@@ -1090,31 +1090,60 @@ Letter_Bodies:
 	.word Letter_World7	; World 7 
 
 Letter_World1:
+;==========================================================================================================================
+	; "You know what they say--'Time is money.' No, no...'Money is time.'"
+	;      Y    o    u         k    n    o    w         w    h    a    t
+	.byte $C8, $DE, $CE, $FE, $DA, $DD, $DE, $81, $FE, $81, $D7, $D0, $CD, $00
+
+	;      t    h    e    y         s    a    y    -
+	.byte $CD, $D7, $D4, $8C, $FE, $CC, $D0, $8C, $E5, $00
+
+	;      '    T    i    m    e         i    s         m    o    n    e    y    .    '    ?
+	.byte $AB, $C3, $D8, $DC, $D4, $FE, $D8, $CC, $FE, $DC, $DE, $DD, $D4, $8C, $E9, $AB, $EB, $00
+
+	;      N    o    ,         n    o    .    .    .
+	.byte $BD, $DE, $9A, $FE, $DD, $DE, $E9, $E9, $E9, $00
+
+	;      '    M    o    n    e    y         i    s         t    i    m    e    .    .    .    '
+	.byte $AB, $BC, $DE, $DD, $D4, $8C, $FE, $D8, $CC, $FE, $CD, $D8, $DC, $D4, $E9, $E9, $E9, $AB, $00
+
+	;
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+
+	;
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+
+	;
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+
+	; Terminator
+	.byte $FF, $FF, $FF
+;==========================================================================================================================
 	; "If you see any" / "ghosts,be careful." / "They will give chase" / "if you turn away." / "I have enclosed a" / "jewel that helps" / "    protect you."
 
 	;       I    f         y    o    u         s    e    e         a    n    y   
-	.byte $B8, $D5, $FE, $8C, $DE, $CE, $FE, $CC, $D4, $D4, $FE, $D0, $DD, $8C, $00
+	;.byte $B8, $D5, $FE, $8C, $DE, $CE, $FE, $CC, $D4, $D4, $FE, $D0, $DD, $8C, $00
 
 	;       g    h    o    s    t    s    ,    b    e         c    a    r    e    f    u    l    .
-	.byte $D6, $D7, $DE, $CC, $CD, $CC, $9A, $D1, $D4, $FE, $D2, $D0, $CB, $D4, $D5, $CE, $DB, $E9, $00
+	;.byte $D6, $D7, $DE, $CC, $CD, $CC, $9A, $D1, $D4, $FE, $D2, $D0, $CB, $D4, $D5, $CE, $DB, $E9, $00
 
 	;       T    h    e    y         w    i    l    l         g    i    v    e         c    h    a    s    e
-	.byte $C3, $D7, $D4, $8C, $FE, $81, $D8, $DB, $DB, $FE, $D6, $D8, $CF, $D4, $FE, $D2, $D7, $D0, $CC, $D4, $00
+	;.byte $C3, $D7, $D4, $8C, $FE, $81, $D8, $DB, $DB, $FE, $D6, $D8, $CF, $D4, $FE, $D2, $D7, $D0, $CC, $D4, $00
 
 	;       i    f         y    o    u         t    u    r    n         a    w    a    y    .
-	.byte $D8, $D5, $FE, $8C, $DE, $CE, $FE, $CD, $CE, $CB, $DD, $FE, $D0, $81, $D0, $8C, $E9, $00
+	;.byte $D8, $D5, $FE, $8C, $DE, $CE, $FE, $CD, $CE, $CB, $DD, $FE, $D0, $81, $D0, $8C, $E9, $00
 
 	;       I         h    a    v    e         e    n    c    l    o    s    e    d         a
-	.byte $B8, $FE, $D7, $D0, $CF, $D4, $FE, $D4, $DD, $D2, $DB, $DE, $CC, $D4, $D3, $FE, $D0, $00
+	;.byte $B8, $FE, $D7, $D0, $CF, $D4, $FE, $D4, $DD, $D2, $DB, $DE, $CC, $D4, $D3, $FE, $D0, $00
 
 	;       j    e    w    e    l         t    h    a    t         h    e    l    p    s
-	.byte $D9, $D4, $81, $D4, $DB, $FE, $CD, $D7, $D0, $CD, $FE, $D7, $D4, $DB, $DF, $CC, $00
+	;.byte $D9, $D4, $81, $D4, $DB, $FE, $CD, $D7, $D0, $CD, $FE, $D7, $D4, $DB, $DF, $CC, $00
 
 	;                           p    r    o    t    e    c    t         y    o    u    .    
-	.byte $FE, $FE, $FE, $FE, $DF, $CB, $DE, $CD, $D4, $D2, $CD, $FE, $8C, $DE, $CE, $E9
+	;.byte $FE, $FE, $FE, $FE, $DF, $CB, $DE, $CD, $D4, $D2, $CD, $FE, $8C, $DE, $CE, $E9
 
 	; Terminator
-	.byte $FF
+	;.byte $FF
 
 
 Letter_World2:
@@ -1205,34 +1234,66 @@ Letter_World4:
 
 	
 Letter_World5:
-	; "Be careful in the" / "Ice World. The" / "creatures trapped in" / "the ice will come to" / "life if warmed." / "I have enclosed a" / "jewel that helps" / "protect you."
+;==========================================================================================================================
+	; "Every 7 coins increases your odds... Don't roll over 99!
 
-	;       B    e         c    a    r    e    f    u    l         i    n         t    h    e
-	.byte $B1, $D4, $FE, $D2, $D0, $CB, $D4, $D5, $CE, $DB, $FE, $D8, $DD, $FE, $CD, $D7, $D4, $00
+	;      E    v    e    r    y         s    e    v    e    n         c    o    i    n    s
+	.byte $B4, $CF, $D4, $CB, $8C, $FE, $CC, $D4, $CF, $D4, $DD, $FE, $D2, $DE, $D8, $DD, $CC, $00
 
-	;       I    c    e         W    o    r    l    d    .         T    h    e    
-	.byte $B8, $D2, $D4, $FE, $C6, $DE, $CB, $DB, $D3, $E9, $FE, $C3, $D7, $D4, $00
+	;      i    n    c    r    e    a    s    e    s         y    o    u    r
+	.byte $D8, $DD, $D2, $CB, $D4, $D0, $CC, $D4, $CC, $FE, $8C, $DE, $CE, $CB, $00
 
-	;       c    r    e    a    t    u    r    e    s         t    r    a    p    p    e    d         i    n
-	.byte $D2, $CB, $D4, $D0, $CD, $CE, $CB, $D4, $CC, $FE, $CD, $CB, $D0, $DF, $DF, $D4, $D3, $FE, $D8, $DD, $00
+	;      o    d    d    s   .    .    .         D    o    n    '    t         r    o    l    l
+	.byte $DE, $D3, $D3, $CC, $E9, $E9, $E9, $FE, $B3, $DE, $DD, $AB, $CD, $FE, $CB, $DE, $DB, $DB, $00
 
-	;       t    h    e         i    c    e         w    i    l    l         c    o    m    e         t    o
-	.byte $CD, $D7, $D4, $FE, $D8, $D2, $D4, $FE, $81, $D8, $DB, $DB, $FE, $D2, $DE, $DC, $D4, $FE, $CD, $DE, $00
+	;      o    v    e    r         n    i    n    e    t    y         n    i    n    e    !
+	.byte $DE, $CF, $D4, $CB, $FE, $DD, $D8, $DD, $D4, $CD, $8C, $FE, $DD, $D8, $DD, $D4, $EA, $FF
 
-	;       l    i    f    e         i    f         w    a    r    m    e    d    .
-	.byte $DB, $D8, $D5, $D4, $FE, $D8, $D5, $FE, $81, $D0, $CB, $DC, $D4, $D3, $E9, $00
+	;
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 
-	;       I         h    a    v    e         e    n    c    l    o    s    e    d         a
-	.byte $B8, $FE, $D7, $D0, $CF, $D4, $FE, $D4, $DD, $D2, $DB, $DE, $CC, $D4, $D3, $FE, $D0, $00
+	;
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 
-	;       j    e    w    e    l         t    h    a    t         h    e    l    p    s
-	.byte $D9, $D4, $81, $D4, $DB, $FE, $CD, $D7, $D0, $CD, $FE, $D7, $D4, $DB, $DF, $CC, $00
+	;
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 
-	;       p    r    o    t    e    c    t         y    o    u    .    
-	.byte $DF, $CB, $DE, $CD, $D4, $D2, $CD, $FE, $8C, $DE, $CE, $E9
+	;
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 
-	; Terminator
+	;
 	.byte $FF
+
+;==========================================================================================================================
+;	; "Be careful in the" / "Ice World. The" / "creatures trapped in" / "the ice will come to" / "life if warmed." / "I have enclosed a" / "jewel that helps" / "protect you."
+;
+;	;       B    e         c    a    r    e    f    u    l         i    n         t    h    e
+;	.byte $B1, $D4, $FE, $D2, $D0, $CB, $D4, $D5, $CE, $DB, $FE, $D8, $DD, $FE, $CD, $D7, $D4, $00
+;
+;	;       I    c    e         W    o    r    l    d    .         T    h    e    
+;	.byte $B8, $D2, $D4, $FE, $C6, $DE, $CB, $DB, $D3, $E9, $FE, $C3, $D7, $D4, $00
+;
+;	;       c    r    e    a    t    u    r    e    s         t    r    a    p    p    e    d         i    n
+;	.byte $D2, $CB, $D4, $D0, $CD, $CE, $CB, $D4, $CC, $FE, $CD, $CB, $D0, $DF, $DF, $D4, $D3, $FE, $D8, $DD, $00
+;
+;	;       t    h    e         i    c    e         w    i    l    l         c    o    m    e         t    o
+;	.byte $CD, $D7, $D4, $FE, $D8, $D2, $D4, $FE, $81, $D8, $DB, $DB, $FE, $D2, $DE, $DC, $D4, $FE, $CD, $DE, $00
+;
+;	;       l    i    f    e         i    f         w    a    r    m    e    d    .
+;	.byte $DB, $D8, $D5, $D4, $FE, $D8, $D5, $FE, $81, $D0, $CB, $DC, $D4, $D3, $E9, $00
+;
+;	;       I         h    a    v    e         e    n    c    l    o    s    e    d         a
+;	.byte $B8, $FE, $D7, $D0, $CF, $D4, $FE, $D4, $DD, $D2, $DB, $DE, $CC, $D4, $D3, $FE, $D0, $00
+;
+;	;       j    e    w    e    l         t    h    a    t         h    e    l    p    s
+;	.byte $D9, $D4, $81, $D4, $DB, $FE, $CD, $D7, $D0, $CD, $FE, $D7, $D4, $DB, $DF, $CC, $00
+;
+;	;       p    r    o    t    e    c    t         y    o    u    .    
+;	.byte $DF, $CB, $DE, $CD, $D4, $D2, $CD, $FE, $8C, $DE, $CE, $E9
+;
+;	; Terminator
+;	.byte $FF
+;==========================================================================================================================
 
 
 Letter_World6:
