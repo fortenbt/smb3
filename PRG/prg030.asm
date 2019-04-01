@@ -5858,10 +5858,37 @@ PRG030_9F0D:
 	RTS		 ; Return
 
 	; Probably unused space
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	;.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	;.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	;.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+; CheckPoisonAndDie fits right in this unused space, leaving 1 byte left
+    .byte $ff
+CheckPoisonAndDie:
+	LDA #200
+	STA <Objects_Y,X        ; this is doing what our hook replaced
 
+	LDA Objects_Frame,X
+	SUB #$01
+	BNE PRG030_9xxx_1
+
+	STA Inventory_Open
+	STA InvFlip_Frame
+	LDA #$01
+	STA InvFlip_Counter
+	JSR Player_Die
+	RTS
+
+PRG030_9xxx_1
+	; Store object into Player's inventory
+	LDY Objects_Var1,X	; Y = Inventory_Items offset        ; 3 bytes
+	LDA Objects_Frame,X                                     ; 3 bytes
+	STA Inventory_Items,Y                                   ; 3 bytes
+	; Force redraw of Inventory items
+	LDA #$0c                               ; 2 bytes
+	STA InvFlip_Frame                      ; 3 bytes
+	LDA #$03                               ; 2 bytes
+	STA InvFlip_Counter                    ; 3 bytes
+	RTS
 
 PRG030_SUB_9F40:
 	LDA #$00
@@ -5939,3 +5966,24 @@ PRG030_9FAF:
 
 ; NOTE: The remaining ROM space was all blank ($FF)
 
+SetOddsGetRand:
+	LDX #$FF                    ; Offset into ToadHouse_RandomItem array
+PRG030_9xxx_2
+	INX
+	LDA ToadHouse_RandomItem,X
+	STA PoisonMushroomOddsArray,X   ; Initialize our RAM odds array
+	BNE PRG030_9xxx_2
+	TAX
+	LDA Inventory_Coins
+PRG030_9xxx_3
+	CMP #7                      ; For every 6 coins, set another chance to get hammer
+	BCC PRG030_9xxx_4
+	INX
+	INC PoisonMushroomOddsArray,X
+	SBC #7
+	JMP PRG030_9xxx_3
+PRG030_9xxx_4
+	LDX THouse_Treasure
+	DEX
+	LDA RandomN                 ; Need to get the RandomN that we replaced with our hook
+	RTS
