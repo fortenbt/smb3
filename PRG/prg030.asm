@@ -5939,3 +5939,28 @@ PRG030_9FAF:
 
 ; NOTE: The remaining ROM space was all blank ($FF)
 
+	; space left that's used by the death counter patch
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+
+; This must return Counter_1 & 0x8 due to our hook
+DoQuickShoe:
+	LDA <Pad_Holding
+	AND #(PAD_LEFT)
+	BNE left
+	LDA <Pad_Holding
+	AND #(PAD_RIGHT)
+	BEQ nvm
+	; holding RIGHT
+	LDY #62
+	BNE store ; jump always past left
+left:
+	LDY #-62
+store:
+	STY <Player_XVel
+
+nvm:
+	LDA <Counter_1
+	AND #$08
+	RTS
