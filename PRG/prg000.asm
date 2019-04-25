@@ -1886,7 +1886,7 @@ PRG000_C997:
 	CPY #OBJSTATE_NORMAL
 	BEQ PRG000_C9B3	 ; If object's state is Normal, jump to PRG000_C9B3
 
-	CPY #$04	 
+	CPY #OBJSTATE_HELD
 	BNE PRG000_C9AF	 ; If object's state is NOT 4 (being held), jump to PRG000_C9AF
 
 	; Object being held...
@@ -5786,7 +5786,7 @@ Player_Die:
 	LDA #-64
 	STA <Player_YVel ; Player_YVel = -64
 
-	LDA #$30	 
+	LDA #$14
 	STA Event_Countdown ; Event_Countdown = $30 (ticks until dropped back to map)
 
 	LDA #$01

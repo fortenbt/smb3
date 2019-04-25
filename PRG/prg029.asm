@@ -2079,7 +2079,8 @@ Player_Die_Dying:
 PRG029_D6DA:
 	LDA Event_Countdown
 	BNE PRG029_D6E2	 ; If Event_Countdown <> 0 (time until drop to map), jump to PRG029_D6E2
-	JMP PRG029_D768	 ; Otherwise, jump to PRG029_D6E2
+	;JMP PRG029_D768	 ; Otherwise, jump to PRG029_D6E2
+	JMP PRG029_ExitAndCancelFadeout
 
 PRG029_D6E2:
 	JMP PRG029_D771	 ; Jump to PRG029_D771 if Event_Countdown <> 0
@@ -2106,9 +2107,11 @@ Player_Die_FellOff:
 	BNE PRG029_D702	 ; If Event_Countdown <> 0, jump to PRG029_D702 (RTS)
 
 PRG029_D6FB:
-	INC <Level_ExitToMap	; Level_ExitToMap = 1
+	;INC <Level_ExitToMap	; Level_ExitToMap = 1
 
-	LDA #$01
+	;LDA #$01
+	NOP
+	JMP PRG029_ExitAndCancelFadeout
 	STA Map_ReturnStatus	 ; Map_ReturnStatus = 1 (Player died, level is not clear)
 
 PRG029_D702:
@@ -2135,13 +2138,14 @@ Player_Die_TimeUp:
 	LDA <Player_SpriteY
 	AND #$f0
 	CMP #$b0
-	BEQ PRG029_D729	 ; If Player_SpriteY >= $B0 && Player_SpriteY <= $BF (Player is halfway below status bar), jump to PRG029_D729
+	BNE PRG029_D729	 ; If Player_SpriteY >= $B0 && Player_SpriteY <= $BF (Player is halfway below status bar), jump to PRG029_D729
 
 PRG029_D71E:
 	LDA Event_Countdown
 	BNE PRG029_D726	 ; If Event_Countdown <> 0, jump to PRG029_D726
 
-	JMP PRG029_D768	 ; Jump to PRG029_D768
+	;JMP PRG029_D768	 ; Jump to PRG029_D768
+	JMP PRG029_ExitAndCancelFadeout
 
 PRG029_D726:
 	JMP PRG029_D771	 ; Jump to PRG029_D768 if Event_Countdown <> 0
@@ -2156,7 +2160,7 @@ PRG029_D729:
 	ADD <Pipe_PlayerY
 	STA <Pipe_PlayerX	; Pipe_PlayerX += Pipe_PlayerY
 
-	LDA #112
+	LDA #30
 	STA Event_Countdown	 ; Event_Countdown = 112
 
 PRG029_D73B:
@@ -2192,12 +2196,21 @@ PRG029_D74A:
 
 PRG029_D768:
 	; Player gravity while dying
-	INC <Player_YVel
-	INC <Player_YVel ; Player_YVel += 2
+	;INC <Player_YVel
+	;INC <Player_YVel ; Player_YVel += 2
 
-	LDX #$00	 ; X = 0 (?)
+	;LDX #$00	 ; X = 0 (?)
 
-	JSR Player_ApplyYVelocity	 ; Applies Player's Y velocity
+	;JSR Player_ApplyYVelocity	 ; Applies Player's Y velocity
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
 
 PRG029_D771:
 	LDA #PF_DIE
@@ -2322,7 +2335,14 @@ PRG029_D7FC:
 
 	;; BEGIN HUGE UNUSED SPACE
 
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D80A - $D819
+PRG029_ExitAndCancelFadeout
+	INC Level_ExitToMap		;3
+	LDA #$01				;2
+	STA Map_ReturnStatus	;3
+	STA FadeOut_Cancel		;3
+	JMP PRG029_D771			;3
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D80A - $D819
+	.byte $FF, $FF
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D81A - $D829
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D82A - $D839
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D83A - $D849

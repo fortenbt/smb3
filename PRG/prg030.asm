@@ -2833,7 +2833,8 @@ PRG030_910C:
 
 	; Player returns to map dead
 
-	LDY #$02	 ; Y = 2 (Will be the Map_Operation value)
+	;LDY #$02	 ; Y = 2 (Will be the Map_Operation value)
+	LDY #$0d
 
 	; Map_ReturnStatus = 0
 	LDA #$00
@@ -2845,7 +2846,8 @@ PRG030_910C:
 	LDX Player_Current	 ; X = Player_Current
 
 	; Skid backward
-	LDA #$01
+	;LDA #$01
+	LDA #$00
 	STA Map_Player_SkidBack,X
 
 	LDA Map_PlayerLost2PVs
@@ -4615,6 +4617,20 @@ PRG030_997F:
 ;
 ; Shakes up the random number pool a bit!
 ; Anyone want to detail the algorithm, go right ahead...
+;
+; Random_Pool is an array of 9 bytes
+; RandomN points to the second byte
+;
+;      ,--,--,--,--,--,--,--,--,--,
+; R -> |  |  |  |  |  |  |  |  |  |
+;      `--`--`--`--`--`--`--`--`--`
+;
+; - Is 2nd LSB (bit 1) of R[0] the same as R[1]?
+;   (R[0] & 2) ^ (R[1] & 2) == 0?
+; - If so, we'll shift a zero in
+;   If not, we'll shift a one in
+; - ROR each byte in the Random_Pool (carry bit is specified
+;   by 2nd LSB of R[0] and R[1] being equal)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Randomize:
 	LDX #$00	
