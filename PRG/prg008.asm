@@ -2298,8 +2298,9 @@ PRG008_AB2B:
 	LDA Player_KuriboFrame,Y	; Get appropriate Kuribo's shoe frame
 	STA <Player_Frame		; Store as active Player frame
 
-	LDA <Counter_1
-	AND #$08	
+	JSR DoQuickShoe
+	NOP
+
 	BEQ PRG008_AB38	 	; Every 8 ticks, jump to PRG008_AB38
 
 	INC <Player_Frame	; Player_Frame++
