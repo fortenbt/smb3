@@ -2122,6 +2122,7 @@ RandomN = Random_Pool+1			; Pull a random number from the sequence (NOTE: Random
 
 	Player_RescuePrincess:	.ds 1	; Player will jump to the princess rescue when Level_ExitToMap is nonzero (instead of map)
 
+	Player_Deaths:				; Added for death count
 				.ds 8	; $078E-$0795 unused
 
 	; Objects_PlayerHitStat:
