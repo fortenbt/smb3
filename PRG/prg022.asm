@@ -1255,28 +1255,56 @@ PRG022_C880:
 	CMP #$07
 	BLT PRG022_C8A0	 ; If Bonus_GameState < 7, jump to PRG022_C8A0
 
-	LDA <Pad_Input
-	AND #(PAD_A | PAD_B)
-	BEQ PRG022_C8A0	 ; If Player is pushing neither A nor B, jump to PRG022_C8A0
-
-	; Player pushing A or B...
-
-	LDA SndCur_Music2
-	BNE PRG022_C897	 ; If music is playing from set 2, jump to PRG022_C897
-
-	; Otherwise, start the Bonus Game music
-	LDA #MUS2A_BONUSGAME
-	STA Sound_QMusic2
-
-PRG022_C897:
-
-	; Bonus_GameState = 9
-	LDA #$09
-	STA Bonus_GameState
-
-	; Exit to map!  (NOTE: Exits to either Spade/N-Spade game)
-	LDA #$01
-	STA <Level_ExitToMap
+;=====================================================
+;	LDA <Pad_Input
+;	AND #(PAD_A | PAD_B)
+;	BEQ PRG022_C8A0	 ; If Player is pushing neither A nor B, jump to PRG022_C8A0
+;
+;	; Player pushing A or B...
+;
+;	LDA SndCur_Music2
+;	BNE PRG022_C897	 ; If music is playing from set 2, jump to PRG022_C897
+;
+;	; Otherwise, start the Bonus Game music
+;	LDA #MUS2A_BONUSGAME
+;	STA Sound_QMusic2
+;
+;PRG022_C897:
+;
+;	; Bonus_GameState = 9
+;	LDA #$09
+;	STA Bonus_GameState
+;
+;	; Exit to map!  (NOTE: Exits to either Spade/N-Spade game)
+;	LDA #$01
+;	STA <Level_ExitToMap
+;=====================================================
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+;=====================================================
 
 PRG022_C8A0:
 	LDA Bonus_GameState
@@ -1291,7 +1319,8 @@ PRG022_C8A0:
 	.word Bonus_DieFlyAway	; 5: Die "flies away"; go to state 6 if you won the Odd/Even game and to state 8 otherwise
 	.word Bonus_InitRound2	; 6: Initialize for Round 2
 	.word Bonus_DoHostText	; 7: Giving instructions for Spade/N-Spade (LEGACY: For "Round 2" game)
-	.word Bonus_WaitA0	; 8: Wait $A0 ticks
+	;.word Bonus_WaitA0	; 8: Wait $A0 ticks
+	.word Bonus_WaitForABPress	; 8: Wait until A or B is pressed
 	.word Bonus_KTPrizeGame	; 9: Appears to be all that was implemented toward "winning" the Koopa Troopa "Prize" Game
 
 
@@ -1347,26 +1376,51 @@ PRG022_C8E6:
 PRG022_C8EF:
 	RTS		 ; Return
 
-Bonus_WaitA0:
-	LDA Bonus_Timer
-	BNE PRG022_C8FA	 ; If Bonus_Timer <> 0, jump to PRG022_C8FA
-
-	; Bonus_Timer = $A0
-	LDA #$a0
-	STA Bonus_Timer
-
-PRG022_C8FA:
-	DEC Bonus_Timer	 ; Bonus_Timer--
-	BNE PRG022_C906	 ; If Bonus_Timer not expired, jump to PRG022_C906
-
-	INC Bonus_GameState	 ; Bonus_GameState = 9 (bad state but nothing really happens because we're exiting)
-
-	; Exit to map
+;=====================================================
+Bonus_WaitForABPress:
+	LDA <Pad_Input
+	AND #(PAD_A | PAD_B)
+	BEQ PRG022_C8FA
 	LDA #$01
 	STA <Level_ExitToMap
+PRG022_C8FA:
+	RTS
 
-PRG022_C906:
-	RTS		 ; Return
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+
+;=====================================================
+;Bonus_WaitA0:
+;	LDA Bonus_Timer
+;	BNE PRG022_C8FA	 ; If Bonus_Timer <> 0, jump to PRG022_C8FA
+;
+;	; Bonus_Timer = $A0
+;	LDA #$a0
+;	STA Bonus_Timer
+;
+;PRG022_C8FA:
+;	DEC Bonus_Timer	 ; Bonus_Timer--
+;	BNE PRG022_C906	 ; If Bonus_Timer not expired, jump to PRG022_C906
+;
+;	INC Bonus_GameState	 ; Bonus_GameState = 9 (bad state but nothing really happens because we're exiting)
+;
+;	; Exit to map
+;	LDA #$01
+;	STA <Level_ExitToMap
+;
+;PRG022_C906:
+;	RTS		 ; Return
+;=====================================================
 
 
 Bonus_DoHostText:
@@ -1677,19 +1731,34 @@ BonusGame_UNUSED0_Text:
 	.byte $FF, BONUS_UNUSED_KEYCOIN
 
 	; Spade Instruction
-	; English: "Line up the pictures and" / "get a prize!" / "You only get one try."
+;=====================================================
+	; English: coins coins coins are good, trust me
 BonusGame_Spade_Text:
-	;       L    i    n    e         u    p         t    h    e         p    i    c    t    u    r    e    s         a    n    d
-	.byte $BB, $D8, $DD, $D4, $FE, $CE, $DF, $FE, $CD, $D7, $D4, $FE, $DF, $D8, $D2, $CD, $CE, $CB, $D4, $CC, $FE, $D0, $DD, $D3, $00
+	;      C    o    i    n    s    ,         c    o    i    n    s    ,         c    o    i    n    s         a    r    e
+	.byte $B2, $DE, $D8, $DD, $CC, $9A, $FE, $D2, $DE, $D8, $DD, $CC, $9A, $FE, $D2, $DE, $D8, $DD, $CC, $FE, $D0, $CB, $D4, $00
 
-	;       g    e    t         a         p    r    i    z    e    !
-	.byte $D6, $D4, $CD, $FE, $D0, $FE, $DF, $CB, $D8, $8F, $D4, $EA, $00
-
-	;       Y    o    u         o    n    l    y         g    e    t         o    n    e         t    r    y    .
-	.byte $C8, $DE, $CE, $FE, $DE, $DD, $DB, $8C, $FE, $D6, $D4, $CD, $FE, $DE, $DD, $D4, $FE, $CD, $CB, $8C, $E9
+	;      g    o    o    d    .         T    r    u    s    t         m    e    .    .    .
+	.byte $D6, $DE, $DE, $D3, $E9, $FE, $C3, $CB, $CE, $CC, $CD, $FE, $DC, $D4, $E9, $E9, $E9
 
 	; (Terminator, value into Bonus_Round2)
 	.byte $FF, BONUS_SPADE
+	; unused...
+	.byte $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+
+;=====================================================
+;	; English: "Line up the pictures and" / "get a prize!" / "You only get one try."
+;	;       L    i    n    e         u    p         t    h    e         p    i    c    t    u    r    e    s         a    n    d
+;	;.byte $BB, $D8, $DD, $D4, $FE, $CE, $DF, $FE, $CD, $D7, $D4, $FE, $DF, $D8, $D2, $CD, $CE, $CB, $D4, $CC, $FE, $D0, $DD, $D3, $00
+;
+;	;       g    e    t         a         p    r    i    z    e    !
+;	;.byte $D6, $D4, $CD, $FE, $D0, $FE, $DF, $CB, $D8, $8F, $D4, $EA, $00
+;
+;	;       Y    o    u         o    n    l    y         g    e    t         o    n    e         t    r    y    .
+;	;.byte $C8, $DE, $CE, $FE, $DE, $DD, $DB, $8C, $FE, $D6, $D4, $CD, $FE, $DE, $DD, $D4, $FE, $CD, $CB, $8C, $E9
+;
+;	; (Terminator, value into Bonus_Round2)
+;	;.byte $FF, BONUS_SPADE
+;=====================================================
 
 	; N-Spade Instruction
 	; English: "Flip over any two cards" / "and see if they match." / "You can only miss twice!"
