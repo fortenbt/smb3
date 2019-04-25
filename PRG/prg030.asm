@@ -782,7 +782,7 @@ PRG030_8617:
 
 PRG030_8625:
 	LDA World_Num	 
-	CMP #$08
+	CMP #$18
 	BNE PRG030_8634	 ; If World_Num <> 8 (World 9 / Warp Zone), jump to PRG030_8634
 
 	LDA #$2b	

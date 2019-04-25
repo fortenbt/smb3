@@ -3185,13 +3185,13 @@ PRG010_D183:
 
 Map_WarpZone_Numbers:
 	; Sprites of the world numbers used in the warp zone
-	.byte $3F, $91, $01, $64
-	.byte $3F, $93, $01, $84
-	.byte $3F, $95, $01, $A4
-	.byte $5F, $97, $01, $64
-	.byte $5F, $99, $01, $84
-	.byte $5F, $9B, $01, $A4
-	.byte $7F, $9D, $01, $A4
+	.byte $3F, $49, $01, $64
+	.byte $3F, $49, $01, $84
+	.byte $3F, $49, $01, $A4
+	.byte $5F, $49, $01, $64
+	.byte $5F, $49, $01, $84
+	.byte $5F, $49, $01, $A4
+	.byte $7F, $49, $01, $A4
 
 Map_WarpZone_DrawNumbers:
 
