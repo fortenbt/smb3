@@ -2067,7 +2067,8 @@ OBJSTATE_POOFDEATH	= 8	; "Poof" Death (e.g. Piranha death)
 
 	Map_Airship_Trav:	.ds 1	; Airship's current travel-table offset (randomly offset by 0-2, spices up life)
 
-				.ds 2	; $0743-$0744 unused
+	Map_FortFXtraDone:	.ds 1
+				.ds 1	; $0743-$0744 unused
 
 	Map_DoFortressFX:	.ds 1	; Bust locks, build bridges, whatever after Mini-Fortress is toppled
 
@@ -3585,8 +3586,10 @@ TILE_LUIGICOMP_P	= $01	; Luigi Completed, standard panel
 TILE_PANEL1		= $03	; Level Panel 1
 TILE_MARIOCOMP_O	= $40	; Mario Completed, orange color
 TILE_LUIGICOMP_O	= $41	; Luigi Completed, orange color
+TILE_DESERTSAND		= $43	; Desert sand in World 2
 TILE_HORZPATH		= $45	; Standard horizontal path
 TILE_VERTPATH		= $46	; Standard vertical path
+TILE_SE_RDCONN		= $4A	; S.E. Road Connector A
 TILE_DOCK		= $4B	; Docking spot for canoe
 TILE_BORDER3		= $4E
 TILE_BORDER1		= $4F

@@ -133,14 +133,14 @@ Map_Complete_Bits:
 	.byte $80, $40, $20, $10, $08, $04, $02, $01
 
 Map_Removable_Tiles:
-	.byte TILE_ROCKBREAKH, TILE_ROCKBREAKV, TILE_LOCKVERT, TILE_FORT, TILE_ALTFORT, TILE_ALTLOCK, TILE_LOCKHORZ, TILE_RIVERVERT
+	.byte TILE_ROCKBREAKH, TILE_ROCKBREAKV, TILE_LOCKVERT, TILE_FORT, TILE_ALTFORT, TILE_ALTLOCK, TILE_LOCKHORZ, TILE_RIVERVERT, TILE_DESERTSAND, TILE_DANCINGPALM, TILE_POOL
 MRT_END	; marker to calculate size -- allows user expansion of Map_Removable_Tiles
 
 Map_RemoveTo_Tiles:
 	; These specify tiles that coorespond to the tile placed when the above is removed
 	; (NOTE: First two are for rock; see also PRG026 RockBreak_Replace)
 	; NOTE: Must have as many elements as Map_Removable_Tiles!
-	.byte TILE_HORZPATH, TILE_VERTPATH, TILE_VERTPATH, TILE_FORTRUBBLE, TILE_ALTRUBBLE, TILE_HORZPATHSKY, TILE_HORZPATH, TILE_BRIDGE
+	.byte TILE_HORZPATH, TILE_VERTPATH, TILE_VERTPATH, TILE_FORTRUBBLE, TILE_ALTRUBBLE, TILE_HORZPATHSKY, TILE_HORZPATH, TILE_BRIDGE, TILE_VERTPATH, TILE_HORZPATH, TILE_VERTPATH
 
 Map_Completable_Tiles:
 	; These tiles are simply marked with the M/L
