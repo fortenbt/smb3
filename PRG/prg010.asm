@@ -2586,6 +2586,9 @@ MO_NormalMoveEnter:
 	STA Map_NoLoseTurn	 ; Map_NoLoseTurn = 0
 	STA Map_WasInPipeway	 ; Map_WasInPipeway = 0
 
+	LDY #$0D
+	JSR PRG030_CheckForDeathThreshold
+
 	LDX Player_Current
 	LDA <World_Map_Move,X
 	BEQ PRG010_CDDC	 	; If Player is not moving on map, jump to PRG010_CDDC
