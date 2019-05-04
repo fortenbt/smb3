@@ -620,9 +620,9 @@ InvFlipFrame_DrawMLLivesScore:
 	LDX <Temp_Var9		 ; X = Temp_Var9
 
 	;LDA StatusBar_LivesH
-	;STA Graphics_Buffer+16,X
+	;STA Graphics_Buffer+8,X
 	;LDA StatusBar_LivesL
-	;STA Graphics_Buffer+17,X
+	;STA Graphics_Buffer+9,X
 	NOP
 	NOP
 	NOP
@@ -3069,6 +3069,7 @@ StatusBar_Fill_Score:
 	NOP
 	NOP
 	NOP
+	NOP
 	STA <Temp_Var1		; Keep LSD in Temp_Var1	 
 
 	LDA Player_Deaths+1	; Get next higher byte
@@ -3085,7 +3086,6 @@ StatusBar_Fill_Score:
 	LDA Player_Deaths	; Get most significant byte of score
 	;ADC #$00	 	; Add in any carry
 	;STA Player_Deaths	; Store result
-	NOP
 	NOP
 	NOP
 	NOP
@@ -3588,11 +3588,11 @@ TileChng_VRAMCommit:
 
 ; Same format as data from Video_Upd_Table in PRG030, check there for details
 ; This is used as a template, but actual values will be overwritten below...
-StatusBar_UpdTemplate____OLD:
+StatusBar_UpdTemplate:
 	vaddr $2B28
 	.byte $0C, $EF, $EF, $EF, $EF, $EF, $EF, $AE, $AF, $FE, $EC, $F0, $F0
 	vaddr $2B45
-	.byte $0F, $FE, $F0, $FE, $F0, $F0, $F0, $F0, $F0, $F0, $F0, $FE, $ED, $F0, $F0, $F0
+	.byte $0F, $77, $FB, $FE, $F0, $F0, $F0, $F0, $F0, $F0, $FE, $FE, $ED, $F0, $F0, $F0
 	.byte $00 ; Terminator
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -3647,7 +3647,7 @@ PRG026_B47A:
 	STA Graphics_Buffer,Y		; Store it into the graphics buffer
 	INY				; Y++
 	INX				; X++
-	CPX #$27
+	CPX #$22
 	BNE PRG026_B47A	 		; If X <> $22, loop!
 
 	; *** Power meter copy loop
@@ -3670,10 +3670,10 @@ PRG026_B48B:
 
 	; *** Lives copy
 	;LDY Graphics_BufCnt	 ; Y = Graphics_BufCnt
-	;LDA StatusBar_LivesH	
-	;STA Graphics_Buffer+31,Y
-	;LDA StatusBar_LivesL	
-	;STA Graphics_Buffer+32,Y
+	;LDA StatusBar_LivesH
+	;STA Graphics_Buffer+18,Y
+	;LDA StatusBar_LivesL
+	;STA Graphics_Buffer+19,Y
 	NOP
 	NOP
 	NOP
@@ -3695,7 +3695,7 @@ PRG026_B48B:
 	LDX #$00	 	; X = 0
 PRG026_B4BA:
 	LDA StatusBar_Score,X
-	STA Graphics_Buffer+26,Y
+	STA Graphics_Buffer+21,Y
 	INY		 ; Y++
 	INX		 ; X++
 	CPX #$06
@@ -3706,7 +3706,7 @@ PRG026_B4BA:
 	LDX #$00	 	; X = 0
 PRG026_B4CB:
 	LDA StatusBar_Time,X	
-	STA Graphics_Buffer+35,Y
+	STA Graphics_Buffer+30,Y
 	INY		 ; Y++
 	INX		 ; X++
 	CPX #$03	 
@@ -3739,7 +3739,7 @@ PRG026_B4EE:
 PRG026_B4F5:
 	; Update graphics buffer count
 	LDA Graphics_BufCnt
-	ADD #$26
+	ADD #$21
 	STA Graphics_BufCnt	 
 
 	RTS		 ; Return
@@ -3784,12 +3784,3 @@ PRG026_B51F:
 ; Rest of ROM bank was empty...
 PRG026_DEATHSx:
 	.byte $74, $75, $76, $77, $FB  ; "DEATHSx"
-; Same format as data from Video_Upd_Table in PRG030, check there for details
-; This is used as a template, but actual values will be overwritten below...
-StatusBar_UpdTemplate:
-	vaddr $2B28
-	.byte  12, $EF, $EF, $EF, $EF, $EF, $EF, $AE, $AF, $FE, $EC, $F0, $F0
-	vaddr $2B40
-	.byte  20, $FC, $A6, $74, $75, $76, $77, $FB, $FE, $FE, $FE, $FE, $FE, $FE, $FE	; [M/L]x  000000 c000| etc.
-	.byte $FE, $FE, $ED, $F0, $F0, $F0
-	.byte $00 ; Terminator
