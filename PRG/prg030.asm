@@ -2865,13 +2865,72 @@ PRG030_9128:
 	LDA #MUS1_STOPMUSIC
 	STA Sound_QMusic1
 
-	STY Map_Operation	 ; Map_Operation = 2
+	;STY Map_Operation	 ; Map_Operation = 2
+	JSR PRG030_CheckForDeathThreshold
 	JMP PRG030_84D7	 	; Jump to PRG030_84D7
 
-PRG030_9133:
+;PRG030_9133:
 	;=====================================================================================
 	;=====================================================================================
-	; GAME OVER!! (Now unused)
+	; GAME OVER!! (Now unused - lots of room for new stuff)
+
+PRG030_CheckForDeathThreshold:
+	LDA Death_Threshold
+	ORA Death_Threshold+1
+	BNE PRG030_ThresholdInitDone; Already initialized the threshold
+
+	LDA #0
+	CMP Player_Deaths
+	BNE PRG030_ThresholdInitDone
+	CMP Player_Deaths+1
+	BNE PRG030_ThresholdInitDone
+	ORA #1
+	CMP Player_Deaths+2
+	BNE PRG030_ThresholdInitDone
+	; First death; initialize the Death_Threshold to a random
+	; value between 100 and 500 (between 0x64 and 0x1F4) 0`0110`0100 - 1`1111`0100
+	; Death_Threshold is little endian where Player_Deaths is big endian
+	LDA RandomN+1
+	AND #1
+	STA Death_Threshold+1		; MSB is 0 or 1
+	LDA RandomN
+	ORA #%01100100				; LSB is at least 64
+	STA Death_Threshold
+PRG030_ThresholdInitDone:
+	LDA Death_Threshold
+	ORA Death_Threshold+1
+	BEQ PRG030_PastLockout		; We haven't initialized the threshold yet, move along
+
+	LDA Threshold_Lockout
+	CMP #0
+	BNE PRG030_PastLockout		; Already locked out, don't do it again
+	LDA #1						; Hard-coded world 2
+	CMP World_Num
+	BNE PRG030_PastLockout		; Not the right world, don't lock out yet
+
+	LDA Player_Deaths
+	CMP #0
+	BNE PRG030_DoLockout		; If Player_Deaths is set, we're definitely above the threshold
+
+	LDA Death_Threshold+1
+	CMP Player_Deaths+1			; If [Player_Deaths+1] > [Death_Threshold+1], we're above the threshold
+	BCC PRG030_DoLockout
+	BNE PRG030_PastLockout		; If [Player_Deaths+1] != [Death_Threshold+1] here, it means
+								; [Player_Deaths+1] < [Death_Threshold+1], so we definitely haven't reached the threshold yet.
+	; DeathsMSB == ThresholdMSB, so we just need to check if DeathsLSB >= ThresholdLSB now
+	LDA Player_Deaths+2
+	CMP Death_Threshold
+	BCC PRG030_PastLockout		; Deaths < Threshold, no lockout!
+PRG030_DoLockout
+	; Deaths > Threshold, lockout!
+	LDY #$08					; MO_DoFortressFX
+	LDA #1
+	STA Map_DoFortressFX
+	STA Map_NoLoseTurn
+	STA Threshold_Lockout		; Did the lockout
+PRG030_PastLockout:
+	STY Map_Operation
+	RTS
 
 	; Set Player as twirling (in case they Continue...)
 	;LDA #$01												Removed to give room for the BNE PRG030_9128 above
