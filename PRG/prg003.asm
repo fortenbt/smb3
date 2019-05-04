@@ -572,7 +572,8 @@ PRG003_A321:
 
 	; Give Player the treasure item
 	LDA Level_TreasureItem
-	JSR Player_GetItem
+	;JSR Player_GetItem
+	JSR Player_GetItemAndCheckSecret
 
 	LDX <SlotIndexBackup		 ; X = object slot index
 
@@ -6221,3 +6222,30 @@ PRG003_BFAE:
 
 ; Rest of ROM bank was empty
 
+Player_GetItemAndCheckSecret:
+	JSR Player_GetItem_PRG0
+
+	LDA World_Num
+	CMP #1						; World 2
+	BNE PRG003_NotSecret
+
+	LDA Map_Entered_Y			; Level 3 Y
+	CMP #$60
+	BNE PRG003_NotSecret
+
+	LDA Map_Entered_XHi			; Level 3 XHi
+	BNE PRG003_NotSecret
+
+	LDA Map_Entered_X			; Level 3 X
+	CMP #$C0
+	BNE PRG003_NotSecret
+
+	; We're in the right level, is this the secret treasure (Player_YHi == 1)
+	LDA Player_YHi
+	CMP #1
+	BNE PRG003_NotSecret
+
+	; Secret done!
+	STA Got_2_3_Secret
+PRG003_NotSecret:
+	RTS
