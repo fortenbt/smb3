@@ -2126,7 +2126,8 @@ RandomN = Random_Pool+1			; Pull a random number from the sequence (NOTE: Random
 	Player_Deaths:		.ds 3		; Added for death count
 	Death_Threshold:	.ds 2		; Added to trigger something at Death_Threshold deaths
 	Threshold_Lockout:	.ds 1
-						.ds 2		; $078E-$0795 unused
+	Got_2_3_Secret:		.ds 1
+						.ds 1		; $078E-$0795 unused
 
 	; Objects_PlayerHitStat:
 	;	Bit 0 - Set if Player's bbox bottom is HIGHER than object's bbox bottom
@@ -2395,6 +2396,8 @@ VSOBJID_KICKEDBLOCK	= 11	; Kicked block (from [?] block match)
 	; ASSEMBLER BOUNDARY CHECK, 2P VS END OF $7950
 .Bound_7950:	BoundCheck .Bound_7950, $7950, 2P VS RAM
 
+	.org $FD65
+	Player_GetItem_PRG0:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $6000-$7FFF MMC3 SRAM
