@@ -1541,7 +1541,7 @@ PRG010_C7BA:
 	; Indexed by value from FortressFX_Wx
 	; 		               0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F   10
 __FortressFX_VAddrH:	.byte $29, $2A, $2A, $29, $29, $29, $29, $29, $29, $28, $29, $29, $29, $29, $29, $29, $29
-__FortressFX_VAddrL:	.byte $C8, $44, $04, $C4, $84, $86, $86, $8E, $9A, $92, $8A, $1A, $CE, $10, $52, $98, $CA
+__FortressFX_VAddrL:	.byte $48, $50, $12, $4C, $06, $96, $86, $8E, $9A, $92, $8A, $1A, $CE, $10, $52, $98, $CA
 
 	; Indexed by value from FortressFX_Wx
 	; Stores the column index for Map_Completions followed by which
@@ -1570,17 +1570,12 @@ __FortressFX_MapCompIdx:
 	; Patterns to overwrite to cause the disappearance of a lock
 	; or creation of a bridge, whatever is appropriate
 __FortressFX_Patterns:
-	.byte $B6, $B8, $B7, $B9	; 0	lock
-	;.byte $FE, $C0, $FE, $C0	; 0	vertical path
-	;.byte $B6, $B8, $B7, $B9	; 1	lock
-	.byte $FE, $C0, $FE, $C0	; 1	vertical path
-	.byte $FE, $C0, $FE, $C0	; 2	vertical path
-	;.byte $FE, $FE, $E1, $E1	; 2
-	.byte $FE, $C0, $FE, $C0	; 3	vertical path
-	;.byte $FE, $FE, $E1, $E1	; 4
-	.byte $FE, $FE, $FE, $CD	; 4	nub
-	;.byte $D4, $D6, $D5, $D7	; 5
-	.byte $FE, $FE, $E1, $E1	; 5	horizontal path
+	.byte $FE, $C0, $FE, $C0	; 0
+	.byte $FE, $C0, $FE, $C0	; 1
+	.byte $FE, $FE, $E1, $E1	; 2
+	.byte $FE, $C0, $FE, $C0	; 3
+	.byte $FE, $FE, $E1, $E1	; 4
+	.byte $D4, $D6, $D5, $D7	; 5
 	.byte $D4, $D6, $D5, $D7	; 6
 	.byte $FE, $FE, $E1, $E1	; 7
 	.byte $FE, $FE, $E1, $E1	; 8
@@ -1596,16 +1591,16 @@ __FortressFX_Patterns:
 	; Indexed by value from FortressFX_Wx
 	; The related "row" for the FortressFX_MapLocation
 __FortressFX_MapLocationRow:
-	.byte $70, $90, $80, $70, $60, $60, $60, $60, $60, $20, $60, $40, $70, $40, $50, $60, $70
+	.byte $50, $90, $80, $50, $40, $60, $60, $60, $60, $20, $60, $40, $70, $40, $50, $60, $70
 
 	; Indexed by value from FortressFX_Wx
 	; Selects location of tile to bust out
 	; Lower 4 bits are the "screen", upper 4 bits are the column
 __FortressFX_MapLocation:
-	.byte $40, $20, $20, $20, $20, $30, $30, $71, $D0, $91, $52, $D0, $71, $80, $91, $C2, $53
+	.byte $40, $80, $90, $61, $31, $B0, $30, $71, $D0, $91, $52, $D0, $71, $80, $91, $C2, $53
 
 __FortressFX_MapTileReplace:
-	.byte TILE_LOCKVERT, TILE_VERTPATH, TILE_VERTPATH, TILE_VERTPATH, $45, $B3, $B3, $DA, $DA, $B3, $45, $46, $45, $46, $45, $46, $45
+	.byte $46, $46, $45, $46, $45, $B3, $B3, $DA, $DA, $B3, $45, $46, $45, $46, $45, $46, $45
 
 	; Defines slots for post-Mini-Fortress events; since this is looked up 
 	; by an index table (FortressFXBase_ByWorld), there's no need for this 
@@ -1845,22 +1840,7 @@ PRG010_C9C9:
 	; Clear variables
 	LDA #$00
 	STA <Map_ClearLevelFXCnt
-	LDA World_Num
-	CMP #1							; Hard-code world 2
-	BNE PRG010_FortressFXDone		; Wrong world? Just exit normally
-
-	INC Map_FortFXtraDone
-	LDA Map_FortFXtraDone
-	CMP #9
-	BEQ PRG010_FortressFXDone		; Extra FX for this world already done? Just exit normally
-
-	CLC
-	ADC #1
-	STA Map_DoFortressFX
-	JMP MO_DoFortressFX
-PRG010_FortressFXDone:
-	LDA #$00
-	STA Map_DoFortressFX
+	JMP PRG010_CheckAndDoSpecialFX
 
 PRG010_C9D0:
 	INC Map_Operation	 	; Map_Operation++
@@ -2601,12 +2581,15 @@ Map_PostJC_PUpPP2:	.byte $0F, $0F, $16, $0F, $0F, $0F, $0F
 
 
 MO_NormalMoveEnter:
-	LDA #$00
-	STA Map_NoLoseTurn	 ; Map_NoLoseTurn = 0
-	STA Map_WasInPipeway	 ; Map_WasInPipeway = 0
+	;LDA #$00
+	;STA Map_NoLoseTurn	 ; Map_NoLoseTurn = 0
+	;STA Map_WasInPipeway	 ; Map_WasInPipeway = 0
 
 	LDY #$0D
-	JSR PRG030_CheckForDeathThreshold
+	JSR PRG030_CheckFortressFX
+	NOP
+	NOP
+	NOP
 
 	LDX Player_Current
 	LDA <World_Map_Move,X
@@ -4075,10 +4058,10 @@ DMC08_End
 
 	; Indexed by value from FortressFX_Wx
 	; 		               0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
-FortressFX_VAddrH:	.byte $29, $2A, $2A, $29, $29, $29, $29, $29, $29, $28, $29, $29, $29, $29, $29, $29
-					.byte $29, $2A, $2A, $29, $29, $29, $29, $28, $28, $28, $00, $00, $00, $00, $00, $00
-FortressFX_VAddrL:	.byte $C8, $44, $04, $C4, $84, $86, $86, $8E, $9A, $92, $8A, $1A, $CE, $10, $52, $98
-					.byte $CA, $44, $04, $C4, $84, $44, $04, $C4, $84, $86, $00, $00, $00, $00, $00, $00
+FortressFX_VAddrH:	.byte $29, $29, $29, $29, $2A, $29, $29, $29, $29, $28, $29, $29, $29, $29, $29, $29
+					.byte $2A, $2A, $29, $29, $29, $29, $29, $29, $28, $28, $00, $00, $00, $00, $00, $00
+FortressFX_VAddrL:	.byte $48, $84, $86, $4C, $02, $80, $86, $8E, $58, $80, $86, $1A, $CE, $10, $86, $44
+					.byte $0E, $12, $D2, $92, $CC, $8C, $4C, $0C, $84, $86, $00, $00, $00, $00, $00, $00
 
 	; Indexed by value from FortressFX_Wx
 	; Stores the column index for Map_Completions followed by which
@@ -4086,73 +4069,68 @@ FortressFX_VAddrL:	.byte $C8, $44, $04, $C4, $84, $86, $86, $8E, $9A, $92, $8A, 
 	; is now busted or bridge constructed...
 FortressFX_MapCompIdx:
 	.byte $04, $10	; 0
-	.byte $08, $01	; 1
-	.byte $09, $02	; 2
+	.byte $12, $08	; 1
+	.byte $13, $08	; 2
 	.byte $16, $10	; 3
-	.byte $13, $20	; 4
-	.byte $0B, $08	; 5
+	.byte $11, $02	; 4
+	.byte $20, $08	; 5
 	.byte $03, $08	; 6
 	.byte $17, $08	; 7
-	.byte $0D, $08	; 8
-	.byte $19, $80	; 9
-	.byte $25, $08	; A
+	.byte $0C, $10	; 8
+	.byte $10, $80	; 9
+	.byte $13, $08	; A
 	.byte $0D, $20	; B
 	.byte $17, $04	; C
 	.byte $08, $20	; D
-	.byte $19, $10	; E
-	.byte $2C, $08	; F
-	.byte $35, $04	; 10
-	.byte $02, $01	; 11
-	.byte $02, $02	; 12
-	.byte $02, $04	; 13
-	.byte $02, $08	; 14
-	.byte $02, $10	; 15
-	.byte $02, $20	; 16
-	.byte $02, $40	; 17
-	.byte $02, $80	; 18
-	.byte $03, $80	; 19
-	.byte $25, $08	; 1A
-	.byte $0D, $20	; 1B
-	.byte $17, $04	; 1C
-	.byte $08, $20	; 1D
-	.byte $19, $10	; 1E
-	.byte $2C, $08	; 1F
+	.byte $13, $08	; E
+	.byte $02, $10	; F
+	.byte $27, $02	; 10
+	.byte $09, $02	; 11
+	.byte $09, $04	; 12
+	.byte $09, $08	; 13
+	.byte $06, $04	; 14
+	.byte $06, $08	; 15
+	.byte $00, $00	; 16
+	.byte $00, $00	; 17
+	.byte $00, $00	; 18
+	.byte $00, $00	; 19
+	.byte $00, $00	; 1A
+	.byte $00, $00	; 1B
+	.byte $00, $00	; 1C
+	.byte $00, $00	; 1D
+	.byte $00, $00	; 1E
+	.byte $00, $00	; 1F
 
 	; Indexed by value from FortressFX_Wx
 	; Patterns to overwrite to cause the disappearance of a lock
 	; or creation of a bridge, whatever is appropriate
 FortressFX_Patterns:
-	.byte $B6, $B8, $B7, $B9	; 0	lock
-	;.byte $FE, $C0, $FE, $C0	; 0	vertical path
-	;.byte $B6, $B8, $B7, $B9	; 1	lock
-	.byte $FE, $C0, $FE, $C0	; 1	vertical path
-	.byte $FE, $C0, $FE, $C0	; 2	vertical path
-	;.byte $FE, $FE, $E1, $E1	; 2
-	.byte $FE, $C0, $FE, $C0	; 3	vertical path
-	;.byte $FE, $FE, $E1, $E1	; 4
-	.byte $FE, $FE, $FE, $CD	; 4	nub
-	;.byte $D4, $D6, $D5, $D7	; 5
-	.byte $FE, $FE, $E1, $E1	; 5	horizontal path
+	.byte $FE, $C0, $FE, $C0	; 0
+	.byte $FE, $FE, $E1, $E1	; 1
+	.byte $FE, $FE, $E1, $E1	; 2
+	.byte $FE, $C0, $FE, $C0	; 3
+	.byte $FE, $FE, $E1, $E1	; 4
+	.byte $FE, $C0, $FE, $C0	; 5
 	.byte $D4, $D6, $D5, $D7	; 6
 	.byte $FE, $FE, $E1, $E1	; 7
-	.byte $FE, $FE, $E1, $E1	; 8
+	.byte $FE, $C0, $FE, $C0	; 8
 	.byte $D4, $D6, $D5, $D7	; 9
 	.byte $FE, $FE, $E1, $E1	; A
 	.byte $FE, $C0, $FE, $C0	; B
 	.byte $FE, $FE, $E1, $E1	; C
 	.byte $FE, $C0, $FE, $C0	; D
 	.byte $FE, $FE, $E1, $E1	; E
-	.byte $FF, $FF, $FF, $FF	; F (Makes an all black square in the dark)
+	.byte $FE, $C0, $FE, $C0	; F
 	.byte $FE, $FE, $E1, $E1	; 10
-	.byte $FE, $C0, $FE, $C0	; 11	vert path
-	.byte $FE, $C0, $FE, $C0	; 12	vert path
-	.byte $FE, $C0, $FE, $C0	; 13	vert path
-	.byte $FE, $C0, $FE, $C0	; 14	vert path
-	.byte $FE, $C0, $FE, $C0	; 15	vert path
-	.byte $FE, $C0, $FE, $C0	; 16	vert path
-	.byte $FE, $C0, $FE, $C0	; 17	vert path
-	.byte $FE, $FE, $FE, $CD	; 18	nub
-	.byte $FE, $FE, $E1, $E1	; 19	horizontal path
+	.byte $9F, $9C, $1E, $1F	; 11
+	.byte $9B, $9C, $99, $94	; 12
+	.byte $10, $11, $97, $94	; 13
+	.byte $FE, $C0, $E1, $CD	; 14
+	.byte $FE, $C0, $FE, $C0	; 15
+	.byte $FE, $C0, $FE, $CD	; 16
+	.byte $FE, $C0, $FE, $C0	; 17
+	.byte $FE, $FE, $FE, $CD	; 18
+	.byte $FE, $FE, $E1, $E1	; 19
 	.byte $FE, $FE, $E1, $E1	; 1A
 	.byte $FE, $FE, $E1, $E1	; 1B
 	.byte $FE, $FE, $E1, $E1	; 1C
@@ -4164,26 +4142,45 @@ FortressFX_Patterns:
 	; The related "row" for the FortressFX_MapLocation
 FortressFX_MapLocationRow:
 	;      0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
-	.byte $70, $90, $80, $70, $60, $60, $60, $60, $60, $20, $60, $40, $70, $40, $50, $60
-	.byte $70, $90, $80, $70, $60, $50, $40, $30, $20, $20, $00, $00, $00, $00, $00, $00
+	.byte $50, $60, $60, $50, $80, $60, $60, $60, $50, $20, $60, $40, $70, $40, $60, $50
+	.byte $80, $80, $70, $60, $70, $60, $50, $40, $20, $20, $00, $00, $00, $00, $00, $00
 
 	; Indexed by value from FortressFX_Wx
 	; Selects location of tile to bust out
 	; Lower 4 bits are the "screen", upper 4 bits are the column
 FortressFX_MapLocation:
 	;      0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
-	.byte $40, $20, $20, $20, $20, $30, $30, $71, $D0, $91, $52, $D0, $71, $80, $91, $C2
-	.byte $53, $20, $20, $20, $20, $20, $20, $20, $20, $30, $00, $00, $00, $00, $00, $00
+	.byte $40, $21, $31, $61, $11, $02, $30, $71, $C0, $01, $31, $D0, $71, $80, $31, $20
+	.byte $72, $90, $90, $90, $60, $60, $60, $60, $20, $30, $00, $00, $00, $00, $00, $00
 
 FortressFX_MapTileReplace
-	.byte TILE_LOCKVERT, TILE_VERTPATH, TILE_VERTPATH, TILE_VERTPATH, $45, $B3, $B3, $DA, $DA, $B3, $45, $46, $45, $46, $45, $46
-	.byte $45, TILE_VERTPATH, TILE_VERTPATH, TILE_VERTPATH, TILE_VERTPATH, TILE_VERTPATH, TILE_VERTPATH, TILE_VERTPATH, TILE_VERTPATH, TILE_HORZPATH, $00, $00, $00, $00, $00, $00
+	.byte $46, $45, $45, $46, $45, $46, $B3, $DA, $46, $B3, $45, $46, $45, $46, $45, $46
+	.byte $45, $91, $A0, $89, $4A, $46, $48, $46, TILE_VERTPATH, TILE_HORZPATH, $00, $00, $00, $00, $00, $00
 
 FortressFX_W1:	.byte $00, $00, $00, $00
-FortressFX_W2:	.byte $11, $12, $13, $14, $15, $16, $17, $18, $19, $1A, $1B, $1C, $1D, $1E, $1F, $01, $00, $00, $00
-FortressFX_W3:	.byte $02, $03, $00, $00
-FortressFX_W4:	.byte $04, $05, $00, $00
+FortressFX_W2:	.byte $04, $08, $00, $00
+FortressFX_W3:	.byte $10, $05, $00, $00
+FortressFX_W4:	.byte $0F, $00, $00, $00
 FortressFX_W5:	.byte $06, $07, $00, $00
-FortressFX_W6:	.byte $08, $09, $0A, $00
+FortressFX_W6:	.byte $0E, $00, $02, $00
 FortressFX_W7:	.byte $0B, $0C, $00, $00
-FortressFX_W8:	.byte $0D, $0E, $0F, $10
+FortressFX_W8:	.byte $11, $12, $13, $14, $15, $16, $17, $18, $19, $1A, $1B, $1C, $1D, $1E, $1F, $0D, $0E, $0F, $10
+
+PRG010_CheckAndDoSpecialFX:
+	LDA World_Num
+	CMP #7							; Hard-code world 8 (match PRG030_CheckForDeathThreshold hard-code)
+	BNE PRG010_FortressFXDone		; Wrong world? Just exit normally
+
+	INC Map_FortFXtraDone
+	LDA Map_FortFXtraDone
+	CMP #5
+	BEQ PRG010_FortressFXDone		; Extra FX for this world already done? Just exit normally
+
+	CLC
+	ADC #1
+	STA Map_DoFortressFX
+	JMP MO_DoFortressFX
+PRG010_FortressFXDone:
+	LDA #$00
+	STA Map_DoFortressFX
+	JMP PRG010_C9D0

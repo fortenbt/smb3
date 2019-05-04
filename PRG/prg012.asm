@@ -132,15 +132,15 @@ Map_Complete_Bits:
 	; Quick LUT to get the bit for this completion row
 	.byte $80, $40, $20, $10, $08, $04, $02, $01
 
-Map_Removable_Tiles:
-	.byte TILE_ROCKBREAKH, TILE_ROCKBREAKV, TILE_LOCKVERT, TILE_FORT, TILE_ALTFORT, TILE_ALTLOCK, TILE_LOCKHORZ, TILE_RIVERVERT, TILE_DESERTSAND, TILE_DANCINGPALM, TILE_POOL
-MRT_END	; marker to calculate size -- allows user expansion of Map_Removable_Tiles
+__Map_Removable_Tiles:
+	.byte TILE_ROCKBREAKH, TILE_ROCKBREAKV, TILE_LOCKVERT, TILE_FORT, TILE_ALTFORT, TILE_ALTLOCK, TILE_LOCKHORZ, TILE_RIVERVERT
+;MRT_END	; marker to calculate size -- allows user expansion of Map_Removable_Tiles
 
-Map_RemoveTo_Tiles:
+__Map_RemoveTo_Tiles:
 	; These specify tiles that coorespond to the tile placed when the above is removed
 	; (NOTE: First two are for rock; see also PRG026 RockBreak_Replace)
 	; NOTE: Must have as many elements as Map_Removable_Tiles!
-	.byte TILE_HORZPATH, TILE_VERTPATH, TILE_VERTPATH, TILE_FORTRUBBLE, TILE_ALTRUBBLE, TILE_HORZPATHSKY, TILE_HORZPATH, TILE_BRIDGE, TILE_VERTPATH, TILE_HORZPATH, TILE_VERTPATH
+	.byte TILE_HORZPATH, TILE_VERTPATH, TILE_VERTPATH, TILE_FORTRUBBLE, TILE_ALTRUBBLE, TILE_HORZPATHSKY, TILE_HORZPATH, TILE_BRIDGE
 
 Map_Completable_Tiles:
 	; These tiles are simply marked with the M/L
@@ -356,9 +356,10 @@ PRG012_A535:
 
 PRG012_A54A:
 	; Mini-fortresses or others here
-	LDX #(MRT_END-Map_Removable_Tiles-1)	; X = 7
+	LDX #(MRT_EXTEND_END-Map_Removable_Tiles-1)	; X = 7
 PRG031_A54C:
-	CMP Map_Removable_Tiles,X	; Check this tile
+	JSR CheckRemovableTileAndWorld
+	;CMP Map_Removable_Tiles,X	; Check this tile
 	BEQ PRG031_A556	 		; If it matches this index, jump to PRG031_A556
 	DEX		 		; X--
 	BPL PRG031_A54C	 		; While X >=0, loop!
@@ -1083,3 +1084,29 @@ Map_LevelLayouts:
 
 
 ; Rest of ROM bank was empty
+Map_Removable_Tiles:
+	.byte TILE_ROCKBREAKH, TILE_ROCKBREAKV, TILE_LOCKVERT, TILE_FORT, TILE_ALTFORT, TILE_ALTLOCK, TILE_LOCKHORZ, TILE_RIVERVERT
+MRT_END	; marker to calculate size -- allows user expansion of Map_Removable_Tiles
+	.byte $42, $43, $45, $47, $55, $85, $95, $BB
+MRT_EXTEND_END
+Map_RemoveTo_Tiles:
+	; These specify tiles that coorespond to the tile placed when the above is removed
+	; (NOTE: First two are for rock; see also PRG026 RockBreak_Replace)
+	; NOTE: Must have as many elements as Map_Removable_Tiles!
+	.byte TILE_HORZPATH, TILE_VERTPATH, TILE_VERTPATH, TILE_FORTRUBBLE, TILE_ALTRUBBLE, TILE_HORZPATHSKY, TILE_HORZPATH, TILE_BRIDGE
+	.byte $46, $46, $8A, $4A, $46, $91, $89, $48
+
+CheckRemovableTileAndWorld:
+	PHA
+	LDA World_Num
+	CMP #7
+	BEQ PRG012_DoCheck
+	TXA
+	CMP #(MRT_END-Map_Removable_Tiles)
+	BCC PRG012_DoCheck
+	; Our index is too high for this world, set it back
+	LDX #(MRT_END-Map_Removable_Tiles-1)
+PRG012_DoCheck:
+	PLA
+	CMP Map_Removable_Tiles,X	; Check this tile
+	RTS
