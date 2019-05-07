@@ -1106,6 +1106,8 @@ CheckRemovableTileAndWorld:
 	BEQ PRG012_DoCheck
 	CMP #1
 	BEQ PRG012_DoCheckW2
+	CMP #3
+	BEQ PRG012_DoCheckW2
 
 	TXA
 	CMP #(MRT_END-Map_Removable_Tiles)
