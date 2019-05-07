@@ -4059,9 +4059,9 @@ DMC08_End
 	; Indexed by value from FortressFX_Wx
 	; 		               0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
 FortressFX_VAddrH:	.byte $29, $29, $29, $29, $2A, $29, $29, $29, $29, $28, $29, $29, $29, $29, $29, $29
-					.byte $2A, $2A, $29, $29, $29, $29, $29, $29, $28, $28, $00, $00, $00, $00, $00, $00
+					.byte $2A, $2A, $29, $29, $29, $29, $29, $29, $28, $29, $29, $29, $00, $00, $00, $00
 FortressFX_VAddrL:	.byte $48, $84, $86, $4C, $02, $80, $86, $8E, $58, $80, $86, $1A, $CE, $10, $86, $44
-					.byte $0E, $12, $D2, $92, $CC, $8C, $58, $18, $D8, $86, $00, $00, $00, $00, $00, $00
+					.byte $0E, $12, $D2, $92, $CC, $8C, $58, $18, $D8, $44, $84, $C4, $00, $00, $00, $00
 
 	; Indexed by value from FortressFX_Wx
 	; Stores the column index for Map_Completions followed by which
@@ -4093,9 +4093,9 @@ FortressFX_MapCompIdx:
 	.byte $0C, $10	; 16
 	.byte $0C, $20	; 17
 	.byte $0C, $40	; 18
-	.byte $00, $00	; 19
-	.byte $00, $00	; 1A
-	.byte $00, $00	; 1B
+	.byte $02, $10	; 19
+	.byte $02, $08	; 1A
+	.byte $02, $04	; 1B
 	.byte $00, $00	; 1C
 	.byte $00, $00	; 1D
 	.byte $00, $00	; 1E
@@ -4130,9 +4130,9 @@ FortressFX_Patterns:
 	.byte $FE, $C0, $FE, $C0	; 16
 	.byte $FE, $C0, $FE, $CD	; 17
 	.byte $FE, $C0, $FE, $C0	; 18
-	.byte $FE, $FE, $E1, $E1	; 19
-	.byte $FE, $FE, $E1, $E1	; 1A
-	.byte $FE, $FE, $E1, $E1	; 1B
+	.byte $FE, $C0, $FE, $C0	; 19
+	.byte $FE, $C0, $FE, $C0	; 1A
+	.byte $FE, $C0, $FE, $C0	; 1B
 	.byte $FE, $FE, $E1, $E1	; 1C
 	.byte $FE, $FE, $E1, $E1	; 1D
 	.byte $FE, $FE, $E1, $E1	; 1E
@@ -4143,7 +4143,7 @@ FortressFX_Patterns:
 FortressFX_MapLocationRow:
 	;      0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
 	.byte $50, $60, $60, $50, $80, $60, $60, $60, $50, $20, $60, $40, $70, $40, $60, $50
-	.byte $80, $80, $70, $60, $70, $60, $50, $40, $30, $20, $00, $00, $00, $00, $00, $00
+	.byte $80, $80, $70, $60, $70, $60, $50, $40, $30, $50, $60, $70, $00, $00, $00, $00
 
 	; Indexed by value from FortressFX_Wx
 	; Selects location of tile to bust out
@@ -4151,27 +4151,29 @@ FortressFX_MapLocationRow:
 FortressFX_MapLocation:
 	;      0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
 	.byte $40, $21, $31, $61, $11, $02, $30, $71, $C0, $01, $31, $D0, $71, $80, $31, $20
-	.byte $72, $90, $90, $90, $60, $60, $C0, $C0, $C0, $30, $00, $00, $00, $00, $00, $00
+	.byte $72, $90, $90, $90, $60, $60, $C0, $C0, $C0, $20, $20, $20, $00, $00, $00, $00
 
 FortressFX_MapTileReplace
 	.byte $46, $45, $45, $46, $45, $46, $B3, $DA, $46, $B3, $45, $46, $45, $46, $45, $46
-	.byte $45, $91, $A0, $89, $4A, $46, $46, $48, $46, TILE_HORZPATH, $00, $00, $00, $00, $00, $00
+	.byte $45, $91, $A0, $89, $4A, $46, $46, $48, $46, $46, $46, $46, $00, $00, $00, $00
 
 FortressFX_W1:	.byte $00, $00, $00, $00
 FortressFX_W2:	.byte $04, $08, $16, $17, $18, $00, $00
 FortressFX_W3:	.byte $10, $05, $00, $00
-FortressFX_W4:	.byte $0F, $00, $00, $00
+FortressFX_W4:	.byte $19, $1A, $1B, $0F, $00, $00, $00
 FortressFX_W5:	.byte $06, $07, $00, $00
 FortressFX_W6:	.byte $0E, $00, $02, $00
 FortressFX_W7:	.byte $0B, $0C, $00, $00
-FortressFX_W8:	.byte $11, $12, $13, $14, $15, $19, $1A, $1B, $1C, $1D, $1E, $1F, $0D, $0E, $0F, $10
+FortressFX_W8:	.byte $11, $12, $13, $14, $15, $1C, $1D, $1E, $1F, $0D, $0E, $0F, $10
 
 PRG010_CheckAndDoSpecialFX:
 	LDA World_Num
 	CMP #7
 	BEQ _CheckAndDoSpecialFX_World8	; Do world 8
+	CMP #3
+	BEQ _CheckAndDoSpecialFX_World4	; Do world 4
 	CMP #1
-	BNE PRG010_FortressFXDone				; If not world 8 or world 2, we're done
+	BNE PRG010_FortressFXDone
 	; World 2 special FX, check the secret
 	LDA Got_2_3_Secret
 	CMP #2
@@ -4186,6 +4188,12 @@ _CheckAndDoSpecialFX_World2:
 	LDA #5
 	STA Map_FortFXtraCount
 	BNE PRG010_DoSpecialFX					; always branch
+
+_CheckAndDoSpecialFX_World4:
+	; World 4 special effects: indices 0 through 2 (Map_DoFortressFX 1,2,3)
+	LDA #3
+	STA Map_FortFXtraCount
+	BNE PRG010_DoSpecialFX
 
 _CheckAndDoSpecialFX_World8:
 	; World 8 special effects: indices 0 through 4 (Map_DoFortressFX 1,2,3,4,5)
