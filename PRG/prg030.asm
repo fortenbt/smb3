@@ -2938,14 +2938,16 @@ PRG030_CheckFortressFX:
 
 	; Check death threshold
 	JSR PRG030_CheckForDeathThreshold
+
 	; Check world 2, level 3 secret
 	LDA Got_2_3_Secret
-	BEQ PRG030_CheckDone
+	CMP #1
+	BNE PRG030_CheckDone
 	; Got the secret
-	DEC Got_2_3_Secret			; Reset the secret
+	INC Got_2_3_Secret
 	LDA #$08					; MO_DoFortressFX
 	STA Map_Operation
-	LDA #1						; TODO: 1?
+	LDA #3						;
 	STA Map_DoFortressFX
 	STA Map_NoLoseTurn
 PRG030_CheckDone:
@@ -2964,7 +2966,7 @@ PRG030_CheckDone:
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 
 PRG030_92B6:
 

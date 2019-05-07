@@ -2067,8 +2067,9 @@ OBJSTATE_POOFDEATH	= 8	; "Poof" Death (e.g. Piranha death)
 
 	Map_Airship_Trav:	.ds 1	; Airship's current travel-table offset (randomly offset by 0-2, spices up life)
 
+	Map_FortFXtraCount:	.ds 1
 	Map_FortFXtraDone:	.ds 1
-				.ds 1	; $0743-$0744 unused
+				;.ds 1	; $0743-$0744 unused
 
 	Map_DoFortressFX:	.ds 1	; Bust locks, build bridges, whatever after Mini-Fortress is toppled
 
