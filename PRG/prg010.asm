@@ -4061,7 +4061,7 @@ DMC08_End
 FortressFX_VAddrH:	.byte $29, $29, $29, $29, $2A, $29, $29, $29, $29, $28, $29, $29, $29, $29, $29, $29
 					.byte $2A, $2A, $29, $29, $29, $29, $29, $29, $28, $28, $00, $00, $00, $00, $00, $00
 FortressFX_VAddrL:	.byte $48, $84, $86, $4C, $02, $80, $86, $8E, $58, $80, $86, $1A, $CE, $10, $86, $44
-					.byte $0E, $12, $D2, $92, $CC, $8C, $4C, $0C, $84, $86, $00, $00, $00, $00, $00, $00
+					.byte $0E, $12, $D2, $92, $CC, $8C, $58, $18, $D8, $86, $00, $00, $00, $00, $00, $00
 
 	; Indexed by value from FortressFX_Wx
 	; Stores the column index for Map_Completions followed by which
@@ -4090,9 +4090,9 @@ FortressFX_MapCompIdx:
 	.byte $09, $08	; 13
 	.byte $06, $04	; 14
 	.byte $06, $08	; 15
-	.byte $00, $00	; 16
-	.byte $00, $00	; 17
-	.byte $00, $00	; 18
+	.byte $0C, $10	; 16
+	.byte $0C, $20	; 17
+	.byte $0C, $40	; 18
 	.byte $00, $00	; 19
 	.byte $00, $00	; 1A
 	.byte $00, $00	; 1B
@@ -4127,9 +4127,9 @@ FortressFX_Patterns:
 	.byte $10, $11, $97, $94	; 13
 	.byte $FE, $C0, $E1, $CD	; 14
 	.byte $FE, $C0, $FE, $C0	; 15
-	.byte $FE, $C0, $FE, $CD	; 16
-	.byte $FE, $C0, $FE, $C0	; 17
-	.byte $FE, $FE, $FE, $CD	; 18
+	.byte $FE, $C0, $FE, $C0	; 16
+	.byte $FE, $C0, $FE, $CD	; 17
+	.byte $FE, $C0, $FE, $C0	; 18
 	.byte $FE, $FE, $E1, $E1	; 19
 	.byte $FE, $FE, $E1, $E1	; 1A
 	.byte $FE, $FE, $E1, $E1	; 1B
@@ -4143,7 +4143,7 @@ FortressFX_Patterns:
 FortressFX_MapLocationRow:
 	;      0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
 	.byte $50, $60, $60, $50, $80, $60, $60, $60, $50, $20, $60, $40, $70, $40, $60, $50
-	.byte $80, $80, $70, $60, $70, $60, $50, $40, $20, $20, $00, $00, $00, $00, $00, $00
+	.byte $80, $80, $70, $60, $70, $60, $50, $40, $30, $20, $00, $00, $00, $00, $00, $00
 
 	; Indexed by value from FortressFX_Wx
 	; Selects location of tile to bust out
@@ -4151,29 +4151,51 @@ FortressFX_MapLocationRow:
 FortressFX_MapLocation:
 	;      0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
 	.byte $40, $21, $31, $61, $11, $02, $30, $71, $C0, $01, $31, $D0, $71, $80, $31, $20
-	.byte $72, $90, $90, $90, $60, $60, $60, $60, $20, $30, $00, $00, $00, $00, $00, $00
+	.byte $72, $90, $90, $90, $60, $60, $C0, $C0, $C0, $30, $00, $00, $00, $00, $00, $00
 
 FortressFX_MapTileReplace
 	.byte $46, $45, $45, $46, $45, $46, $B3, $DA, $46, $B3, $45, $46, $45, $46, $45, $46
-	.byte $45, $91, $A0, $89, $4A, $46, $48, $46, TILE_VERTPATH, TILE_HORZPATH, $00, $00, $00, $00, $00, $00
+	.byte $45, $91, $A0, $89, $4A, $46, $46, $48, $46, TILE_HORZPATH, $00, $00, $00, $00, $00, $00
 
 FortressFX_W1:	.byte $00, $00, $00, $00
-FortressFX_W2:	.byte $04, $08, $00, $00
+FortressFX_W2:	.byte $04, $08, $16, $17, $18, $00, $00
 FortressFX_W3:	.byte $10, $05, $00, $00
 FortressFX_W4:	.byte $0F, $00, $00, $00
 FortressFX_W5:	.byte $06, $07, $00, $00
 FortressFX_W6:	.byte $0E, $00, $02, $00
 FortressFX_W7:	.byte $0B, $0C, $00, $00
-FortressFX_W8:	.byte $11, $12, $13, $14, $15, $16, $17, $18, $19, $1A, $1B, $1C, $1D, $1E, $1F, $0D, $0E, $0F, $10
+FortressFX_W8:	.byte $11, $12, $13, $14, $15, $19, $1A, $1B, $1C, $1D, $1E, $1F, $0D, $0E, $0F, $10
 
 PRG010_CheckAndDoSpecialFX:
 	LDA World_Num
-	CMP #7							; Hard-code world 8 (match PRG030_CheckForDeathThreshold hard-code)
-	BNE PRG010_FortressFXDone		; Wrong world? Just exit normally
+	CMP #7
+	BEQ _CheckAndDoSpecialFX_World8	; Do world 8
+	CMP #1
+	BNE PRG010_FortressFXDone				; If not world 8 or world 2, we're done
+	; World 2 special FX, check the secret
+	LDA Got_2_3_Secret
+	CMP #2
+	BCC PRG010_FortressFXDone
+	BNE _CheckAndDoSpecialFX_World2
+PRG010_FortressFXInitWorld2:
+	INC Got_2_3_Secret
+	LDA #2
+	STA Map_FortFXtraDone
 
+_CheckAndDoSpecialFX_World2:
+	LDA #5
+	STA Map_FortFXtraCount
+	BNE PRG010_DoSpecialFX					; always branch
+
+_CheckAndDoSpecialFX_World8:
+	; World 8 special effects: indices 0 through 4 (Map_DoFortressFX 1,2,3,4,5)
+	LDA #5
+	STA Map_FortFXtraCount
+
+PRG010_DoSpecialFX:
 	INC Map_FortFXtraDone
 	LDA Map_FortFXtraDone
-	CMP #5
+	CMP Map_FortFXtraCount
 	BEQ PRG010_FortressFXDone		; Extra FX for this world already done? Just exit normally
 
 	CLC
@@ -4183,4 +4205,5 @@ PRG010_CheckAndDoSpecialFX:
 PRG010_FortressFXDone:
 	LDA #$00
 	STA Map_DoFortressFX
+	STA Map_FortFXtraDone
 	JMP PRG010_C9D0

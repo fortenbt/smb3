@@ -356,7 +356,7 @@ PRG012_A535:
 
 PRG012_A54A:
 	; Mini-fortresses or others here
-	LDX #(MRT_EXTEND_END-Map_Removable_Tiles-1)	; X = 7
+	LDX #(MRT_EXTEND_W8_END-Map_Removable_Tiles-1)	; X = 7
 PRG031_A54C:
 	JSR CheckRemovableTileAndWorld
 	;CMP Map_Removable_Tiles,X	; Check this tile
@@ -1087,25 +1087,40 @@ Map_LevelLayouts:
 Map_Removable_Tiles:
 	.byte TILE_ROCKBREAKH, TILE_ROCKBREAKV, TILE_LOCKVERT, TILE_FORT, TILE_ALTFORT, TILE_ALTLOCK, TILE_LOCKHORZ, TILE_RIVERVERT
 MRT_END	; marker to calculate size -- allows user expansion of Map_Removable_Tiles
-	.byte $42, $43, $45, $47, $55, $85, $95, $BB
-MRT_EXTEND_END
+	.byte $42, $BB, $43
+MRT_EXTEND_W2_END
+	.byte $45, $47, $55, $85, $95
+MRT_EXTEND_W8_END
 Map_RemoveTo_Tiles:
 	; These specify tiles that coorespond to the tile placed when the above is removed
 	; (NOTE: First two are for rock; see also PRG026 RockBreak_Replace)
 	; NOTE: Must have as many elements as Map_Removable_Tiles!
 	.byte TILE_HORZPATH, TILE_VERTPATH, TILE_VERTPATH, TILE_FORTRUBBLE, TILE_ALTRUBBLE, TILE_HORZPATHSKY, TILE_HORZPATH, TILE_BRIDGE
-	.byte $46, $46, $8A, $4A, $46, $91, $89, $48
+	.byte $46, $48, $46
+	.byte $8A, $4A, $46, $91, $89
 
 CheckRemovableTileAndWorld:
 	PHA
 	LDA World_Num
 	CMP #7
 	BEQ PRG012_DoCheck
+	CMP #1
+	BEQ PRG012_DoCheckW2
+
 	TXA
 	CMP #(MRT_END-Map_Removable_Tiles)
 	BCC PRG012_DoCheck
 	; Our index is too high for this world, set it back
 	LDX #(MRT_END-Map_Removable_Tiles-1)
+	BNE PRG012_DoCheck
+
+PRG012_DoCheckW2:
+	TXA
+	CMP #(MRT_EXTEND_W2_END-Map_Removable_Tiles)
+	BCC PRG012_DoCheck
+	; Our index is too high for this world, set it back
+	LDX #(MRT_EXTEND_W2_END-Map_Removable_Tiles-1)
+
 PRG012_DoCheck:
 	PLA
 	CMP Map_Removable_Tiles,X	; Check this tile
