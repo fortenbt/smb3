@@ -4059,9 +4059,11 @@ DMC08_End
 	; Indexed by value from FortressFX_Wx
 	; 		               0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
 FortressFX_VAddrH:	.byte $29, $29, $29, $29, $2A, $29, $29, $29, $29, $28, $29, $29, $29, $29, $29, $29
-					.byte $2A, $2A, $29, $29, $29, $29, $29, $29, $28, $29, $29, $29, $00, $00, $00, $00
+					.byte $2A, $2A, $29, $29, $29, $29, $29, $29, $28, $29, $29, $29, $20, $20, $20, $00
 FortressFX_VAddrL:	.byte $48, $84, $86, $4C, $02, $80, $86, $8E, $58, $80, $86, $1A, $CE, $10, $86, $44
-					.byte $0E, $12, $D2, $92, $CC, $8C, $58, $18, $D8, $44, $84, $C4, $00, $00, $00, $00
+					.byte $0E, $12, $D2, $92, $CC, $8C, $58, $18, $D8, $44, $84, $C4, $10, $12, $14, $00
+;(note), for 1C, 1D, 1E (6-6 secret), we don't change any tiles onscreen, so
+; addresses $2010, $2012, and $2014 are used since they aren't visible
 
 	; Indexed by value from FortressFX_Wx
 	; Stores the column index for Map_Completions followed by which
@@ -4096,9 +4098,9 @@ FortressFX_MapCompIdx:
 	.byte $02, $10	; 19
 	.byte $02, $08	; 1A
 	.byte $02, $04	; 1B
-	.byte $00, $00	; 1C
-	.byte $00, $00	; 1D
-	.byte $00, $00	; 1E
+	.byte $0E, $04	; 1C
+	.byte $0E, $08	; 1D
+	.byte $0E, $10	; 1E
 	.byte $00, $00	; 1F
 
 	; Indexed by value from FortressFX_Wx
@@ -4131,11 +4133,11 @@ FortressFX_Patterns:
 	.byte $FE, $C0, $FE, $CD	; 17
 	.byte $FE, $C0, $FE, $C0	; 18
 	.byte $FE, $C0, $FE, $C0	; 19
-	.byte $FE, $C0, $FE, $C0	; 1A
+	.byte $FE, $C0, $FE, $CD	; 1A
 	.byte $FE, $C0, $FE, $C0	; 1B
-	.byte $FE, $FE, $E1, $E1	; 1C
-	.byte $FE, $FE, $E1, $E1	; 1D
-	.byte $FE, $FE, $E1, $E1	; 1E
+	.byte $FE, $C0, $FE, $C0	; 1C
+	.byte $FE, $C0, $FE, $CD	; 1D
+	.byte $FE, $C0, $FE, $C0	; 1E
 	.byte $FE, $FE, $E1, $E1	; 1F
 
 	; Indexed by value from FortressFX_Wx
@@ -4143,7 +4145,7 @@ FortressFX_Patterns:
 FortressFX_MapLocationRow:
 	;      0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
 	.byte $50, $60, $60, $50, $80, $60, $60, $60, $50, $20, $60, $40, $70, $40, $60, $50
-	.byte $80, $80, $70, $60, $70, $60, $50, $40, $30, $50, $60, $70, $00, $00, $00, $00
+	.byte $80, $80, $70, $60, $70, $60, $50, $40, $30, $50, $60, $70, $70, $60, $50, $00
 
 	; Indexed by value from FortressFX_Wx
 	; Selects location of tile to bust out
@@ -4151,20 +4153,20 @@ FortressFX_MapLocationRow:
 FortressFX_MapLocation:
 	;      0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
 	.byte $40, $21, $31, $61, $11, $02, $30, $71, $C0, $01, $31, $D0, $71, $80, $31, $20
-	.byte $72, $90, $90, $90, $60, $60, $C0, $C0, $C0, $20, $20, $20, $00, $00, $00, $00
+	.byte $72, $90, $90, $90, $60, $60, $C0, $C0, $C0, $20, $20, $20, $E0, $E0, $E0, $00
 
 FortressFX_MapTileReplace
 	.byte $46, $45, $45, $46, $45, $46, $B3, $DA, $46, $B3, $45, $46, $45, $46, $45, $46
-	.byte $45, $91, $A0, $89, $4A, $46, $46, $48, $46, $46, $46, $46, $00, $00, $00, $00
+	.byte $45, $91, $A0, $89, $4A, $46, $46, $48, $46, $46, $48, $46, $46, $48, $46, $00
 
 FortressFX_W1:	.byte $00, $00, $00, $00
 FortressFX_W2:	.byte $04, $08, $16, $17, $18, $00, $00
 FortressFX_W3:	.byte $10, $05, $00, $00
 FortressFX_W4:	.byte $19, $1A, $1B, $0F, $00, $00, $00
 FortressFX_W5:	.byte $06, $07, $00, $00
-FortressFX_W6:	.byte $0E, $00, $02, $00
+FortressFX_W6:	.byte $0E, $00, $02, $00, $1C, $1D, $1E
 FortressFX_W7:	.byte $0B, $0C, $00, $00
-FortressFX_W8:	.byte $11, $12, $13, $14, $15, $1C, $1D, $1E, $1F, $0D, $0E, $0F, $10
+FortressFX_W8:	.byte $11, $12, $13, $14, $15, $1F, $0D, $0E, $0F, $10
 
 PRG010_CheckAndDoSpecialFX:
 	LDA World_Num
@@ -4172,17 +4174,30 @@ PRG010_CheckAndDoSpecialFX:
 	BEQ _CheckAndDoSpecialFX_World8	; Do world 8
 	CMP #3
 	BEQ _CheckAndDoSpecialFX_World4	; Do world 4
+	CMP #5
+	BEQ PRG010_FortressFXInitWorld6	; Do world 6
 	CMP #1
 	BNE PRG010_FortressFXDone
 	; World 2 special FX, check the secret
-	LDA Got_2_3_Secret
+	LDA Got_Level_Secret
 	CMP #2
 	BCC PRG010_FortressFXDone
 	BNE _CheckAndDoSpecialFX_World2
 PRG010_FortressFXInitWorld2:
-	INC Got_2_3_Secret
+	INC Got_Level_Secret
 	LDA #2
 	STA Map_FortFXtraDone
+	BNE _CheckAndDoSpecialFX_World2			; always branch
+
+PRG010_FortressFXInitWorld6:
+	LDA Got_Level_Secret
+	CMP #2
+	BCC PRG010_FortressFXDone
+	BNE _CheckAndDoSpecialFX_World6
+	INC Got_Level_Secret
+	LDA #4
+	STA Map_FortFXtraDone
+	BNE _CheckAndDoSpecialFX_World6			; always branch
 
 _CheckAndDoSpecialFX_World2:
 	LDA #5
@@ -4193,7 +4208,13 @@ _CheckAndDoSpecialFX_World4:
 	; World 4 special effects: indices 0 through 2 (Map_DoFortressFX 1,2,3)
 	LDA #3
 	STA Map_FortFXtraCount
-	BNE PRG010_DoSpecialFX
+	BNE PRG010_DoSpecialFX					; always branch
+
+_CheckAndDoSpecialFX_World6:
+	; World 6 special effects: indices 4 through 6 (Map_DoFortressFX 5,6,7)
+	LDA #7
+	STA Map_FortFXtraCount
+	BNE PRG010_DoSpecialFX					; always branch
 
 _CheckAndDoSpecialFX_World8:
 	; World 8 special effects: indices 0 through 4 (Map_DoFortressFX 1,2,3,4,5)
@@ -4214,5 +4235,5 @@ PRG010_FortressFXDone:
 	LDA #$00
 	STA Map_DoFortressFX
 	STA Map_FortFXtraDone
-	STA Got_2_3_Secret
+	STA Got_Level_Secret
 	JMP PRG010_C9D0

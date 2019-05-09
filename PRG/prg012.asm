@@ -1087,7 +1087,7 @@ Map_LevelLayouts:
 Map_Removable_Tiles:
 	.byte TILE_ROCKBREAKH, TILE_ROCKBREAKV, TILE_LOCKVERT, TILE_FORT, TILE_ALTFORT, TILE_ALTLOCK, TILE_LOCKHORZ, TILE_RIVERVERT
 MRT_END	; marker to calculate size -- allows user expansion of Map_Removable_Tiles
-	.byte $42, $BB, $43
+	.byte $42, $BB, $43, $B4
 MRT_EXTEND_W2_END
 	.byte $45, $47, $55, $85, $95
 MRT_EXTEND_W8_END
@@ -1096,7 +1096,7 @@ Map_RemoveTo_Tiles:
 	; (NOTE: First two are for rock; see also PRG026 RockBreak_Replace)
 	; NOTE: Must have as many elements as Map_Removable_Tiles!
 	.byte TILE_HORZPATH, TILE_VERTPATH, TILE_VERTPATH, TILE_FORTRUBBLE, TILE_ALTRUBBLE, TILE_HORZPATHSKY, TILE_HORZPATH, TILE_BRIDGE
-	.byte $46, $48, $46
+	.byte $46, $48, $46, $48
 	.byte $8A, $4A, $46, $91, $89
 
 CheckRemovableTileAndWorld:
@@ -1107,6 +1107,8 @@ CheckRemovableTileAndWorld:
 	CMP #1
 	BEQ PRG012_DoCheckW2
 	CMP #3
+	BEQ PRG012_DoCheckW2
+	CMP #5
 	BEQ PRG012_DoCheckW2
 
 	TXA
