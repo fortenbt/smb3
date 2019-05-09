@@ -4214,4 +4214,5 @@ PRG010_FortressFXDone:
 	LDA #$00
 	STA Map_DoFortressFX
 	STA Map_FortFXtraDone
+	STA Got_2_3_Secret
 	JMP PRG010_C9D0
