@@ -1386,14 +1386,27 @@ PRG007_A6C9:
 	ORA #SND_PLAYERKICK
 	STA Sound_QPlayer
 
-	LDA Objects_HitCount,Y
-	BEQ PRG007_A6DD	 ; If enemy has no hits left, jump to PRG007_A6DD
-
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	TYA
+	TAX
+	JMP DamageBasedOnCoins			; comes back to PRG007_A6DD if needed, otherwise returns
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;3;LDA Objects_HitCount,Y
+	;
+	;2;BEQ PRG007_A6DD	 ; If enemy has no hits left, jump to PRG007_A6DD
+	;
 	; Otherwise, just remove a hit...
-	SUB #$01
-	STA Objects_HitCount,Y
-
-	RTS		 ; Return
+	;3;SUB #$01
+	;3;STA Objects_HitCount,Y
+	;
+	;1;RTS		 ; Return
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 PRG007_A6DD:
@@ -6261,3 +6274,18 @@ PRG007_BFDC:
 
 ; Rest of ROM bank was empty
 
+DamageBasedOnCoins:
+	; A, X, Y are all object index
+	; (note) Objects_HitCount,Y
+	LDA Inventory_Coins
+dmgloop:
+	DEC Objects_HitCount,X
+	BEQ dmgkilled
+	SEC
+	SBC #7
+	BEQ	dmgdone				; if exactly zero, we're done
+	BGS dmgloop				; if > 0 (negative flag not set), keep looping
+dmgdone:
+	RTS
+dmgkilled:
+	JMP PRG007_A6DD
