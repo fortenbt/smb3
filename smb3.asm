@@ -898,6 +898,7 @@ PLAYERSUIT_LAST		= PLAYERSUIT_HAMMER	; Marker for "last" suit (Debug cycler need
 
 	Raster_Effect:	.ds 1		; $00 is standard status bar, $20 is title/ending, $40 = 32 pixel partition, $60 = Spade Bonus Game (3 sliding rows), $80 is nothing (e.g. as in 2P versus), $A0 = ???
 
+
 	.org $0160
 	Debug_Flag:	.ds 1		; Set to $80 by the debug menu, enables debug functionality like power level cycling and not dying from time over
 
@@ -2127,7 +2128,7 @@ RandomN = Random_Pool+1			; Pull a random number from the sequence (NOTE: Random
 	Player_Deaths:		.ds 3		; Added for death count
 	Death_Threshold:	.ds 2		; Added to trigger something at Death_Threshold deaths
 	Threshold_Lockout:	.ds 1
-	Got_2_3_Secret:		.ds 1
+	Got_Level_Secret:	.ds 1
 						.ds 1		; $078E-$0795 unused
 
 	; Objects_PlayerHitStat:

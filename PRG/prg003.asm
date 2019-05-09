@@ -6246,6 +6246,6 @@ Player_GetItemAndCheckSecret:
 	BNE PRG003_NotSecret
 
 	; Secret done!
-	STA Got_2_3_Secret
+	STA Got_Level_Secret
 PRG003_NotSecret:
 	RTS

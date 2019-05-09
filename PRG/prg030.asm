@@ -2939,22 +2939,48 @@ PRG030_CheckFortressFX:
 	; Check death threshold
 	JSR PRG030_CheckForDeathThreshold
 
-	; Check world 2, level 3 secret
-	LDA Got_2_3_Secret
+	; Check world 2, level 3 or World 6, level 6 secrets
+	LDA Got_Level_Secret
 	CMP #1
 	BNE PRG030_CheckDone
 	; Got the secret
-	INC Got_2_3_Secret
+	INC Got_Level_Secret
 	LDA #$08					; MO_DoFortressFX
 	STA Map_Operation
-	LDA #3						;
+	LDA World_Num
+	CMP #1		; world 2
+	BNE PRG030_DoWorld6Secret
+	LDA #3						; world 2 secret path is index 3
+	BNE PRG030_StoreFortressFX	; always
+PRG030_DoWorld6Secret:
+	LDA #5						; world 6 secret path is index 5
+
+PRG030_StoreFortressFX
 	STA Map_DoFortressFX
 	STA Map_NoLoseTurn
 PRG030_CheckDone:
 	RTS
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+
+PRG030_CheckAndDoNipperSecret:
+	JSR Enemy_CollideWithWorld	; Do hooked function
+	LDA World_Num
+	CMP #5						; World 6
+	BNE PRG030_NotSecret
+	LDA Map_Entered_Y
+	CMP #$60					; Level 6 Y
+	BNE PRG030_NotSecret
+	LDA Map_Entered_XHi
+	CMP #$02					; Level 6 XHi
+	BNE PRG030_NotSecret
+	LDA Map_Entered_X
+	CMP #$20					; Level 6 X
+	BNE PRG030_NotSecret
+	; We're in 6-6, is this the secret nipper
+	LDA #1
+	STA Got_Level_Secret
+PRG030_NotSecret:
+	RTS
+
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
@@ -5781,4 +5807,3 @@ PRG030_9FAF:
 	JMP IntIRQ_32PixelPartition_Part3
 
 ; NOTE: The remaining ROM space was all blank ($FF)
-

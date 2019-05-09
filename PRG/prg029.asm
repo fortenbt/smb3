@@ -155,9 +155,24 @@ M12ASegData23:
 
 
 	;; BEGIN HUGE UNUSED SPACE
+GetTreasureBasedOnWorld:
+	; World 2 and 4, get hammer (0xA) and hammer suit (0x4), respectively, into X and return 0
+	; Other world, just return with Zero flag not set
+	LDX #$0A							;2; Assume World 2 at first, hammer index
+	LDA World_Num						;3;
+	CMP #1								;2;
+	BEQ GetTreasure_Success				;2; World 2, hammer index
+	CMP #3								;2;
+	BNE GetTreasureBasedOnWorld_End		;2; Returning with Zero flag not set (fail)
+	LDX #$04							;2; World 4, hammer suit index
+GetTreasure_Success:
+	LDA #0								;2; Returning with Zero flag set (success)
+GetTreasureBasedOnWorld_End:
+	RTS									;1;
 
-	.byte $FF, $FF, $FF, $FF, $FF, $FF ; $C5E0 - $C5EF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C5F0 - $C5FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF ; $C5E0 - $C5EF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C5F0 - $C5FF
+	.byte $FF, $FF, $FF, $FF
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C600 - $C60F
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C610 - $C61F
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C620 - $C62F
@@ -851,7 +866,9 @@ PRG029_D13A:
 	RTS		 ; Return
 
 ToadHouse_Item2Inventory:
-	.byte $0C, $08, $04, $05, $06, $04, $05, $06, $01, $02, $03, $04, $02, $03, $05
+	; MINI-KAIZO: Changes here to stay compatible with the poison mushroom patch
+	;             although not technically needed.
+	.byte $0C, $08, $04, $05, $06, $04, $05, $06, $01, $01, $0b, $04, $02, $03, $05
 
 	; Toad House items:
 	; 0 = Warp Whistle
@@ -880,7 +897,9 @@ ToadHouse_RandomItem:
 	; Where 0 = Super Mushroom, 1 = Fire Flower, 2 = Super Leaf
 	; OR 0 = Frog, 1 = Tanooki, 2 = Hammer
 	; Super Mushroom / Frog has the best chance in this lottery by 1...
-	.byte $00, $01, $02, $00, $01, $02, $00, $01, $02, $00, $01, $02, $00, $01, $02, $00
+	; MINI-KAIZO: Changes here to stay compatible with the poison mushroom patch
+	;             although not technically needed.
+	.byte $02, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $00
 
 
 	; X values of three treasure boxes, specifically the tile that must change when opened
@@ -929,10 +948,16 @@ PRG029_D17F:
 
 	; THouse_Treasure = 7 is standard random basic item (mushroom, flower, leaf)
 
-	LDX THouse_Treasure
-	DEX		 ; X = THouse_Treasure - 1
-	CPX #$05	 
-	BLS PRG029_D1B1	 ; If X < 5, jump to PRG029_D1B1
+	JSR GetTreasureBasedOnWorld		; 3;
+	BEQ PRG029_D1B1					; 2; If we return success (0), jump to getting the item
+	NOP
+	NOP
+	NOP
+
+	;3;LDX THouse_Treasure
+	;1;DEX		 ; X = THouse_Treasure - 1
+	;2;CPX #$05
+	;2;BLS PRG029_D1B1	 ; If X < 5, jump to PRG029_D1B1
 
 	; X = 5 if random super suit (frog, tanooki, hammer)
 	; X = 6 if standard random basic item
