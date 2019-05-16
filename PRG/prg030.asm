@@ -2995,6 +2995,41 @@ PRG030_CheckAndDoNipperSecret:
 PRG030_NotSecret:
 	RTS
 
+BowserHammer_Attributes:	.byte SPR_PAL2, SPR_PAL2, SPR_PAL2 | SPR_HFLIP | SPR_VFLIP, SPR_PAL2 | SPR_HFLIP | SPR_VFLIP
+
+SetFireballPattern:
+	LDA SpecialObj_ID,X
+	STA <Temp_Var1			; save off fireball id
+	LDA #$D7				; assume nipper fireball at first
+	STA Sprite_RAM+$01,Y
+
+	LDA SpecialObj_XVel,X
+	LSR A
+	AND #SPR_HFLIP	 		; Flip based on X velocity
+	PHA						; save off flip
+
+	LDA SpecialObj_Var1,X
+	LSR A
+	LSR A
+	AND #$03
+	TAX		 ; X = 0 to 3
+
+	LDA <Temp_Var1
+	CMP #SOBJ_NIPPERFIREBALL	; if not nipper, go get the Fireball_Patterns
+	BNE SetNormalFireball
+
+	PLA							; restore flip
+	EOR BowserHammer_Attributes,X
+	RTS
+
+SetNormalFireball:
+	LDA Fireball_Patterns,X
+	STA Sprite_RAM+$01,Y
+
+	PLA							; restore flip
+	EOR Fireball_Attributes,X
+	RTS
+
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
@@ -3002,10 +3037,7 @@ PRG030_NotSecret:
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff
 
 PRG030_92B6:
 

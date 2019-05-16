@@ -5205,23 +5205,47 @@ PRG007_BA4D:
 	JMP PRG007_BA6E	 ; Jump to PRG007_BA6E
 
 PRG007_BA55:
-	LDA SpecialObj_XVel,X
-	LSR A
-	AND #SPR_HFLIP	 ; Flip based on X velocity
-	PHA		 ; Save flip
 
-	LDA SpecialObj_Var1,X
-	LSR A
-	LSR A
-	AND #$03
-	TAX		 ; X = 0 to 3
-
+	JSR SetFireballPattern
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	;3;LDA SpecialObj_XVel,X
+	;1;LSR A
+	;2;AND #SPR_HFLIP	 ; Flip based on X velocity
+	;1;PHA		 ; Save flip
+	;
+	;3;LDA SpecialObj_Var1,X
+	;1;LSR A
+	;1;LSR A
+	;2;AND #$03
+	;1;TAX		 ; X = 0 to 3
+	;
 	; Set fireball pattern
-	LDA Fireball_Patterns,X
-	STA Sprite_RAM+$01,Y
-
-	PLA		 ; Restore flip
-	EOR Fireball_Attributes,X
+	;LDA Fireball_Patterns,X
+	;STA Sprite_RAM+$01,Y
+	;
+	;PLA		 ; Restore flip
+	;EOR PlayerFireball_FlipBits,X
 
 PRG007_BA6E:
 
