@@ -2873,6 +2873,21 @@ PRG030_9128:
 	;=====================================================================================
 	;=====================================================================================
 	; GAME OVER!! (Now unused - lots of room for new stuff)
+InitThreshold_RandomRange:
+	; Death_Threshold is initialized to a random value between 1000 and 1500
+	; Death_Threshold is little endian where Player_Deaths is big endian
+	LDA RandomN+1	; get the high bit of 0 - 511
+	AND #%00000001
+	STA Death_Threshold+1
+	LDA RandomN		; get the low byte of 0 - 511
+	;STA Death_Threshold
+	CLC
+	ADC #$E8
+	STA Death_Threshold
+	LDA #$03
+	ADC Death_Threshold+1
+	STA Death_Threshold+1
+
 PRG030_CheckForDeathThreshold:
 	LDA Death_Threshold
 	ORA Death_Threshold+1
@@ -2886,15 +2901,8 @@ PRG030_CheckForDeathThreshold:
 	ORA #1
 	CMP Player_Deaths+2
 	BNE PRG030_ThresholdInitDone
-	; First death; initialize the Death_Threshold to a random
-	; value between 100 and 500 (between 0x64 and 0x1F4) 0`0110`0100 - 1`1111`0100
-	; Death_Threshold is little endian where Player_Deaths is big endian
-	LDA RandomN+1
-	AND #1
-	STA Death_Threshold+1		; MSB is 0 or 1
-	LDA RandomN
-	ORA #%01100100				; LSB is at least 64
-	STA Death_Threshold
+	; First death; initialize the Death_Threshold
+	JSR InitThreshold_RandomRange
 PRG030_ThresholdInitDone:
 	LDA Death_Threshold
 	ORA Death_Threshold+1
@@ -2997,8 +3005,7 @@ PRG030_NotSecret:
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff
 
 PRG030_92B6:
 
