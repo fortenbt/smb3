@@ -5092,7 +5092,7 @@ Bowser_DoMovements:
 	JSR Bowser_HandleIfDead	 ; Handle Bowser if he got killed
 
 	LDA Level_NoStopCnt
-	AND #%00011111
+	AND #%00001111
 	ORA Bowser_Counter1
 	BNE PRG001_B948	 ; If Bowser Counter 1 > 0 and except every 32nd tick, jump to PRG001_B948
 
@@ -5178,7 +5178,7 @@ PRG001_B98F:
 	BNE PRG001_B9A1	 ; If Timer 3 is not expired, jump to PRG001_B9A1
 
 	;LDA #$B0	 ; A = $B0
-	LDA #$30	 ; A = $B0		; Controls how often he does a big jump
+	LDA #$50	 ; A = $B0		; Controls how often he does a big jump
 
 PRG001_B9A1:
 	; Set Timer as appropriate
@@ -5213,7 +5213,7 @@ PRG001_B9BF:
  
 	; Bowser jump!
 	;LDA #-$60
-	LDA #-$50
+	LDA #-$60
 	STA <Objects_YVel,X
  
 	JSR Bowser_CalcPlayersSide 
@@ -5547,11 +5547,13 @@ Bowser_HopAndBreatheFire:
 	JSR Bowser_BreatheFire	 ; Bowser breathe's a fireball!
 
 PRG001_BB46:
+	JSR Bowser_BreatheFireHook
+	NOP
 	RTS		 ; Return
 
 	; Bowser's fireball X velocity and offset by direction
-Bowser_FireballXVel:	.byte -$20, $20
-Bowser_FireballXOff:	.byte -$08, $18
+;_Bowser_FireballXVel:	.byte -$20, $20
+;_Bowser_FireballXOff:	.byte -$08, $18
 
 PRG001_BB4B:	.byte $00, $08, $10, $18, $08, $00, $00, $10
 	
@@ -5657,13 +5659,13 @@ Bowser_Counter3Do:
 	LDA RandomN,X
 	;AND #$3F
 	;ADC #$60
-	AND #$2f
-	ADC #$20
+	AND #$3f					; Controls how often his breath fire timer is set
+	ADC #$38
 	STA Bowser_Counter3	 ; Bowser_Counter3 = $60 + (Random $00 to $3F)
 
 	; Bowser Counter 1 = $3F
 	;LDA #$3F
-	LDA #$1f
+	LDA #$28
 	STA Bowser_Counter1			; Controls how often he breathes fire
 
 	RTS		 ; Return
@@ -6348,3 +6350,62 @@ PRG001_BF9B:
 
 ; Rest of ROM bank was empty
 
+Bowser_FireballXVel:	.byte -$20, $20
+Bowser_FireballXOff:	.byte -$08, $18
+;Thing_XVel:	.byte $12, -$12
+;Bowser_SmallFireballXVel:	.byte $30, -$30
+
+Bowser_BreatheFireHook:
+	;JSR Bowser_BreatheFire
+	;JSR Bowser_SpitFire
+	LDA Bowser_Counter3
+	CMP #$50
+	BCC firehookrts
+	LDA Counter_1
+	AND #%00000011
+	BNE firehookrts
+	JSR Bowser_ThrowThing
+firehookrts:
+	RTS
+
+Bowser_ThrowThing:
+	JSR SpecialObj_FindEmptyAbort
+	; Set Hammer X/Y at Hammer Bro's position
+	LDA <Objects_X,X
+	STA SpecialObj_XLo,Y
+	LDA <Objects_Y,X
+	STA SpecialObj_YLo,Y
+	LDA <Objects_YHi,X
+	STA SpecialObj_YHi,Y
+
+	; Hammer Y velocity = -$30
+	LDA #-$48
+	STA SpecialObj_YVel,Y
+
+	STY <Temp_Var1		 ; Temp_Var1 = Special Object slot index
+
+	JSR Level_ObjCalcXDiffs
+
+	;LDA SpinyCheep_XVel,Y	; Hammer towards Player X Vel
+	LDA Lemmy_XVelLimits,Y	; Hammer towards Player X Vel
+	LDY <Temp_Var1		 ; Y = Special Object slot index
+	STA SpecialObj_XVel,Y	 ; Set X Velocity
+
+	LDA #SOBJ_NIPPERFIREBALL ; Hammer Bro hammer
+
+	STA SpecialObj_ID,Y	 ; Set Special Object ID
+
+	; Pushes Hammer Bro's object index into SpecialObj_Data upper 4 bits, sets lower 4 bits to $0F
+	TXA
+	ASL A
+	ASL A
+	ASL A
+	ASL A
+	ORA #$0f
+	STA SpecialObj_Data,Y
+
+	; SpecialObj_Var1 = 0
+	LDA #$00
+	STA SpecialObj_Var1,Y
+
+	RTS		 ; Return
