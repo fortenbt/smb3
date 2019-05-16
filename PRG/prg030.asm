@@ -2936,6 +2936,12 @@ PRG030_CheckFortressFX:
 	STA Map_NoLoseTurn		; Map_NoLoseTurn = 0
 	STA Map_WasInPipeway	; Map_WasInPipeway = 0
 
+	LDA StuckInHandLevel
+	BEQ PRG030_CheckDeath
+	INC Map_Operation			; Stuck in a hand, get pulled in again
+	JMP WorldMap_UpdateAndDraw	; Jump to WorldMap_UpdateAndDraw
+
+PRG030_CheckDeath:
 	; Check death threshold
 	JSR PRG030_CheckForDeathThreshold
 
@@ -2992,7 +2998,7 @@ PRG030_NotSecret:
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff
 
 PRG030_92B6:
 

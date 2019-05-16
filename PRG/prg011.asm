@@ -584,7 +584,8 @@ HT_Init:
 	STA <Map_WWOrHT_X
 
 	INC Map_HandState		; Next state...
-	JMP WorldMap_UpdateAndDraw	 ; Update and draw world map and don't come back
+	;JMP WorldMap_UpdateAndDraw	 ; Update and draw world map and don't come back
+	JMP GetStuckInHand
 
 HT_Flash:
 	JSR WarpWhistle_Flash	 	; Reused flashing effect
@@ -4625,7 +4626,8 @@ PRG011_BA67:
 	LDX <Temp_Var13		 ; X = Temp_Var13 (completion vertical index)
 
 	; Mark this completion!
-	LDA Map_Completions,Y
+	JSR ClearHandFlag
+	;LDA Map_Completions,Y
 	ORA Map_CompleteBit,X
 	STA Map_Completions,Y
 
@@ -4978,3 +4980,12 @@ Map_NoAnimUpdate:
 
 ; Rest of ROM bank was empty
 
+ClearHandFlag:
+	LDA #0
+	STA StuckInHandLevel
+	LDA Map_Completions,Y
+	RTS
+GetStuckInHand:
+	LDA #1
+	STA StuckInHandLevel
+	JMP WorldMap_UpdateAndDraw
