@@ -158,13 +158,13 @@ M12ASegData23:
 GetTreasureBasedOnWorld:
 	; World 2 and 4, get hammer (0xA) and hammer suit (0x4), respectively, into X and return 0
 	; Other world, just return with Zero flag not set
-	LDX #$0A							;2; Assume World 2 at first, hammer index
+	LDX #$0A							;2; Assume hammer index
 	LDA World_Num						;3;
-	CMP #1								;2;
-	BEQ GetTreasure_Success				;2; World 2, hammer index
 	CMP #3								;2;
+	BEQ GetTreasure_Success				;2; World 4, hammer index
+	CMP #1								;2;
 	BNE GetTreasureBasedOnWorld_End		;2; Returning with Zero flag not set (fail)
-	LDX #$04							;2; World 4, hammer suit index
+	LDX #$04							;2; World 2, hammer suit index
 GetTreasure_Success:
 	LDA #0								;2; Returning with Zero flag set (success)
 GetTreasureBasedOnWorld_End:
