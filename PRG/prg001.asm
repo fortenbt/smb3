@@ -4935,6 +4935,48 @@ Bowser_Hook:
 	DEC Inventory_Coins
 BowserHookRts:
 	RTS
+
+;Bowser_Init_Hook:
+;	STA Objects_HitCount,X			; Do the hook stuff
+;	TXA
+;	PHA
+;
+;	LDX Graphics_BufCnt
+;
+;	; Going to change the sprite palette
+;	LDA #$3f
+;	STA Graphics_Buffer,X
+;	LDA #$18
+;	STA Graphics_Buffer+1,X
+;
+;	; 4 bytes (full sprite palette)
+;	LDA #$04
+;	STA Graphics_Buffer+2,X
+;
+;	LDY #$00
+;	STA <Temp_Var1		 ; Temp_Var1 = 4 (loop counter)
+;PRG001_pal_loop:
+;	LDA Bowser_Hammer_Palette,Y ; Get palette byte
+;	STA Graphics_Buffer+3,X	 ; Store into buffer
+;	INX		 ; X++
+;	INY		 ; Y++
+;	DEC <Temp_Var1	 ; Temp_Var1--
+;	BNE PRG001_pal_loop	 ; While Temp_Var1 > 0, loop!
+;	; Terminator
+;	LDA #$00
+;	STA Graphics_Buffer+3,X
+;
+;	INX	; addr lo
+;	INX	; addr hi
+;	INX	; size
+;	STX Graphics_BufCnt	; Graphics_BufCnt += num bytes we wrote
+;
+;	PLA
+;	TAX
+;	RTS
+
+;Bowser_Hammer_Palette:
+;	.byte $00, $16, $36, $0F
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
@@ -4947,6 +4989,7 @@ ObjInit_Bowser:
 
 	; Bowser takes 200 fireball hits!
 	LDA #200
+	;JSR Bowser_Init_Hook
 	STA Objects_HitCount,X
 
 	; Bowser is giant!
@@ -6361,10 +6404,10 @@ Bowser_BreatheFireHook:
 	;JSR Bowser_BreatheFire
 	;JSR Bowser_SpitFire
 	LDA Bowser_Counter3
-	CMP #$50
+	CMP #$30
 	BCC firehookrts
 	LDA Counter_1
-	AND #%00000011
+	AND #%00000111
 	BNE firehookrts
 	JSR Bowser_ThrowThing
 firehookrts:
