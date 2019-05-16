@@ -156,7 +156,7 @@ M12ASegData23:
 
 	;; BEGIN HUGE UNUSED SPACE
 GetTreasureBasedOnWorld:
-	; World 2 and 4, get hammer (0xA) and hammer suit (0x4), respectively, into X and return 0
+	; World 2 and 4, get cloud (0xE) and hammer (0xA), respectively, into X and return 0
 	; Other world, just return with Zero flag not set
 	LDX #$0A							;2; Assume hammer index
 	LDA World_Num						;3;
@@ -164,7 +164,7 @@ GetTreasureBasedOnWorld:
 	BEQ GetTreasure_Success				;2; World 4, hammer index
 	CMP #1								;2;
 	BNE GetTreasureBasedOnWorld_End		;2; Returning with Zero flag not set (fail)
-	LDX #$04							;2; World 2, hammer suit index
+	LDX #$0E							;2; World 2, cloud index
 GetTreasure_Success:
 	LDA #0								;2; Returning with Zero flag set (success)
 GetTreasureBasedOnWorld_End:
@@ -868,7 +868,7 @@ PRG029_D13A:
 ToadHouse_Item2Inventory:
 	; MINI-KAIZO: Changes here to stay compatible with the poison mushroom patch
 	;             although not technically needed.
-	.byte $0C, $08, $04, $05, $06, $04, $05, $06, $01, $01, $0b, $04, $02, $03, $05
+	.byte $0C, $08, $04, $05, $06, $04, $05, $06, $01, $01, $0b, $04, $02, $03, $07
 
 	; Toad House items:
 	; 0 = Warp Whistle
