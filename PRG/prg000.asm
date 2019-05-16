@@ -281,7 +281,8 @@ Object_BoundBox:
 	.byte  2,  12,   2,  24	; 2
 	.byte 10,  27,  -2,  18	; 3
 	.byte  1,  14,   2,  26	; 4 (UNUSED)
-	.byte  5,  14,  10,  18	; 5 (UNUSED)
+	;.byte  5,  14,  10,  18	; 5 (UNUSED)
+	.byte  4,  18,  10,  30	; 5
 	.byte  2,  27,  -2,  34	; 6
 	.byte  2,  20,   2,  12	; 7
 	.byte  2,  43,  -2,  18	; 8
@@ -319,7 +320,7 @@ Object_AttrFlags:
 	.byte OAT_BOUNDBOX00	; Object $15
 	.byte OAT_BOUNDBOX00	; Object $16
 	.byte OAT_BOUNDBOX01	; Object $17 - OBJ_SPINYCHEEP
-	.byte OAT_BOUNDBOX13	; Object $18 - OBJ_BOSS_BOWSER
+	.byte OAT_BOUNDBOX05	; Object $18 - OBJ_BOSS_BOWSER
 	.byte OAT_BOUNDBOX01 | OAT_FIREIMMUNITY | OAT_HITNOTKILL	; Object $19 - OBJ_POWERUP_FIREFLOWER
 	.byte OAT_BOUNDBOX01 | OAT_FIREIMMUNITY | OAT_HITNOTKILL	; Object $1A
 	.byte OAT_BOUNDBOX01 | OAT_FIREIMMUNITY | OAT_HITNOTKILL	; Object $1B - OBJ_BOUNCELEFTRIGHT
