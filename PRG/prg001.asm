@@ -4925,13 +4925,21 @@ PRG001_B819:
 
 
 	; Hmm, unused space?
+Bowser_Hook:
+	JSR Bowser_DoVar5Action
+	LDA Counter_1
+	BNE BowserHookRts
+	LDA Inventory_Coins
+	BEQ BowserHookRts			; Don't underflow our coins
+	DEC Inventory_Coins
+BowserHookRts:
+	RTS
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF
 
 
 ObjInit_Bowser:
@@ -4973,7 +4981,7 @@ PRG001_B8A1:
 	DEC Bowser_Counter2	 ; Bowser_Counter2--
 
 PRG001_B8AB:
-	JSR Bowser_DoVar5Action	; Do Bowser's internal state action
+	JSR Bowser_Hook	; Do Bowser's internal state action
 	JSR Bowser_HopAndBreatheFire	; Bowser hops and breathes fireballs
 	JSR Player_HitEnemy	 	; Do hit detection
 
@@ -5150,7 +5158,8 @@ PRG001_B97C:
 
 	; Bowser fall up to $40 Y Velocity...
 	LDA <Objects_YVel,X
-	CMP #$40	 
+	;CMP #$40
+	CMP #$50
 	BGS PRG001_B98F	 ; If Bowser's Y Velocity >= $40, jump to PRG001_B98F
 
 	INC <Objects_YVel,X	 ; Bowser's gravity
@@ -5162,12 +5171,14 @@ PRG001_B98F:
 
 	JSR Object_HitGround	 ; Align to floor
 
-	LDA #$10	; A = $10
+	;LDA #$10	; A = $10
+	LDA #$02	; A = $10
 
 	LDY Objects_Timer3,X
 	BNE PRG001_B9A1	 ; If Timer 3 is not expired, jump to PRG001_B9A1
 
-	LDA #$b0	 ; A = $B0
+	;LDA #$B0	 ; A = $B0
+	LDA #$30	 ; A = $B0		; Controls how often he does a big jump
 
 PRG001_B9A1:
 	; Set Timer as appropriate
@@ -5192,7 +5203,8 @@ PRG001_B9BF:
 	CMP #$01 
 	BEQ PRG001_B9F3	 ; If timer expired, jump to PRG001_B9F3
 
-	CMP #$80 
+	;CMP #$80
+	CMP #$10				; Controls when he does a big jump
 	BNE PRG001_B9F2	 ; If timer <> $80, jump to PRG001_B9F2 (RTS) 
 
 	; Jump and land on floor mode
@@ -5200,7 +5212,8 @@ PRG001_B9BF:
 	STA <Objects_Var4,X
  
 	; Bowser jump!
-	LDA #-$60 
+	;LDA #-$60
+	LDA #-$50
 	STA <Objects_YVel,X
  
 	JSR Bowser_CalcPlayersSide 
@@ -5277,7 +5290,8 @@ PRG001_BA17:
 	LDA <Objects_YVel,X
 	BPL PRG001_BA1F	 ; If Bowser is not moving upward, jump to PRG001_BA1F
 
-	CMP #-$20
+	;CMP #-$20
+	CMP #-$08
 	BLT PRG001_BA4B	 ; If Bowser is moving upward faster than -$20, jump to PRG001_BA4B
 
 PRG001_BA1F:
@@ -5300,7 +5314,8 @@ PRG001_BA1F:
 	STA <Objects_Var4,X
 
 	; Timer = $0A
-	LDA #$0a
+	;LDA #$0A
+	LDA #2
 	STA Objects_Timer,X
 
 	; Calculate an X position that targets Player and aligned to tile
@@ -5310,7 +5325,8 @@ PRG001_BA1F:
 	STA Objects_TargetingXVal,X
 
 	; Bowser jump!
-	LDA #-$20
+	;LDA #-$20
+	LDA #1
 	STA <Objects_YVel,X
 
 	; Stop Bowser's horizontal movement
@@ -5339,12 +5355,15 @@ PRG001_BA4B:
 	STA Sound_QLevel1
 
 	; Object timer = $35
-	LDA #$35
+	;LDA #$35
+	LDA #$0f
 	STA Objects_Timer,X
 
 	LDA RandomN,X
-	AND #$1f	
-	ADC #$67	
+	;AND #$1f
+	;ADC #$67
+	AND #$0F
+	ADC #$0F
 	STA Objects_Timer3,X	 ; Timer 3 = Random $67 to $86
 	STA Objects_Var7,X	 ; -> Var7
 
@@ -5389,13 +5408,15 @@ PRG001_BA96:
 	LDA <Objects_YVel,X
 	BMI PRG001_BAA1	 ; If Bowser is moving upward, jump to PRG001_BAA1
 
-	CMP #$70
+	;CMP #$70
+	CMP #$68
 	BGE PRG001_BAA6	 ; If Bowser's Y Velocity >= $70, jump to PRG001_BAA6 (RTS)
 
 PRG001_BAA1:
 
 	; Bowser's rapid stomp fall!
-	ADD #$06
+	;ADD #$06
+	ADD #$18
 	STA <Objects_YVel,X
 
 PRG001_BAA6:
@@ -5440,8 +5461,10 @@ PRG001_BACD:
 	STA <Objects_Var4,X
 
 	LDA RandomN,X
-	AND #$7f
-	ORA #$80
+	;AND #$7F
+	;ORA #$80
+	AND #$1f
+	ORA #$00
 	STA Objects_Timer3,X	 ; Timer 3 = $7F to $FF
 
 	RTS		 ; Return
@@ -5517,7 +5540,8 @@ Bowser_HopAndBreatheFire:
 	STA Objects_Frame,X
 
 	LDA Bowser_Counter1
-	CMP #$10	 
+	;CMP #$10
+	CMP #$0C				; Controls when he breathes fires
 	BNE PRG001_BB46	 ; If Bowser_Counter1 <> $10, jump to PRG001_BB46 (RTS)
 
 	JSR Bowser_BreatheFire	 ; Bowser breathe's a fireball!
@@ -5526,7 +5550,7 @@ PRG001_BB46:
 	RTS		 ; Return
 
 	; Bowser's fireball X velocity and offset by direction
-Bowser_FireballXVel:	.byte -$10, $10
+Bowser_FireballXVel:	.byte -$20, $20
 Bowser_FireballXOff:	.byte -$08, $18
 
 PRG001_BB4B:	.byte $00, $08, $10, $18, $08, $00, $00, $10
@@ -5631,13 +5655,16 @@ Bowser_Counter3Do:
 	BNE PRG001_BBDC	 ; If Bowser_Counter3 <> 0, jump to PRG001_BBDC
 
 	LDA RandomN,X
-	AND #$3f
-	ADC #$60
+	;AND #$3F
+	;ADC #$60
+	AND #$2f
+	ADC #$20
 	STA Bowser_Counter3	 ; Bowser_Counter3 = $60 + (Random $00 to $3F)
 
 	; Bowser Counter 1 = $3F
-	LDA #$3f
-	STA Bowser_Counter1
+	;LDA #$3F
+	LDA #$1f
+	STA Bowser_Counter1			; Controls how often he breathes fire
 
 	RTS		 ; Return
 
