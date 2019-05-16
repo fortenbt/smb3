@@ -4926,8 +4926,9 @@ PRG001_B819:
 
 	; Hmm, unused space?
 Bowser_Hook:
-	JSR Bowser_DoVar5Action
+	STA PatTable_BankSel+5
 	LDA Counter_1
+	AND #%01111111
 	BNE BowserHookRts
 	LDA Inventory_Coins
 	BEQ BowserHookRts			; Don't underflow our coins
@@ -4939,7 +4940,7 @@ BowserHookRts:
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF
 
 
 ObjInit_Bowser:
@@ -4963,7 +4964,8 @@ ObjNorm_Bowser:
 	LDA #$3a
 	STA PatTable_BankSel+4
 	LDA #$3b
-	STA PatTable_BankSel+5
+	;3;STA PatTable_BankSel+5
+	JSR Bowser_Hook
 
 	LDA <Player_HaltGame
 	BNE PRG001_B8D3	 ; If gameplay is halted, jump to PRG001_B8D3
@@ -4981,7 +4983,7 @@ PRG001_B8A1:
 	DEC Bowser_Counter2	 ; Bowser_Counter2--
 
 PRG001_B8AB:
-	JSR Bowser_Hook	; Do Bowser's internal state action
+	JSR Bowser_DoVar5Action	; Do Bowser's internal state action
 	JSR Bowser_HopAndBreatheFire	; Bowser hops and breathes fireballs
 	JSR Player_HitEnemy	 	; Do hit detection
 
