@@ -142,11 +142,11 @@ __Map_RemoveTo_Tiles:
 	; NOTE: Must have as many elements as Map_Removable_Tiles!
 	.byte TILE_HORZPATH, TILE_VERTPATH, TILE_VERTPATH, TILE_FORTRUBBLE, TILE_ALTRUBBLE, TILE_HORZPATHSKY, TILE_HORZPATH, TILE_BRIDGE
 
-Map_Completable_Tiles:
+__Map_Completable_Tiles:
 	; These tiles are simply marked with the M/L
 	; NOTE: The Dancing Flower is a "completable tile"...
 	.byte TILE_TOADHOUSE, TILE_SPADEBONUS, TILE_HANDTRAP, TILE_DANCINGFLOWER, TILE_ALTTOADHOUSE
-MCT_END	; marker to calculate size -- allows user expansion of Map_Completable_Tiles
+;MCT_END	; marker to calculate size -- allows user expansion of Map_Completable_Tiles
 
 Map_CompleteByML_Tiles:
 	.byte TILE_MARIOCOMP_P, TILE_LUIGICOMP_P, TILE_MARIOCOMP_O, TILE_LUIGICOMP_O
@@ -1138,3 +1138,9 @@ PRG012_DoCheck:
 	PLA
 	CMP Map_Removable_Tiles,X	; Check this tile
 	RTS
+
+Map_Completable_Tiles:
+	; These tiles are simply marked with the M/L
+	; NOTE: The Dancing Flower is a "completable tile"...,
+	.byte TILE_TOADHOUSE, TILE_SPADEBONUS, TILE_HANDTRAP, TILE_DANCINGFLOWER, TILE_ALTTOADHOUSE, TILE_ALTSPIRAL
+MCT_END	; marker to calculate size -- allows user expansion of Map_Completable_Tiles

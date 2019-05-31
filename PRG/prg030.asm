@@ -1635,7 +1635,10 @@ PRG030_8AE0:
 	CMP #18
 	BNE PRG030_8AE7	 ; If Level_Tileset <> 18 (2P Vs), jump to PRG030_8AE7
 
-	JMP Do_2PVsChallenge	 ; Jump Do_2PVsChallenge
+	;JMP Do_2PVsChallenge	 ; Jump Do_2PVsChallenge
+	NOP
+	NOP
+	NOP
 
 PRG030_8AE7:
 	; Normal gameplay...
@@ -3185,191 +3188,93 @@ Map_WarpZone_Numbers:
 
 ;; Note all this 2P stuff is removed by the pad-held-secret branch.
 ;; Maybe we should consider combining that branch with this one...
-Do_2PVsChallenge:
 
-	; 2P Vs Challenge!
+CheckForMiniKaizoPadHeldSecret:
+	JSR Player_DetectSolids			; we hooked this in Player_Update in prg008.asm
+	LDA MiniKaizoPadHeld			; Did we already get the secret?
+	CMP #$FF
+	BEQ HeldSecretRTS
+	LDA World_Num
+	CMP #7
+	BNE HeldSecretEnd
+	LDA Map_Entered_Y
+	CMP #$70						; 8-3 Y
+	BNE HeldSecretEnd
+	LDA Map_Entered_XHi
+	CMP #3							; 8-3 XHi
+	BNE HeldSecretEnd
+	LDA Map_Entered_X
+	CMP #$60						; 8-3 X
+	BNE HeldSecretEnd
+	; We're in the right level, is our player location on the right tile?
+	LDA Player_XHi
+	CMP #0							; The secret bush's XHi
+	BNE HeldSecretEnd
+	LDA Player_YHi
+	CMP #1							; The secret bush's YHi
+	BNE HeldSecretEnd
+	LDA Player_X					; Looking for X between 0xDB and 0xE6
+	CMP #$DB
+	BCC HeldSecretEnd
+	CMP #$E7
+	BCS HeldSecretEnd
+	LDA Player_Y					; Looking for Y == #$80
+	CMP #$80
+	BNE HeldSecretEnd
+	; Bingo....have we been holding B for long enough?
+	LDA Pad_Holding
+	CMP #PAD_B						; Holding ONLY B
+	BNE HeldSecretEnd
+	INC MiniKaizoPadHeld
+	LDA MiniKaizoPadHeld
+	CMP #$ff
+	BNE HeldSecretRTS				; Everything is right, but we haven't held it long enough
 
-	; Load page 14 @ C000
-	LDA #14
-	STA PAGE_C000
-	JSR PRGROM_Change_Both2
-
-	JSR Scroll_Dirty_Update	 ; Render the 2P Vs terrain
-
-	; Update_Select = $C0
-	LDA #$c0
-	STA Update_Select
-
-	; Raster_Effect = $80
+	; Vibrate the floor
 	LDA #$80
-	STA Raster_Effect
+	STA Level_Vibration
+	; Ba-bam!
+	;LDA #SND_LEVELBABOOM
+	;STA Sound_QLevel1
+	; Play got coin sound
+	LDA Sound_QLevel1
+	ORA #SND_LEVELCOIN
+	STA Sound_QLevel1
+	; Bump player upward
+	LDA #-$40
+	STA <Player_YVel
+	INC <Player_InAir
+	; Give 99 coins
+	LDA #99
+	STA Inventory_Coins
+	BNE HeldSecretRTS
 
-	; Load graphics for 2P Vs
-	LDY #$04
-	STY PatTable_BankSel+2
-	INY
-	STY PatTable_BankSel+3
-	INY
-	STY PatTable_BankSel+4
-	INY
-	STY PatTable_BankSel+5
+HeldSecretEnd:
+	LDA #0
+	STA MiniKaizoPadHeld
+HeldSecretRTS:
+	RTS
 
-	; Play battle (2P Vs) music
-	LDA #MUS2B_BATTLE
-	STA Level_MusicQueue
-
-	; Set page @ A000 to 27
-	LDA #27
-	STA PAGE_A000
-	JSR PRGROM_Change_A000
-
-	JSR Setup_PalData	 ; On page 27 -- PalData now holds palette data for world map tiles/objects
-
-	; Resume Update_Select activity
-	LDA #$00
-	STA UpdSel_Disable
-
-	; Set page @ A000 to 26
-	LDA #26
-	STA PAGE_A000
-	JSR PRGROM_Change_A000
-	JSR Palette_FadeIn	 ; On page 26 -- Fade in the world map
-
-	; Set page @ A000 to 9
-	LDA #$09
-	STA PAGE_A000
-	JSR PRGROM_Change_A000
-
-PRG030_939A:
-	JSR GraphicsBuf_Prep_And_WaitVSync	 ; V Sync
-
-	LDA SndCur_Map
-	AND #SND_MAPENTERLEVEL
-	BNE PRG030_93B1	 ; If the level entrance sound is still playing, jump to PRG030_93B1
-
-	LDA Level_MusicQueue
-	BEQ PRG030_93B1	 ; If no BGM is queued, jump to PRG030_93B1
-
-	; Play the queued music
-	STA Sound_QMusic2
-
-	; Clear music queue
-	LDA #$00
-	STA Level_MusicQueue
-
-PRG030_93B1:
-	JSR Sprite_RAM_Clear	 ; Clear Sprite RAM 
-	JSR Vs_2PVsPauseHandler	 ; Handle pausing
-
-	LDA Level_ExitToMap
-	BEQ PRG030_939A	 ; If not exiting to map, loop 2P Vs!
-
-	; Set page @ A000 to 26
-	LDA #26
-	STA PAGE_A000
-	JSR PRGROM_Change_A000
-	JSR Palette_FadeOut	 		; Fade out
-
-	; Stop 2P Vs music
-	LDA #MUS1_STOPMUSIC
-	STA Sound_QMusic1
-
-	LDA #%00011000
-	STA <PPU_CTL2_Copy	; Show BG+Sprites
-
-	JSR GraphicsBuf_Prep_And_WaitVSync	; Vertical sync
-
-	; Disable display
-	LDA #$00
-	STA PPU_CTL1
-	STA PPU_CTL2
-
-	LDX Map_PlayerLost2PVs
-	DEX
-	CPX Player_Current
-	BNE PRG030_93E7	 ; If the Player who lost the match was not the Player whose turn it was, jump to PRG030_93E7
-
-	JMP PRG030_946C	 ; Jump to PRG030_946C
-
-PRG030_93E7:
-	LDA #(Inventory_Score - Inventory_Items)	; Offset to Mario's score
-
-	LDX Player_Current
-	BEQ PRG030_93F1	 ; If current Player is Mario, jump to PRG030_93F1
-
-	ADD #(Inventory_Score2 - Inventory_Score)	; Offset to Luigi's score
-
-PRG030_93F1:
-	TAY		 ; Y = offset to Player's score
-
-	LDX #$00	 ; X = 0
-PRG030_93F4:
-	LDA Inventory_Items,Y
-	STA Player_Score,X
-
-	INY		 ; Y++ (next "inventory" score byte)
-	INX		 ; X++ (next "active" score byte)
-
-	CPX #$03
-	BNE PRG030_93F4	; While X <> 3, loop!
-
-	LDX Map_PlayerLost2PVs
-	DEX
-	TXA
-	EOR #$01
-	TAY		 ; Y = the OTHER Player's index
-
-	; Swap all Player map position variables because the challenger lost!
-	LDA Map_Previous_Y,Y
-	STA <Temp_Var1
-	LDA Map_Previous_XHi,Y
-	STA <Temp_Var2
-	LDA Map_Previous_X,Y
-	STA <Temp_Var3
-	LDA Map_Prev_XOff2,Y
-	STA <Temp_Var4
-	LDA Map_Prev_XHi2,Y
-	STA <Temp_Var5
-	LDA Map_Prev_XOff,Y
-	STA <Temp_Var6
-	LDA Map_Prev_XHi,Y
-	STA <Temp_Var7
-	LDA Map_Previous_Y,X
-	STA Map_Previous_Y,Y
-	LDA Map_Previous_XHi,X
-	STA Map_Previous_XHi,Y
-	LDA Map_Previous_X,X
-	STA Map_Previous_X,Y
-	LDA Map_Prev_XOff2,X
-	STA Map_Prev_XOff2,Y
-	LDA Map_Prev_XHi2,X
-	STA Map_Prev_XHi2,Y
-	LDA <Temp_Var1
-	STA Map_Previous_Y,X
-	LDA <Temp_Var2
-	STA Map_Previous_XHi,X
-	LDA <Temp_Var3
-	STA Map_Previous_X,X
-	LDA <Temp_Var4
-	STA Map_Prev_XOff2,X
-	LDA <Temp_Var5
-	STA Map_Prev_XHi2,X
-	LDA <Temp_Var6
-	STA Map_Prev_XOff,X
-	LDA <Temp_Var7
-	STA Map_Prev_XHi,X
-
-PRG030_946C:
-
-	; Flag as "death" so challenger flies backward
-	LDX Map_PlayerLost2PVs
-	STX Map_ReturnStatus
-
-	; Set new current Player
-	DEX		 ; X--
-	STX Player_Current
-
-	JMP PRG030_8FB2	 ; Jump to PRG030_8FB2
+	;CMP Tile_AttrTable+4,Y
+CheckEnterable_Hook:
+	CMP #TILE_ALTSPIRAL
+	BNE _enterable_norm
+	CMP #1				; just compare to something we know our tile will be >
+	RTS
+_enterable_norm:
+	CMP Tile_AttrTable+4,Y
+	RTS
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 
 GameOver_WhiteMapObjs:
 	.byte MAPOBJ_NSPADE, MAPOBJ_WHITETOADHOUSE, MAPOBJ_UNK0C
