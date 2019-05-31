@@ -767,7 +767,8 @@ PRG010_C3E3:
 	LDY #MUS2A_MUSICBOX	 ; Otherwise, Y = $C (music box song)
 
 PRG010_C3EA:
-	LDA SndCur_Music2
+	;LDA SndCur_Music2
+	JSR SndCheck_Hook
 	BNE PRG010_C3F2	 	; If SndCur_Music2 <> 0 (a song from set 2 is playing), jump to PRG010_C3F2
 
 	; Otherwise, queue the requested song!
@@ -4244,3 +4245,21 @@ PRG010_FortressFXDone:
 	STA Map_FortFXtraDone
 	STA Got_Level_Secret
 	JMP PRG010_C9D0
+
+SndCheck_Hook:
+	;; NOTE - THIS HOOK MUST NOT TRASH Y
+	LDA SndOverride
+	BEQ _sndcheck_norm
+	LDA WarpPipeDst
+	BNE _sndhook_chk		; if we used a warp pipe and SndCur_Music2 is MUS2A_WARPWHISTLE, we want to allow the new sound
+_sndcheck_norm:
+	LDA SndCur_Music2		; otherwise, do what the hook did
+	RTS
+_sndhook_chk:
+	LDA SndCur_Music2
+	CMP #MUS2A_WARPWHISTLE
+	BNE _sndhook_rts
+	LDA #0
+	STA SndOverride
+_sndhook_rts:
+	RTS

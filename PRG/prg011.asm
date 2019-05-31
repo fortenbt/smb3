@@ -5029,6 +5029,10 @@ WarpPipesW8_X_11:		.byte $80, $A0, $C0, $80, $ff, $C0, $80, $A0, $A0
 WW_LoadWorld_Hook:
 	LDA WarpPipeDst
 	BEQ _ww_load_w8			; If WarpPipeDst isn't set, it's a normal warp whistle
+	PHA
+	LDA #1
+	STA SndOverride
+	PLA
 	SEC
 	SBC #1
 	CMP #9				; If dst is 0-8, load world directly
