@@ -5601,7 +5601,7 @@ PRG024_BC32:
 	JSR Ending2_DoEndPic	 ; Update and draw end picture per world
 
 	LDA <Ending2_CurWorld
-	CMP #$08
+	CMP #$01
 	BNE PRG024_BC32	 ; While Ending2_CurWorld <> 8, loop!
 
 	; Ending2_CurWorld = 0
@@ -6023,7 +6023,7 @@ Ending2_SetFlag2:
 PRG024_BE29:
 	.byte $2A, $2E, $32, $36, $3A, $3E, $44, $49
 PRG024_BE31:
-	.byte $2D, $31, $35, $39, $3D, $43, $48, $4C
+	.byte $2A, $31, $35, $39, $3D, $43, $48, $4C
 
 Ending2_CommitPicture:
 	LDA PPU_STAT	
@@ -6162,7 +6162,7 @@ Ending2_FadeIn:
 	STA Graphics_Queue
 
 	; Ending2_TimerH = $F
-	LDA #$0f
+	LDA #$40
 	STA <Ending2_TimerH
 
 	; Ending2_TimerL = $16
@@ -6276,10 +6276,14 @@ PRG024_BF5D:
 	RTS		 ; Return
 
 	; PatTable_BankSel+X values (sprite pattern tables) loaded per "world" of ending picture
-Ending2_EndPicPatTable2:	.byte $57, $53, $51, $00, $43, $02, $44, $54
-Ending2_EndPicPatTable3:	.byte $00, $04, $00, $76, $76, $76, $04, $76
-Ending2_EndPicPatTable4:	.byte $57, $4E, $1A, $1A, $00, $0B, $00, $00
-Ending2_EndPicPatTable5:	.byte $4F, $4F, $00, $00, $4F, $4F, $4F, $00
+;Ending2_EndPicPatTable2:	.byte $57, $53, $51, $00, $43, $02, $44, $54
+;Ending2_EndPicPatTable3:	.byte $00, $04, $00, $76, $76, $76, $04, $76
+;Ending2_EndPicPatTable4:	.byte $57, $4E, $1A, $1A, $00, $0B, $00, $00
+;Ending2_EndPicPatTable5:	.byte $4F, $4F, $00, $00, $4F, $4F, $4F, $00
+Ending2_EndPicPatTable2:	.byte $54, $53, $51, $00, $43, $02, $44, $54
+Ending2_EndPicPatTable3:	.byte $76, $04, $00, $76, $76, $76, $04, $76
+Ending2_EndPicPatTable4:	.byte $00, $4E, $1A, $1A, $00, $0B, $00, $00
+Ending2_EndPicPatTable5:	.byte $00, $4F, $00, $00, $4F, $4F, $4F, $00
 
 	; Split address, parallel tables for the starting address of the end picture sprite lists for each world
 Ending2_EndPicSpriteListH:	
@@ -6314,16 +6318,16 @@ Ending2_EndPicSpriteListLen:
 	.byte (Ending2_EndPicSprites8_End - Ending2_EndPicSprites8 - 1)
 
 Ending2_EndPicSprites1:
-	.byte $81, $19, $00, $B0
-	.byte $81, $1B, $00, $B8
-	.byte $91, $1D, $00, $B0
-	.byte $91, $21, $00, $B8
-	.byte $B1, $EB, $01, $B8
-	.byte $B1, $EB, $41, $C0
-	.byte $B1, $D9, $01, $80
-	.byte $B1, $DB, $41, $88
-	.byte $B1, $D9, $01, $90
-	.byte $B1, $DB, $41, $98
+	.byte $FC, $19, $00, $B0
+	.byte $FC, $1B, $00, $B8
+	.byte $FC, $1D, $00, $B0
+	.byte $FC, $21, $00, $B8
+	.byte $FC, $EB, $01, $B8
+	.byte $FC, $EB, $41, $C0
+	.byte $FC, $D9, $01, $80
+	.byte $FC, $DB, $41, $88
+	.byte $FC, $D9, $01, $90
+	.byte $FC, $DB, $41, $98
 Ending2_EndPicSprites1_End
 
 Ending2_EndPicSprites2:

@@ -117,16 +117,30 @@ EndPicByWorld_L:.byte LOW(EndPic_World1), LOW(EndPic_World2), LOW(EndPic_World3)
 	; The value $F1 inserts $71 twice
 
 EndPic_World1:
-	.byte $70, $F1, $F1, $F1, $F1, $F1, $F1, $F1, $72, $73, $BF, $3F, $00, $04, $06, $04
-	.byte $00, $04, $00, $04, $06, $BF, $73, $73, $BF, $3F, $05, $BF, $3F, $05, $BF, $3F
-	.byte $05, $BF, $73, $73, $04, $0E, $04, $07, $BF, $3F, $63, $04, $00, $04, $0A, $BF
-	.byte $73, $73, $BF, $3F, $0B, $BF, $3F, $05, $BF, $BF, $BF, $73, $73, $BF, $3F, $63
-	.byte $04, $62, $04, $10, $BF, $38, $44, $39, $3F, $73, $73, $3F, $D5, $05, $55, $BF
-	.byte $3F, $38, $44, $49, $3D, $3C, $3F, $73, $73, $D5, $65, $63, $65, $0A, $04, $06
-	.byte $1E, $06, $04, $3E, $3C, $3F, $73, $73, $55, $E5, $05, $E5, $55, $05, $3C, $D5
-	.byte $55, $3C, $3F, $73, $73, $55, $E5, $00, $04, $06, $04, $00, $48, $C4, $44, $49
-	.byte $3F, $73, $73, $D5, $D5, $D5, $D5, $D5, $D5, $D5, $73, $74, $F1, $F1, $F1, $F1
-	.byte $F1, $F1, $F1, $75
+	;.byte $70, $F1, $F1, $F1, $F1, $F1, $F1, $F1, $72, $73, $BF, $3F, $00, $04, $06, $04
+	;.byte $00, $04, $00, $04, $06, $BF, $73, $73, $BF, $3F, $05, $BF, $3F, $05, $BF, $3F
+	;.byte $05, $BF, $73, $73, $04, $0E, $04, $07, $BF, $3F, $63, $04, $00, $04, $0A, $BF
+	;.byte $73, $73, $BF, $3F, $0B, $BF, $3F, $05, $BF, $BF, $BF, $73, $73, $BF, $3F, $63
+	;.byte $04, $62, $04, $10, $BF, $38, $44, $39, $3F, $73, $73, $3F, $D5, $05, $55, $BF
+	;.byte $3F, $38, $44, $49, $3D, $3C, $3F, $73, $73, $D5, $65, $63, $65, $0A, $04, $06
+	;.byte $1E, $06, $04, $3E, $3C, $3F, $73, $73, $55, $E5, $05, $E5, $55, $05, $3C, $D5
+	;.byte $55, $3C, $3F, $73, $73, $55, $E5, $00, $04, $06, $04, $00, $48, $C4, $44, $49
+	;.byte $3F, $73, $73, $D5, $D5, $D5, $D5, $D5, $D5, $D5, $73, $74, $F1, $F1, $F1, $F1
+	;.byte $F1, $F1, $F1, $75
+
+	.byte $70, $F1, $F1, $F1, $F1, $F1, $F1, $F1, $72
+	.byte $73, $B0, $B0, $B0, $B0, $B0, $B0, $B0, $73
+	.byte $73, $B0, $B0, $B0, $00, $01, $B0, $B0, $B0, $73
+	.byte $73, $B0, $B0, $30, $02, $03, $04, $05, $B0, $B0, $30, $73
+	.byte $73, $B0, $30, $06, $07, $0A, $0B, $0C, $0D, $0E, $0F, $B0, $30, $73
+	.byte $73, $B0, $30, $20, $21, $22, $23, $24, $25, $26, $27, $B0, $30, $73
+	.byte $73, $B0, $B0, $31, $32, $33, $34, $35, $36, $37, $B0, $30, $73
+	.byte $73, $B0, $B0, $12, $2A, $2B, $2C, $2D, $2E, $2F, $B0, $30, $73
+	.byte $73, $B0, $30, $38, $39, $3A, $3B, $3C, $3D, $3E, $3F, $B0, $30, $73
+	.byte $73, $B0, $B0, $1A, $1B, $1C, $1D, $1E, $1F, $B0, $B0, $73
+	.byte $73, $B0, $B0, $B0, $B0, $B0, $B0, $B0, $73
+	.byte $74, $F1, $F1, $F1, $F1, $F1, $F1, $F1, $75
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 
 EndPic_World2:
 	.byte $70, $F1, $F1, $F1, $F1, $F1, $F1, $F1, $72, $73, $35, $03, $04, $06, $5C, $0A
@@ -211,8 +225,10 @@ EndPic_World8:
 	.byte $F1, $75
 
 	; Split address, parallel tables for the starting VRAM address of the end picture for each world
-EndPic_VRAMStart_H:	.byte $28, $28, $28, $29, $29, $28, $28, $28	; High
-EndPic_VRAMStart_L:	.byte $E3, $AD, $E9, $67, $23, $AD, $A3, $A9	; Low
+;EndPic_VRAMStart_H:	.byte $28, $28, $28, $29, $29, $28, $28, $28	; High
+;EndPic_VRAMStart_L:	.byte $E3, $AD, $E9, $67, $23, $AD, $A3, $A9	; Low
+EndPic_VRAMStart_H:	.byte $29, $28, $28, $29, $29, $28, $28, $28	; High
+EndPic_VRAMStart_L:	.byte $10, $AD, $E9, $67, $23, $AD, $A3, $A9	; Low
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; This table contains commands for Video_Misc_Updates2 which tells
@@ -269,11 +285,13 @@ Video_Upd_Table2:
 	.word EndSeq_WorldFadeIn2	; $27 - End pic world fade in effect part 2
 	.word EndSeq_WorldFadeIn3	; $28 - End pic world fade in effect part 3
 	.word EndSeq_WorldFadeIn4	; $29 - End pic world fade in effect part 4
-	.word PRG025_CD82		; $2A - ???
-	.word PRG025_CDA6		; $2B - ???
-	.word PRG025_CDBB		; $2C - ???
-	.word PRG025_CDD1		; $2D - ???
-	.word PRG025_CDE7		; $2E - ???
+	;.word PRG025_CD82		; $2A - ???
+	.word PRG025_WORLD1Cred		; $2A - World1End Credits text
+	.word PRG025_WORLD1Cred2	; $2B - ???
+	.word PRG025_WORLD1Cred3	; $2C - ???
+	.word PRG025_WORLD1Cred4	; $2D - ???
+	;.word PRG025_CDE7		; $2E - ???
+	.word PRG025_WORLD2Cred		; $2E - World2End Credits text
 	.word PRG025_CE02		; $2F - ???
 	.word PRG025_CE19		; $30 - ???
 	.word PRG025_CE2D		; $31 - 
@@ -289,7 +307,8 @@ Video_Upd_Table2:
 	.word PRG025_CEE2		; $3B - 
 	.word PRG025_CEFF		; $3C - 
 	.word PRG025_CF0A		; $3D - 
-	.word PRG025_CF20		; $3E - 
+	;.word PRG025_CF20		; $3E -
+	.word PRG025_WORLD6Cred		; $3E -  World6End Credits text
 	.word PRG025_CF43		; $3F - 
 	.word PRG025_CF6B		; $40 - 
 	.word PRG025_CF8A		; $41 - 
@@ -815,27 +834,30 @@ EndSeq_WorldFadeIn4:
 	; Terminator
 	.byte $00
 
-PRG025_CD82:
-	.byte $28, $F4, $07, $DE, $F4, $EF, $F1, $E3 ; $CD7A - $CD89
-	.byte $5C, $77, $29, $74, $0A, $E8, $EF, $E0, $F8, $F8, $5C, $F1, $E0, $F3, $E3, $2A ; $CD8A - $CD99
+;PRG025_CD82:
+_PRG025_WORLD1Cred:
+	.byte $28, $F4, $07, $DE, $F4, $EF, $F1, $E3 ; $CD7A - $CD89	"WORLD"
+	.byte $5C, $77, $29, $74, $0A, $E8, $EF, $E0, $F8, $F8, $5C, $F1, $E0, $F3, $E3, $2A ; $CD8A - $CD99 " 1
 	.byte $5C, $04, $D0, $D1, $D2, $D3, $2A, $7C, $82, $D4, $D6, $00
 
-PRG025_CDA6:
+;PRG025_CDA6:
+PRG025_WORLD1Cred2:
 	.byte $2A, $7F, $85, $D5 ; $CD9A - $CDA9
 	.byte $D7, $D7, $D7, $D7, $2A, $BA, $04, $D0, $D1, $D2, $D3, $2A, $DA, $82, $D4, $D6 ; $CDAA - $CDB9
 	.byte $00
 
-PRG025_CDBB:
+PRG025_WORLD1Cred3:
 	.byte $2A, $80, $03, $D1, $D2, $D3, $2A, $A2, $01, $D5, $2A, $C1, $04, $D0, $D1 ; $CDBA - $CDC9
 	.byte $D2, $D3, $2A, $E4, $01, $D5, $00
 
-PRG025_CDD1:
+PRG025_WORLD1Cred4:
 	.byte $2B, $D1, $04, $55, $55, $55, $99, $2B, $D9 ; $CDCA - $CDD9
 	.byte $04, $55, $55, $7F, $BB, $2B, $E1, $04, $A5, $A5, $AF, $AB, $00
 
-PRG025_CDE7:
+;PRG025_CDE7:
+PRG025_WORLD2Cred:
 	.byte $28, $E3, $07 ; $CDDA - $CDE9
-	.byte $DE, $F4, $EF, $F1, $E3, $5C, $78, $29, $24, $06, $E3, $E4, $F8, $E4, $EF, $F9 ; $CDEA - $CDF9
+	.byte $DE, $F4, $EF, $F1, $E3, $5C, $78, $29, $24, $06, $E3, $E4, $F8, $E4, $EF, $F9 ; $CDEA - $CDF9 "WORLD 2"
 	.byte $29, $67, $04, $F1, $E0, $F3, $E3, $00
 
 PRG025_CE02:
@@ -900,8 +922,9 @@ PRG025_CF0A:
 	.byte $2B, $D1, $04, $5A, $FA, $FA, $9A, $2B, $D9, $04, $FF, $7F, $5F, $99, $2B, $E1 ; $CF0A - $CF19
 	.byte $04, $55, $55, $55, $99, $00
 
-PRG025_CF20:
-	.byte $28, $E3, $07, $DE, $F4, $EF, $F1, $E3, $5C, $7C ; $CF1A - $CF29
+;PRG025_CF20:
+PRG025_WORLD6Cred:
+	.byte $28, $E3, $07, $DE, $F4, $EF, $F1, $E3, $5C, $7C ; $CF1A - $CF29 "WORLD 6"
 	.byte $2A, $51, $08, $EA, $E2, $E4, $5C, $F1, $E0, $F3, $E3, $2A, $20, $0A, $01, $0D ; $CF2A - $CF39
 	.byte $01, $0D, $01, $0D, $01, $0D, $01, $0D, $00
 
@@ -967,7 +990,7 @@ PRG025_D059:
 EndSeq_World1Pal:
         vaddr $3F00
 	.byte $20, $0F, $0F, $30, $16, $0F, $17, $2A, $37, $0F, $2C, $30, $37, $0F, $2C, $2A
-	.byte $37, $0F, $16, $36, $0F, $0F, $0F, $30, $16, $0F, $0F, $30, $16, $0F, $0F, $30
+	.byte $37, $0F, $2A, $30, $16, $0F, $0F, $30, $16, $0F, $0F, $30, $16, $0F, $0F, $30
 	.byte $16
 
 	; Terminator
@@ -1313,3 +1336,65 @@ PRG025_D505:
 
 ; Rest of ROM bank was empty
 
+;; NOTE THAT SOME OF THIS SPACE USED BY KP FOR THE CUSTOM TITLE SCREEN
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF
+
+;"KP, OrangeExpo, joesmo, Koopa, Jabem, GenoCL, Doublebass. Thank you so much. And TheHaxor for getting frame ruled."
+; MINI KAIZO
+; THANKS TO
+;     KP
+; ORANGEEXPO
+;   JOESMO
+; KOOPA
+; JABEM
+; GENOCL
+; DOUBLEBASS
+; AND THEHAXOR FOR GETTING FRAME RULED
+; $10 2019 MITCHFLOWERPOWER
+PRG025_WORLD1Cred:
+	;.byte $28, $F4, $07, $DE, $F4, $EF, $F1, $E3, $5C, $77				; WORLD 1
+	;.byte $29, $74, $0A, $E8, $EF, $E0, $F8, $F8, $5C, $F1, $E0, $F3, $E3		; GRASS LAND
+	;.byte $2A, $5C, $04, $D0, $D1, $D2, $D3						; (portions of the bushes)
+	;.byte $2A, $7C, $82, $D4, $D6, $00						; (portions of the bushes)
+	.byte $28, $8B, $0A, $F2, $EA, $F3, $EA, $5C, $F0, $E0, $EA, $FF, $F4		; "MINI KAIZO"
+	.byte $28, $C3, $09, $F9, $E9, $E0, $F3, $F0, $F8, $5C, $F9, $F4		; " THANKS TO"
+	.byte $29, $23, $06, $5C, $5C, $5C, $5C, $F0, $F5				; "    KP"
+	.byte $29, $43, $0A, $F4, $EF, $E0, $F3, $E8, $E4, $E4, $FD, $F5, $F4		; "ORANGEEXPO"
+	.byte $29, $63, $08, $5C, $5C, $EB, $F4, $E4, $F8, $F2, $F4			; "  JOESMO"
+	.byte $29, $83, $07, $5C, $5C, $F0, $F4, $F4, $F5, $E0				; "  KOOPA"
+	.byte $29, $A3, $07, $5C, $5C, $EB, $E0, $E1, $E4, $F2				; "  JABEM"
+	.byte $29, $C3, $08, $5C, $5C, $E8, $E4, $F3, $F4, $E2, $F1			; "  GENOCL"
+	.byte $29, $E3, $0A, $E3, $F4, $FA, $E1, $F1, $E4, $E1, $E0, $F8, $F8		; "DOUBLEBASS"
+	.byte $2A, $23, $0C, $E0, $F3, $E3, $5C, $F9, $E9, $E4, $E9, $E0, $FD, $F4, $EF	; "AND THEHAXOR"
+	.byte $2A, $43, $0B, $E5, $F4, $EF, $5C, $E8, $E4, $F9, $F9, $EA, $F3, $E8	; "FOR GETTING"
+	.byte $2A, $63, $0A, $E5, $EF, $E0, $F2, $E4, $EF, $FA, $F1, $E4, $E3		; "FRAMERULED"
+	.byte $2A, $A4, $82, $10, $11
+	.byte $2A, $C6, $15, $78, $76, $77, $7F, $5C, $F2, $EA, $F9, $E2, $E9, $E5, $F1, $F4, $DE, $E4, $EF, $F5, $F4, $DE, $E4, $EF	; "2019 MITCHFLOWERPOWER"
+	.byte $00
