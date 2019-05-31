@@ -537,7 +537,6 @@ PRG030_84A0:
 	STA PAGE_A000
 	JSR PRGROM_Change_Both2	
 
-
 	JSR Map_Init	 ; Initialize map variables (page 11)
 
 	LDA #$00
@@ -3161,8 +3160,17 @@ EnterLevel_Hook:
 	JMP WorldMap_Loop
 _no_pipe_warp:
 	JMP PRG030_87C0
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+
+W8_DrawWarpPipeNumbers:
+	; We know we're in world 8 here
+	LDA World_Map_XHi
+	CMP #3
+	BNE _draw_warp_rts
+	JSR Map_WarpZone_DrawNumbers
+_draw_warp_rts:
+	RTS
+
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 
 	; Reset game
 	JMP IntReset_Part2
