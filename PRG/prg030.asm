@@ -911,7 +911,8 @@ WorldMap_Loop:
 	LDA #11
 	STA PAGE_A000	
 	JSR PRGROM_Change_A000
-	JSR Map_DoAnimations	; On page 11 -- animate world map
+	;JSR Map_DoAnimations	; On page 11 -- animate world map
+	JSR CheckSecretCode
 
 	LDA InvFlip_Counter
 	BNE PRG030_86F9	 	; If InvFlip_Counter <> 0, jump to PRG030_86F9
@@ -3030,6 +3031,75 @@ SetNormalFireball:
 	EOR Fireball_Attributes,X
 	RTS
 
+CheckSecretCode:
+	JSR Map_DoAnimations			; Do the hooked function
+	LDA World_Num
+	CMP #7
+	BNE _SecretCode_RTS				; Not world 8? Don't care.
+	LDA World_Map_XHi
+	CMP #3
+	BNE _SecretCode_RTS				; Not on the Bowser castle page? Don't care.
+	LDX Secret_Code_Index
+	BMI _SecretCode_RTS				; Have we gotten the code yet? (index <	0)
+	; Didn't get the code yet
+	LDA Secret_Code_Counter			; If the counter reaches 0, we waited too long between presses, so reset
+	BNE _SecretCodePastInit
+	STA Secret_Code_Index			; Counter was zero, so A is 0 here, reset our index
+_SecretCodePastInit:
+	LDA Controller1Press			; Did a new input come in this frame?
+	BEQ _SecretCodeDecIfNotZero		; If no new input, just decrement the counter
+	; We have new input!
+	; 1. Store the input at our current Secret_Code_Index
+	; 2. Increment the Secret_Code_Index
+	; 3. If Secret_Code_Index == 8, we've finished our code, check it!
+	;    - If they got it right, set Secret_Code_Index to 0xFF and return
+	;    - If they got it wrong, set Secret_Code_Index to 0x00 and go to _SecretCodeDecIfNotZero
+	; 4. If Secret_Code_Index != 8, set Secret_Code_Counter to 101
+	STA Player_Secret_Code,X
+	INX
+	STX Secret_Code_Index
+	CPX #8
+	BNE _SecretCode_KickCounter
+	JSR ComparePlayerSecretCode
+	BEQ _SecretCode_GotIt
+	LDA #1							; Code failed
+	STA Secret_Code_Counter			; Set counter to 1, which will reset index on next frame
+	BNE _SecretCodeDec				; Always branch
+_SecretCode_GotIt:
+	LDA #$FF						; Code succeeded!
+	STA Secret_Code_Index			; Set index to -1 to signal we got the code
+	LDA #SND_MAPBONUSAPPEAR
+	STA Sound_QMap					; Play bonus sound
+	LDA #6							; Bowser castle lock FX index is 6
+	STA Map_DoFortressFX
+	LDA #$08						; MO_DoFortressFX
+	STA Map_Operation
+	RTS
+
+_SecretCode_KickCounter:
+	LDA #101
+	STA Secret_Code_Counter
+_SecretCodeDecIfNotZero:
+	LDA Secret_Code_Counter			; Only decrement the counter if > 0
+	BEQ _SecretCode_RTS
+_SecretCodeDec:
+	DEC Secret_Code_Counter
+_SecretCode_RTS:
+	RTS
+
+Secret_Code:	.byte PAD_UP, PAD_DOWN, PAD_UP, PAD_DOWN, PAD_A, PAD_B, PAD_B, PAD_A
+ComparePlayerSecretCode:
+	LDX #0
+_cmploop:
+	LDA Secret_Code,X
+	CMP Player_Secret_Code,X
+	BNE _Compare_RTS
+	INX
+	CPX #8
+	BNE _cmploop
+	LDA #0
+_Compare_RTS:
+	RTS
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
@@ -3037,104 +3107,8 @@ SetNormalFireball:
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff
-
-PRG030_92B6:
-
-	LDA #$00
-	STA World_EnterState	 ; World_EnterState = 0 (just arriving)
-
-	LDX Player_Current	 ; X = Player_Current
-
-	LDA Map_GameOver_CursorY
-	AND #$08
-	BNE PRG030_932A	 ; If Player chose to END, jump to PRG030_932A
-
-	; Player's live reset to 4
-	LDA #$04
-	STA Player_Lives,X
-
-	; Set up position variables
-	LDA <Horz_Scroll
-	STA Map_Prev_XOff,X
-	LDA <Horz_Scroll_Hi
-	STA Map_Prev_XHi,X
-	LDA <World_Map_Y,X
-	STA Map_Entered_Y,X
-	LDA <World_Map_XHi,X
-	STA Map_Entered_XHi,X
-	LDA <World_Map_X,X
-	STA Map_Entered_X,X
-	LDA <Map_UnusedPlayerVal2,X
-	STA Map_Previous_UnusedPVal2,X
-
-	; Reset map variables
-	LDA #$00
-	STA Map_Player_SkidBack,X
-	STA World_EnterState
-	STA Map_GameOver_CursorY
-	STA BigQBlock_GotIt	; Didn't get any Big ? Blocks
-
-	LDY #(Inventory_Coins - Inventory_Cards)	; Y = offset to Mario's coins
-
-	CPX #$00
-	BEQ PRG030_92FE	 ; If Player is Mario, jump to PRG030_92FE
-
-	LDY #(Inventory_Coins2 - Inventory_Cards)	; Y = offset to Luigi's coins
-
-PRG030_92FE:
-	LDA #(Inventory_Coins - Inventory_Cards)
-	STA <Temp_Var1		 ; Temp_Var1 = total bytes to clear
-
-	LDA #$00	 ; A = 0
-PRG030_9304:
-	STA Inventory_Cards,Y	 ; Clear cards/coins
-
-	DEY		 ; Y--
-	DEC <Temp_Var1	 ; Temp_Var1--
-	BPL PRG030_9304	 ; While Temp_Var1 >= 0, loop
-
-	LDY #$3f	 ; Y = $3F (End of Mario's Map Completions)
-
-	CPX #$00
-	BEQ PRG030_9314	 ; If Player is Mario, jump to PRG030_9314
-
-	LDY #$7f	 ; Y = $7F (End of Luigi's Map Completions)
-
-PRG030_9314:
-	LDA #$3f
-	STA <Temp_Var1	 ; Temp_Var1 = $3F
- 
-PRG030_9318:
-	TYA
-	EOR #$40
-	TAX
-
-	; Clear this Player's map completions
-	LDA Map_Completions,X
-	AND Map_Completions,Y
-	STA Map_Completions,Y
-
-	DEY		 ; Y--
-	DEC <Temp_Var1	 ; Temp_Var1--
-	BPL PRG030_9318	 ; While Temp_Var1 >= 0, loop!
-
-PRG030_932A:
-	LDY Total_Players	 ; Y = Total_Players
-	DEY		 ; Y = 0 if 1P, or 1 if 2P
-
-PRG030_932E:
-	LDA Player_Lives,Y
-	BPL PRG030_933E	 ; If this Player isn't dead, jump to PRG030_933E
-
-	DEY		 ; Y--
-	BPL PRG030_932E	 ; While Y >= 0, loop
-
-	; All Players are dead and have given up
-
-	; Stop music
-	LDA #MUS1_STOPMUSIC
-	STA Sound_QMusic1
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff
 
 	; Reset game
 	JMP IntReset_Part2

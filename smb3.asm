@@ -1502,7 +1502,8 @@ PAUSE_RESUMEMUSIC	= $02	; Resume sound (resumes music)
 	Map_Object_Data:	.ds 15	; $052D-$053B For marching objects, 0/1 for their direction, could be anything though
 	Map_March_Count:	.ds 15	; $053C-$054A Simply counts and overflows, but used to determine position of marching map objects (PER ID, not object index ... Actually is seems they go back and forth on that??)
 
-				.ds 60	; $054B-$0586 unused
+	Secret_Code_Counter:	.ds 1	; Counter value decremented between each button press for tracking the secret code input
+				.ds 59	; $054B-$0586 unused
 
 	Map_Objects_Vis:	.ds 15	; $0587-$058E Set for map objects as visible, clear if it's not
 	Map_MarchInit:		.ds 1	; Set when marching data has been initialized (done once per marching cycle on the map)
@@ -2178,7 +2179,9 @@ RandomN = Random_Pool+1			; Pull a random number from the sequence (NOTE: Random
 ;	are not re-enterable, but still seems a bit extreme...
 	BigQBlock_GotIt:	.ds 1
 
-				.ds 13	; $07E3-$07EF unused
+	Player_Secret_Code:	.ds 8	; ududabba
+	Secret_Code_Index:	.ds 1	; which one are we on? - set to 0xff when we've gotten the secret
+						.ds 4	; $07E3-$07EF unused
 
 	DMC_Queue:		.ds 1	; Stores value to play on DMC
 	DMC_Current:		.ds 1	; Currently playing DMC sound
