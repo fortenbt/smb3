@@ -3191,7 +3191,7 @@ PRG010_D179:
 PRG010_D183:
 	RTS		 ; Return
 
-Map_WarpZone_Numbers:
+_Map_WarpZone_Numbers:
 	; Sprites of the world numbers used in the warp zone
 	.byte $3F, $91, $01, $A4	; 2, (a4, 3f)
 	.byte $3F, $93, $01, $C4	; 3, (c4, 3f)
@@ -3203,7 +3203,7 @@ Map_WarpZone_Numbers:
 
 Map_WarpZone_DrawNumbers:
 
-	LDY #$1b	 ; Y = $1B
+	LDY #$20	 ; Y = $1B
 PRG010_D1A2:
 	LDA Map_WarpZone_Numbers,Y
 	STA Sprite_RAM+$98,Y

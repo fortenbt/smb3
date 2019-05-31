@@ -3170,25 +3170,21 @@ W8_DrawWarpPipeNumbers:
 _draw_warp_rts:
 	RTS
 
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+;; These fit juuuuust right before the pad-held-secret stuff
+;; below.
+Map_WarpZone_Numbers:
+	; Sprites of the world numbers used in the warp zone
+	.byte $3F, $4F, $01, $84	; 1, (84, 3f)
+	.byte $3F, $91, $01, $A4	; 2, (a4, 3f)
+	.byte $3F, $93, $01, $C4	; 3, (c4, 3f)
+	.byte $5F, $95, $01, $84	; 4, (84, 5f)
+	.byte $68, $99, $C1, $A4	; 9, (a4, 5f) (a 6, flip vert, flip horz)
+	.byte $5F, $99, $01, $C4	; 6, (c4, 5f)
+	.byte $7F, $9B, $01, $84	; 7, (84, 7f)
+	.byte $7F, $9D, $01, $A4	; 8, (a4, 7f)
 
-	; Reset game
-	JMP IntReset_Part2
-
-
-
-	; A Player gave up, but there's one left
-
-	JSR GameOver_PlayerQuitCleanup	 ; Performs some cleanup work for the Player who left
-
-	; Map_Operation = 0
-	LDY #$00
-	STY Map_Operation
-
-	LDX Player_Current	 ; X = Player_Current
-	JMP PRG030_879B	 ; Jump to PRG030_879B
-
-
+;; Note all this 2P stuff is removed by the pad-held-secret branch.
+;; Maybe we should consider combining that branch with this one...
 Do_2PVsChallenge:
 
 	; 2P Vs Challenge!
