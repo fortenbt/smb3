@@ -866,8 +866,6 @@ PRG029_D13A:
 	RTS		 ; Return
 
 ToadHouse_Item2Inventory:
-	; MINI-KAIZO: Changes here to stay compatible with the poison mushroom patch
-	;             although not technically needed.
 	.byte $0C, $08, $04, $05, $06, $04, $05, $06, $01, $01, $0b, $04, $02, $03, $07
 
 	; Toad House items:
@@ -897,8 +895,6 @@ ToadHouse_RandomItem:
 	; Where 0 = Super Mushroom, 1 = Fire Flower, 2 = Super Leaf
 	; OR 0 = Frog, 1 = Tanooki, 2 = Hammer
 	; Super Mushroom / Frog has the best chance in this lottery by 1...
-	; MINI-KAIZO: Changes here to stay compatible with the poison mushroom patch
-	;             although not technically needed.
 	.byte $02, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $00
 
 
@@ -962,11 +958,12 @@ PRG029_D17F:
 	; X = 5 if random super suit (frog, tanooki, hammer)
 	; X = 6 if standard random basic item
 
-	LDA RandomN
+	;LDA RandomN
+	JSR SetOddsGetRand
 	AND #$0f
 	TAY		 ; Y = Random number 0 - 15
 
-	LDA ToadHouse_RandomItem,Y	; Pick a random item
+	LDA PoisonMushroomOddsArray,Y	; Pick a random item
 	ADD ToadHouse_ItemOff,X	 	; Add appropriate offset
 	TAX		 ; -> 'X'
 
