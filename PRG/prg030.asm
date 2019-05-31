@@ -2839,7 +2839,8 @@ PRG030_910C:
 
 	; Player returns to map dead
 
-	LDY #$02	 ; Y = 2 (Will be the Map_Operation value)
+	;LDY #$02	 ; Y = 2 (Will be the Map_Operation value)
+	LDY #$0d	; MO_NormalMoveEnter
 
 	; Map_ReturnStatus = 0
 	LDA #$00
@@ -2851,7 +2852,8 @@ PRG030_910C:
 	LDX Player_Current	 ; X = Player_Current
 
 	; Skid backward
-	LDA #$01
+	;LDA #$01
+	LDA #$00		; don't skid
 	STA Map_Player_SkidBack,X
 
 	LDA Map_PlayerLost2PVs
