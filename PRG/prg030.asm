@@ -2112,7 +2112,8 @@ PRG030_8D4A:
 	LDA #$09
 	STA PalSel_Obj_Colors
 
-	LDY #16		; Level tileset 16 (Spade)
+	;LDY #16		; Level tileset 16 (Spade)
+	LDY #0			; Changed to 0 to skip playing the game
 
 	BNE PRG030_8D95	 ; Jump (technically always) to PRG030_8D95
 
