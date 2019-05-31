@@ -5223,7 +5223,7 @@ PRG001_B98F:
 	BNE PRG001_B9A1	 ; If Timer 3 is not expired, jump to PRG001_B9A1
 
 	;LDA #$B0	 ; A = $B0
-	LDA #$50	 ; A = $B0		; Controls how often he does a big jump
+	LDA #$70	 ; A = $B0		; Controls how often he does a big jump
 
 PRG001_B9A1:
 	; Set Timer as appropriate
@@ -5238,7 +5238,7 @@ Bowser_XVelByDist:
 
 PRG001_B9B5:
 	LDA Bowser_Counter2 
-	AND #$1f 
+	AND #$1f
 	BNE PRG001_B9BF	 ; Only continue 1:32 ticks, otherwise jump to PRG001_B9BF
  
 	INC Objects_Frame,X	 ; Bowser's frame++
@@ -5258,7 +5258,7 @@ PRG001_B9BF:
  
 	; Bowser jump!
 	;LDA #-$60
-	LDA #-$60
+	LDA #-$61
 	STA <Objects_YVel,X
  
 	JSR Bowser_CalcPlayersSide 
@@ -5336,7 +5336,7 @@ PRG001_BA17:
 	BPL PRG001_BA1F	 ; If Bowser is not moving upward, jump to PRG001_BA1F
 
 	;CMP #-$20
-	CMP #-$08
+	CMP #-$1f
 	BLT PRG001_BA4B	 ; If Bowser is moving upward faster than -$20, jump to PRG001_BA4B
 
 PRG001_BA1F:
@@ -6407,7 +6407,7 @@ Bowser_BreatheFireHook:
 	CMP #$30
 	BCC firehookrts
 	LDA Counter_1
-	AND #%00000111
+	AND #%00001111
 	BNE firehookrts
 	JSR Bowser_ThrowThing
 firehookrts:
