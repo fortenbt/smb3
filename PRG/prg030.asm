@@ -3087,7 +3087,7 @@ _SecretCodeDec:
 _SecretCode_RTS:
 	RTS
 
-Secret_Code:	.byte PAD_UP, PAD_DOWN, PAD_UP, PAD_DOWN, PAD_A, PAD_B, PAD_B, PAD_A
+Secret_Code:	.byte PAD_A, PAD_UP, PAD_DOWN, PAD_UP, PAD_A, PAD_A, PAD_DOWN, PAD_UP
 ComparePlayerSecretCode:
 	LDX #0
 _cmploop:

@@ -2179,7 +2179,7 @@ RandomN = Random_Pool+1			; Pull a random number from the sequence (NOTE: Random
 ;	are not re-enterable, but still seems a bit extreme...
 	BigQBlock_GotIt:	.ds 1
 
-	Player_Secret_Code:	.ds 8	; ududabba
+	Player_Secret_Code:	.ds 8
 	Secret_Code_Index:	.ds 1	; which one are we on? - set to 0xff when we've gotten the secret
 						.ds 4	; $07E3-$07EF unused
 
