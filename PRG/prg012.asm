@@ -1120,9 +1120,11 @@ _SetIndexNormal:
 	BNE PRG012_DoCheck					; Always branch
 
 PRG012_DoCheckW8:
+	LDA WarpPipeDst				; If we're warping back to 8, we need to set a normal index
+	BNE _SetIndexNormal
 	LDA World_Map_XHi
 	CMP #0					; The 0th page in world 8 is the only special one
-	BEQ PRG012_DoCheck			; If we're not on the third page, allow the extended check
+	BEQ PRG012_DoCheck			; If we're on the 0th page, allow the extended check
 	BNE _SetIndexNormal			; always branch
 
 PRG012_DoCheckW2:
