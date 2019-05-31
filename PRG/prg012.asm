@@ -1121,9 +1121,9 @@ _SetIndexNormal:
 
 PRG012_DoCheckW8:
 	LDA World_Map_XHi
-	CMP #3						; The third page in world 8 should be "Normal"
-	BNE PRG012_DoCheck			; If we're not on the third page, allow the extended check
-	BEQ _SetIndexNormal			; always branch
+	CMP #0					; The 0th page in world 8 is the only special one
+	BEQ PRG012_DoCheck			; If we're not on the third page, allow the extended check
+	BNE _SetIndexNormal			; always branch
 
 PRG012_DoCheckW2:
 	TXA
