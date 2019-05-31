@@ -5030,8 +5030,8 @@ WW_LoadWorld_Hook:
 	LDA WarpPipeDst
 	BEQ _ww_load_w8			; If WarpPipeDst isn't set, it's a normal warp whistle
 	PHA
-	LDA #1
-	STA SndOverride
+	LDA #0
+	STA SndCur_Music2		; Stop the warp whistle tune
 	PLA
 	SEC
 	SBC #1
