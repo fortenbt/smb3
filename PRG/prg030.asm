@@ -5839,3 +5839,24 @@ PRG030_9xxx_4
 	DEX
 	LDA RandomN                 ; Need to get the RandomN that we replaced with our hook
 	RTS
+
+; This must return Counter_1 & 0x8 due to our hook
+DoQuickShoe:
+	LDA <Pad_Holding
+	AND #(PAD_LEFT)
+	BNE _hld_left
+	LDA <Pad_Holding
+	AND #(PAD_RIGHT)
+	BEQ _no_pad
+	; holding RIGHT
+	LDY #62
+	BNE _store_xvel ; jump always past left
+_hld_left:
+	LDY #-62
+_store_xvel:
+	STY <Player_XVel
+
+_no_pad:
+	LDA <Counter_1
+	AND #$08
+	RTS
