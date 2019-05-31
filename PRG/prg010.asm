@@ -4059,9 +4059,9 @@ DMC08_End
 	; Indexed by value from FortressFX_Wx
 	; 		               0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
 FortressFX_VAddrH:	.byte $29, $29, $29, $29, $2A, $29, $29, $29, $29, $28, $29, $29, $29, $29, $29, $29
-					.byte $2A, $2A, $29, $29, $29, $29, $29, $29, $28, $29, $29, $29, $20, $20, $20, $00
+					.byte $2A, $2A, $29, $29, $29, $29, $29, $29, $28, $29, $29, $29, $20, $20, $20, $29
 FortressFX_VAddrL:	.byte $48, $84, $86, $4C, $02, $80, $86, $8E, $58, $80, $86, $1A, $CE, $10, $86, $44
-					.byte $0E, $12, $D2, $92, $CC, $8C, $58, $18, $D8, $44, $84, $C4, $10, $12, $14, $00
+					.byte $0E, $12, $D2, $92, $CC, $8C, $58, $18, $D8, $44, $84, $C4, $10, $12, $14, $C6
 ;(note), for 1C, 1D, 1E (6-6 secret), we don't change any tiles onscreen, so
 ; addresses $2010, $2012, and $2014 are used since they aren't visible
 
@@ -4101,7 +4101,7 @@ FortressFX_MapCompIdx:
 	.byte $0E, $04	; 1C
 	.byte $0E, $08	; 1D
 	.byte $0E, $10	; 1E
-	.byte $00, $00	; 1F
+	.byte $33, $04	; 1F
 
 	; Indexed by value from FortressFX_Wx
 	; Patterns to overwrite to cause the disappearance of a lock
@@ -4145,7 +4145,7 @@ FortressFX_Patterns:
 FortressFX_MapLocationRow:
 	;      0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
 	.byte $50, $60, $60, $50, $80, $60, $60, $60, $50, $20, $60, $40, $70, $40, $60, $50
-	.byte $80, $80, $70, $60, $70, $60, $50, $40, $30, $50, $60, $70, $70, $60, $50, $00
+	.byte $80, $80, $70, $60, $70, $60, $50, $40, $30, $50, $60, $70, $70, $60, $50, $70
 
 	; Indexed by value from FortressFX_Wx
 	; Selects location of tile to bust out
@@ -4153,11 +4153,11 @@ FortressFX_MapLocationRow:
 FortressFX_MapLocation:
 	;      0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
 	.byte $40, $21, $31, $61, $11, $02, $30, $71, $C0, $01, $31, $D0, $71, $80, $31, $20
-	.byte $72, $90, $90, $90, $60, $60, $C0, $C0, $C0, $20, $20, $20, $E0, $E0, $E0, $00
+	.byte $72, $90, $90, $90, $60, $60, $C0, $C0, $C0, $20, $20, $20, $E0, $E0, $E0, $33
 
 FortressFX_MapTileReplace
 	.byte $46, $45, $45, $46, $45, $46, $B3, $DA, $46, $B3, $45, $46, $45, $46, $45, $46
-	.byte $45, $91, $A0, $89, $4A, $46, $46, $48, $46, $46, $48, $46, $46, $48, $46, $00
+	.byte $45, $91, $A0, $89, $4A, $46, $46, $48, $46, $46, $48, $46, $46, $48, $46, $45
 
 FortressFX_W1:	.byte $00, $00, $00, $00
 FortressFX_W2:	.byte $04, $08, $16, $17, $18, $00, $00
@@ -4218,6 +4218,13 @@ _CheckAndDoSpecialFX_World6:
 
 _CheckAndDoSpecialFX_World8:
 	; World 8 special effects: indices 0 through 4 (Map_DoFortressFX 1,2,3,4,5)
+	; World 8 Secret Code should only do the one lock
+	LDA Secret_Code_Index
+	CMP #$FF
+	BNE _w8_death_fx
+	DEC Secret_Code_Index					; Set to 0xFE to be done with this secret completely
+	BNE PRG010_FortressFXDone				; always branch
+_w8_death_fx:
 	LDA #5
 	STA Map_FortFXtraCount
 

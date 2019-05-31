@@ -1103,7 +1103,7 @@ CheckRemovableTileAndWorld:
 	PHA
 	LDA World_Num
 	CMP #7
-	BEQ PRG012_DoCheck
+	BEQ PRG012_DoCheckW8
 	CMP #1
 	BEQ PRG012_DoCheckW2
 	CMP #3
@@ -1111,12 +1111,19 @@ CheckRemovableTileAndWorld:
 	CMP #5
 	BEQ PRG012_DoCheckW2
 
+_SetIndexNormal:
 	TXA
 	CMP #(MRT_END-Map_Removable_Tiles)
 	BCC PRG012_DoCheck
-	; Our index is too high for this world, set it back
+	; Our index is too high for this world/screen, set it back
 	LDX #(MRT_END-Map_Removable_Tiles-1)
-	BNE PRG012_DoCheck
+	BNE PRG012_DoCheck					; Always branch
+
+PRG012_DoCheckW8:
+	LDA World_Map_XHi
+	CMP #3						; The third page in world 8 should be "Normal"
+	BNE PRG012_DoCheck			; If we're not on the third page, allow the extended check
+	BEQ _SetIndexNormal			; always branch
 
 PRG012_DoCheckW2:
 	TXA
