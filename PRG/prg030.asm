@@ -1061,8 +1061,10 @@ PRG030_87A9:
 PRG030_87BD:
 	; Map_Operation >= $F...
 
-	JSR GraphicsBuf_Prep_And_WaitVSync	; Vertical sync
+	;JSR GraphicsBuf_Prep_And_WaitVSync	; Vertical sync
+	JMP EnterLevel_Hook
 
+PRG030_87C0:
 	; Copy the Player's positions into respective backup variables
 	LDX Player_Current
 	LDA <Horz_Scroll
@@ -3146,14 +3148,26 @@ StatusBar_Fill_World_Hook:
 	RTS
 _no_world_change:
 	JMP StatusBar_Fill_World
+
+EnterLevel_Hook:
+	; Need to jmp back to WorldMap_Loop if we're warping
+	; Otherwise, just jmp to PRG030_87C0
+	JSR GraphicsBuf_Prep_And_WaitVSync	; Vertical sync
+
+	JSR HandleWarpPipes			; We know prg026 is already loaded at 0xA000
+	BNE _no_pipe_warp
+	LDA #$0D				; MO_NormalMoveEnter
+	STA Map_Operation
+	JMP WorldMap_Loop
+_no_pipe_warp:
+	JMP PRG030_87C0
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 
 	; Reset game
 	JMP IntReset_Part2
 
-PRG030_933E:
+
 
 	; A Player gave up, but there's one left
 
