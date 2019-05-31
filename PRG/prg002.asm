@@ -3929,7 +3929,7 @@ ToadMsg_Standard:		; World 3
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 	; English: "One toot on" / "this whistle" / "will send you" / "to a far away" / "land!"
-	; When the time's right you'll know when to use this
+	; When the time is right, you will know when to use this
 ToadMsg_WarpWhistle:	; World 2
 	;      W    h    e    n         t    h    e         t    i    m    e
 	.byte $C6, $D7, $D4, $DD, $FE, $CD, $D7, $D4, $FE, $CD, $D8, $DC, $D4, $FE, $FE
@@ -4004,8 +4004,8 @@ ToadMsg_AnchorPWing:	; World 4
 	; Warp Whistle
 	; Standard
 	; Anchor/P-Wing
-ToadMsg_Low:	.byte LOW(ToadMsg_WarpWhistle), LOW(ToadMsg_Standard), LOW(ToadMsg_AnchorPWing)
-ToadMsg_High:	.byte HIGH(ToadMsg_WarpWhistle), HIGH(ToadMsg_Standard), HIGH(ToadMsg_AnchorPWing)
+ToadMsg_Low:	.byte LOW(ToadMsg_AnchorPWing), LOW(ToadMsg_Standard), LOW(ToadMsg_WarpWhistle)
+ToadMsg_High:	.byte HIGH(ToadMsg_AnchorPWing), HIGH(ToadMsg_Standard), HIGH(ToadMsg_WarpWhistle)
 
 
 Toad_DoToadText:
