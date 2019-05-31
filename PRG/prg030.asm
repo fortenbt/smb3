@@ -1675,7 +1675,7 @@ PRG030_8B03:
 	JSR StatusBar_Update_Cards	 ; Update status bar cards
 	JSR StatusBar_UpdateValues	 ; Update other status bar stuff
 	JSR StatusBar_Fill_MorL	 	 ; Patch in correct M or L on status bar
-	JSR StatusBar_Fill_World	 ; Fill in correct world number
+	JSR StatusBar_Fill_World_Hook	 ; Fill in correct world number
 
 	LDA #$00		 ; A = 0 (Graphics buffer push)
 	JSR Video_Do_Update	 ; Push through what's in graphics buffer
@@ -2742,7 +2742,7 @@ PRG030_9080:
 
 	INC World_Num	 ; Go to next world!
 
-	JMP PRG030_84A0	 	; Jump to PRG030_84A0 (initialize the world map!)
+	JMP PRG030_84A0_Hook	 	; Jump to PRG030_84A0 (initialize the world map!)
 
 PRG030_9097:
 
@@ -3130,11 +3130,25 @@ Map_PrepareLevel_Hook:
 _PrepareLevel_RTS:
 	JMP Map_PrepareLevel
 
+PRG030_84A0_Hook:			; we get here when A is pressed on a letter
+	LDA BadEndingInitDone
+	BEQ _norm_84a0
+	JMP IntReset_Part2
+_norm_84a0:
+	JMP PRG030_84A0
+
+StatusBar_Fill_World_Hook:
+	LDA BadEndingInitDone
+	BEQ _no_world_change
+	INC World_Num
+	JSR StatusBar_Fill_World
+	DEC World_Num
+	RTS
+_no_world_change:
+	JMP StatusBar_Fill_World
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 
 	; Reset game
 	JMP IntReset_Part2
