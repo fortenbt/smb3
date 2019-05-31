@@ -444,7 +444,7 @@ PRG027_A272:
 PRG027_A2B3:
 	RTS		 ; Return
 
-KingText_Typical:
+KingText_Thanks:
 	; "KP, OrangeExpo, joesmo, Koopa, Jabem, GenoCL, Doublebass. Thank you so much. And TheHaxor for getting frame ruled."
 	;      K    P    ,    O    r    a    n    g    e    E    x    p    o    ,
 	.byte $BA, $BF, $9A, $BE, $CB, $D0, $DD, $D6, $D4, $B4, $88, $DF, $DE, $9A, $FE, $FE, $FE, $FE, $FE, $FE
@@ -480,38 +480,44 @@ KingText_Typical:
 	;.byte $D5, $CB, $DE, $DC, $FE, $CD, $D7, $D4, $FE, $BF, $CB, $D8, $DD, $D2, $D4, $CC, $CC, $E9, $FE, $FE
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-KingText_Frog:
-	; "Oh me,oh my!" / "You've been" / "transformed!" / "Shall I change you" / "back with this wand?"
-
-	;       O    h         m    e    ,    o    h         m    y    !
-	.byte $BE, $D7, $FE, $DC, $D4, $9A, $DE, $D7, $FE, $DC, $8C, $EA, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
-
-	;       Y    o    u    '    v    e         b    e    e    n
-	.byte $C8, $DE, $CE, $AB, $CF, $D4, $FE, $D1, $D4, $D4, $DD, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
-
-	;       t    r    a    n    s    f    o    r    m    e    d    !
-	.byte $CD, $CB, $D0, $DD, $CC, $D5, $DE, $CB, $DC, $D4, $D3, $EA, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
-
-	;       S    h    a    l    l         I         c    h    a    n    g    e         y    o    u
-	.byte $C2, $D7, $D0, $DB, $DB, $FE, $B8, $FE, $D2, $D7, $D0, $DD, $D6, $D4, $FE, $8C, $DE, $CE, $FE, $FE
-
-	;       b    a    c    k         w    i    t    h         t    h    i    s         w    a    n    d    ?
-	.byte $D1, $D0, $D2, $DA, $FE, $81, $D8, $CD, $D7, $FE, $CD, $D7, $D8, $CC, $FE, $81, $D0, $DD, $D3, $EB
-
-	;
+KingText_World1:
+	; La mort est seulement le debut.
+	;      L    a         m    o    r    t         e    s    t
+	.byte $BB, $D0, $FE, $DC, $DE, $CB, $CD, $FE, $D4, $CC, $CD, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	;      s    e    u    l    e    m    e    n    t         l    e         d    e    b    u    t    .
+	.byte $CC, $D4, $CE, $DB, $D4, $DC, $D4, $DD, $CD, $FE, $DB, $D4, $FE, $D3, $D4, $D1, $CE, $CD, $E9, $FE
 	.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;	; "Oh me,oh my!" / "You've been" / "transformed!" / "Shall I change you" / "back with this wand?"
+;	;       O    h         m    e    ,    o    h         m    y    !
+;	.byte $BE, $D7, $FE, $DC, $D4, $9A, $DE, $D7, $FE, $DC, $8C, $EA, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+;	;       Y    o    u    '    v    e         b    e    e    n
+;	.byte $C8, $DE, $CE, $AB, $CF, $D4, $FE, $D1, $D4, $D4, $DD, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+;	;       t    r    a    n    s    f    o    r    m    e    d    !
+;	.byte $CD, $CB, $D0, $DD, $CC, $D5, $DE, $CB, $DC, $D4, $D3, $EA, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+;	;       S    h    a    l    l         I         c    h    a    n    g    e         y    o    u
+;	.byte $C2, $D7, $D0, $DB, $DB, $FE, $B8, $FE, $D2, $D7, $D0, $DD, $D6, $D4, $FE, $8C, $DE, $CE, $FE, $FE
+;	;       b    a    c    k         w    i    t    h         t    h    i    s         w    a    n    d    ?
+;	.byte $D1, $D0, $D2, $DA, $FE, $81, $D8, $CD, $D7, $FE, $CD, $D7, $D8, $CC, $FE, $81, $D0, $DD, $D3, $EB
+;	;
+;	.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 KingText_World3:
-	; "Seek throughout these lands to uncover the hidden code."
-	;      S    e    e    k         t    h    r    o    u    g    h    o    u    t
-	.byte $C2, $D4, $D4, $DA, $FE, $CD, $D7, $CB, $DE, $CE, $D6, $D7, $DE, $CE, $CD, $FE, $FE, $FE, $FE, $FE
-	;      t    h    e    s    e         l    a    n    d    s         t    o
-	.byte $CD, $D7, $D4, $CC, $D4, $FE, $DB, $D0, $DD, $D3, $CC, $FE, $CD, $DE, $FE, $FE, $FE, $FE, $FE, $FE
-	;      u    n    c    o    v    e    r         t    h    e         h    i    d    d    e    n
-	.byte $CE, $DD, $D2, $DE, $CF, $D4, $CB, $FE, $CD, $D7, $D4, $FE, $D7, $D8, $D3, $D3, $D4, $DD, $FE, $FE
-	;      c    o    d    e    .
-	.byte $D2, $DE, $D3, $D4, $E9, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
-	.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	; Legend tells of a soul generator. Extracting the souls  of the dead may change Dark land.
+	;      L    e    g    e    n    d         t    e    l    l    s         o    f         a
+	.byte $BB, $D4, $D6, $D4, $DD, $D3, $FE, $CD, $D4, $DB, $DB, $CC, $FE, $DE, $D5, $FE, $D0, $FE, $FE, $FE
+	;      s    o    u    l         g    e    n    e    r    a    t    o    r    .
+	.byte $CC, $DE, $CE, $DB, $FE, $D6, $D4, $DD, $D4, $CB, $D0, $CD, $DE, $CB, $E9, $FE, $FE, $FE, $FE, $FE
+	;      E    x    t    r    a    c    t    i    n    g         t    h    e         s    o    u    l    s
+	.byte $B4, $88, $CD, $CB, $D0, $D2, $CD, $D8, $DD, $D6, $FE, $CD, $D7, $D4, $FE, $CC, $DE, $CE, $DB, $CC
+	;      o    f         t    h    e         d    e    a    d         m    a    y
+	.byte $DE, $D5, $FE, $CD, $D7, $D4, $FE, $D3, $D4, $D0, $D3, $FE, $DC, $D0, $8C, $FE, $FE, $FE, $FE, $FE
+	;      c    h    a    n    g    e         D    a    r    k         L    a    n    d    .
+	.byte $D2, $D7, $D0, $DD, $D6, $D4, $FE, $B3, $D0, $CB, $DA, $FE, $BB, $D0, $DD, $D3, $E9, $FE, $FE, $FE
 	.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
 	;; "Thank you,kind" / "raccoon." / "" / "Please tell me your" / "name."
 	;
@@ -569,21 +575,21 @@ KingText_BadEnding:
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 DiagText_BySuit_L:
-	.byte LOW(KingText_Typical)
-	.byte LOW(KingText_Typical)
+	.byte LOW(KingText_World1)
+	.byte LOW(KingText_World2)
 	.byte LOW(KingText_World3)
-	.byte LOW(KingText_Typical)
-	.byte LOW(KingText_Frog)
-	.byte LOW(KingText_World3)
+	.byte LOW(KingText_Thanks)
+	.byte LOW(KingText_Thanks)
+	.byte LOW(KingText_World6)
 	.byte LOW(KingText_BadEnding)
 
 DiagText_BySuit_H:
-	.byte HIGH(KingText_Typical)
-	.byte HIGH(KingText_Typical)
+	.byte HIGH(KingText_World1)
+	.byte HIGH(KingText_World2)
 	.byte HIGH(KingText_World3)
-	.byte HIGH(KingText_Typical)
-	.byte HIGH(KingText_Frog)
-	.byte HIGH(KingText_World3)
+	.byte HIGH(KingText_Thanks)
+	.byte HIGH(KingText_Thanks)
+	.byte HIGH(KingText_World6)
 	.byte HIGH(KingText_BadEnding)
 
 
@@ -1136,87 +1142,127 @@ Letter_Bodies:
 	.word Letter_World7	; World 7 
 
 Letter_World1:
-	; "If you see any" / "ghosts,be careful." / "They will give chase" / "if you turn away." / "I have enclosed a" / "jewel that helps" / "    protect you."
-
-	;       I    f         y    o    u         s    e    e         a    n    y   
-	.byte $B8, $D5, $FE, $8C, $DE, $CE, $FE, $CC, $D4, $D4, $FE, $D0, $DD, $8C, $00
-
-	;       g    h    o    s    t    s    ,    b    e         c    a    r    e    f    u    l    .
-	.byte $D6, $D7, $DE, $CC, $CD, $CC, $9A, $D1, $D4, $FE, $D2, $D0, $CB, $D4, $D5, $CE, $DB, $E9, $00
-
-	;       T    h    e    y         w    i    l    l         g    i    v    e         c    h    a    s    e
-	.byte $C3, $D7, $D4, $8C, $FE, $81, $D8, $DB, $DB, $FE, $D6, $D8, $CF, $D4, $FE, $D2, $D7, $D0, $CC, $D4, $00
-
-	;       i    f         y    o    u         t    u    r    n         a    w    a    y    .
-	.byte $D8, $D5, $FE, $8C, $DE, $CE, $FE, $CD, $CE, $CB, $DD, $FE, $D0, $81, $D0, $8C, $E9, $00
-
-	;       I         h    a    v    e         e    n    c    l    o    s    e    d         a
-	.byte $B8, $FE, $D7, $D0, $CF, $D4, $FE, $D4, $DD, $D2, $DB, $DE, $CC, $D4, $D3, $FE, $D0, $00
-
-	;       j    e    w    e    l         t    h    a    t         h    e    l    p    s
-	.byte $D9, $D4, $81, $D4, $DB, $FE, $CD, $D7, $D0, $CD, $FE, $D7, $D4, $DB, $DF, $CC, $00
-
-	;                           p    r    o    t    e    c    t         y    o    u    .    
-	.byte $FE, $FE, $FE, $FE, $DF, $CB, $DE, $CD, $D4, $D2, $CD, $FE, $8C, $DE, $CE, $E9
-
-	; Terminator
-	.byte $FF
+	; "Every seven coins increases your odds and power....Don't roll over ninety nine!"
+	;      E    v    e    r    y         s    e    v    e    n         c    o    i    n    s
+	.byte $B4, $CF, $D4, $CB, $8C, $FE, $CC, $D4, $CF, $D4, $DD, $FE, $D2, $DE, $D8, $DD, $CC, $00
+	;      i    n    c    r    e    a    s    e    s         y    o    u    r         o    d    d    s
+	.byte $D8, $DD, $D2, $CB, $D4, $D0, $CC, $D4, $CC, $FE, $8C, $DE, $CE, $CB, $FE, $DE, $D3, $D3, $CC, $00
+	;      a    n    d         p    o    w    e    r    .
+	.byte $D0, $DD, $D3, $FE, $DF, $DE, $81, $D4, $CB, $E9, $00
+	;      D    o    n    '    t         r    o    l    l         o    v    e    r
+	.byte $B3, $DE, $DD, $AB, $CD, $FE, $CB, $DE, $DB, $DB, $FE, $DE, $CF, $D4, $CB, $00
+	;      n    i    n    e    t    y         n    i    n    e    !
+	.byte $DD, $D8, $DD, $D4, $CD, $8C, $FE, $DD, $D8, $DD, $D4, $EA, $00
+	;
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+;=============================================================================
+;	; "If you see any" / "ghosts,be careful." / "They will give chase" / "if you turn away." / "I have enclosed a" / "jewel that helps" / "    protect you."
+;
+;	;       I    f         y    o    u         s    e    e         a    n    y
+;	.byte $B8, $D5, $FE, $8C, $DE, $CE, $FE, $CC, $D4, $D4, $FE, $D0, $DD, $8C, $00
+;
+;	;       g    h    o    s    t    s    ,    b    e         c    a    r    e    f    u    l    .
+;	.byte $D6, $D7, $DE, $CC, $CD, $CC, $9A, $D1, $D4, $FE, $D2, $D0, $CB, $D4, $D5, $CE, $DB, $E9, $00
+;
+;	;       T    h    e    y         w    i    l    l         g    i    v    e         c    h    a    s    e
+;	.byte $C3, $D7, $D4, $8C, $FE, $81, $D8, $DB, $DB, $FE, $D6, $D8, $CF, $D4, $FE, $D2, $D7, $D0, $CC, $D4, $00
+;
+;	;       i    f         y    o    u         t    u    r    n         a    w    a    y    .
+;	.byte $D8, $D5, $FE, $8C, $DE, $CE, $FE, $CD, $CE, $CB, $DD, $FE, $D0, $81, $D0, $8C, $E9, $00
+;
+;	;       I         h    a    v    e         e    n    c    l    o    s    e    d         a
+;	.byte $B8, $FE, $D7, $D0, $CF, $D4, $FE, $D4, $DD, $D2, $DB, $DE, $CC, $D4, $D3, $FE, $D0, $00
+;
+;	;       j    e    w    e    l         t    h    a    t         h    e    l    p    s
+;	.byte $D9, $D4, $81, $D4, $DB, $FE, $CD, $D7, $D0, $CD, $FE, $D7, $D4, $DB, $DF, $CC, $00
+;
+;	;                           p    r    o    t    e    c    t         y    o    u    .
+;	.byte $FE, $FE, $FE, $FE, $DF, $CB, $DE, $CD, $D4, $D2, $CD, $FE, $8C, $DE, $CE, $E9
+;
+;	; Terminator
+;	.byte $FF
+;=============================================================================
 
 
 Letter_World2:
-	; "You can stomp on" / "your enemies using" / "Goomba's shoe." / "I have enclosed a" / "jewel that helps" / "    protect you."
-
-	;       Y    o    u         c    a    n         s    t    o    m    p         o    n    
-	.byte $C8, $DE, $CE, $FE, $D2, $D0, $DD, $FE, $CC, $CD, $DE, $DC, $DF, $FE, $DE, $DD, $00
-
-	;       y    o    u    r         e    n    e    m    i    e    s         u    s    i    n    g
-	.byte $8C, $DE, $CE, $CB, $FE, $D4, $DD, $D4, $DC, $D8, $D4, $CC, $FE, $CE, $CC, $D8, $DD, $D6, $00
-
-	;       G    o    o    m    b    a    '    s         s    h    o    e    .
-	.byte $B6, $DE, $DE, $DC, $D1, $D0, $AB, $CC, $FE, $CC, $D7, $DE, $D4, $E9, $00
-
-	;       I         h    a    v    e         e    n    c    l    o    s    e    d         a
-	.byte $B8, $FE, $D7, $D0, $CF, $D4, $FE, $D4, $DD, $D2, $DB, $DE, $CC, $D4, $D3, $FE, $D0, $00
-
-	;       j    e    w    e    l         t    h    a    t         h    e    l    p    s
-	.byte $D9, $D4, $81, $D4, $DB, $FE, $CD, $D7, $D0, $CD, $FE, $D7, $D4, $DB, $DF, $CC, $00
-
-	;                           p    r    o    t    e    c    t         y    o    u    .    
-	.byte $FE, $FE, $FE, $FE, $DF, $CB, $DE, $CD, $D4, $D2, $CD, $FE, $8C, $DE, $CE, $E9
-
-	; Terminator
-	.byte $FF
+	; "To tame the dog will not be easy.  Stay low...left, right, left, right"
+	;      T    o         t    a    m    e         t    h    e         d    o    g
+	.byte $C3, $DE, $FE, $CD, $D0, $DC, $D4, $FE, $CD, $D7, $D4, $FE, $D3, $DE, $D6, $00
+	;      w    i    l    l         n    o    t         b    e         e    a    s    y    .
+	.byte $81, $D8, $DB, $DB, $FE, $DD, $DE, $CD, $FE, $D1, $D4, $FE, $D4, $D0, $CC, $8C, $E9, $00
+	;      S    t    a    y         l    o    w    .    .    .    l    e    f    t    ,
+	.byte $C2, $CD, $D0, $8C, $FE, $DB, $DE, $81, $E9, $E9, $E9, $DB, $D4, $D5, $CD, $9A, $00
+	;      r    i    g    h    t    ,    l    e    f    t    ,    r    i    g    h    t    .
+	.byte $CB, $D8, $D6, $D7, $CD, $9A, $DB, $D4, $D5, $CD, $9A, $CB, $D8, $D6, $D7, $CD, $E9, $FF
+	;
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF
+;=============================================================================
+;	; "You can stomp on" / "your enemies using" / "Goomba's shoe." / "I have enclosed a" / "jewel that helps" / "    protect you."
+;
+;	;       Y    o    u         c    a    n         s    t    o    m    p         o    n
+;	.byte $C8, $DE, $CE, $FE, $D2, $D0, $DD, $FE, $CC, $CD, $DE, $DC, $DF, $FE, $DE, $DD, $00
+;
+;	;       y    o    u    r         e    n    e    m    i    e    s         u    s    i    n    g
+;	.byte $8C, $DE, $CE, $CB, $FE, $D4, $DD, $D4, $DC, $D8, $D4, $CC, $FE, $CE, $CC, $D8, $DD, $D6, $00
+;
+;	;       G    o    o    m    b    a    '    s         s    h    o    e    .
+;	.byte $B6, $DE, $DE, $DC, $D1, $D0, $AB, $CC, $FE, $CC, $D7, $DE, $D4, $E9, $00
+;
+;	;       I         h    a    v    e         e    n    c    l    o    s    e    d         a
+;	.byte $B8, $FE, $D7, $D0, $CF, $D4, $FE, $D4, $DD, $D2, $DB, $DE, $CC, $D4, $D3, $FE, $D0, $00
+;
+;	;       j    e    w    e    l         t    h    a    t         h    e    l    p    s
+;	.byte $D9, $D4, $81, $D4, $DB, $FE, $CD, $D7, $D0, $CD, $FE, $D7, $D4, $DB, $DF, $CC, $00
+;
+;	;                           p    r    o    t    e    c    t         y    o    u    .
+;	.byte $FE, $FE, $FE, $FE, $DF, $CB, $DE, $CD, $D4, $D2, $CD, $FE, $8C, $DE, $CE, $E9
+;
+;	; Terminator
+;	.byte $FF
+;=============================================================================
 
 
 Letter_World3:
-	; "The white block" / "contains magic" / "powers that will" / "enable you to defeat" / "your enemies." / "I have enclosed a" / "jewel that helps" / "protect you."
+	; "Seek throughout these lands to uncover the hidden code."
+	;      S    e    e    k         t    h    r    o    u    g    h    o    u    t
+	.byte $C2, $D4, $D4, $DA, $FE, $CD, $D7, $CB, $DE, $CE, $D6, $D7, $DE, $CE, $CD, $00
+	;      t    h    e    s    e         l    a    n    d    s         t    o
+	.byte $CD, $D7, $D4, $CC, $D4, $FE, $DB, $D0, $DD, $D3, $CC, $FE, $CD, $DE, $00
+	;      u    n    c    o    v    e    r         t    h    e         h    i    d    d    e    n
+	.byte $CE, $DD, $D2, $DE, $CF, $D4, $CB, $FE, $CD, $D7, $D4, $FE, $D7, $D8, $D3, $D3, $D4, $DD, $00
+	;      c    o    d    e    .
+	.byte $D2, $DE, $D3, $D4, $E9, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 
-	;       T    h    e         w    h    i    t    e         b    l    o    c    k
-	.byte $C3, $D7, $D4, $FE, $C6, $D7, $D8, $CD, $D4, $FE, $B1, $DB, $DE, $D2, $DA, $00
-
-	;       c    o    n    t    a    i    n    s         m    a    g    i    c
-	.byte $D2, $DE, $DD, $CD, $D0, $D8, $DD, $CC, $FE, $DC, $D0, $D6, $D8, $D2, $00
-
-	;       p    o    w    e    r    s         t    h    a    t         w    i    l    l
-	.byte $DF, $DE, $81, $D4, $CB, $CC, $FE, $CD, $D7, $D0, $CD, $FE, $81, $D8, $DB, $DB, $00
-
-	;       e    n    a    b    l    e         y    o    u         t    o         d    e    f    e    a    t
-	.byte $D4, $DD, $D0, $D1, $DB, $D4, $FE, $8C, $DE, $CE, $FE, $CD, $DE, $FE, $D3, $D4, $D5, $D4, $D0, $CD, $00
-
-	;       y    o    u    r         e    n    e    m    i    e    s    .
-	.byte $8C, $DE, $CE, $CB, $FE, $D4, $DD, $D4, $DC, $D8, $D4, $CC, $E9, $00
-
-	;       I         h    a    v    e         e    n    c    l    o    s    e    d         a
-	.byte $B8, $FE, $D7, $D0, $CF, $D4, $FE, $D4, $DD, $D2, $DB, $DE, $CC, $D4, $D3, $FE, $D0, $00
-
-	;       j    e    w    e    l         t    h    a    t         h    e    l    p    s
-	.byte $D9, $D4, $81, $D4, $DB, $FE, $CD, $D7, $D0, $CD, $FE, $D7, $D4, $DB, $DF, $CC, $00
-
-	;       p    r    o    t    e    c    t         y    o    u    .    
-	.byte $DF, $CB, $DE, $CD, $D4, $D2, $CD, $FE, $8C, $DE, $CE, $E9
-
-	; Terminator
-	.byte $FF
+;=============================================================================
+;	; "The white block" / "contains magic" / "powers that will" / "enable you to defeat" / "your enemies." / "I have enclosed a" / "jewel that helps" / "protect you."
+;	;       T    h    e         w    h    i    t    e         b    l    o    c    k
+;	.byte $C3, $D7, $D4, $FE, $C6, $D7, $D8, $CD, $D4, $FE, $B1, $DB, $DE, $D2, $DA, $00
+;	;       c    o    n    t    a    i    n    s         m    a    g    i    c
+;	.byte $D2, $DE, $DD, $CD, $D0, $D8, $DD, $CC, $FE, $DC, $D0, $D6, $D8, $D2, $00
+;	;       p    o    w    e    r    s         t    h    a    t         w    i    l    l
+;	.byte $DF, $DE, $81, $D4, $CB, $CC, $FE, $CD, $D7, $D0, $CD, $FE, $81, $D8, $DB, $DB, $00
+;	;       e    n    a    b    l    e         y    o    u         t    o         d    e    f    e    a    t
+;	.byte $D4, $DD, $D0, $D1, $DB, $D4, $FE, $8C, $DE, $CE, $FE, $CD, $DE, $FE, $D3, $D4, $D5, $D4, $D0, $CD, $00
+;	;       y    o    u    r         e    n    e    m    i    e    s    .
+;	.byte $8C, $DE, $CE, $CB, $FE, $D4, $DD, $D4, $DC, $D8, $D4, $CC, $E9, $00
+;	;       I         h    a    v    e         e    n    c    l    o    s    e    d         a
+;	.byte $B8, $FE, $D7, $D0, $CF, $D4, $FE, $D4, $DD, $D2, $DB, $DE, $CC, $D4, $D3, $FE, $D0, $00
+;	;       j    e    w    e    l         t    h    a    t         h    e    l    p    s
+;	.byte $D9, $D4, $81, $D4, $DB, $FE, $CD, $D7, $D0, $CD, $FE, $D7, $D4, $DB, $DF, $CC, $00
+;	;       p    r    o    t    e    c    t         y    o    u    .
+;	.byte $DF, $CB, $DE, $CD, $D4, $D2, $CD, $FE, $8C, $DE, $CE, $E9
+;	; Terminator
+;	.byte $FF
+;=============================================================================
 
 	
 Letter_World4:
@@ -1282,59 +1328,78 @@ Letter_World5:
 
 
 Letter_World6:
-	; "I am well. Please" / "retrieve the Magic" / "Whistle hidden in" / "the darkness at the" / "end of the Third" / "world. I have" / "enclosed a jewel" / "that helps" / "protect you."
-
-	;       I         a    m         w    e    l    l    .         P    l    e    a    s    e
-	.byte $B8, $FE, $D0, $DC, $FE, $81, $D4, $DB, $DB, $E9, $FE, $BF, $DB, $D4, $D0, $CC, $D4, $00
-
-	;       r    e    t    r    i    e    v    e         t    h    e         M    a    g    i    c
-	.byte $CB, $D4, $CD, $CB, $D8, $D4, $CF, $D4, $FE, $CD, $D7, $D4, $FE, $BC, $D0, $D6, $D8, $D2, $00
-
-	;       W    h    i    s    t    l    e         h    i    d    d    e    n         i    n    
-	.byte $C6, $D7, $D8, $CC, $CD, $DB, $D4, $FE, $D7, $D8, $D3, $D3, $D4, $DD, $FE, $D8, $DD, $00
-
-	;       t    h    e         d    a    r    k    n    e    s    s         a    t         t    h    e
-	.byte $CD, $D7, $D4, $FE, $D3, $D0, $CB, $DA, $DD, $D4, $CC, $CC, $FE, $D0, $CD, $FE, $CD, $D7, $D4, $00
-
-	;       e    n    d         o    f         t    h    e         T    h    i    r    d
-	.byte $D4, $DD, $D3, $FE, $DE, $D5, $FE, $CD, $D7, $D4, $FE, $C3, $D7, $D8, $CB, $D3, $00
-
-	;       w    o    r    l    d    .         I         h    a    v    e
-	.byte $81, $DE, $CB, $DB, $D3, $E9, $FE, $B8, $FE, $D7, $D0, $CF, $D4, $00
-
-	;       e    n    c    l    o    s    e    d         a         j    e    w    e    l
-	.byte $D4, $DD, $D2, $DB, $DE, $CC, $D4, $D3, $FE, $D0, $FE, $D9, $D4, $81, $D4, $DB, $00
-
-	;       t    h    a    t         h    e    l    p    s
-	.byte $CD, $D7, $D0, $CD, $FE, $D7, $D4, $DB, $DF, $CC, $00
-
-	;       p    r    o    t    e    c    t         y    o    u    .
-	.byte $DF, $CB, $DE, $CD, $D4, $D2, $CD, $FE, $8C, $DE, $CE, $E9, $FF
+	; "Holding run on a lone bush will give you more power."
+	;      H    o    l    d    i    n    g         r    u    n         o    n         a
+	.byte $B7, $DE, $DB, $D3, $D8, $DD, $D6, $FE, $CB, $CE, $DD, $FE, $DE, $DD, $FE, $D0, $00
+	;      l    o    n    e         b    u    s    h         w    i    l    l         g    i    v    e
+	.byte $DB, $DE, $DD, $D4, $FE, $D1, $CE, $CC, $D7, $FE, $81, $D8, $DB, $DB, $FE, $D6, $D8, $CF, $D4, $00
+	;      y    o    u         m    o    r    e         p    o    w    e    r    .
+	.byte $8C, $DE, $CE, $FE, $DC, $DE, $CB, $D4, $FE, $DF, $DE, $81, $D4, $CB, $E9, $00
+	;
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+;=============================================================================
+;	; "I am well. Please" / "retrieve the Magic" / "Whistle hidden in" / "the darkness at the" / "end of the Third" / "world. I have" / "enclosed a jewel" / "that helps" / "protect you."
+;	;       I         a    m         w    e    l    l    .         P    l    e    a    s    e
+;	.byte $B8, $FE, $D0, $DC, $FE, $81, $D4, $DB, $DB, $E9, $FE, $BF, $DB, $D4, $D0, $CC, $D4, $00
+;	;       r    e    t    r    i    e    v    e         t    h    e         M    a    g    i    c
+;	.byte $CB, $D4, $CD, $CB, $D8, $D4, $CF, $D4, $FE, $CD, $D7, $D4, $FE, $BC, $D0, $D6, $D8, $D2, $00
+;	;       W    h    i    s    t    l    e         h    i    d    d    e    n         i    n
+;	.byte $C6, $D7, $D8, $CC, $CD, $DB, $D4, $FE, $D7, $D8, $D3, $D3, $D4, $DD, $FE, $D8, $DD, $00
+;	;       t    h    e         d    a    r    k    n    e    s    s         a    t         t    h    e
+;	.byte $CD, $D7, $D4, $FE, $D3, $D0, $CB, $DA, $DD, $D4, $CC, $CC, $FE, $D0, $CD, $FE, $CD, $D7, $D4, $00
+;	;       e    n    d         o    f         t    h    e         T    h    i    r    d
+;	.byte $D4, $DD, $D3, $FE, $DE, $D5, $FE, $CD, $D7, $D4, $FE, $C3, $D7, $D8, $CB, $D3, $00
+;	;       w    o    r    l    d    .         I         h    a    v    e
+;	.byte $81, $DE, $CB, $DB, $D3, $E9, $FE, $B8, $FE, $D7, $D0, $CF, $D4, $00
+;	;       e    n    c    l    o    s    e    d         a         j    e    w    e    l
+;	.byte $D4, $DD, $D2, $DB, $DE, $CC, $D4, $D3, $FE, $D0, $FE, $D9, $D4, $81, $D4, $DB, $00
+;	;       t    h    a    t         h    e    l    p    s
+;	.byte $CD, $D7, $D0, $CD, $FE, $D7, $D4, $DB, $DF, $CC, $00
+;	;       p    r    o    t    e    c    t         y    o    u    .
+;	.byte $DF, $CB, $DE, $CD, $D4, $D2, $CD, $FE, $8C, $DE, $CE, $E9, $FF
+;=============================================================================
 
 
 Letter_World7:
-	; "I kidnapped the" / "Princess while you" / "were running around." / "She's here in my" / "castle,if you dare" / "to try and rescue" / "    her."
-
-	;       I         k    i    d    n    a    p    p    e    d         t    h    e
-	.byte $B8, $FE, $DA, $D8, $D3, $DD, $D0, $DF, $DF, $D4, $D3, $FE, $CD, $D7, $D4, $00
-
-	;       P    r    i    n    c    e    s    s         w    h    i    l    e         y    o    u
-	.byte $DF, $CB, $D8, $DD, $D2, $D4, $CC, $CC, $FE, $81, $D7, $D8, $DB, $D4, $FE, $8C, $DE, $CE, $00
-
-	;       w    e    r    e         r    u    n    n    i    n    g         a    r    o    u    n    d    .
-	.byte $81, $D4, $CB, $D4, $FE, $CB, $CE, $DD, $DD, $D8, $DD, $D6, $FE, $D0, $CB, $DE, $CE, $DD, $D3, $E9, $00
-
-	;       S    h    e    '    s         h    e    r    e         i    n         m    y
-	.byte $C2, $D7, $D4, $AB, $CC, $FE, $D7, $D4, $CB, $D4, $FE, $D8, $DD, $FE, $DC, $8C, $00
-
-	;       c    a    s    t    l    e    ,    i    f         y    o    u         d    a    r    e
-	.byte $D2, $D0, $CC, $CD, $DB, $D4, $9A, $D8, $D5, $FE, $8C, $DE, $CE, $FE, $D3, $D0, $CB, $D4, $00
-
-	;       t    o         t    r    y         a    n    d         r    e    s    c    u    e
-	.byte $CD, $DE, $FE, $CD, $CB, $8C, $FE, $D0, $DD, $D3, $FE, $CB, $D4, $CC, $D2, $CE, $D4, $00
-
-	;                           h    e    r    .
-	.byte $FE, $FE, $FE, $FE, $D7, $D4, $CB, $E9, $FF
+	; "I gathered enough souls to change these lands. The kingdom will now perish, consider this your bad ending...."
+	;      I         g    a    t    h    e    r    e    d         e    n    o    u    g    h
+	.byte $B8, $FE, $D6, $D0, $CD, $D7, $D4, $CB, $D4, $D3, $FE, $D4, $DD, $DE, $CE, $D6, $D7, $00
+	;      s    o    u    l    s         t    o         c    h    a    n    g    e
+	.byte $CC, $DE, $CE, $DB, $CC, $FE, $CD, $DE, $FE, $D2, $D7, $D0, $DD, $D6, $D4, $00
+	;      t    h    e    s    e         l    a    n    d    s    .         T    h    e
+	.byte $CD, $D7, $D4, $CC, $D4, $FE, $DB, $D0, $DD, $D3, $CC, $E9, $FE, $C3, $D7, $D4, $00
+	;      k    i    n    g    d    o    m         w    i    l    l         n    o    w
+	.byte $DA, $D8, $DD, $D6, $D3, $DE, $DC, $FE, $81, $D8, $DB, $DB, $FE, $DD, $DE, $81, $00
+	;      p    e    r    i    s    h    .         C    o    n    s    i    d    e    r
+	.byte $DF, $D4, $CB, $D8, $CC, $D7, $E9, $FE, $B2, $DE, $DD, $CC, $D8, $D3, $D4, $CB, $00
+	;      t    h    i    s         y    o    u    r         b    a    d
+	.byte $CD, $D7, $D8, $CC, $FE, $8C, $DE, $CE, $CB, $FE, $D1, $D0, $D3, $00
+	;      e    n    d    i    n    g    .    .    .    .
+	.byte $D4, $DD, $D3, $D8, $DD, $D6, $E9, $E9, $E9, $E9, $00
+	;
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+;=============================================================================
+;	; "I kidnapped the" / "Princess while you" / "were running around." / "She's here in my" / "castle,if you dare" / "to try and rescue" / "    her."
+;	;       I         k    i    d    n    a    p    p    e    d         t    h    e
+;	.byte $B8, $FE, $DA, $D8, $D3, $DD, $D0, $DF, $DF, $D4, $D3, $FE, $CD, $D7, $D4, $00
+;	;       P    r    i    n    c    e    s    s         w    h    i    l    e         y    o    u
+;	.byte $DF, $CB, $D8, $DD, $D2, $D4, $CC, $CC, $FE, $81, $D7, $D8, $DB, $D4, $FE, $8C, $DE, $CE, $00
+;	;       w    e    r    e         r    u    n    n    i    n    g         a    r    o    u    n    d    .
+;	.byte $81, $D4, $CB, $D4, $FE, $CB, $CE, $DD, $DD, $D8, $DD, $D6, $FE, $D0, $CB, $DE, $CE, $DD, $D3, $E9, $00
+;	;       S    h    e    '    s         h    e    r    e         i    n         m    y
+;	.byte $C2, $D7, $D4, $AB, $CC, $FE, $D7, $D4, $CB, $D4, $FE, $D8, $DD, $FE, $DC, $8C, $00
+;	;       c    a    s    t    l    e    ,    i    f         y    o    u         d    a    r    e
+;	.byte $D2, $D0, $CC, $CD, $DB, $D4, $9A, $D8, $D5, $FE, $8C, $DE, $CE, $FE, $D3, $D0, $CB, $D4, $00
+;	;       t    o         t    r    y         a    n    d         r    e    s    c    u    e
+;	.byte $CD, $DE, $FE, $CD, $CB, $8C, $FE, $D0, $DD, $D3, $FE, $CB, $D4, $CC, $D2, $CE, $D4, $00
+;	;                           h    e    r    .
+;	.byte $FE, $FE, $FE, $FE, $D7, $D4, $CB, $E9, $FF
+;=============================================================================
 
 
 LetterRow_VRAM_L:	.byte $4A, $2A, $06, $E6, $C6, $A6, $86, $66, $46
@@ -2167,3 +2232,31 @@ LoadTextByWorld:
 	LDY World_Num
 	LDA DiagText_BySuit_L,Y
 	RTS
+
+KingText_World2:
+	; "Yes it is very possible to get all the mushroom houses but......how?"
+	;      Y    e    s    ,    i    t         i    s         v    e    r    y
+	.byte $C8, $D4, $CC, $9A, $D8, $CD, $FE, $D8, $CC, $FE, $CF, $D4, $CB, $8C, $FE, $FE, $FE, $FE, $FE, $FE
+	;      p    o    s    s    i    b    l    e         t    o         g    e    t         a    l    l
+	.byte $DF, $DE, $CC, $CC, $D8, $D1, $DB, $D4, $FE, $CD, $DE, $FE, $D6, $D4, $CD, $FE, $D0, $DB, $DB, $FE
+	;      t    h    e         m    u    s    h    r    o    o    m         h    o    u    s    e    s    ,
+	.byte $CD, $D7, $D4, $FE, $DC, $CE, $CC, $D7, $CB, $DE, $DE, $DC, $FE, $D7, $DE, $CE, $CC, $D4, $CC, $9A
+	;      b    u    t    .    .    .    .    .    .    h    o    w    ?
+	.byte $D1, $CE, $CD, $E9, $E9, $E9, $E9, $E9, $E9, $D7, $DE, $81, $EB, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	;
+	.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+
+KingText_World6:
+	; "1000 and under to go head to head with the king of dark land."
+	;      1    0    0    0         a    n    d         u    n    d    e    r         t    o         g    o
+	.byte $9D, $BE, $BE, $BE, $FE, $D0, $DD, $D3, $FE, $CE, $DD, $D3, $D4, $CB, $FE, $CD, $DE, $FE, $D6, $DE
+	;      h    e    a    d         t    o         h    e    a    d         w    i    t    h
+	.byte $D7, $D4, $D0, $D3, $FE, $CD, $DE, $FE, $D7, $D4, $D0, $D3, $FE, $81, $D8, $CD, $D7, $FE, $FE, $FE
+	;      t    h    e         k    i    n    g         o    f         D    a    r    k
+	.byte $CD, $D7, $D4, $FE, $DA, $D8, $DD, $D6, $FE, $DE, $D5, $FE, $B3, $D0, $CB, $DA, $FE, $FE, $FE, $FE
+	;      L    a    n    d    .
+	.byte $BB, $D0, $DD, $D3, $E9, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	;
+	.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
