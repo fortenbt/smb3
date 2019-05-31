@@ -1319,7 +1319,7 @@ PRG030_891A:
 	; Level_ObjPtr_AddrL/H and Level_ObjPtrOrig_AddrL/H (object list pointer)
 	; Level_LayPtr_AddrL/H and Level_LayPtrH_AddrL/H (tile layout pointer)
 	; Level_Tileset
-	JSR Map_PrepareLevel	 
+	JSR Map_PrepareLevel_Hook
 
 PRG030_892A:
 	LDA World_Num
@@ -3100,15 +3100,41 @@ _cmploop:
 	LDA #0
 _Compare_RTS:
 	RTS
+
+World8_BadEndingCheck:
+	LDA World_Num
+	CMP #7
+	BNE _BadEnding_RTS
+	LDA Map_Entered_Y
+	CMP #$50				; World 8 bad ending pipe Y
+	BNE _BadEnding_RTS
+	LDA Map_Entered_XHi
+	CMP #$00				; World 8 bad ending pipe XHi
+	BNE _BadEnding_RTS
+	LDA Map_Entered_X
+	CMP #$60				; World 8 bad ending pipe X
+	BNE _BadEnding_RTS
+	LDA #0
+_BadEnding_RTS:
+	RTS
+
+Map_PrepareLevel_Hook:
+	JSR World8_BadEndingCheck
+	BNE _PrepareLevel_RTS
+	LDA #1
+	STA Player_FallToKing	; Player is "falling to the king"
+	STA BadEndingInitDone
+	LDA #6
+	STA World_Num
+	STA Map_Warp_PrevWorld
+_PrepareLevel_RTS:
+	JMP Map_PrepareLevel
+
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 
 	; Reset game
 	JMP IntReset_Part2
