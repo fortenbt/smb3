@@ -2039,7 +2039,7 @@ OBJSTATE_POOFDEATH	= 8	; "Poof" Death (e.g. Piranha death)
 
 	Map_Operation:		.ds 1	; Map_Operation: Current "operation" happening on map (See Map_DoOperation in PRG010)
 
-				.ds 1	; $072A unused
+	SndOverride: .ds 1	; $072A unused
 
 	Total_Players:		.ds 1	; Total players (0 = 1P, 1 = 2P)
 	Map_Unused72C:		.ds 1	; No apparent use; only assigned to, but never read back
