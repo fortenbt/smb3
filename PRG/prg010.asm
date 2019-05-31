@@ -2625,7 +2625,8 @@ PRG010_CDEC:
 	; possibly be enterable (so goes the idea...)
 
 	LDA <World_Map_Tile
-	CMP Tile_AttrTable+4,Y
+	;CMP Tile_AttrTable+4,Y
+	JSR CheckEnterable_Hook
 	BLT PRG010_CE64	 	; If tile is not in "enterable" range, jump to PRG010_CE64
 
 	LDA <Pad_Holding

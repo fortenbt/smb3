@@ -400,7 +400,7 @@ PAD_RIGHT	= $01
 
 	Map_EnterViaID:		.ds 1	; Overrides whatever spot on the map you entered with something special (see Map_DoEnterViaID)
 
-				.ds 1	; $1F unused
+	MiniKaizoPadHeld:	.ds 1	; $1F unused
 
 	; $20 has a lot of different uses on the World Map...
 	Map_EnterLevelFX:		; When entering a level on the map, dictates the status of the entry (0=None, 1=Boxing in, 2=Boxing out [J only]) NOTE: Overlap/reuse
