@@ -820,7 +820,9 @@ PRG027_A63B:
 PRG027_A63D:
 
 	; Get King pattern, put in sprite
-	LDA King_Patterns,Y
+	;3;LDA King_Patterns,Y
+	JMP DrawKing_Hook
+PRG027_A640:
 	STA Sprite_RAM+$55,X
 
 	; Y += 2 (next King sprite pattern)
@@ -834,6 +836,8 @@ PRG027_A63D:
 	DEX
 	BPL PRG027_A63D	 ; While X >= 0, loop
 
+PRG027_A64B:
+
 	LDY CineKing_WandState
 	CPY #$02
 	BLT PRG027_A659	 ; If CineKing_WandState < 2 (held), jump to  PRG027_A659
@@ -842,7 +846,8 @@ PRG027_A63D:
 
 	; Wand pattern
 	LDA #$bf
-	STA Sprite_RAM+$51
+	;3;STA Sprite_RAM+$51
+	JSR WandHeld_Hook
 	BNE PRG027_A6CD	 ; Jump (technically always) to PRG027_A6CD
 
 PRG027_A659:
@@ -2078,4 +2083,41 @@ PRG027_B9C3:
 
 
 ; Rest of ROM bank was empty...
+ChairWandPats:	.byte $78, $7F, $02, $C8, $78, $7D, $42, $D0
+WandHeld_Hook:
+	PHA
+	LDA BadEndingInitDone
+	BEQ _do_norm
+	PLA						; don't care
+	LDX #$0
+	; Wand on chair pattern
+_chair_wand_loop:
+	LDA ChairWandPats,X
+	STA Sprite_RAM+$50,X
+	INX
+	CPX #8
+	BNE _chair_wand_loop
+	LDA #1
+	RTS
 
+_do_norm:
+	PLA
+_do_store:
+	STA Sprite_RAM+$51
+	RTS
+
+DrawKing_Hook:
+	LDA BadEndingInitDone
+	BEQ _load_king
+	LDA #$00
+_sprite_offscreen:
+	STA Sprite_RAM+$57,X
+	DEX
+	DEX
+	DEX
+	DEX
+	BPL _sprite_offscreen
+	JMP PRG027_A64B
+_load_king:
+	LDA King_Patterns,Y
+	JMP PRG027_A640

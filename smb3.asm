@@ -2607,7 +2607,8 @@ CFIRE_LASER		= $15	; Laser fire
 
 	SObjBlooperKid_OutOfWater:.ds 8	; $7A68-$7A6F Blooper kid only; if set, Blooper Kid is trying to go out of water
 
-				.ds 2	; $7A70-$7A71 unused
+	BadEndingInitDone:		.ds 1
+				.ds 1	; $7A70-$7A71 unused
 
 	Object_SplashAlt:	.ds 1	; Used to alternate the "splash slots" 1 and 2 as objects hit the water
 
@@ -2991,7 +2992,7 @@ SOBJ_POOF		= $16 	; Poof
 	CineKing_TimerT:		.ds 1	; Cheering Toad animation Timer
 	CineKing_Timer3:		.ds 1	; Timer decremented every 4 ticks (does not appear to be used!)
 
-					.ds 2	; $7A0A-$7A0B unused in this context
+				.ds 2	; $7A0A-$7A0B unused in this context
 
 	CineKing_WandX:			.ds 1	; Wand X position
 	CineKing_WandY:			.ds 1	; Wand Y position
