@@ -5101,6 +5101,11 @@ _ww_y_norm:
 	RTS
 
 WW_Done_Hook:
+	LDA World_Num
+	CMP #6			; don't init for world 7...it puts a "help" sprite in the wrong place
+	BEQ _after_map_init
+	JSR Map_Init	 ; Initialize map variables (page 11)
+_after_map_init:
 	LDA #0
 	STA WarpPipeDst
 	LDA #248
