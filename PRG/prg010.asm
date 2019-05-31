@@ -4225,6 +4225,8 @@ _CheckAndDoSpecialFX_World8:
 	CMP #$FF
 	BNE _w8_death_fx
 	DEC Secret_Code_Index					; Set to 0xFE to be done with this secret completely
+	LDA #$0C
+	STA Map_Operation
 	BNE PRG010_FortressFXDone				; always branch
 _w8_death_fx:
 	LDA #5
