@@ -417,12 +417,13 @@ PRG027_A272:
 
 	; Dialog box is complete
 
-	; Select dialog text by Player's power up suit...
+	; Select dialog text by Player's power up suit... (mini-kaizo: NOPE, make that by world...)
 
 	LDY <Player_Suit ; Y = current Player suit
 
 	; Set proper offset of ToadTalk_CPos
-	LDA DiagText_BySuit_L,Y
+	;LDA DiagText_BySuit_L,Y
+	JSR LoadTextByWorld
 	STA ToadTalk_CPos
 
 	; Set proper high address in CineKing_DiagHi
@@ -444,25 +445,40 @@ PRG027_A2B3:
 	RTS		 ; Return
 
 KingText_Typical:
-	; "Oh,thank heavens!" / "I'm back to my old" / "self again." / "Thank you so much." / "Here is a letter" / "from the Princess."
-
-	;       O    h    ,    t    h    a    n    k         h    e    a    v    e    n    s    !
-	.byte $BE, $D7, $9A, $CD, $D7, $D0, $DD, $DA, $FE, $D7, $D4, $D0, $CF, $D4, $DD, $CC, $EA, $FE, $FE, $FE
-
-	;       I    '    m         b    a    c    k         t    o         m    y         o    l    d
-	.byte $B8, $AB, $DC, $FE, $D1, $D0, $D2, $DA, $FE, $CD, $DE, $FE, $DC, $8C, $FE, $DE, $DB, $D3, $FE, $FE
-
-	;       s    e    l    f         a    g    a    i    n    .
-	.byte $CC, $D4, $DB, $D5, $FE, $D0, $D6, $D0, $D8, $DD, $E9, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
-
-	;       T    h    a    n    k         y    o    u         s    o         m    u    c    h    .
+	; "KP, OrangeExpo, joesmo, Koopa, Jabem, GenoCL, Doublebass. Thank you so much. And TheHaxor for getting frame ruled."
+	;      K    P    ,    O    r    a    n    g    e    E    x    p    o    ,
+	.byte $BA, $BF, $9A, $BE, $CB, $D0, $DD, $D6, $D4, $B4, $88, $DF, $DE, $9A, $FE, $FE, $FE, $FE, $FE, $FE
+	;      j    o    e    s    m    o    ,    K    o    o    p    a    ,    J    a    b    e    m    ,
+	.byte $D9, $DE, $D4, $CC, $DC, $DE, $9A, $BA, $DE, $DE, $DF, $D0, $9A, $B9, $D0, $D1, $D4, $DC, $9A, $FE
+	;      G    e    n    o    C    L    ,    D    o    u    b    l    e    b    a    s    s    .
+	.byte $B6, $D4, $DD, $DE, $B2, $BB, $9A, $B3, $DE, $CE, $D1, $DB, $D4, $D1, $D0, $CC, $CC, $E9, $FE, $FE
+	;      T    h    a    n    k         y    o    u         s    o         m    u    c    h    .
 	.byte $C3, $D7, $D0, $DD, $DA, $FE, $8C, $DE, $CE, $FE, $CC, $DE, $FE, $DC, $CE, $D2, $D7, $E9, $FE, $FE
-
-	;       H    e    r    e         i    s         a         l    e    t    t    e    r
-	.byte $B7, $D4, $CB, $D4, $FE, $D8, $CC, $FE, $D0, $FE, $DB, $D4, $CD, $CD, $D4, $CB, $FE, $FE, $FE, $FE
-
-	;       f    r    o    m         t    h    e         P    r    i    n    c    e    s    s    .
-	.byte $D5, $CB, $DE, $DC, $FE, $CD, $D7, $D4, $FE, $BF, $CB, $D8, $DD, $D2, $D4, $CC, $CC, $E9, $FE, $FE
+	;      A    n    d         T    h    e    H    a    x    o    r         f    o    r
+	.byte $B0, $DD, $D3, $FE, $C3, $D7, $D4, $B7, $D0, $88, $DE, $CB, $FE, $D5, $DE, $CB, $FE, $FE, $FE, $FE
+	;      g    e    t    t    i    n    g         f    r    a    m    e         r    u    l    e    d    .
+	.byte $D6, $D4, $CD, $CD, $D8, $DD, $D6, $FE, $D5, $CB, $D0, $DC, $D4, $FE, $CB, $CE, $DB, $D4, $D3, $E9
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; "Oh,thank heavens!" / "I'm back to my old" / "self again." / "Thank you so much." / "Here is a letter" / "from the Princess."
+	;
+	;;       O    h    ,    t    h    a    n    k         h    e    a    v    e    n    s    !
+	;.byte $BE, $D7, $9A, $CD, $D7, $D0, $DD, $DA, $FE, $D7, $D4, $D0, $CF, $D4, $DD, $CC, $EA, $FE, $FE, $FE
+	;
+	;;       I    '    m         b    a    c    k         t    o         m    y         o    l    d
+	;.byte $B8, $AB, $DC, $FE, $D1, $D0, $D2, $DA, $FE, $CD, $DE, $FE, $DC, $8C, $FE, $DE, $DB, $D3, $FE, $FE
+	;
+	;;       s    e    l    f         a    g    a    i    n    .
+	;.byte $CC, $D4, $DB, $D5, $FE, $D0, $D6, $D0, $D8, $DD, $E9, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	;
+	;;       T    h    a    n    k         y    o    u         s    o         m    u    c    h    .
+	;.byte $C3, $D7, $D0, $DD, $DA, $FE, $8C, $DE, $CE, $FE, $CC, $DE, $FE, $DC, $CE, $D2, $D7, $E9, $FE, $FE
+	;
+	;;       H    e    r    e         i    s         a         l    e    t    t    e    r
+	;.byte $B7, $D4, $CB, $D4, $FE, $D8, $CC, $FE, $D0, $FE, $DB, $D4, $CD, $CD, $D4, $CB, $FE, $FE, $FE, $FE
+	;
+	;;       f    r    o    m         t    h    e         P    r    i    n    c    e    s    s    .
+	;.byte $D5, $CB, $DE, $DC, $FE, $CD, $D7, $D4, $FE, $BF, $CB, $D8, $DD, $D2, $D4, $CC, $CC, $E9, $FE, $FE
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 KingText_Frog:
 	; "Oh me,oh my!" / "You've been" / "transformed!" / "Shall I change you" / "back with this wand?"
@@ -485,65 +501,90 @@ KingText_Frog:
 	;
 	.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
 
-KingText_Tanooki:
-	; "Thank you,kind" / "raccoon." / "" / "Please tell me your" / "name."
-
-	;       T    h    a    n    k         y    o    u    ,    k    i    n    d
-	.byte $C3, $D7, $D0, $DD, $DA, $FE, $8C, $DE, $CE, $9A, $DA, $D8, $DD, $D3, $FE, $FE, $FE, $FE, $FE, $FE
-
-	;       r    a    c    c    o    o    n    .
-	.byte $CB, $D0, $D2, $D2, $DE, $DE, $DD, $E9, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
-
-	; 
+KingText_World3:
+	; "Seek throughout these lands to uncover the hidden code."
+	;      S    e    e    k         t    h    r    o    u    g    h    o    u    t
+	.byte $C2, $D4, $D4, $DA, $FE, $CD, $D7, $CB, $DE, $CE, $D6, $D7, $DE, $CE, $CD, $FE, $FE, $FE, $FE, $FE
+	;      t    h    e    s    e         l    a    n    d    s         t    o
+	.byte $CD, $D7, $D4, $CC, $D4, $FE, $DB, $D0, $DD, $D3, $CC, $FE, $CD, $DE, $FE, $FE, $FE, $FE, $FE, $FE
+	;      u    n    c    o    v    e    r         t    h    e         h    i    d    d    e    n
+	.byte $CE, $DD, $D2, $DE, $CF, $D4, $CB, $FE, $CD, $D7, $D4, $FE, $D7, $D8, $D3, $D3, $D4, $DD, $FE, $FE
+	;      c    o    d    e    .
+	.byte $D2, $DE, $D3, $D4, $E9, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
 	.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
-
-	;       P    l    e    a    s    e         t    e    l    l         m    e         y    o    u    r
-	.byte $BF, $DB, $D4, $D0, $CC, $D4, $FE, $CD, $D4, $DB, $DB, $FE, $DC, $D4, $FE, $8C, $DE, $CE, $CB, $FE
-
-	;       n    a    m    e    .
-	.byte $DD, $D0, $DC, $D4, $E9, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
-
-	; 
 	.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	;; "Thank you,kind" / "raccoon." / "" / "Please tell me your" / "name."
+	;
+	;;       T    h    a    n    k         y    o    u    ,    k    i    n    d
+	;.byte $C3, $D7, $D0, $DD, $DA, $FE, $8C, $DE, $CE, $9A, $DA, $D8, $DD, $D3, $FE, $FE, $FE, $FE, $FE, $FE
+	;
+	;;       r    a    c    c    o    o    n    .
+	;.byte $CB, $D0, $D2, $D2, $DE, $DE, $DD, $E9, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	;
+	;;
+	;.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	;
+	;;       P    l    e    a    s    e         t    e    l    l         m    e         y    o    u    r
+	;.byte $BF, $DB, $D4, $D0, $CC, $D4, $FE, $CD, $D4, $DB, $DB, $FE, $DC, $D4, $FE, $8C, $DE, $CE, $CB, $FE
+	;
+	;;       n    a    m    e    .
+	;.byte $DD, $D0, $DC, $D4, $E9, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	;
+	;;
+	;.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
 
-KingText_Hammer:
-	; "Hey,you!" / "How about lending me" / "your clothes?" / "No dice?!" / "What a drag."
-
-	;       H    e    y    ,    y    o    u    !
-	.byte $B7, $D4, $8C, $9A, $8C, $DE, $CE, $EA, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
-
-	;       H    o    w         a    b    o    u    t         l    e    n    d    i    n    g         m    e
-	.byte $B7, $DE, $81, $FE, $D0, $D1, $DE, $CE, $CD, $FE, $DB, $D4, $DD, $D3, $D8, $DD, $D6, $FE, $DC, $D4
-
-	;       y    o    u    r         c    l    o    t    h    e    s    ?
-	.byte $8C, $DE, $CE, $CB, $FE, $D2, $DB, $DE, $CD, $D7, $D4, $CC, $EB, $FE, $FE, $FE, $FE, $FE, $FE, $FE
-
-	;       N    o         d    i    c    e    ?    !
-	.byte $BD, $DE, $FE, $D3, $D8, $D2, $D4, $EB, $EA, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
-
-	;       W    h    a    t         a         d    r    a    g    .
-	.byte $C6, $D7, $D0, $CD, $FE, $D0, $FE, $D3, $CB, $D0, $D6, $E9, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
-
-	; 
+KingText_BadEnding:
+	; "Uh oh, Where is the king?  This doesn't feel right.   I shouldn't be here"
+	;      U    h         o    h    .    .    .         W    h    e    r    e         i    s
+	.byte $C4, $D7, $FE, $DE, $D7, $E9, $E9, $E9, $FE, $C6, $D7, $D4, $CB, $D4, $FE, $D8, $CC, $FE, $FE, $FE
+	;      t    h    e         k    i    n    g    ?         T    h    i    s
+	.byte $CD, $D7, $D4, $FE, $DA, $D8, $DD, $D6, $EB, $FE, $C3, $D7, $D8, $CC, $FE, $FE, $FE, $FE, $FE, $FE
+	;      d    o    e    s    n    '    t         f    e    e    l         r    i    g    h    t    .
+	.byte $D3, $DE, $D4, $CC, $DD, $AB, $CD, $FE, $D5, $D4, $D4, $DB, $FE, $CB, $D8, $D6, $D7, $CD, $E9, $FE
+	;      I         s    h    o    u    l    d    n    '    t         b    e
+	.byte $B8, $FE, $CC, $D7, $DE, $CE, $DB, $D3, $DD, $AB, $CD, $FE, $D1, $D4, $FE, $FE, $FE, $FE, $FE, $FE
+	;      h    e    r    e    .    .    .
+	.byte $D7, $D4, $CB, $D4, $E9, $E9, $E9, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
 	.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; "Hey,you!" / "How about lending me" / "your clothes?" / "No dice?!" / "What a drag."
+	;
+	;;       H    e    y    ,    y    o    u    !
+	;.byte $B7, $D4, $8C, $9A, $8C, $DE, $CE, $EA, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	;
+	;;       H    o    w         a    b    o    u    t         l    e    n    d    i    n    g         m    e
+	;.byte $B7, $DE, $81, $FE, $D0, $D1, $DE, $CE, $CD, $FE, $DB, $D4, $DD, $D3, $D8, $DD, $D6, $FE, $DC, $D4
+	;
+	;;       y    o    u    r         c    l    o    t    h    e    s    ?
+	;.byte $8C, $DE, $CE, $CB, $FE, $D2, $DB, $DE, $CD, $D7, $D4, $CC, $EB, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	;
+	;;       N    o         d    i    c    e    ?    !
+	;.byte $BD, $DE, $FE, $D3, $D8, $D2, $D4, $EB, $EA, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	;
+	;;       W    h    a    t         a         d    r    a    g    .
+	;.byte $C6, $D7, $D0, $CD, $FE, $D0, $FE, $D3, $CB, $D0, $D6, $E9, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	;
+	;;
+	;.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 DiagText_BySuit_L:
-	.byte LOW(KingText_Typical)	; Small
-	.byte LOW(KingText_Typical)	; Big
-	.byte LOW(KingText_Typical)	; Fire
-	.byte LOW(KingText_Typical)	; Raccoon
-	.byte LOW(KingText_Frog)	; Frog
-	.byte LOW(KingText_Tanooki)	; Tanooki
-	.byte LOW(KingText_Hammer)	; Hammer
+	.byte LOW(KingText_Typical)
+	.byte LOW(KingText_Typical)
+	.byte LOW(KingText_World3)
+	.byte LOW(KingText_Typical)
+	.byte LOW(KingText_Frog)
+	.byte LOW(KingText_World3)
+	.byte LOW(KingText_BadEnding)
 
 DiagText_BySuit_H:
-	.byte HIGH(KingText_Typical)	; Small
-	.byte HIGH(KingText_Typical)	; Big
-	.byte HIGH(KingText_Typical)	; Fire
-	.byte HIGH(KingText_Typical)	; Raccoon
-	.byte HIGH(KingText_Frog)	; Frog
-	.byte HIGH(KingText_Tanooki)	; Tanooki
-	.byte HIGH(KingText_Hammer)	; Hammer
+	.byte HIGH(KingText_Typical)
+	.byte HIGH(KingText_Typical)
+	.byte HIGH(KingText_World3)
+	.byte HIGH(KingText_Typical)
+	.byte HIGH(KingText_Frog)
+	.byte HIGH(KingText_World3)
+	.byte HIGH(KingText_BadEnding)
 
 
 TAndK_DoKingText:
@@ -2121,3 +2162,8 @@ _sprite_offscreen:
 _load_king:
 	LDA King_Patterns,Y
 	JMP PRG027_A640
+
+LoadTextByWorld:
+	LDY World_Num
+	LDA DiagText_BySuit_L,Y
+	RTS
