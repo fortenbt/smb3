@@ -857,7 +857,8 @@ PRG008_A3FA:
 	JSR Player_Die	 ; Begin death sequence
 
 	; This jumps the initial part of the death sequence
-	LDA #$c0
+	;LDA #$c0
+	LDA #$0c
 	STA Event_Countdown ; Event_Countdown = $C0
 	LDA #$02
 	STA <Player_IsDying	; Player_IsDying = 2 (already dropped off screen)
