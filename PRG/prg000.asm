@@ -141,7 +141,7 @@ Level_MinTileUWByQuad:
 	
 ToadItem_PalPerItem:
 	.byte $30	; 0: INVALID
-	.byte $16	; 1: Mushroom
+	.byte $03	; 1: Mushroom
 	.byte $2A	; 2: Fire flower
 	.byte $2A	; 3: Leaf
 	.byte $2A	; 4: Frog

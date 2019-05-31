@@ -4227,25 +4227,46 @@ PRG002_B534:
 	BLT PRG002_B572	 ; If item's Y < 200, jump to PRG002_B572
 
 	; Prevent object from falling lower than 200
-	LDA #200
-	STA <Objects_Y,X
+	;LDA #200               ; 2 bytes
+	;STA <Objects_Y,X       ; 2 bytes
+	JSR CheckPoisonAndDie
+	NOP
 
-	LDY Objects_Var1,X	; Y = Inventory_Items offset
+	;LDY Objects_Var1,X	; Y = Inventory_Items offset    3 bytes
 
 	; Store object into Player's inventory
-	LDA Objects_Frame,X
-	STA Inventory_Items,Y
+	;LDA Objects_Frame,X                    ; 3 bytes
+	;STA Inventory_Items,Y                  ; 3 bytes
 
 	; Force redraw of Inventory items
-	LDA #$03
-	STA InvFlip_Counter
-	LDA #$0c
-	STA InvFlip_Frame
+	;LDA #$03                               ; 2 bytes
+	;STA InvFlip_Counter                    ; 3 bytes
+	;LDA #$0c                               ; 2 bytes
+	;STA InvFlip_Frame                      ; 3 bytes
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
 
 PRG002_B56A:
 	LDA <Counter_1
 	AND #%0011000
-	BEQ PRG002_B5A9	 ; Flashing display; jump on and off to PRG002_B5A9
+	BEQ PRG002_B5A9	 ; Flashing display; jump on and off to PRG002_B5A9 (RTS)
 
 	LDY #$18	 ; Y = $18
 
