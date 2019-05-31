@@ -1,0 +1,15 @@
+*.patch
+*.nes
+*.fns
+*.csv
+*.ips
+*.exe
+*.c
+*.tgz
+*.zip
+*.deb
+*.txt
+*.swp
+Hacks/
+research/
+speedrunning/
