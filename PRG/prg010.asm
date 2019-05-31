@@ -3196,7 +3196,7 @@ Map_WarpZone_Numbers:
 	.byte $3F, $91, $01, $A4	; 2, (a4, 3f)
 	.byte $3F, $93, $01, $C4	; 3, (c4, 3f)
 	.byte $5F, $95, $01, $84	; 4, (84, 5f)
-	.byte $67, $99, $C1, $A4	; 9, (a4, 5f) (a 6, flip vert, flip horz)
+	.byte $68, $99, $C1, $A4	; 9, (a4, 5f) (a 6, flip vert, flip horz)
 	.byte $5F, $99, $01, $C4	; 6, (c4, 5f)
 	.byte $7F, $9B, $01, $84	; 7, (84, 7f)
 	.byte $7F, $9D, $01, $A4	; 8, (a4, 7f)
