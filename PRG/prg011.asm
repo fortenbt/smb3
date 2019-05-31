@@ -452,8 +452,9 @@ PRG011_A3BA:
 	LDA World_Num	 	
 	STA Map_Warp_PrevWorld	 	; Map_Warp_PrevWorld = World_Num (where you're coming FROM)
 
-	LDA #$08	 
-	STA World_Num	 		; World_Num = 8 (World 9)
+	LDA #$08
+	;3;STA World_Num	 		; World_Num = 8 (World 9)
+	JSR WW_LoadWorld_Hook
 
 	; Clears out map objects 
 	LDY #(MAPOBJ_TOTAL-1) ; Y = (MAPOBJ_TOTAL-1)
@@ -489,20 +490,40 @@ WWFX_WarpIslandInit:
 	LDY Map_Warp_PrevWorld	; Y = Map_Warp_PrevWorld
 	LDX Player_Current	; X = Map_Warp_PrevWorld
 
-	; Clears all map X related variables
-	LDA #$00
-	STA Map_Prev_XOff,X
-	STA Map_Prev_XHi,X
-	STA <World_Map_XHi,X
+	JSR WW_Load_X_Y_Hook
 
-	LDA Map_WW_IslandX,Y
-	STA <World_Map_X,X	; Store appropriate X coordinate based on world you came from
+	; Clears all map X related variables
+	;2;LDA #$00
+	;3;STA Map_Prev_XOff,X
+	;3;STA Map_Prev_XHi,X
+
+	;2;STA <World_Map_XHi,X
+
+	;3;LDA Map_WW_IslandX,Y
+	;2;STA <World_Map_X,X	; Store appropriate X coordinate based on world you came from
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
 
 	LDA #240
 LT0:	STA <Map_WWOrHT_X	; Map_WWOrHT_X = 240 (oops, reassigned?)
 
-	LDA Map_WW_IslandY,Y
-	STA <Map_WWOrHT_Y	; Store appropriate Y coordinate based on world you came from
+	;3;LDA Map_WW_IslandY,Y
+	;2;STA <Map_WWOrHT_Y	; Store appropriate Y coordinate based on world you came from
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
 
 	LDA #$80	 
 	STA Map_Intro_Tick	; Map_Intro_Tick = $80
@@ -531,12 +552,14 @@ WWFX_WarpLanding:
 	ADD Map_WW_DeltaX,X	; Map_WWOrHT_X += Map_WW_DeltaX[X] (travels based on direction)
 
 	STA <Map_WWOrHT_X
-	CMP Map_WW_IslandX,Y
+	;3;CMP Map_WW_IslandX,Y
+	JSR CMP_WW_IslandX_Hook
 	BNE PRG011_A44C	 	; If wind hasn't reached your landing point, jump to PRG011_A44C
 
 	LDX Player_Current	; X = Player_Current
 
-	LDA Map_WW_IslandY,Y
+	;3;LDA Map_WW_IslandY,Y
+	JSR WW_Load_Y_Hook
 	STA Map_PlyrSprOvrY	; Map_PlyrSprOvrY = Map_WW_IslandY[Y] (target Y) (restore map sprite)
 	STA <World_Map_Y,X	; World_Map_Y = Map_WW_IslandY[Y] (target Y)
 
@@ -553,8 +576,10 @@ PRG011_A44C:
 	STA <Map_WWOrHT_Cnt
 	STA <Map_WarpWind_FX
 
-	LDA #248
-	STA <Map_WWOrHT_X	; Map_WWOrHT_X = 248
+	;2;LDA #248
+	;2;STA <Map_WWOrHT_X	; Map_WWOrHT_X = 248
+	JSR WW_Done_Hook
+	NOP
 
 PRG011_A45B:
 	JMP PRG011_A3D9	 ; Jump to PRG011_A3D9
@@ -4989,3 +5014,91 @@ GetStuckInHand:
 	LDA #1
 	STA StuckInHandLevel
 	JMP WorldMap_UpdateAndDraw
+
+
+; These are copies of the values in prg026.asm
+				;      W1   W2   W3   W4   W5   W6   W7   W8   W9
+WarpPipesByWorld_Y_11:		.byte $20, $90, $20, $20, $ff, $A0, $70, $20, $30
+WarpPipesByWorld_XHi_11:	.byte $00, $00, $00, $01, $ff, $01, $01, $01, $00
+WarpPipesByWorld_X_11:		.byte $70, $A0, $30, $10, $ff, $20, $50, $40, $50
+; +27 to here
+WarpPipesW8_Y_11:		.byte $50, $50, $50, $70, $ff, $70, $90, $90, $70
+WarpPipesW8_XHi_11:		.byte $03, $03, $03, $03, $ff, $03, $03, $03, $03
+WarpPipesW8_X_11:		.byte $80, $A0, $C0, $80, $ff, $C0, $80, $A0, $A0
+
+WW_LoadWorld_Hook:
+	LDA WarpPipeDst
+	BEQ _ww_load_w8			; If WarpPipeDst isn't set, it's a normal warp whistle
+	SEC
+	SBC #1
+	CMP #9				; If dst is 0-8, load world directly
+	BCC _ww_load_world
+	LDA #7				; Otherwise, our dest world is back to world 8
+	JMP _ww_load_world
+_ww_load_w8:
+	LDA #8
+_ww_load_world:
+	STA World_Num
+	RTS
+
+WW_Load_X_Y_Hook:
+	LDA WarpPipeDst
+	BEQ _ww_x_y_norm
+	SEC
+	SBC #1
+	; A now has our dst index off of WarpPipesByWorld_Y_11
+	TAX
+	LDA WarpPipesByWorld_Y_11,X
+	STA <Map_WWOrHT_Y
+	LDA WarpPipesByWorld_XHi_11,X
+	STA <World_Map_XHi
+	LDA WarpPipesByWorld_X_11,X
+	STA <World_Map_X
+	RTS
+_ww_x_y_norm:
+	; Clears all map X related variables
+	STA Map_Prev_XOff,X
+	STA Map_Prev_XHi,X
+	STA <World_Map_XHi
+
+	LDA Map_WW_IslandX,Y	; Y is prev world num for index
+	STA <World_Map_X	; Store appropriate X coordinate based on world you came from
+	LDA Map_WW_IslandY,Y
+	STA <Map_WWOrHT_Y	; Store appropriate Y coordinate based on world you came from
+	RTS
+
+CMP_WW_IslandX_Hook:
+	PHA
+	LDA WarpPipeDst
+	BEQ _ww_cmp_norm
+	SEC
+	SBC #1
+	TAY
+	PLA
+	CMP WarpPipesByWorld_X_11,Y
+	RTS
+_ww_cmp_norm:
+	PLA
+	CMP Map_WW_IslandX,Y
+	RTS
+
+WW_Load_Y_Hook:
+	LDA WarpPipeDst
+	BEQ _ww_y_norm
+	SEC
+	SBC #1
+	TAX
+	LDA WarpPipesByWorld_Y_11,X
+	LDX Player_Current
+	RTS
+_ww_y_norm:
+	LDA Map_WW_IslandY,Y
+	LDX Player_Current
+	RTS
+
+WW_Done_Hook:
+	LDA #0
+	STA WarpPipeDst
+	LDA #248
+	STA <Map_WWOrHT_X	; Map_WWOrHT_X = 248
+	RTS

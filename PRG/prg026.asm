@@ -3784,3 +3784,119 @@ PRG026_B51F:
 ; Rest of ROM bank was empty...
 PRG026_DEATHSx:
 	.byte $74, $75, $76, $77, $FB  ; "DEATHSx"
+
+			;      W1   W2   W3   W4   W5   W6   W7   W8   W9
+WarpPipesByWorld_Y:	.byte $20, $90, $20, $20, $ff, $A0, $70, $20, $30
+WarpPipesByWorld_XHi:	.byte $00, $00, $00, $01, $ff, $01, $01, $01, $00
+WarpPipesByWorld_X:	.byte $70, $A0, $30, $10, $ff, $20, $50, $40, $50
+; +27 to here
+WarpPipesW8_Y:		.byte $50, $50, $50, $70, $ff, $70, $90, $90, $70
+WarpPipesW8_XHi:	.byte $03, $03, $03, $03, $ff, $03, $03, $03, $03
+WarpPipesW8_X:		.byte $80, $A0, $C0, $80, $ff, $C0, $80, $A0, $A0
+
+; Returns 0 if we warped
+HandleWarpPipes:
+	LDX World_Num
+	LDA <World_Map_Y		; Check Y
+	CMP WarpPipesByWorld_Y,X
+	BNE _check_w8
+	LDA <World_Map_XHi		; Check XHi
+	CMP WarpPipesByWorld_XHi,X
+	BNE _check_w8
+	LDA <World_Map_X		; Check X
+	CMP WarpPipesByWorld_X,X
+	BNE _check_w8
+	; Warping from one of the lone pipes to a W8 page 3 pipe, so store our offset + 28 into WarpPipeDst
+	TXA
+	CLC
+	ADC #28
+	STA WarpPipeDst
+	JSR WarpWhistle_Pipe
+	LDA #0
+	RTS
+_check_w8:
+	CPX #7
+	BNE _dont_warp			; If this wasn't w8, don't warp
+
+_check_for_warp_pipe_w8:		; If this was w8, but not a lone pipe, check the rest
+	LDX #$08
+_w8_loop:
+	LDA <World_Map_Y		; Check Y
+	CMP WarpPipesW8_Y,X
+	BNE _next_pipe_w8
+
+	LDA <World_Map_XHi		; Check XHi
+	CMP WarpPipesW8_XHi,X
+	BNE _next_pipe_w8
+
+	LDA <World_Map_X		; Check X
+	CMP WarpPipesW8_X,X
+	BEQ DoWarpPipe_w8
+_next_pipe_w8:
+	DEX
+	BPL _w8_loop
+_dont_warp:
+	; Didn't warp, zero flag is not set
+	RTS
+DoWarpPipe_w8:
+	; Warping from one of the 8 w8 pipes to a lone pipe, so store our offset + 1 into WarpPipeDst
+	TXA
+	CLC
+	ADC #1
+	STA WarpPipeDst
+	JSR WarpWhistle_Pipe
+	LDA #0
+	RTS
+
+
+WarpWhistle_Pipe:
+	LDY Player_Current	; Y = Player_Current
+	LDX #$00	 	; X = 0 (Wind comes from the left)
+	LDA World_Map_X,Y	; Get Player's X position on Map
+	SUB <Horz_Scroll	; Offset it by the horizontal scroll
+	CMP #$80
+	BGE _prg026_wind
+	LDX #$01		; Wind comes from the right
+_prg026_wind:
+	STX <Map_WWOrHT_Dir		; Store travel direction
+
+	LDA Map_WWOrHT_StartX,X		; Get proper start position for the wind
+	STA <Map_WWOrHT_X		; Set it as the wind's X
+	LDA World_Map_Y,Y		; Get Player's Y position on map
+	STA <Map_WWOrHT_Y		; Set it as the wind's Y
+	STA Map_PlyrSprOvrY		; Clear the map sprite override Y
+
+	; Back up the Player's map positioning (why??)
+	LDA World_Map_Y,Y
+	STA Map_WW_Backup_Y	; Store Player's map Y position
+
+	LDA World_Map_X,Y
+	STA Map_WW_Backup_X	; Store Player's map X position
+
+	LDA World_Map_XHi,Y
+	STA Map_WW_Backup_XH	; Store Player's map X Hi position
+
+	LDA Map_UnusedPlayerVal2,Y
+	STA Map_WW_Backup_UPV2	; Store Player's Map_WW_Backup_UPV2
+
+	LDA WarpPipeDst
+	SEC
+	SBC #1
+	TAX
+	LDA WarpPipesByWorld_XHi,X
+	STA Map_Prev_XHi
+
+	LDX #$01	 ; X = 1
+
+	LDA #$00
+	; Clear all of the following:
+	STA Map_Prev_XOff,Y
+	;STA Map_Prev_XHi,Y
+	STA <Scroll_LastDir
+	STA Map_InCanoe_Flag		; Not in a canoe
+
+	STX <Map_WarpWind_FX		 ; Map_WarpWind_FX = 1 (Warp Whistle begin!)
+
+	LDA #MUS2A_WARPWHISTLE
+	STA Sound_QMusic2	 ; Play the Warp Whistle tune
+	RTS

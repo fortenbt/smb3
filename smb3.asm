@@ -2046,7 +2046,7 @@ OBJSTATE_POOFDEATH	= 8	; "Poof" Death (e.g. Piranha death)
 	Bonus_DDDD:		.ds 1	; ?? Set to '1' if you exit the unused bonus game BONUS_UNUSED_DDDD
 	Map_HandState:		.ds 1	; Hand trap state
 
-				.ds 1	; $072F unused
+	WarpPipeDst:		.ds 1	; $072F unused
 
 	Map_WW_Backup_Y:	.ds 1	; Warp Whistle wind backs up the Player's map Y
 
