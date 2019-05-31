@@ -3201,11 +3201,10 @@ _Map_WarpZone_Numbers:
 	.byte $7F, $9D, $01, $A4	; 8, (a4, 7f)
 
 Map_WarpZone_DrawNumbers:
-
 	LDY #$20	 ; Y = $1B
 PRG010_D1A2:
 	LDA Map_WarpZone_Numbers,Y
-	STA Sprite_RAM+$98,Y
+	STA Sprite_RAM+$30,Y
 	DEY		 
 	BPL PRG010_D1A2	 ; While Y >= 0, loop!
 	RTS		 ; Return
