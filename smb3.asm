@@ -3755,6 +3755,7 @@ TILE1_GROUNDTL		= $55	; Ground top left
 TILE1_GROUNDML		= $56	; Ground middle-left
 TILE1_GROUNDTR		= $57	; Ground top right
 TILE1_GROUNDMR		= $58	; Ground middle-right
+TILE1_BOOTSPIKE		= $59	; Spikes that hurt regardless of kuribo's shoe
 
 TILE1_CANNONTOP1	= $76	; Upper top of cannon
 TILE1_CANNONTOP2	= $77	; Lower top of cannon

@@ -6364,7 +6364,10 @@ PRG008_BD70:
 	; SPIKE TILE LOGIC
 
 PRG008_BD73:
-	LDX #$02	 ; X = 2
+	LDX #$02	 ; X = 2 (offsetting Level_Tile_Head, to check head and feet)
+				; Level_Tile_Head:	.ds 1	; Tile at Player's head
+				; Level_Tile_GndL:	.ds 1	; Tile at Player's feet left
+				; Level_Tile_GndR:	.ds 1	; Tile at Player's feet right
 
 PRG008_BD75:
 	LDA SpikesEnable,Y
@@ -6373,7 +6376,7 @@ PRG008_BD75:
 
 	; Otherwise...
 	SUB Level_Tile_Head,X
-	CMP #$02
+	CMP #$02	 ; Supports downward and upward spike tiles
 	BLT PRG008_BD89	 ; If this is a spike tile, jump to PRG008_BD89
 	DEX		 ; X--
 	BPL PRG008_BD75	 ; While X >= 0, loop!
@@ -6383,8 +6386,10 @@ PRG008_BD89:
 
 	; It's a spike tile...
 
-	LDA Player_Kuribo
-	BEQ PRG008_BD93	 ; If Player is NOT in a Kuribo's shoe, jump to PRG008_BD93
+	;LDA Player_Kuribo
+	JSR HandleSpikes
+	BEQ PRG008_BD93	 ; If Player is NOT in a Kuribo's shoe, or if player landed on boot spikes,
+			 ; jump to PRG008_BD93
 
 	LDA Player_HitCeiling
 	BEQ PRG008_BD96	 ; If Player has not just hit head off ceiling, jump to PRG008_BD96

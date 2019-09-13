@@ -5939,3 +5939,10 @@ PRG030_9FAF:
 
 ; NOTE: The remaining ROM space was all blank ($FF)
 
+HandleSpikes:
+	LDA Level_Tile_Head,X
+	CMP #TILE1_BOOTSPIKE
+	BEQ _spike_rts
+	LDA Player_Kuribo
+_spike_rts:
+	RTS

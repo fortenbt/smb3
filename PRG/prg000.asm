@@ -496,7 +496,8 @@ Object_AttrFlags:
 	; Index by Level_TilesetIdx
 	; Enables spike tiles where available (this tile and tile before it)
 SpikesEnable:
-	.byte $FF	;  0 Plains style
+	.byte TILE1_BOOTSPIKE+1	;  0 Plains style (+1 here because boot spikes can only point upward, but
+				;  the spike-handling code always allows for two spike tiles (up & down))
 	.byte TILE2_SPIKEDOWN	;  1 Mini Fortress style
 	.byte $FF	;  2 Hills style
 	.byte $FF	;  3 High-Up style

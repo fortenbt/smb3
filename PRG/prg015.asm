@@ -25,7 +25,7 @@ Tile_Layout_TS1:
 	.byte $28, $05, $05, $2D, $2F, $13, $00, $13, $FF, $FF, $FF, $FF, $10, $10, $B8, $B8 ; Tiles $20 - $2F
 	.byte $B8, $B8, $BC, $FD, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
 	.byte $DC, $05, $FC, $FC, $05, $05, $05, $03, $3C, $3C, $3C, $3D, $FC, $03, $3C, $FC ; Tiles $40 - $4F
-	.byte $13, $00, $13, $01, $62, $0A, $66, $01, $62, $FF, $FF, $FF, $FF, $FF, $FF, $D8 ; Tiles $50 - $5F
+	.byte $13, $00, $13, $01, $62, $0A, $66, $01, $62, $A0, $FF, $FF, $FF, $FF, $FF, $D8 ; Tiles $50 - $5F
 	.byte $98, $98, $98, $98, $98, $98, $92, $B4, $B4, $B4, $B4, $B4, $B4, $B4, $B4, $B4 ; Tiles $60 - $6F
 	.byte $B4, $B8, $C0, $C0, $C0, $C0, $A4, $EC, $E4, $C0, $D5, $B2, $FF, $FF, $FF, $FF ; Tiles $70 - $7F
 	.byte $05, $FF, $FF, $FF, $FF, $C4, $50, $03, $3C, $3C, $3C, $3D, $FC, $03, $3C, $FC ; Tiles $80 - $8F
@@ -43,7 +43,7 @@ Tile_Layout_TS1:
 	.byte $FD, $2B, $06, $06, $06, $18, $58, $18, $FF, $FF, $FF, $FF, $24, $24, $B9, $B9 ; Tiles $20 - $2F
 	.byte $B9, $B9, $BD, $FD, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
 	.byte $DD, $06, $FC, $FC, $06, $06, $06, $35, $37, $37, $16, $5B, $FC, $23, $16, $FC ; Tiles $40 - $4F
-	.byte $18, $58, $18, $60, $62, $5A, $66, $60, $62, $FF, $FF, $FF, $FF, $FF, $FF, $D9 ; Tiles $50 - $5F
+	.byte $18, $58, $18, $60, $62, $5A, $66, $60, $62, $A1, $FF, $FF, $FF, $FF, $FF, $D9 ; Tiles $50 - $5F
 	.byte $99, $99, $99, $99, $99, $99, $93, $B5, $B5, $B5, $B5, $B5, $B5, $B5, $B5, $B5 ; Tiles $60 - $6F
 	.byte $B5, $B9, $C1, $C1, $C1, $C1, $A5, $ED, $E4, $C1, $B2, $B2, $FF, $FF, $FF, $FF ; Tiles $70 - $7F
 	.byte $06, $FF, $FF, $FF, $FF, $C4, $51, $35, $37, $37, $16, $5B, $FC, $23, $16, $FC ; Tiles $80 - $8F
@@ -61,7 +61,7 @@ Tile_Layout_TS1:
 	.byte $29, $07, $2C, $2E, $07, $12, $12, $02, $FF, $FF, $FF, $FF, $11, $11, $BA, $BA ; Tiles $20 - $2F
 	.byte $BA, $BA, $BE, $FD, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
 	.byte $DE, $07, $FC, $FC, $07, $07, $07, $37, $04, $37, $37, $3D, $3D, $37, $04, $37 ; Tiles $40 - $4F
-	.byte $12, $12, $02, $01, $63, $01, $63, $0B, $0D, $FF, $FF, $FF, $FF, $FF, $FF, $DA ; Tiles $50 - $5F
+	.byte $12, $12, $02, $01, $63, $01, $63, $0B, $0D, $A2, $FF, $FF, $FF, $FF, $FF, $DA ; Tiles $50 - $5F
 	.byte $9A, $9A, $9A, $9A, $9A, $9A, $CA, $B6, $B6, $B6, $B6, $B6, $B6, $B6, $B6, $B6 ; Tiles $60 - $6F
 	.byte $B6, $BA, $C2, $C2, $C2, $C2, $A6, $EE, $E5, $C2, $D5, $B2, $FF, $FF, $FF, $FF ; Tiles $70 - $7F
 	.byte $07, $FF, $FF, $FF, $FF, $C6, $56, $37, $04, $37, $37, $3D, $3D, $37, $04, $37 ; Tiles $80 - $8F
@@ -79,7 +79,7 @@ Tile_Layout_TS1:
 	.byte $FD, $08, $08, $08, $08, $17, $19, $59, $FF, $FF, $FF, $FF, $39, $39, $BB, $BB ; Tiles $20 - $2F
 	.byte $BB, $BB, $BF, $FD, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
 	.byte $DF, $08, $FC, $FC, $08, $08, $08, $3C, $36, $3C, $34, $3D, $3D, $34, $25, $34 ; Tiles $40 - $4F
-	.byte $17, $19, $59, $61, $63, $61, $63, $0C, $0D, $FF, $FF, $FF, $FF, $FF, $FF, $DB ; Tiles $50 - $5F
+	.byte $17, $19, $59, $61, $63, $61, $63, $0C, $0D, $A3, $FF, $FF, $FF, $FF, $FF, $DB ; Tiles $50 - $5F
 	.byte $9B, $9B, $9B, $9B, $9B, $9B, $CB, $B7, $B7, $B7, $B7, $B7, $B7, $B7, $B7, $B7 ; Tiles $60 - $6F
 	.byte $B7, $BB, $C3, $C3, $C3, $C3, $A7, $EF, $E5, $C3, $B2, $B2, $FF, $FF, $FF, $FF ; Tiles $70 - $7F
 	.byte $08, $FF, $FF, $FF, $FF, $C6, $57, $3C, $36, $3C, $34, $3D, $3D, $34, $25, $34 ; Tiles $80 - $8F
@@ -201,6 +201,7 @@ LoadLevel_Generator_TS1:
 	.word LoadLevel_IceBricks		; 43 - Run of ice bricks
 	.word LoadLevel_VTransitPipeRun		; 44 - Vertical in-level transit pipe
 	.word LoadLevel_LittleCloudSolidRun	; 45 - Run of the all-solid Judgem's type clouds (BROKEN, check function def for notes)
+	.word LoadLevel_BootSpike		; 46 - Run of boot spikes
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -273,3 +274,23 @@ LeveLoad_FixedSizeGen_TS1:
 
 ; Rest of ROM bank was empty
 
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; LoadLevel_BootSpike
+;
+; Puts down 1-16 upward boot spikes
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+LoadLevel_BootSpike:
+	LDA LL_ShapeDef
+	AND #$0f
+	STA <Temp_Var4		 ; Temp_Var4 = lower 4 bits of LL_ShapeDef (width of run)
+	LDY TileAddr_Off	 ; Y = TileAddr_Off
+
+_bs_run_loop:
+	LDA #TILE1_BOOTSPIKE	 ; Boot spike tile
+	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	JSR LoadLevel_NextColumn ; Next column
+	DEC <Temp_Var4		 ; Temp_Var4--
+	BPL _bs_run_loop	 ; While Temp_Var4 >= 0, loop!
+	RTS			 ; Return...
