@@ -152,7 +152,7 @@ LoadLevel_Generator_TS1:
 	; PRG015_A419 provides values well in excess of 45, but only 45
 	; addresses are defined here; reserved for expansion...
 
-	JSR DynJump
+	JSR PRG15_DynJump_LLGen
 
 	; THESE MUST FOLLOW DynJump FOR THE DYNAMIC JUMP TO WORK!!
 	.word LoadLevel_GenerateBigBlock	; 0 - White big blocks which auto generate to the ground
@@ -201,7 +201,6 @@ LoadLevel_Generator_TS1:
 	.word LoadLevel_IceBricks		; 43 - Run of ice bricks
 	.word LoadLevel_VTransitPipeRun		; 44 - Vertical in-level transit pipe
 	.word LoadLevel_LittleCloudSolidRun	; 45 - Run of the all-solid Judgem's type clouds (BROKEN, check function def for notes)
-	.word LoadLevel_BootSpike		; 46 - Run of boot spikes
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -294,3 +293,20 @@ _bs_run_loop:
 	DEC <Temp_Var4		 ; Temp_Var4--
 	BPL _bs_run_loop	 ; While Temp_Var4 >= 0, loop!
 	RTS			 ; Return...
+
+PRG15_DynJump_LLGen:
+	CMP #46
+	BCC _j_DynJump
+
+	; If we're generating our custom object, we need to JSR to DynJump with our new index
+	SUB #46
+	STA <Temp_Var1	; save A
+	PLA	; eat our current return address
+	PLA	; eat our current return address
+	LDA <Temp_Var1	; restore A
+	JSR DynJump
+	; THESE MUST FOLLOW DynJump FOR THE DYNAMIC JUMP TO WORK!!
+	.word LoadLevel_BootSpike		; 46 - Run of boot spikes
+
+_j_DynJump:
+	JMP DynJump
