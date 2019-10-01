@@ -1,0 +1,17 @@
+research/
+_smb3ws/
+*.csv
+*.xlsx
+*.wch
+*.md
+*.fm3
+*.fm2
+*.py
+*.lua
+*.txt
+*.tgz
+*.exe
+*.c
+*.nes
+*.patch
+tags

@@ -5857,10 +5857,10 @@ PRG030_9F0D:
 	LDA <Level_Tile	; A = Level_Tile (the tile retrieved)
 	RTS		 ; Return
 
-	; Probably unused space
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	; Probably unused space ([orange] - consolidated all this whitespace below)
+	;.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	;.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	;.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 
 
 PRG030_SUB_9F40:
@@ -5870,8 +5870,8 @@ PRG030_SUB_9F40:
 	LDA Update_Request
 	JMP PRG031_F499
 
-	; Filler space
-	.byte $ff, $ff, $ff, $ff, $ff
+	; Filler space ([orange] - consolidated all this whitespace below)
+	;.byte $ff, $ff, $ff, $ff, $ff
 
 	; Sub part of A0 mode of IRQ
 PRG030_SUB_9F50:
@@ -5888,9 +5888,10 @@ PRG030_9F52:
 	STA MMC3_IRQENABLE
 	RTS		 ; Return
 
-	; Probably unused space
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	; Probably unused space ([orange] - consolidated all this whitespace below)
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+
 
 IntIRQ_32PixelPartition_Part5:
 
@@ -5910,8 +5911,90 @@ PRG030_9F80:
 	STA MMC3_IRQENABLE ; Enable IRQ again
 	JMP PRG031_FA3C	 ; Jump to PRG031_FA3C
 
-	; Unused space
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	; Unused space ([orange] - consolidated all this whitespace below)
+	;;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; 0x22 bytes
+;; CheckWallslide is jumped to by our JMP hook, so we have to JMP back to the
+;; correct location.
+WALLSLIDE_FALL_VEL = $18
+WALLSLIDE_AIRJUMP_FRAMES = 6
+CheckWallslide:
+	LDA <Player_InAir
+	BNE _check_air_reqs
+	JMP _player_not_in_air		; Not in the air, so "return"
+
+_check_air_reqs:
+	JSR InAirWallslideRequirements
+	BEQ _do_wallslide
+	JMP PRG008_BCAA			; Failed in-air requirements, "return" to in-air location
+
+_do_wallslide:
+	JSR DoWallslidePoof
+	LDA #WALLSLIDE_FALL_VEL
+	STA <Player_YVel
+	LDA #WALLSLIDE_AIRJUMP_FRAMES	; Allow the player to jump for some number of frames...
+					; This makes the turning around and jumping feel reasonable
+	STA Player_AllowAirJump		; This gives them time to turn away and jump
+	STA <Player_Wallsliding		; This is decremented to 0 by DecPlayer_AllowAirJump
+
+	LDX Player_Suit
+	LDA Airship_JumpFrameByPup,X
+	STA <Player_Frame		; Set the correct sprite for "grabbing" the wall
+
+
+;; 0x11 bytes
+InAirWallslideRequirements:
+	JSR Level_CheckInFU_TileGTAttr	; Is our face touching a solid tile?
+	BCC _air_req_fail
+
+	LDA <Player_YVel		; Are we moving downward?
+	BMI _air_req_fail
+
+	LDA Player_IsDucking		; Are we ducking?
+	BNE _air_req_fail
+
+	LDX <Player_FlipBits
+	LDA <Player_X			; Are we facing the wall?
+	AND #$0f
+	CMP #$08
+	BMI _verify_face_right
+_verify_face_left:
+	TXA
+	BNE _air_req_fail
+	RTS				; Success
+_verify_face_right
+	TXA
+	BEQ _air_req_fail
+
+	LDA #0				; Success
+	RTS
+_air_req_fail:
+	LDA <Player_InAir
+	RTS
+
+; This decrements both Player_AllowAirJump and Player_Wallsliding
+;; 0x6 bytes
+DecPlayer_AllowAirJump:
+	DEC Player_AllowAirJump
+	DEC <Player_Wallsliding
+	RTS
+
+; This checks if the given tile is greater-than-or-equal-to
+; the related "AttrTable" slot and, if so, returns 'carry set'
+;; 0xA bytes
+Level_CheckInFU_TileGTAttr:
+	LDX Level_Tile_Quad+3		; Get quad for InFU
+	LDA Level_Tile_InFU		; Check the tile here
+	CMP Tile_AttrTable+4,X
+	; NOTE: The return value is "carry set" for true!
+	RTS		 ; Return
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+
 
 IntIRQ_32PixelPartition_Part2:	; $9FA0
 	LDA Update_Request	 
@@ -5938,6 +6021,46 @@ PRG030_9FAF:
 	JMP IntIRQ_32PixelPartition_Part3
 
 ; NOTE: The remaining ROM space was all blank ($FF)
+
+
+WJ_RIGHT_VEL	= $1f
+WJ_LEFT_VEL	= -WJ_RIGHT_VEL
+WJ_VERT_VEL	= -$2f
+HandlePlayerJumped:
+	LDA Player_Wallsliding
+	BEQ _norm_jmp_rts		; No walljump? Just do normal jump.
+
+	; Walljump
+	LDA #$00
+	STA Player_Wallsliding		; Walljumped, kill wallsliding
+
+	LDA <Player_FlipBits
+	EOR #$40			; Force the player to turn around
+	STA <Player_FlipBits
+
+	LDA #$10
+	STA <Temp_Var1
+	JSR WalljumpPoof
+
+	LDA <Player_X
+	AND #$0f
+	CMP #$08
+	BPL _walljump_right
+_walljump_left:
+	LDA #WJ_LEFT_VEL
+	BNE _set_x_vel
+_walljump_right:
+	LDA #WJ_RIGHT_VEL
+_set_x_vel:
+	STA <Player_XVel
+
+_load_y_vel:
+	LDA #WJ_VERT_VEL
+	RTS
+
+_norm_jmp_rts:
+	LDA Player_RootJumpVel		; Get initial jump velocity
+	RTS
 
 HandleSpikes:
 	LDA Level_Tile_Head,X

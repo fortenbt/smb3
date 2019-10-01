@@ -55,15 +55,60 @@ DMC02:	.byte $55, $60, $6B, $79, $EA, $F8, $FF, $43, $82, $24, $00, $20, $8E, $E
 DMC02_End
 
 	;
+;; 0xE bytes
+DoWallslidePoof:
+	LDA <Counter_1
+	AND #%00001111
+	BNE _no_wallslide_poof
+	LDA #$0a
+	STA <Temp_Var1
+	JSR WalljumpPoof
+_no_wallslide_poof:
+	RTS
 
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
+;;
+WalljumpPoof:				; (see CannonFire_NoiseAndSmoke)
+	JSR BrickBust_MoveOver		; Make room in first "brick bust" slot for poof
+
+	; Brick bust, poof style
+	LDA #$01
+	STA BrickBust_En
+
+	; Set poof X			; We want the poof at the edge of the wall
+	LDA #-6
+	STA <Temp_Var2
+	LDA <Player_X
+	AND #$0f
+	CMP #$08
+	BPL _set_poofx
+	LDA #6
+	STA <Temp_Var2
+_set_poofx:
+	LDA <Player_X
+	SUB <Horz_Scroll		; Make relative to horizontal scroll
+	ADD <Temp_Var2
+	STA BrickBust_X			; Set X
+
+	LDA <Player_Y
+	ADD #$0C
+	SUB Level_VertScroll		; Make relative to vertical scroll
+	STA BrickBust_YUpr		; Set Y
+
+	; Set poof counter
+	LDA <Temp_Var1
+	STA BrickBust_HEn
+
+	RTS		 ; Return
+
+
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 
 Music_PlayDMC:
 	LDA DMC_Queue	 ; Get value queued for DMC

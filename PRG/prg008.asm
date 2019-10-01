@@ -2546,7 +2546,8 @@ Player_JumpFlyFlutter:
 	LDA Player_AllowAirJump
 	BEQ PRG008_AC30	 ; If Player_AllowAirJump = 0, jump to PRG008_AC30
 
-	DEC Player_AllowAirJump ; Player_AllowAirJump--
+	;;DEC Player_AllowAirJump ; Player_AllowAirJump--
+	JSR DecPlayer_AllowAirJump
 
 PRG008_AC30:
 
@@ -2604,7 +2605,8 @@ PRG008_AC73:
 	LSR A
 	TAX	 ; X = Magnitude of Player's X Velocity >> 4 (the "whole" part)
 
-	LDA Player_RootJumpVel	 	; Get initial jump velocity
+	;LDA Player_RootJumpVel	 	; Get initial jump velocity
+	JSR HandlePlayerJumped
 	SUB Player_SpeedJumpInc,X	; Subtract a tiny bit of boost at certain X Velocity speed levels
 	STA <Player_YVel		; -> Y velocity
 
@@ -6140,8 +6142,11 @@ Player_DoSpecialTiles:
 	LDA PipeTile_EnableByTileset,Y
 	STA <Temp_Var16
 
-	LDA <Player_InAir
-	BNE PRG008_BCAA	 	; If Player is mid air, jump to PRG008_BCAA
+	;LDA <Player_InAir
+	;BNE PRG008_BCAA	 	; If Player is mid air, jump to PRG008_BCAA
+	JMP CheckWallslide
+_player_not_in_air:
+	NOP
 
 	LDA Level_Tile_InFL	 ; Get tile near head...
 

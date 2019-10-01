@@ -842,7 +842,7 @@ CineKing_DialogState:	; Toad & King Cinematic: When 1, we're doing the text vers
 	Player_SprWorkL:	.ds 1	; Sprite work address low
 	Player_SprWorkH:	.ds 1	; Sprite work address high
 
-				.ds 1	; $E3 unused
+	Player_Wallsliding:	.ds 1	; $E3 unused
 
 	Level_TileOff:		.ds 1	; Tile mem offset
 	Level_Tile:		.ds 1	; Temporary holding point for a detected tile index
