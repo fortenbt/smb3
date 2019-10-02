@@ -2551,8 +2551,10 @@ Player_JumpFlyFlutter:
 
 PRG008_AC30:
 
-	LDA <Pad_Input
-	AND #PAD_A
+	;;LDA <Pad_Input
+	;;AND #PAD_A
+	JSR CheckForRegrab
+	NOP
 	STA <Temp_Var1	 ; Temp_Var1 = $80 if Player is pressing 'A', otherwise 0
 	BEQ PRG008_AC9E	 ; If Player is NOT pressing 'A', jump to PRG008_AC9E
 
@@ -2560,7 +2562,7 @@ PRG008_AC30:
 	BNE PRG008_AC41	 ; If Player_AllowAirJump <> 0, jump to PRG008_AC41
 
 	LDA <Player_InAir
-	BNE PRG008_AC9E	 ; If Player is mid air, jump to PRG008_AC9E
+	BNE PRG008_AC9E	; If Player is mid air, jump to PRG008_AC9E
 
 PRG008_AC41:
 
@@ -6949,9 +6951,11 @@ Player_ApplyYVelocity:
 	LDA <Player_YVel
 	BMI PRG008_BFF9	 ; If Player_YVel < 0, jump to PRG008_BFF9
 
-	CMP #FALLRATE_MAX
-	BLS PRG008_BFF9	 ; If Player_YVelo < FALLRATE_MAX, jump to PRG008_BFF9
-
+	;CMP #FALLRATE_MAX
+	;BLS PRG008_BFF9	 ; If Player_YVelo < FALLRATE_MAX, jump to PRG008_BFF9
+	JMP FallrateHook
+	NOP
+_cap_fallrate_max:
 	; Cap Y velocity at FALLRATE_MAX
 	LDA #FALLRATE_MAX
 	STA <Player_YVel ; Player_YVel = FALLRATE_MAX

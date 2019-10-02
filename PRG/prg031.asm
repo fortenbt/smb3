@@ -100,11 +100,45 @@ _set_poofx:
 
 	RTS		 ; Return
 
+CheckForRegrab:
+	;; This needs to load Pad_Input AND'd with PAD_A before returning
+	LDA <Player_Regrabbing		; Regrab only allowed once every few frames
+	BNE _regrab_do_spin
+
+	LDA <Player_InAir		; Regrab only done if in air
+	BEQ _regrab_lda_rts
+
+	;LDA <Player_YVel		; Regrab only done if YVel is > some small negative value, so you can regrab toward the top of your jump
+	;BMI _regrab_lda_rts
+	LDA <Player_Wallsliding		; Regrab only done for non-walljumps
+	BNE _regrab_lda_rts
+
+	LDA <Pad_Input
+	AND #PAD_A			; Regrab while falaling in air by pressing A
+	BEQ _regrab_rts
+
+	LDA #30
+	STA <Player_Regrabbing
+	BNE _regrab_lda_rts
+
+_regrab_do_spin:
+	LDA <Counter_1
+	AND #%00000001
+	BNE _regrab_dec_rts
+	LDA <Player_FlipBits
+	EOR #$40
+	STA <Player_FlipBits
+_regrab_dec_rts:
+	DEC <Player_Regrabbing
+_regrab_lda_rts:
+	LDA <Pad_Input
+	AND #PAD_A
+_regrab_rts:
+	RTS
 
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
@@ -1283,10 +1317,42 @@ Music_RestH_LUT:
 	; If you're creating a custom hack, delete these $FFs and use the following line instead:
 ; .AlignDMC04:	DMCAlign .AlignDMC04
 
+FALLRATE_SPIN = $20
+FallrateHook:
+	LDA <Player_Regrabbing
+	BEQ _compare_normal
+	LDA <Player_YVel
+	CMP #FALLRATE_SPIN
+	BMI _j_apply_vel		; we're < FALLRATE_SPIN, just apply the velocity
+	; we're regrabbing and > FALLRATE_SPIN, cap it
+	LDA #FALLRATE_SPIN
+	STA <Player_YVel
+	BNE _j_apply_vel		; jmp always to _j_apply_vel
+_compare_normal:
+	LDA <Player_YVel
+	CMP #FALLRATE_MAX
+	BPL _j__cap_fallrate_max
+_j_apply_vel:
+	JMP PRG008_BFF9			; apply velocities
+_j__cap_fallrate_max:
+	JMP _cap_fallrate_max
+
+
+Player_TryHoldShell:
+	LDA Player_Regrabbing
+	BNE _j_Player_KickObject	; If we're regrabbing, kick the object away
+_normal_hold:
+	BIT <Pad_Holding
+	BVS _j_PRG000_D34F		; If Player is holding B, jump to PRG000_D34F
+_j_Player_KickObject:
+	JMP Player_KickObject		; Kick away the object and don't come back!
+_j_PRG000_D34F:
+	JMP PRG000_D34F
+
 	.byte $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF

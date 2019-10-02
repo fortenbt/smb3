@@ -4055,9 +4055,14 @@ PRG000_D343:
 	LDA Player_ISHolding_OLD
 	BNE PRG000_D39F	 ; If Player WAS holding something, jump to PRG000_D39F (RTS)
 
-	BIT <Pad_Holding
-	BVS PRG000_D34F	 	; If Player is holding B, jump to PRG000_D34F
-	JMP Player_KickObject	 ; Kick away the object and don't come back!
+	;BIT <Pad_Holding
+	;BVS PRG000_D34F	 	; If Player is holding B, jump to PRG000_D34F
+	;JMP Player_KickObject	 ; Kick away the object and don't come back!
+	JMP Player_TryHoldShell
+	NOP
+	NOP
+	NOP
+	NOP
 
 PRG000_D34F:
 
