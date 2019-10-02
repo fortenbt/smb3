@@ -26,10 +26,10 @@
 ObjectGroup03_InitJumpTable:
 	.word ObjInit_GroundTroop	; Object $6C - OBJ_GREENTROOPA
 	.word ObjInit_GroundTroop	; Object $6D - OBJ_REDTROOPA
-	.word ObjInit_GroundTroop	; Object $6E - OBJ_PARATROOPAGREENHOP
+	.word ObjInit_ShelledTroop	; Object $6E - OBJ_PARATROOPAGREENHOP
 	.word ObjInit_GroundTroop	; Object $6F - OBJ_FLYINGREDPARATROOPA
 	.word ObjInit_GroundTroop	; Object $70 - OBJ_BUZZYBEATLE
-	.word ObjInit_GroundTroop	; Object $71 - OBJ_SPINY
+	.word ObjInit_ShelledTroop	; Object $71 - OBJ_SPINY
 	.word ObjInit_GroundTroop	; Object $72 - OBJ_GOOMBA
 	.word ObjInit_GroundTroop	; Object $73 - OBJ_PARAGOOMBA
 	.word ObjInit_GroundTroop	; Object $74 - OBJ_PARAGOOMBAWITHMICROS
@@ -111,7 +111,7 @@ ObjectGroup03_NormalJumpTable:
 ObjectGroup03_CollideJumpTable:
 	.word $0000					; Object $6C - OBJ_GREENTROOPA
 	.word $0000					; Object $6D - OBJ_REDTROOPA
-	.word OCSPECIAL_KILLCHANGETO | OBJ_GREENTROOPA	; Object $6E - OBJ_PARATROOPAGREENHOP
+	.word $0000					; Object $6E - OBJ_PARATROOPAGREENHOP
 	.word OCSPECIAL_KILLCHANGETO | OBJ_REDTROOPA	; Object $6F - OBJ_FLYINGREDPARATROOPA
 	.word $0000					; Object $70 - OBJ_BUZZYBEATLE
 	.word $0000					; Object $71 - OBJ_SPINY
@@ -194,7 +194,7 @@ ObjectGroup03_Attributes:
 ObjectGroup03_Attributes2:
 	.byte OA2_GNDPLAYERMOD | OA2_TDOGRP1	; Object $6C - OBJ_GREENTROOPA
 	.byte OA2_GNDPLAYERMOD | OA2_TDOGRP1	; Object $6D - OBJ_REDTROOPA
-	.byte OA2_TDOGRP1			; Object $6E - OBJ_PARATROOPAGREENHOP
+	.byte OA2_GNDPLAYERMOD | OA2_TDOGRP1	; Object $6E - OBJ_PARATROOPAGREENHOP
 	.byte OA2_TDOGRP1			; Object $6F - OBJ_FLYINGREDPARATROOPA
 	.byte OA2_GNDPLAYERMOD | OA2_TDOGRP1	; Object $70 - OBJ_BUZZYBEATLE
 	.byte OA2_GNDPLAYERMOD | OA2_TDOGRP1	; Object $71 - OBJ_SPINY
@@ -4394,7 +4394,7 @@ PRG004_B520:
 	TAY
 
 	LDA Level_ObjectID,X
-	CMP #OBJ_PARATROOPAGREENHOP
+	CMP #OBJ_FLYINGREDPARATROOPA
 	BLT PRG004_B55D	 ; If this is not a paratroopa, jump to PRG004_B55D
 
 	LDA Sprite_RAM+$00,Y
@@ -6206,3 +6206,6 @@ PRG004_BE54:
 
 ; Rest of ROM bank was empty
 
+ObjInit_ShelledTroop:
+	JSR Object_SetShellState
+	JMP ObjInit_GroundTroop
