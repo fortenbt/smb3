@@ -68,7 +68,7 @@ ObjectGroup03_InitJumpTable:
 ObjectGroup03_NormalJumpTable:
 	.word ObjNorm_GroundTroop	; Object $6C - OBJ_GREENTROOPA
 	.word ObjNorm_RedTroopa		; Object $6D - OBJ_REDTROOPA
-	.word ObjNorm_GroundTroop	; Object $6E - OBJ_PARATROOPAGREENHOP
+	.word ObjInit_ShelledTroop	; Object $6E - OBJ_PARATROOPAGREENHOP
 	.word ObjNorm_FlyingRedTroopa	; Object $6F - OBJ_FLYINGREDPARATROOPA
 	.word ObjNorm_GroundTroop	; Object $70 - OBJ_BUZZYBEATLE
 	.word ObjNorm_GroundTroop	; Object $71 - OBJ_SPINY

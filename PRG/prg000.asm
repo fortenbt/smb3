@@ -3606,19 +3606,30 @@ Object_HandleBumpUnderneath:
  
 	LDA Object_TileFeet2 
 	CMP #TILEA_BLOCKBUMP_CLEAR 
-	BNE Player_HitEnemy	 ; If object did not detect a block bump clear tile, jump to Player_HitEnemy 
+	BNE Player_HitEnemy	 ; If object did not detect a block bump clear tile, jump to Player_HitEnemy
 
 	; Object detected a block bump tile (object got bumped)
 
-	; Set Y Vel to -$30 (bounce dead) 
-	LDA #-$30 
-	STA <Objects_YVel,X
- 
-	JSR Level_ObjCalcXDiffs	; Detect which side object is on versus Player 
+	; Set Y Vel to -$30 (bounce dead)
+	;;LDA #-$30
+	;;STA <Objects_YVel,X
+
+	;;JSR Level_ObjCalcXDiffs	; Detect which side object is on versus Player
 
 	; Store proper X velocity
-	LDA PRG000_D16B,Y 
-	STA <Objects_XVel,X
+	;;LDA PRG000_D16B,Y
+	;;STA <Objects_XVel,X
+	JSR DoBounceYVel
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+
 
 	; Vertically flip object 
 	LDA #SPR_VFLIP

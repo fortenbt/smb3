@@ -1360,12 +1360,37 @@ DoNotMidair:
 	STA <Player_Regrabbing
 	RTS
 
+DoBounceYVel:
+	LDA Level_ObjectID,X
+	CMP #OBJ_PARATROOPAGREENHOP
+	BEQ _do_green_vel
+	CMP #OBJ_REDTROOPA
+	BNE _norm_bounce_vel
+_do_red_vel:
+	LDA #-$30
+	STA <Objects_YVel,X
+	LDA #$08
+	STA <Objects_XVel,X
+	RTS
+_do_green_vel:
+	LDA #-$50
+	STA <Objects_YVel,X
+	RTS
+_norm_bounce_vel:
+	LDA #-$30
+	STA <Objects_YVel,X
+	JSR Level_ObjCalcXDiffs		; Detect which side object is on versus Player
+	; Store proper X velocity
+	LDA PRG000_D16B,Y
+	STA <Objects_XVel,X
+	RTS
+
 	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 
