@@ -103,6 +103,7 @@ _set_poofx:
 CheckForRegrab:
 	;; This needs to load Pad_Input AND'd with PAD_A before returning
 	LDA <Player_Regrabbing		; Regrab only allowed once every few frames
+	BMI _regrab_lda_rts		; Regrab only allowed once per jump
 	BNE _regrab_do_spin
 
 	LDA <Player_InAir		; Regrab only done if in air
@@ -130,14 +131,15 @@ _regrab_do_spin:
 	STA <Player_FlipBits
 _regrab_dec_rts:
 	DEC <Player_Regrabbing
+	BEQ _regrab_dec_rts		;  If we hit zero, go to 0xFF
 _regrab_lda_rts:
 	LDA <Pad_Input
 	AND #PAD_A
 _regrab_rts:
 	RTS
 
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
@@ -1320,6 +1322,7 @@ Music_RestH_LUT:
 FALLRATE_SPIN = $20
 FallrateHook:
 	LDA <Player_Regrabbing
+	BMI _compare_normal
 	BEQ _compare_normal
 	LDA <Player_YVel
 	CMP #FALLRATE_SPIN
@@ -1340,6 +1343,7 @@ _j__cap_fallrate_max:
 
 Player_TryHoldShell:
 	LDA Player_Regrabbing
+	BMI _normal_hold
 	BNE _j_Player_KickObject	; If we're regrabbing, kick the object away
 _normal_hold:
 	BIT <Pad_Holding
@@ -1349,14 +1353,21 @@ _j_Player_KickObject:
 _j_PRG000_D34F:
 	JMP PRG000_D34F
 
-	.byte $FF, $FF, $FF
+DoNotMidair:
+	; Once we hit the ground, we can regrab again
+	LDA #$00
+	STA <Player_InAir
+	STA <Player_Regrabbing
+	RTS
+
 	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 
 	; END UNUSED SPACE
 

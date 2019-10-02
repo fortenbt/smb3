@@ -5950,6 +5950,9 @@ InAirWallslideRequirements:
 	JSR Level_CheckInFU_TileGTAttr	; Is our face touching a solid tile?
 	BCC _air_req_fail
 
+	LDA Player_IsHolding
+	BNE _air_req_fail
+
 	LDA <Player_YVel		; Are we moving downward?
 	BMI _air_req_fail
 
@@ -5993,7 +5996,7 @@ Level_CheckInFU_TileGTAttr:
 	RTS		 ; Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff, $ff
 
 
 IntIRQ_32PixelPartition_Part2:	; $9FA0
@@ -6027,12 +6030,13 @@ WJ_RIGHT_VEL	= $1f
 WJ_LEFT_VEL	= -WJ_RIGHT_VEL
 WJ_VERT_VEL	= -$2f
 HandlePlayerJumped:
-	LDA Player_Wallsliding
+	LDA <Player_Wallsliding
 	BEQ _norm_jmp_rts		; No walljump? Just do normal jump.
 
 	; Walljump
 	LDA #$00
-	STA Player_Wallsliding		; Walljumped, kill wallsliding
+	STA <Player_Wallsliding		; Walljumped, kill wallsliding
+	STA <Player_Regrabbing
 
 	LDA <Player_FlipBits
 	EOR #$40			; Force the player to turn around

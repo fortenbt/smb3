@@ -4646,8 +4646,10 @@ PRG008_B5B0:
 	DEC <Player_Y	 ; Player_Y--
 
 PRG008_B5B2:
-	LDA #$00	 
-	STA <Player_InAir ; Player NOT mid air
+	;;LDA #$00
+	;;STA <Player_InAir ; Player NOT mid air
+	JSR DoNotMidair
+	NOP
 	STA <Player_YVel  ; Halt Player vertically
 	STA Kill_Tally	  ; Reset Kill_Tally
 
@@ -5935,8 +5937,10 @@ PRG008_BB69:
 	BMI PRG008_BB1A	 ; If 'A' (relative vertical position on tile) > (height at this point on slope), jump to PRG008_BB1A (RTS)
 
 PRG008_BB7E:
-	LDA #$00
-	STA <Player_InAir ; Player is no longer mid air!
+	;;LDA #$00
+	;;STA <Player_InAir ; Player is no longer mid air!
+	JSR DoNotMidair
+	NOP
 	STA <Player_YVel  ; Player hit solid!
 	STA Kill_Tally	  ; Reset Kill_Tally
 
