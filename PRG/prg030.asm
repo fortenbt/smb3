@@ -5503,13 +5503,6 @@ _air_req_fail:
 	LDA <Player_InAir
 	RTS
 
-; This decrements both Player_AllowAirJump and Player_Wallsliding
-;; 0x6 bytes
-DecPlayer_AllowAirJump:
-	DEC Player_AllowAirJump
-	DEC <Player_Wallsliding
-	RTS
-
 ; This checks if the given tile is greater-than-or-equal-to
 ; the related "AttrTable" slot and, if so, returns 'carry set'
 ;; 0xA bytes
@@ -5597,4 +5590,14 @@ HandleSpikes:
 	BEQ _spike_rts
 	LDA Player_Kuribo
 _spike_rts:
+	RTS
+
+; This decrements both Player_AllowAirJump and Player_Wallsliding
+;; 0x6 bytes
+DecPlayer_AllowAirJump:
+	DEC Player_AllowAirJump
+	LDA <Player_Wallsliding
+	BEQ _dec_rts
+	DEC <Player_Wallsliding
+_dec_rts:
 	RTS
