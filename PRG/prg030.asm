@@ -2876,6 +2876,7 @@ DoStompComparison:
 	LDA Objects_State,X
 	CMP #OBJSTATE_SHELLED
 	BNE _not_shelled
+	STA <Temp_Var1
 	LDA <Player_Y		; This basically allows a player to grab a shelled shell as long as he's holding b
 	SUB #1
 	CMP <Player_Y
