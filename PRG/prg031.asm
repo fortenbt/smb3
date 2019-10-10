@@ -1369,7 +1369,7 @@ DoBounceYVel:
 _do_red_vel:
 	LDA #-$30
 	STA <Objects_YVel,X
-	LDA #$08
+	LDA #$0e
 	STA <Objects_XVel,X
 	RTS
 _do_green_vel:
