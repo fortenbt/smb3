@@ -3251,6 +3251,9 @@ _mg_spawn_loop:
 
 	RTS		 ; Return
 
+PRG004_FREE_SPACE:
+	.ds 0xD3
+
 
 ObjNorm_JumpingCheepCheep:
 	JSR Object_SetPaletteFromAttr	 ; Set palette for Cheep Cheep

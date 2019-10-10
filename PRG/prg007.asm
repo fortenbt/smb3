@@ -4434,6 +4434,9 @@ PRG007_B6CE:
 PRG007_B6CF:
 	JMP SObj_PlayerCollide	 ; Handle Player to Microgoomba collision and don't come back!
 
+PRG007_FREE_SPACE1:
+	.ds 0x80
+
 	; The hammer starting X is offset
 Hammer_XOff:
 	;  Not-HF HF  (HF = Horizontally flipped)
@@ -4691,6 +4694,8 @@ PRG007_B805:
 	;;LDA #$05
 	;;;STA SpecialObj_Data,X
 	JSR MicroGoombaInteraction
+	NOP
+	NOP
 
 PRG007_B826:
 	RTS		 ; Return
