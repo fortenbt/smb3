@@ -3849,7 +3849,7 @@ PRG000_D22E:
 	PLP		 ; Restore CPU state (the comparison)
 
 	SBC <Player_YHi		; Get the difference against the Player_YHi
-	BMI PRG000_D20F	 	; If negative (Player_YHi > Objects_YHi, Player is lower), jump to PRG000_D20F (Object_HoldKickOrHurtPlayer)
+	BLT PRG000_D20F	 	; If negative (Player_YHi > Objects_YHi, Player is lower), jump to PRG000_D20F (Object_HoldKickOrHurtPlayer)
 
 	LDA <Player_YVel	
 	BPL PRG000_D253	 	; If Player's Y Velocity >= 0 (stationary or moving downward), jump to PRG000_D253
