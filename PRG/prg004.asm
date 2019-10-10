@@ -73,7 +73,7 @@ ObjectGroup03_NormalJumpTable:
 	.word ObjNorm_GroundTroop	; Object $70 - OBJ_BUZZYBEATLE
 	.word ObjNorm_GroundTroop	; Object $71 - OBJ_SPINY
 	.word ObjNorm_GroundTroop	; Object $72 - OBJ_GOOMBA
-	.word ObjNorm_ParaGoomba	; Object $73 - OBJ_PARAGOOMBA
+	.word ObjNorm_ParaGoombaBomber	; Object $73 - OBJ_PARAGOOMBA
 	.word ObjNorm_ParaGoombaBomber	; Object $74 - OBJ_PARAGOOMBAWITHMICROS
 	.word ObjNorm_BossAttack	; Object $75 - OBJ_BOSSATTACK
 	.word ObjNorm_JumpingCheepCheep	; Object $76 - OBJ_JUMPINGCHEEPCHEEP
@@ -116,8 +116,8 @@ ObjectGroup03_CollideJumpTable:
 	.word $0000					; Object $70 - OBJ_BUZZYBEATLE
 	.word $0000					; Object $71 - OBJ_SPINY
 	.word $0000					; Object $72 - OBJ_GOOMBA
-	.word OCSPECIAL_KILLCHANGETO | OBJ_GOOMBA	; Object $73 - OBJ_PARAGOOMBA
-	.word OCSPECIAL_KILLCHANGETO | OBJ_GOOMBA	; Object $74 - OBJ_PARAGOOMBAWITHMICROS
+	.word $0000					; Object $73 - OBJ_PARAGOOMBA
+	.word $0000					; Object $74 - OBJ_PARAGOOMBAWITHMICROS
 	.word OCSPECIAL_KILLCHANGETO | OBJ_GOOMBA	; Object $75 - OBJ_BOSSATTACK (OCSPECIAL_KILLCHANGETO must be a mistake, but interesting!)
 	.word $0000					; Object $76 - OBJ_JUMPINGCHEEPCHEEP
 	.word $0000					; Object $77 - OBJ_GREENCHEEP
@@ -3196,215 +3196,20 @@ ObjNorm_ParaGoombaBomber:
 	LDA <Player_HaltGame
 	BEQ PRG004_AF7D	 ; If gameplay is not halted, jump to PRG004_AF7D
 
-	JMP ParaGoomba_Draw	 ; Draw Paragoomba and don't come back!
+	JMP GroundTroop_Draw	 ; Draw Paragoomba and don't come back!
 
 PRG004_AF7D:
-	LDY LRBounce_Vel
-	INY
-	INY
-
-	LDA PRG004_B34E,Y
-
-	LDY #$00	 ; Y = 0
-
-	AND <Objects_Var5,X
-	BEQ PRG004_AF8C	 ; If mask results in zero, jump to PRG004_AF8C
-
-	INY		 ; Y = 1
-
-PRG004_AF8C:
-	TYA		 
-	STA Objects_Frame,X	 ; Set frame appropriately
-
-	JSR ParaGoomba_Draw	 ; Draw Paragoomba
-	JSR PRG004_AF1A	 ; (Indirectly) Handle getting bumped underneath
-
-	LDA <Objects_Var4,X
-	JSR DynJump
-
-	; THESE MUST FOLLOW DynJump FOR THE DYNAMIC JUMP TO WORK!!
-	.word Paragoomba_FlutterDown		; 0: Paragoomba flutters down
-	.word Paragoomba_FlyAbovePlayer		; 1: Fly above Player
-	.word Paragoomba_DropMicrogoombas	; 2: Drop Micro goombas on Player
-
-Paragoomba_FlutterDown:
-	INC <Objects_Var5,X	 ; Var5++
-
-	LDY #$08	 ; Y = $08
-
-	LDA Objects_FlipBits,X
-	BNE PRG004_AFAC	 ; If flipped, jump to PRG004_AFAC
-
-	LDY #-$08	 ; Y = -$08
-
-PRG004_AFAC:
-	STY <Objects_XVel,X	 ; Set horizontal velocity
-
-	JSR Object_Move	 ; Do standard movement
-
-	; Fall slowly
-	DEC <Objects_YVel,X
-	DEC <Objects_YVel,X
-
-	LDY #$08	 ; Y = 8
-
-	LDA <Objects_DetStat,X
-	AND #$04
-	BEQ PRG004_AFDC	 ; If Paragoomba has not hit floor, jump to PRG004_AFDC
-
-	LDA <Objects_Var5,X
-	AND #$3f
-	BNE PRG004_AFCC	 ; 64 ticks on, 64 ticks off; jump to PRG004_AFCC
-
-	JSR Level_ObjCalcXDiffs	
-
-	; Set flip towards Player
-	LDA GroundTroop_FlipTowardsPlayer,Y
-	STA Objects_FlipBits,X
-
-PRG004_AFCC:
-	JSR Object_HitGround	 ; Align to floor
-
-	LDY #$00	 ; Y = 0
-
-	LDA Objects_Timer,X
-	BEQ PRG004_AFE3	 ; If timer expired, jump to PRG004_AFE3
-
-	CMP #$20
-	BGE PRG004_AFDC	 ; If timer >= $20, jump to PRG004_AFDC
-
-	LDY #$08	 ; Y = 8
-
-PRG004_AFDC:
-	TYA
-	STA Objects_Var3,X	; Set Var3 to 0 or 8
-
-	JMP PRG004_AFE5	 ; Jump to PRG004_AFE5
-
-PRG004_AFE3:
-	INC <Objects_Var4,X	 ; Var4++ (next internal state)
-
-PRG004_AFE5:
-	LDA <Objects_DetStat,X
-	AND #$03
-	BEQ PRG004_AFEE	 ; If Paragoomba did not hit wall, jump to PRG004_AFEE (RTS)
-
-	JSR Object_FlipFace	 ; Turn around
-
-PRG004_AFEE:
-	RTS		 ; Return
-
-
-Paragoomba_FlyAbovePlayer:
-
-	; Var3 += 3
-	INC Objects_Var3,X
-	INC Objects_Var3,X
-	INC Objects_Var3,X
-
-	JSR Level_ObjCalcYDiffs
-
-	CPY #$00
-	BNE PRG004_B011	 ; If Player is higher than Paragoomba, jump to PRG004_B011
-
-	LDA <Temp_Var16
-	CMP #$38
-	BLT PRG004_B011	 ; If Paragoomba is not sufficiently above Player, jump to PRG004_B011
-
-	INC <Objects_YVel,X	 ; A little lower
-
-	BNE PRG004_B015	 	; If Paragoomba hit zero, jump to PRG004_B015
-
-	INC <Objects_Var4,X	; Var4++ (next internal state)
-
-	; Set timer to $80
-	LDA #$80
-	STA Objects_Timer,X
-
-	RTS		 ; Return
-
-PRG004_B011:
-
-	; Fly higher
-	LDA #-$10
-	STA <Objects_YVel,X
-
-PRG004_B015:
-	JSR Object_ApplyYVel_NoLimit	 ; Apply Y velocity
-
-	JMP PRG004_B046		; Jump to PRG004_B046
-
-Paragoomba_DropMicrogoombas:
-	LDY Objects_Timer,X
-	BNE PRG004_B029	 ; If timer not expired, jump to PRG004_B029
- 
-	; Return to first internal state
-	LDA #$00
-	STA <Objects_Var4,X
-
-	; Set timer to $80
-	LDA #$80
-	STA Objects_Timer,X
-
-PRG004_B029:
-	; Var3 += 2
-	INC Objects_Var3,X
-	INC Objects_Var3,X
-
-	INC <Objects_Var5,X	 ; Var5++
-
-	LDA <Objects_Var5,X
-	AND #$1f
-	BNE PRG004_B03A	 ; 1:32 ticks, proceed, otherwise jump to PRG004_B03A
-
-	JSR Paragoomba_SpawnMicroGoomba	 ; Drop a Microgoomba
-
-PRG004_B03A:
-	LDY #$08	 ; Y = $08
-
-	LDA <Objects_Var5,X
-	AND #$10
-	BEQ PRG004_B044	 ; 16 ticks on, 16 ticks off; jump to PRG004_B044
-
-	LDY #-$08	 ; Y = -$08
-
-PRG004_B044:
-	STY <Objects_YVel,X	 ; Update Y velocity
-
-PRG004_B046:
-	LDY #$00	 ; Y = 0
-
-	LDA Objects_FlipBits,X
-	BNE PRG004_B04E	 ; If flipped, jump to PRG004_B04E
-
-	INY		 ; Y = 1
-
-PRG004_B04E:
-	LDA <Objects_XVel,X
-	CMP Paragoomba_XVelLimit,Y
-	BEQ PRG004_B05B	 	; If Paragoomba is at his X velocity limit, jump to PRG004_B05B
-
-	ADD Paragoomba_XVelAccel,Y
-	STA <Objects_XVel,X	 ; Accelerate Paragoomba
-
-PRG004_B05B:
-	INC Objects_Var2,X	 ; Var2++
-
-	LDA Objects_Var2,X
-	AND #$3f
-	BNE PRG004_B06E	 ; 1:64 ticks proceed, otherwise jump to PRG004_B06E
-
-	JSR Level_ObjCalcXDiffs	
-
-	; Move towards Player
-	LDA GroundTroop_FlipTowardsPlayer,Y
-	STA Objects_FlipBits,X
-
-PRG004_B06E:
-	JSR Object_ApplyXVel	 ; Apply X Velocity
-	JMP Object_ApplyYVel_NoLimit	 ; Apply Y velocity and don't come back!
+	JMP ObjNorm_GroundTroop
 
 Paragoomba_SpawnMicroGoomba:
+	LDA #$02			; Spawn 2 microgoombas
+	STA <Temp_Var1
+	LDA Level_ObjectID,X
+	CMP #OBJ_PARAGOOMBA
+	BEQ _mg_spawn_loop		; Paragoomba spawns 2 micros
+	DEC <Temp_Var1			; Para w/micros spawns 1 micro
+
+_mg_spawn_loop:
 	LDY #$05	 ; Searching special object slots 0 - 5
 	JSR SpecialObj_FindEmptyAbortY	 ; Find an open special object slot or don't come back
 
@@ -3415,10 +3220,12 @@ Paragoomba_SpawnMicroGoomba:
 	; Data = 0
 	LDA #$00
 	STA SpecialObj_Data,Y
+	LDA #$08
+	STA SpecialObj_Var1,Y		; Var1 = 0 is stompable
 
 	; Microgoomba Y
 	LDA <Objects_Y,X
-	ADD #$04
+	ADD #$00
 	STA SpecialObj_YLo,Y
 	LDA <Objects_YHi,X
 	ADC #$00
@@ -3426,13 +3233,21 @@ Paragoomba_SpawnMicroGoomba:
 
 	; Microgoomba X
 	LDA <Objects_X,X
-	ADD #$04
+	ADD #$00
 	STA SpecialObj_XLo,Y
 
 	; Microgoomba X/YVel = 0
 	LDA #$00
 	STA SpecialObj_YVel,Y
+	LDA #$28
 	STA SpecialObj_XVel,Y
+
+	DEC <Temp_Var1
+	BNE _mg_spawn_loop
+	; Second microgoomba is further out
+	LDA SpecialObj_XLo,Y
+	ADD #$08
+	STA SpecialObj_XLo,Y
 
 	RTS		 ; Return
 

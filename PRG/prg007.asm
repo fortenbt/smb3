@@ -4325,45 +4325,22 @@ SObj_Microgoomba:
 
 	JMP Microgoomba_Draw	 ; Draw Microgoomba and don't come back!
 
-PRG007_B5CC:
+PRG007_B5CC:				; Not paused
+	LDA SpecialObj_Var1,X
+	BEQ _stompable			; SpecialObj_Var1 is zero when microgoomba becomes stompable
+	DEC SpecialObj_Var1,X
+	BNE PRG007_B660
+_stompable:
 	LDA SpecialObj_Data,X
-	BNE PRG007_B5D4	 ; If SpecialObj_Data <> 0, jump to PRG007_B5D4
+	BNE PRG007_B5D4			; If SpecialObj_Data <> 0, jump to PRG007_B5D4
 
-	JMP PRG007_B660	 ; Otherwise, jump to PRG007_B660
+	BEQ PRG007_B660			; Otherwise, jump to PRG007_B660
 
 PRG007_B5D4:
-	BPL PRG007_B5DC	 ; If SpecialObj_Data > 0, jump to PRG007_B5DC
-
-	JSR SObj_ApplyXYVelsWithGravity	 ; Apply X and Y velocities with gravity
-	JMP Microgoomba_Draw	 ; Draw Microgoomba and don't come back
-
-PRG007_B5DC:
-	LDY Player_StarInv
-	BNE PRG007_B601		; If Player is invincible by Star Man, jump to PRG007_B601
-
-	LDY Player_InWater
-	BNE PRG007_B601	 ; If Player is in water, jump to PRG007_B601
-
-	INC Player_UphillSpeedIdx	 ; Player_UphillSpeedIdx = 1 (Microgoomba stuck to Player)
-
-	CMP #$05
-	BGE PRG007_B5F6	 ; If Microgoomba is already at his maximum stickiness, jump to PRG007_B5F6
-
-	; Player is trying to shake him...
-
-	LDA <Counter_1
-	AND #$0f
-	BNE PRG007_B5F6	 ; 1:16 ticks proceed, otherwise, jump to PRG007_B5F6
-
-	INC SpecialObj_Data,X	 ; SpecialObj_Data++ (Increase "stickiness", up to 5)
-
-PRG007_B5F6:
-	LDA <Pad_Input
-	AND #$ff	 ; This probably was intended to be a specific button rather than "everything"
-	BEQ PRG007_B617	 ; If Player is not pressing anything, jump to PRG007_B617
-
-	DEC SpecialObj_Data,X	 ; SpecialObj_Data--
-	BNE PRG007_B617	 	; If SpecialObj_Data > 0, jump to PRG007_B617
+	BPL PRG007_B601			; SpecialObj_Data set to 1 when stomped
+	; Once it's been killed, just apply velocity and gravity until it falls away
+	JSR SObj_ApplyXYVelsWithGravity	; Apply X and Y velocities with gravity
+	JMP Microgoomba_Draw
 
 PRG007_B601:
 
@@ -4385,57 +4362,6 @@ PRG007_B601:
 PRG007_B614:
 	STA SpecialObj_XVel,X	 ; Random X velocity
 
-PRG007_B617:
-	INC SpecialObj_Var1,X	 ; SpecialObj_Var1++
-
-	; Set Microgoomba's Y...
-	LDA SpecialObj_Var1,X
-	LSR A
-	LSR A
-	AND #%00011111
-	CMP #%00010000
-	AND #%00001111
-	BCC PRG007_B62B	 ; 16 ticks on, 16 ticks off; jump to PRG007_B62B
-
-	EOR #%00001111
-	ADC #$00
-
-PRG007_B62B:
-	CLC		 ; Clear carry
-
-	LDY Player_IsDucking
-	BNE PRG007_B635	 ; If Player is ducking, jump to PRG007_B635
-
-	LDY <Player_Suit
-	BNE PRG007_B639	 ; If Player is small, jump to PRG007_B639
-
-PRG007_B635:
-	LSR A
-	ADD #$08
-
-PRG007_B639:
-	ADC <Player_Y
-	STA SpecialObj_YLo,X
-	LDA <Player_YHi
-	ADC #$00
-	STA SpecialObj_YHi,X
-
-
-	; Set Microgoomba's X...
-	LDA SpecialObj_Var1,X
-	AND #%00011111
-	CMP #%00010000
-	AND #%00001111
-	BLT PRG007_B654	 ; 16 ticks on, 16 ticks off; jump to PRG007_B62B
-
-	EOR #%00001111
-	ADC #$00
-
-PRG007_B654:
-	SUB #$03
-	ADD <Player_X
-	STA SpecialObj_XLo,X
-
 	JMP Microgoomba_Draw	 ; Draw Microgoomba and don't come back
 
 PRG007_B660:
@@ -4445,30 +4371,11 @@ PRG007_B660:
 	JSR SObj_AddXVelFrac	 ; Apply X Velocity
 	JSR SObj_AddYVelFrac	 ; Apply Y Velocity
 
-	LDA SpecialObj_YVel,X
-	CMP #$10
-	BGS PRG007_B670	 ; If Microgoomba's Y velocity >= 16, jump to PRG007_B670
-
-	INC SpecialObj_YVel,X	 ; Otherwise, Y Vel++
-
-PRG007_B670:
-	LDA <Counter_1
-	AND #$00
-	BNE Microgoomba_Draw	 ; Technically NEVER jump to Microgoomba_Draw (??)
-
-	LDA SpecialObj_Var1,X
-	AND #$01
-	TAY		 ; Y = 0 or 1
-
-	; Accelerate Microgoomba
+	; Decelerate Microgoomba until normal goomba speed
 	LDA SpecialObj_XVel,X
-	ADD Microgoomba_XAccel,Y
-	STA SpecialObj_XVel,X
-
-	CMP Microgoomba_XLimit,Y
-	BNE Microgoomba_Draw	 ; If Microgoomba hasn't his X velocity limit, jump to Microgoomba_Draw
-
-	INC SpecialObj_Var1,X	 ; Otherwise, SpecialObj_Var1++ (switch direction)
+	CMP #$08
+	BEQ Microgoomba_Draw
+	DEC SpecialObj_XVel,X
 
 Microgoomba_Draw:
 	JSR SObj_GetSprRAMOffChkVScreen
@@ -4781,8 +4688,9 @@ PRG007_B805:
 	BNE PRG007_B827	 ; If this is not a microgoomba, jump to PRG007_B827
 
 	; Microgooma sets to 5
-	LDA #$05
-	STA SpecialObj_Data,X
+	;;LDA #$05
+	;;;STA SpecialObj_Data,X
+	JSR MicroGoombaInteraction
 
 PRG007_B826:
 	RTS		 ; Return

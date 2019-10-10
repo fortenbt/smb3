@@ -2888,10 +2888,65 @@ _not_shelled:			; For non-shells, do normal stomp comparison
 	CMP <Player_Y
 	RTS
 
+DoSquish:
+	LDA Level_ObjectID,X
+	SUB #OBJ_PARAGOOMBA
+	CMP #2			; 0 - 1 would be OBJ_PARAGOOMBA, OBJ_PARAGOOMBAWITHMICROS
+	BCS _ldsnd_rts
+	JSR Paragoomba_SpawnMicroGoomba
+	LDA #$03				; Set object frame to 3
+	STA Objects_Frame,X
+_ldsnd_rts:
+	LDA Sound_QPlayer
+	RTS
+
+MicroGoombaInteraction:
+	LDA SpecialObj_YLo,X	; Get object's Y
+	SUB #$12		; Subtract height above object considered "stompable" range
+	ROL <Temp_Var1		; Stores the carry bit into Temp_Var1 bit 0
+	CMP <Player_Y
+
+	PHP			; Save CPU state (the comparison)
+
+	LSR <Temp_Var1		; Restore the carry bit
+	LDA SpecialObj_YHi,X
+	SBC #$00		; Aply the carry bit to the Objects_YHi as needed for the height subtraction
+
+	PLP			; Restore CPU state (the comparison)
+
+	SBC <Player_YHi		; Get the difference against the Player_YHi
+	BLT _j_Player_GetHurt	; If negative (Player_YHi > Objects_YHi, Player is lower), hurt player
+
+	LDA SpecialObj_Var1,X	; Is it stompable yet?
+	BEQ _stomp_micro
+	RTS
+_stomp_micro:
+	LDA #$01		; "Stomp" microgoomba
+	STA SpecialObj_Data,X
+	LDA #-$40
+	STA <Player_YVel
+
+	LDA Sound_QPlayer	; "Squish" sound
+	ORA #SND_PLAYERSWIM
+	STA Sound_QPlayer
+
+	RTS
+_j_Player_GetHurt:
+	JMP Player_GetHurt
+
+CheckSquashedGoomba:
+	LDA Level_ObjectID,X
+	SUB #OBJ_GOOMBA
+	CMP #3			; allows OBJ_GOOMBA, OBJ_PARAGOOMBA, OBJ_PARAGOOMBAWITHMICROS
+	BCS _squash_rts
+	LDA #0			; return 0 if this was a goomba
+_squash_rts:
+	RTS
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; Removed 2-player vs and game over
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.ds 0x31D
+	.ds 0x2B0
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 
 

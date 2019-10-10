@@ -3343,8 +3343,11 @@ PRG000_D07E:
 	LDA #$03
 	STA Objects_Frame,X
 
-	LDA Level_ObjectID,X
-	CMP #OBJ_GOOMBA
+	;;;LDA Level_ObjectID,X
+	;;CMP #OBJ_GOOMBA
+	NOP
+	NOP
+	JSR CheckSquashedGoomba
 	BNE PRG000_D08D	 ; If object is not a goomba, jump to PRG000_D08D (ObjectGroup_PatternSets, i.e. the "giant" enemy alternative)
 
 	JMP Object_ShakeAndDrawMirrored	 ; Draw goomba as mirrored sprite and don't come back
@@ -3967,7 +3970,8 @@ PRG000_D2B4:
 	STA <Player_YVel
 
 	; Play squish sound
-	LDA Sound_QPlayer
+	;;;LDA Sound_QPlayer
+	JSR DoSquish
 	ORA #SND_PLAYERSWIM
 	STA Sound_QPlayer
 
