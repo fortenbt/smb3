@@ -3828,10 +3828,17 @@ PRG000_D218:
 PRG000_D22E:
 	STY <Temp_Var2		 ; -> Temp_Var2 (height above object considered "stompable" range)
 
-	LDA <Objects_Y,X	 ; Get object's Y
-	SUB <Temp_Var2		 ; Subtract Temp_Var2 (height above object considered "stompable" range)
-	ROL <Temp_Var1		 ; Stores the carry bit into Temp_Var1 bit 0
-	CMP <Player_Y
+	JSR DoStompComparison
+	;;LDA <Objects_Y,X	 ; Get object's Y
+	;;;SUB <Temp_Var2		 ; Subtract Temp_Var2 (height above object considered "stompable" range)
+	;;ROL <Temp_Var1		 ; Stores the carry bit into Temp_Var1 bit 0
+	;;CMP <Player_Y
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
 
 	PHP		 ; Save CPU state (the comparison)
 
