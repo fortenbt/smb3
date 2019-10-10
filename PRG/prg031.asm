@@ -1373,7 +1373,7 @@ _do_red_vel:
 	STA <Objects_XVel,X
 	RTS
 _do_green_vel:
-	LDA #-$50
+	LDA #-$53
 	STA <Objects_YVel,X
 	RTS
 _norm_bounce_vel:
