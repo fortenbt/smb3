@@ -4646,10 +4646,18 @@ SObj_PlayerCollide:
 
 	; Player to Special Object collision logic...
 
-	TXA		 ; object slot index -> 'A'
-	ADD <Counter_1	 ; Keep it interesting
-	LSR A
-	BCC PRG007_B826	 ; Every other tick, jump to PRG007_B826 (RTS)
+	; Do these checks on every frame now (could cause more lag??)
+	;TXA			; object slot index -> 'A'
+	;;;ADD <Counter_1	;Keep it interesting
+	;LSR A
+	;;BCC PRG007_B826	; Every other tick, jump to PRG007_B826 (RTS)
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
 
 	LDY #$00	 ; Y = 0 (small/ducking)
 
@@ -4670,10 +4678,10 @@ PRG007_B7E4:
 	BGE PRG007_B843	 	; If result >= SObj_VLimit, jump to PRG007_B843 (RTS)
 
 	LDA SpecialObj_XLo,X		; Special object X
-	ADD #$06			; +6
+	ADD #$04			; Add less to be closer to middle of object
 	SUB <Player_X			; Subtract Player X
 	SBC #$00			; Carry?
-	CMP #16
+	CMP #18				; 18 gives us pretty accurate results for microgoombas...
 	BGE PRG007_B843	 	; If result >= 16, jump to PRG007_B843 (RTS)
 
 PRG007_B805:
