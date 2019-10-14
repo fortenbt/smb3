@@ -2307,7 +2307,8 @@ PRG030_8E4F:
 PRG030_8E5D:
 	; End of animations...
 
-	LDA SndCur_Pause
+	;;;LDA SndCur_Pause
+	JSR EndAnimHook
 	BNE PRG030_8E79	 ; Can't unpause game while pause sound is playing
 
 	LDA <Pad_Input	
@@ -2943,11 +2944,21 @@ CheckSquashedGoomba:
 _squash_rts:
 	RTS
 
+NewGfx:
+	.byte 118, 119, 124, 125
+EndAnimHook:
+	LDA <Level_OnOff
+	BEQ _anim_hook_rts
+	LDA NewGfx,X
+	STA PatTable_BankSel+1
+_anim_hook_rts:
+	LDA SndCur_Pause
+	RTS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; Removed 2-player vs and game over
 PRG030_FREE_SPACE:
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.ds 0x2C6
+	.ds 0x2B0
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 
 

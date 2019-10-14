@@ -874,7 +874,7 @@ PLAYERSUIT_LAST		= PLAYERSUIT_HAMMER	; Marker for "last" suit (Debug cycler need
 	Player_WagCount:	.ds 1	; after wagging raccoon tail, until this hits zero, holding 'A' keeps your fall rate low
 	Player_IsDying:		.ds 1	; 0 = Not dying, 1 = Dying, 2 = Dropped off screen, 3 = Death due to TIME UP
 
-				.ds 1	; $F2 unused
+	Level_OnOff:		.ds 1	; $F2 unused
 
 	Obj01_Flag:		.ds 1	; Not sure what Obj01 is!! This blocks its left/right handler logic.
 
@@ -3816,6 +3816,9 @@ TILE1_PIPEHT		= $B8	; Pipe horizontal middle top
 TILE1_PIPEHB		= $B9	; Pipe horizontal middle bottom
 TILE1_PIPEVL		= $BA	; Pipe middle vertical left
 TILE1_PIPEVR		= $BB	; Pipe middle vertical right
+
+TILE1_ON		= $BE
+TILE1_OFF		= $FB
 
 TILE1_BLOCK_SHUR	= $C0	; Big block shadow upper-right
 TILE1_BLOCK_SHUL	= $C1	; Big block shadow upper-left (actually none, also used as a cleared P-Switch on level reload, AKA TILEA_PSWITCH_BLANK)
