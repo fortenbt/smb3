@@ -1576,7 +1576,8 @@ PRG000_C7FA:
 PRG000_C82A:
 	LDA [Temp_Var1],Y	; Get tile
  
-	JSR PSwitch_SubstTileAndAttr	 ; Substitute tile if P-Switch is active
+	;;;JSR PSwitch_SubstTileAndAttr	 ; Substitute tile if P-Switch is active
+	JSR DoSubstTileAndAttr
 
 	JMP PRG000_C834	 ; Jump to PRG000_C834
 

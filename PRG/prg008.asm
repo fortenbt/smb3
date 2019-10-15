@@ -4329,7 +4329,8 @@ PRG008_B42E:
 	LDY Level_PipeMove	; Y = Level_PipeMove (movement command in $8x form)
 	BNE PRG008_B43F	 	; If Level_PipeMove <> 0, jump to PRG008_B43F
 
-	JSR PSwitch_SubstTileAndAttr	 ; Otherwise, substitute tile if effected by P-Switch
+	;;;JSR PSwitch_SubstTileAndAttr	 ; Otherwise, substitute tile if effected by P-Switch
+	JSR DoSubstTileAndAttr
 
 PRG008_B43F:
 	LDY <Temp_Var10	 ; Y = Player_YVel
@@ -4366,7 +4367,8 @@ PRG008_B458:
 	LDY Level_PipeMove	 ; Y = Level_PipeMove
 	BNE PRG008_B46C	 	; If Level_PipeMove <> 0, jump to PRG008_B46C
 
-	JSR PSwitch_SubstTileAndAttr	 ; Otherwise, substitute tile if effected by P-Switch
+	;;;JSR PSwitch_SubstTileAndAttr	 ; Otherwise, substitute tile if effected by P-Switch
+	JSR DoSubstTileAndAttr
 
 PRG008_B46C:
 	LDY #$00
@@ -5193,7 +5195,8 @@ LATP_Star:
 	RTS		 ; Return
 
 LATP_Coin:
-	JSR LATP_CoinCommon	 ; Do common "power up" coin routine
+	;;;JSR LATP_CoinCommon	 ; Do common "power up" coin routine
+	JSR CoinblockHook
 
 	LDY #$01	 ; Y = 1 (spawn a coin) (index into PRG001 Bouncer_PUp, i.e. nothing)
 

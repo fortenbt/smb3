@@ -2945,7 +2945,7 @@ _squash_rts:
 	RTS
 
 NewGfx:
-	.byte 118, 119, 124, 125
+	.byte 119, 121, 123, 125
 EndAnimHook:
 	LDA <Level_OnOff
 	BEQ _anim_hook_rts
@@ -2954,11 +2954,64 @@ EndAnimHook:
 _anim_hook_rts:
 	LDA SndCur_Pause
 	RTS
+
+CoinblockHook:
+	LDA #$01
+	EOR <Level_OnOff
+	STA <Level_OnOff
+
+	JMP LATP_CoinCommon
+
+
+OnTile:		.byte TILE1_ON,			TILE1_OFF_INACTIVE
+OffTile:	.byte TILE1_ON_INACTIVE,	TILE1_OFF
+OffAttr:	.byte $00, 			$03
+
+OnOff_SubstTileAndAddr:
+	LDY <Level_OnOff
+	BEQ _onoff_rts		; if 0, RTS
+
+	LDY #(OffTile - OnTile - 1)
+_check_all_tiles:
+	CMP OnTile,Y
+	BNE _next_tile	 	; If this is not a match, jump to PRG000_C858
+
+	STA <Temp_Var5		; Signal we replaced
+	LDA OffAttr,Y		; Get replacement attribute
+	STA <Player_Slopes	; Store into Player_Slopes
+
+	LDA OffTile,Y		; Get replacement tile
+	RTS			; Return
+
+_next_tile:
+	DEY			; Y--
+	BPL _check_all_tiles	; While Y >= 0, loop!
+
+_onoff_rts:
+	RTS			; Return
+
+DoSubstTileAndAttr:
+	STA <Temp_Var6		; store tile
+	LDA #$00
+	STA <Temp_Var5
+	LDA <Temp_Var6		; get tile
+	JSR OnOff_SubstTileAndAddr
+	PHA			; store result
+	LDA <Temp_Var5		; did we replace?
+	BEQ _pswitch_subst
+	PLA			; get result
+	RTS
+_pswitch_subst:
+	PLA			; discard result
+	LDA <Temp_Var6		; get tile
+	JSR PSwitch_SubstTileAndAttr
+	RTS			; Return
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; Removed 2-player vs and game over
 PRG030_FREE_SPACE:
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.ds 0x2B0
+	.ds 0x270
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 
 

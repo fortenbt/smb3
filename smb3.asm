@@ -3817,8 +3817,10 @@ TILE1_PIPEHB		= $B9	; Pipe horizontal middle bottom
 TILE1_PIPEVL		= $BA	; Pipe middle vertical left
 TILE1_PIPEVR		= $BB	; Pipe middle vertical right
 
-TILE1_ON		= $BE
-TILE1_OFF		= $FB
+TILE1_ON		= $BE	; See prg015.asm - solid on block
+TILE1_ON_INACTIVE	= $82	; non-solid on block outline
+TILE1_OFF		= $FB	; solid off block
+TILE1_OFF_INACTIVE	= $D2	; non-solid off block outline
 
 TILE1_BLOCK_SHUR	= $C0	; Big block shadow upper-right
 TILE1_BLOCK_SHUL	= $C1	; Big block shadow upper-left (actually none, also used as a cleared P-Switch on level reload, AKA TILEA_PSWITCH_BLANK)

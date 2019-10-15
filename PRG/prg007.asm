@@ -1056,7 +1056,8 @@ PRG007_A506:
 
 PRG007_A52D:
 	LDA [Temp_Var1],Y	 ; Get the tile at the Player Projectile 
-	JSR PSwitch_SubstTileAndAttr	 ; Handle P-Switch changed tiles
+	;;;JSR PSwitch_SubstTileAndAttr	 ; Handle P-Switch changed tiles
+	JSR DoSubstTileAndAttr
 	PHA		 ; Save adjusted tile
 
 	ASL A
