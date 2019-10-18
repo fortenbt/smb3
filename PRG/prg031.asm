@@ -115,7 +115,7 @@ CheckForRegrab:
 	BNE _regrab_lda_rts
 
 	LDA <Pad_Input
-	AND #PAD_A			; Regrab while falaling in air by pressing A
+	AND #PAD_A			; Regrab while falling in air by pressing A
 	BEQ _regrab_rts
 
 	LDA #30
@@ -1365,12 +1365,19 @@ DoBounceYVel:
 	CMP #OBJ_PARATROOPAGREENHOP
 	BEQ _do_green_vel
 	CMP #OBJ_REDTROOPA
+	BEQ _do_red_vel
+	CMP #OBJ_SPINY
 	BNE _norm_bounce_vel
+_do_spiny_vel:
+	LDA #$10
+	STA <Objects_XVel,X
+	BNE __neg30rts
 _do_red_vel:
-	LDA #-$30
-	STA <Objects_YVel,X
 	LDA #$0e
 	STA <Objects_XVel,X
+__neg30rts:
+	LDA #-$30
+	STA <Objects_YVel,X
 	RTS
 _do_green_vel:
 	LDA #-$53
@@ -1390,8 +1397,7 @@ _norm_bounce_vel:
 	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 
 	; END UNUSED SPACE
 
