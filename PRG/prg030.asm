@@ -2947,8 +2947,10 @@ _squash_rts:
 NewGfx:
 	.byte 119, 121, 123, 125
 EndAnimHook:
+	LDA Level_TimerEn
+	BMI _anim_hook_rts	; If bit 7 is set (animations disabled), jump to _anim_hook_rts
 	LDA <Level_OnOff
-	BEQ _anim_hook_rts
+	BEQ _anim_hook_rts	; If Level_OnOff is 0, normal animations already happened
 	LDA NewGfx,X
 	STA PatTable_BankSel+1
 _anim_hook_rts:
@@ -3011,7 +3013,7 @@ _pswitch_subst:
 	;; Removed 2-player vs and game over
 PRG030_FREE_SPACE:
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.ds 0x270
+	.ds 0x26d
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 
 
