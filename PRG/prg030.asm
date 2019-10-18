@@ -2870,18 +2870,14 @@ Do_2PVsChallenge:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 DoStompComparison:
-	;LDA Level_ObjectID,X
-	;SUB #OBJ_GREENTROOPA
-	;CMP #6			; 0 - 5 would be OBJ_GREENTROOPA, OBJ_REDTROOPA, OBJ_PARATROOPAGREENHOP, OBJ_FLYINGREDPARATROOPA, OBJ_BUZZYBEATLE, OBJ_SPINY
-	;BCS _not_a_shell
 	LDA Objects_State,X
 	CMP #OBJSTATE_SHELLED
 	BNE _not_shelled
-	STA <Temp_Var1
-	LDA <Player_Y		; This basically allows a player to grab a shelled shell as long as he's holding b
-	SUB #1
-	CMP <Player_Y
-	RTS
+	; We're shelled and we collided, remove this return address and jmp to Object_HoldKickOrHurtPlayer
+	; This allows us to grab shelled objects if we're holding B no matter what
+	PLA
+	PLA
+	JMP Object_HoldKickOrHurtPlayer
 _not_shelled:			; For non-shells, do normal stomp comparison
 	LDA <Objects_Y,X	; Get object's Y
 	SUB <Temp_Var2		; Subtract Temp_Var2 (height above object considered "stompable" range)
@@ -3013,7 +3009,7 @@ _pswitch_subst:
 	;; Removed 2-player vs and game over
 PRG030_FREE_SPACE:
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.ds 0x26d
+	.ds 0x272
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 
 
