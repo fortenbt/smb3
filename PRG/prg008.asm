@@ -6412,10 +6412,10 @@ PRG008_BD93:
 	JMP Player_GetHurt	; Hurt Player!!
 
 PRG008_BD96:
-	LDX #$03	 ; X = 3
+	LDX #$04	 ; X = 3
 
 PRG008_BD98:
-	LDA Level_Tile_GndL,X
+	LDA Level_Tile_Head,X
 	CMP MuncherJelectroSet,Y
 	BEQ PRG008_BDA4		; If Player is touching muncher/jelectro (whichever is appropriate), jump to PRG008_BDA4
  
