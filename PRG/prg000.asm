@@ -3519,7 +3519,8 @@ PRG000_D120:
 
 	; Object is not a Bob-omb and not an Ice Block... 
 
-	LDA Objects_Timer3,X 
+	;;;LDA Objects_Timer3,X
+	JSR CheckForWakeup
 	BNE PRG000_D15A	 ; If timer 3 is not expired, jump to PRG000_D15A (RTS) 
 
 	LDA Objects_State,X 

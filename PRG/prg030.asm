@@ -3005,6 +3005,15 @@ _pswitch_subst:
 	JSR PSwitch_SubstTileAndAttr
 	RTS			; Return
 
+
+CheckForWakeup:
+	CMP #OBJ_PARATROOPAGREENHOP
+	BNE _check_wakeup_rts
+	STA Objects_Timer3,X	; Don't let the greenhop troopa wake up
+_check_wakeup_rts:
+	LDA Objects_Timer3,X
+	RTS
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; Removed 2-player vs and game over
 PRG030_FREE_SPACE:
