@@ -27,7 +27,7 @@ ObjectGroup03_InitJumpTable:
 	.word ObjInit_GroundTroop	; Object $6C - OBJ_GREENTROOPA
 	.word ObjInit_GroundTroop	; Object $6D - OBJ_REDTROOPA
 	.word ObjInit_ShelledTroop	; Object $6E - OBJ_PARATROOPAGREENHOP
-	.word ObjInit_GroundTroop	; Object $6F - OBJ_FLYINGREDPARATROOPA
+	.word ObjInit_KickedTroop	; Object $6F - OBJ_FLYINGREDPARATROOPA
 	.word ObjInit_GroundTroop	; Object $70 - OBJ_BUZZYBEATLE
 	.word ObjInit_ShelledTroop	; Object $71 - OBJ_SPINY
 	.word ObjInit_GroundTroop	; Object $72 - OBJ_GOOMBA
@@ -6026,4 +6026,11 @@ PRG004_BE54:
 
 ObjInit_ShelledTroop:
 	JSR Object_SetShellState
+	JMP ObjInit_GroundTroop
+
+ObjInit_KickedTroop:
+	LDA #OBJSTATE_KICKED
+	STA Objects_State,X
+	LDA #$30
+	STA <Objects_XVel,X
 	JMP ObjInit_GroundTroop
