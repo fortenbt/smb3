@@ -2240,7 +2240,8 @@ PRG000_CB4F:
 	JSR Object_AboutFace	 ; Turn around... 
 
 PRG000_CB58:
-	JSR Object_HandleBumpUnderneath	 ; Handle object getting hit from underside 
+	;;;JSR Object_HandleBumpUnderneath	 ; Handle object getting hit from underside
+	JSR DoShelledBumps
 
 PRG000_CB5B:
 	JSR Object_BumpOffOthers	 ; Bump off and turn away from other objects 
@@ -2817,8 +2818,9 @@ ObjState_Held:
 
 PRG000_CE28:
 	JSR Object_ShellDoWakeUp ; Wake up while Player is holding object... 
-	BIT <Pad_Holding 
-	BVC Player_KickObject	 ; If Player is NOT holding B button, jump to Player_KickObject  
+	;;BIT <Pad_Holding
+	;;BVC Player_KickObject	 ; If Player is NOT holding B button, jump to Player_KickObject
+	JMP DoHeldKick
 
 PRG000_CE2F:
 	JMP PRG000_CEEF	 ; Jump to PRG000_CEEF
@@ -2862,7 +2864,8 @@ PRG000_CE54:
 	STA <Objects_YVel,X
 
 	; Set X Velocity appropriately based on kick direction
-	JSR Level_ObjCalcXDiffs
+	;;;JSR Level_ObjCalcXDiffs
+	JSR SetKickedBobombVel
 	LDA BobombKickXVel,Y
 	STA <Objects_XVel,X
 
@@ -2907,7 +2910,8 @@ PRG000_CE79:
 PRG000_CE94:
 	STY <Objects_XVel,X	 ; Set minimum X velocity on object (to enable wall hit detection)
 
-	JSR Object_WorldDetectN1 ; Detect against world
+	;;;JSR Object_WorldDetectN1 ; Detect against world
+	JSR SetKickedNonIceblockVel
 
 	JMP PRG000_CEB4
 

@@ -2897,6 +2897,8 @@ _ldsnd_rts:
 	LDA Sound_QPlayer
 	RTS
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 MicroGoombaInteraction:
 	LDA SpecialObj_YLo,X	; Get object's Y
 	SUB #$12		; Subtract height above object considered "stompable" range
@@ -2931,6 +2933,8 @@ _stomp_micro:
 _j_Player_GetHurt:
 	JMP Player_GetHurt
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 CheckSquashedGoomba:
 	LDA Level_ObjectID,X
 	SUB #OBJ_GOOMBA
@@ -2939,6 +2943,8 @@ CheckSquashedGoomba:
 	LDA #0			; return 0 if this was a goomba
 _squash_rts:
 	RTS
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 NewGfx:
 	.byte 119, 121, 123, 125
@@ -2953,6 +2959,8 @@ _anim_hook_rts:
 	LDA SndCur_Pause
 	RTS
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 CoinblockHook:
 	LDA #$01
 	EOR <Level_OnOff
@@ -2960,6 +2968,7 @@ CoinblockHook:
 
 	JMP LATP_CoinCommon
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 OnTile:		.byte TILE1_ON,			TILE1_OFF_INACTIVE
 OffTile:	.byte TILE1_ON_INACTIVE,	TILE1_OFF
@@ -2988,6 +2997,8 @@ _next_tile:
 _onoff_rts:
 	RTS			; Return
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 DoSubstTileAndAttr:
 	STA <Temp_Var6		; store tile
 	LDA #$00
@@ -3005,6 +3016,7 @@ _pswitch_subst:
 	JSR PSwitch_SubstTileAndAttr
 	RTS			; Return
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 CheckForWakeup:
 	CMP #OBJ_PARATROOPAGREENHOP
@@ -3014,11 +3026,109 @@ _check_wakeup_rts:
 	LDA Objects_Timer3,X
 	RTS
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+THROW_UP_VEL	 = -$50
+SetKickedBobombVel:
+	LDA <ThrowUpward
+	BEQ _norm_bobomb_kick
+	LDA #$00
+	STA <ThrowUpward	; Reset ThrowUpward
+	STA <Objects_XVel,X	; No XVel (ORANGE TODO: should this have Mario's XVel?)
+	LDA #THROW_UP_VEL
+	STA <Objects_YVel,X
+	PLA
+	PLA			; Don't return to our caller
+	JMP Object_ShakeAndDraw	; Draw the bobomb
+_norm_bobomb_kick:
+	JSR Level_ObjCalcXDiffs
+	RTS
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+SetKickedNonIceblockVel:
+	LDA <ThrowUpward
+	BEQ _non_iceblock_rts
+	LDA #$00
+	STA <ThrowUpward	; Reset ThrowUpward
+	STA <Objects_XVel,X	; No XVel (ORANGE TODO: should this have Mario's XVel?)
+	LDA #THROW_UP_VEL
+	STA <Objects_YVel,X
+	LDA #OBJSTATE_SHELLED
+	STA Objects_State,X
+	PLA
+	PLA			; Remove our caller's return address
+	JMP PRG000_CF98		; Jump back to our caller past all the setting of the XVel, shelled state, etc
+_non_iceblock_rts:
+	JMP Object_WorldDetectN1 ; Tailcall Detect against world, return to our caller
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+DoHeldKick:
+	BIT <Pad_Holding
+	BVC _kick_or_throw_up		; If Player is NOT holding B button, check the up button
+	JMP PRG000_CEEF			; Player was holding B, so go ahead and jump back to where we hooked
+_kick_or_throw_up:
+	LDA <Pad_Holding
+	AND #PAD_UP
+	BEQ _norm_kick			; Not holding up when let go of B, so do a normal kick
+	STA <ThrowUpward		; Player was holding up, so throw the shell upward during the "kick"
+_norm_kick:
+	JMP Player_KickObject
+
+DoShelledBumps:
+	LDA PAGE_A000
+	PHA		 ; Save current PAGE_A000 page
+
+	; Set page @ A000 to 8
+	LDA #$08
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+
+	; Temp_Var13 = Object tile detect Y Hi
+	LDA ObjTile_DetYHi
+	STA <Temp_Var13
+
+	; Temp_Var13 = Object tile detect Y Hi
+	LDA ObjTile_DetYLo
+	STA <Temp_Var14
+
+	; Temp_Var15 = Object tile detect X Hi
+	LDA ObjTile_DetXHi
+	STA <Temp_Var15
+
+	; Temp_Var16 = Object tile detect X Lo
+	LDA ObjTile_DetXLo
+	STA <Temp_Var16
+
+	; Handle object bouncing off blocks
+	LDA Object_TileWall2
+	JSR Object_BumpOffBlocks
+
+	LDX <SlotIndexBackup	 ; X = object slot index
+
+	; Restore page @ A000 to previous value
+	PLA
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+
+	JSR ObjectToObject_HitTest
+	BCC _doshelledbumps_rts		; If object has not hit another object, rts
+
+	; Play object-to-object collision sound
+	LDA Sound_QPlayer
+	ORA #SND_PLAYERKICK
+	STA Sound_QPlayer
+
+	JSR ObjectKill_SetShellKillVars	 ; Kill our kicked object and set ShellKill variables
+
+_doshelledbumps_rts:
+	JSR Object_HandleBumpUnderneath
+	RTS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; Removed 2-player vs and game over
 PRG030_FREE_SPACE:
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.ds 0x272
+	.ds 0x1d0
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 
 
