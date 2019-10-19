@@ -3239,14 +3239,14 @@ _mg_spawn_loop:
 	; Microgoomba X/YVel = 0
 	LDA #$00
 	STA SpecialObj_YVel,Y
-	LDA #$28
+	LDA #$20
 	STA SpecialObj_XVel,Y
 
 	DEC <Temp_Var1
 	BNE _mg_spawn_loop
 	; Second microgoomba is further out
 	LDA SpecialObj_XLo,Y
-	ADD #$08
+	ADD #$10
 	STA SpecialObj_XLo,Y
 
 	RTS		 ; Return
