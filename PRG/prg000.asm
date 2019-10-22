@@ -2179,7 +2179,7 @@ PRG000_CB10:
 	BNE PRG000_CB5B	 ; If gameplay is halted, jump to PRG000_CB5B
  
 	JSR Object_ShellDoWakeUp	 ; Handle waking up (MAY not return here, if object "wakes up"!) 
-	JSR Object_Move	 		; Perform standard object movements
+	JSR Object_Move_Hook		; Perform standard object movements
  
 	LDA <Objects_DetStat,X 
 	AND #$04 
@@ -2821,6 +2821,7 @@ PRG000_CE28:
 	;;BIT <Pad_Holding
 	;;BVC Player_KickObject	 ; If Player is NOT holding B button, jump to Player_KickObject
 	JMP DoHeldKick
+	NOP
 
 PRG000_CE2F:
 	JMP PRG000_CEEF	 ; Jump to PRG000_CEEF

@@ -3027,7 +3027,7 @@ _check_wakeup_rts:
 	RTS
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-THROW_UP_VEL	 = -$50
+THROW_UP_VEL	 = -$58
 SetKickedBobombVel:
 	LDA <ThrowUpward
 	BEQ _norm_bobomb_kick
@@ -3076,40 +3076,56 @@ _norm_kick:
 	JMP Player_KickObject
 
 DoShelledBumps:
-	LDA PAGE_A000
-	PHA		 ; Save current PAGE_A000 page
+	LDA <Object_PrevYVel
+	BPL _doshelledbumps_rts		; If object wasn't moving upward, don't bump blocks
 
-	; Set page @ A000 to 8
+	LDA <Objects_DetStat,X
+	BEQ _doshelledbumps_rts		; If we haven't collided with anything, just return
+
+	; Handle object bouncing off blocks
+	LDA Object_TileFeet2
+	STA <Temp_Var8
+
+	;; Custom Object_BumpBlocks due to needing special offsets for a thrown shell
+	; Backup current PAGE_A000 bank
+	LDA PAGE_A000
+	PHA
+
+	; Change page @ A000 to 8
 	LDA #$08
 	STA PAGE_A000
 	JSR PRGROM_Change_A000
 
-	; Temp_Var13 = Object tile detect Y Hi
 	LDA ObjTile_DetYHi
-	STA <Temp_Var13
-
-	; Temp_Var13 = Object tile detect Y Hi
+	STA <Temp_Var13		; YHi
 	LDA ObjTile_DetYLo
-	STA <Temp_Var14
-
-	; Temp_Var15 = Object tile detect X Hi
+	SUB #$08
+	AND #$F0
+	STA <Temp_Var14		; YLo
+	LDA ObjTile_DetXLo
+	SUB #$07
+	AND #$F0
+	STA <Temp_Var16
+	PHP
 	LDA ObjTile_DetXHi
 	STA <Temp_Var15
+	PLP
+	BCS _post_xhi_dec
+	DEC <Temp_Var15
+_post_xhi_dec:
 
-	; Temp_Var16 = Object tile detect X Lo
-	LDA ObjTile_DetXLo
-	STA <Temp_Var16
-
-	; Handle object bouncing off blocks
-	LDA Object_TileWall2
+	; Send detected tile over to check if object has hit any blocks
+	; that respond to being hit with head
+	LDA <Temp_Var8
 	JSR Object_BumpOffBlocks
 
-	LDX <SlotIndexBackup	 ; X = object slot index
+	LDX <SlotIndexBackup	; X = object slot index
 
-	; Restore page @ A000 to previous value
+	; Restore page @ A000 to previous page
 	PLA
 	STA PAGE_A000
 	JSR PRGROM_Change_A000
+	;; End custom Object_BumpBlocks
 
 	JSR ObjectToObject_HitTest
 	BCC _doshelledbumps_rts		; If object has not hit another object, rts
@@ -3122,13 +3138,21 @@ DoShelledBumps:
 	JSR ObjectKill_SetShellKillVars	 ; Kill our kicked object and set ShellKill variables
 
 _doshelledbumps_rts:
+	LDA #$00
+	STA <Object_PrevYVel
 	JSR Object_HandleBumpUnderneath
 	RTS
+
+Object_Move_Hook:
+	LDA <Objects_YVel,X
+	STA <Object_PrevYVel
+	JMP Object_Move
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; Removed 2-player vs and game over
 PRG030_FREE_SPACE:
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.ds 0x1d0
+	.ds 0x1b9
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 
 

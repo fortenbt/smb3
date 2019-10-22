@@ -778,7 +778,7 @@ PAD_RIGHT	= $01
 	Player_XHi:		.ds 1	; Player X Hi 
 	Objects_XHi:		.ds 8	; $76-$7D Other object's X Hi positions
 
-				.ds 1	; $7E unused
+	Object_PrevYVel:	.ds 1	; $7E unused
 
 	; Reuse of $7F
 CineKing_DialogState:	; Toad & King Cinematic: When 1, we're doing the text versus the dialog box itself
