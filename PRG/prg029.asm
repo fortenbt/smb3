@@ -1589,7 +1589,7 @@ Pipe_Move_JumpTable:
 PipeMove_XVel:	.byte 8, -8
 
 	; For vertical pipe movement, Y velocity down and up, respectively
-PipeMove_YVel:	.byte 8, -8
+PipeMove_YVel:	.byte $38, $-38
 
 	; This sets the Scroll_LastDir variable based on travel direction (right and left, respectively)
 PipeMove_LR_Dir:	.byte 0, 1
@@ -1761,13 +1761,13 @@ Pipe_Transit:
 	; point to the uppermost scroll point and visually act strangely
 	; if you try to go somewhere short of that at either end.
 
-	LDA #-2		 ; A = -2 (scroll upward)
+	LDA #-8		 ; A = -2 (scroll upward)
 	LDX #$01	 ; X = 1
 	LDY <Player_YVel ; Y = Player_YVel
 	BMI PRG029_D56F	 ; If Player_YVel < 0, jump to PRG029_D56F
 
 	; If Player_Vel >= 0...
-	LDA #$02	 ; A = 2 (scroll downward)
+	LDA #$08	 ; A = 2 (scroll downward)
 	DEX		 ; X = 0
 
 PRG029_D56F:
