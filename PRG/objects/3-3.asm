@@ -1,6 +1,5 @@
 	.byte $01	; Unknown purpose
 
-	.byte OBJ_AUTOSCROLL, $00, $50
 	.byte OBJ_BIGBERTHA, $00, $19
 	.byte OBJ_CHEEPCHEEPHOPPER, $10, $19
 	.byte OBJ_CHEEPCHEEPHOPPER, $1C, $19
@@ -14,3 +13,4 @@
 	.byte OBJ_CHEEPCHEEPPOOL2POOL2, $96, $19
 	.byte OBJ_TWIRLINGPLATCW, $9E, $11
 	.byte $FF
+	.byte OBJ_AUTOSCROLL, $00, $50
