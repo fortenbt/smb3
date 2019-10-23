@@ -3096,12 +3096,18 @@ DoShelledBumps:
 	STA PAGE_A000
 	JSR PRGROM_Change_A000
 
-	LDA ObjTile_DetYHi
-	STA <Temp_Var13		; YHi
 	LDA ObjTile_DetYLo
 	SUB #$08
 	AND #$F0
 	STA <Temp_Var14		; YLo
+	PHP
+	LDA ObjTile_DetYHi
+	STA <Temp_Var13		; YHi
+	PLP
+	BCS _post_yhi_dec
+	DEC <Temp_Var13
+_post_yhi_dec:
+
 	LDA ObjTile_DetXLo
 	SUB #$07
 	AND #$F0
