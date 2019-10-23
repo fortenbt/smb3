@@ -2962,10 +2962,12 @@ _anim_hook_rts:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 CoinblockHook:
-	LDA #$01
-	EOR <Level_OnOff
+	LDA Level_PSwitchCnt
+	BNE _j_LATP_CoinCommon
+	LDA <Level_OnOff
+	EOR #$01
 	STA <Level_OnOff
-
+_j_LATP_CoinCommon
 	JMP LATP_CoinCommon
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -3154,11 +3156,35 @@ Object_Move_Hook:
 	STA <Object_PrevYVel
 	JMP Object_Move
 
+
+DoPSwitchVibHook:
+	LDA <Level_OnOff
+	STA <Level_OnOffBackup
+	LDA #$00
+	STA <Level_OnOff	; Temporarily turn off the level_onoff switch
+_orig_vib:
+	LDA #$10
+	STA Level_Vibration	; Level_Vibration = $10 (little shake effect)
+	RTS
+
+
+DoPSwitchCntDec:
+	DEC Level_PSwitchCnt	; Level_PSwitchCnt--
+	LDA Level_PSwitchCnt
+	BNE _pswitch_dec_rts
+	; it was zero after decrementing, so we need to restore level_onoff
+	LDA <Level_OnOffBackup
+	STA <Level_OnOff
+	LDA #$00
+	STA <Level_OnOffBackup
+_pswitch_dec_rts:
+	RTS
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; Removed 2-player vs and game over
 PRG030_FREE_SPACE:
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.ds 0x1b9
+	.ds 0x16a
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 
 

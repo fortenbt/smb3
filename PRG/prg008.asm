@@ -412,7 +412,8 @@ PRG008_A203:
 	BNE PRG008_A20C	 ; If 1 - 3, jump to PRG008_A20C (RTS)
 
 PRG008_A209:
-	DEC Level_PSwitchCnt	 ; Level_PSwitchCnt--
+	;;;DEC Level_PSwitchCnt	 ; Level_PSwitchCnt--
+	JSR DoPSwitchCntDec
 
 PRG008_A20C:
 	RTS		 ; Return
@@ -4768,8 +4769,11 @@ PRG008_B623:
 	; Queue tile change 9!
 	JSR Level_QueueChangeBlock
 
-	LDA #$10
-	STA Level_Vibration	; Level_Vibration = $10 (little shake effect)
+	;;LDA #$10
+	;;;STA Level_Vibration	; Level_Vibration = $10 (little shake effect)
+	JSR DoPSwitchVibHook
+	NOP
+	NOP
 
 	; Wham! sound effect
 	LDA Sound_QLevel1

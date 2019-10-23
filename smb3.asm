@@ -794,7 +794,7 @@ CineKing_DialogState:	; Toad & King Cinematic: When 1, we're doing the text vers
 	; Otherwise, they are replaced with a lookup address
 	Level_GndLUT_Addr:	.ds 2
 
-				.ds 1	; $86 unused
+	Level_OnOffBackup:	.ds 1	; $86 unused
 
 	Player_YHi:		.ds 1	; Player Y Hi
 	Objects_YHi:		.ds 8	; $88-$8F Other object's Y Hi positions
@@ -854,7 +854,7 @@ CineKing_DialogState:	; Toad & King Cinematic: When 1, we're doing the text vers
 
 	Player_XStart:		.ds 1	; Set to Player's original starting X position (also used to check if level has initialized)
 
-				.ds 1	; $EC unused
+				.ds 1	; $EC (used by Player_WalkFrame)
 
 ; Player_Suit -- Player's active powerup (see also: Player_QueueSuit)
 PLAYERSUIT_SMALL	= 0
