@@ -2972,31 +2972,73 @@ _j_LATP_CoinCommon
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-OnTile:		.byte TILE1_ON,			TILE1_OFF_INACTIVE
-OffTile:	.byte TILE1_ON_INACTIVE,	TILE1_OFF
-OffAttr:	.byte $00, 			$03
+OnOffOffs		.func (\1 - OnTileTS1 + 1)
+
+TileAndAttrOffsByTS:
+	; Index by object group relative index (ObjGroupRel_Idx)
+	.byte $00			; 0 - Map
+	.byte OnOffOffs(OnTileTS1)	; 1 - Plains [15]
+	.byte OnOffOffs(OnTileTS2)	; 2 - Mini fortress style [21]
+	.byte $00			; 3 - Hills style [16]
+	.byte $00			; 4 - High-Up style [17]
+	.byte $00			; 5 - pipe world plant infestation [19]
+	.byte $00			; 6 - Water world [18]
+	.byte $00			; 7 - Toad house [18]
+	.byte $00			; 8 - Vertical pipe maze [18]
+	.byte $00			; 9 - desert level [20]
+	.byte $00			; 10 - airship [23]
+	.byte $00			; 11 - Giant World [19]
+	.byte $00			; 12 - ice level [17]
+	.byte $00			; 13 - coin heaven / sky level [19]
+	.byte $00			; 14 - underground [13]
+	.byte $00			; 15 - bonus game intro [22]
+	.byte $00			; 16 - spade game sliders [22]
+	.byte $00			; 17 - N-spade [22]
+	.byte $00			; 18 - 2P Vs [14]
+
+
+OnTileTS1:	.byte TILE1_ON,			TILE1_OFF_INACTIVE
+OnTileTS2:	.byte TILE2_ON,			TILE2_OFF_INACTIVE
+
+OffTileTS1:	.byte TILE1_ON_INACTIVE,	TILE1_OFF
+OffTileTS2:	.byte TILE2_ON_INACTIVE,	TILE2_OFF
+
+OffAttrTS1:	.byte $00,			$03
+OffAttrTS2:	.byte $00,			$03
 
 OnOff_SubstTileAndAddr:
-	LDY <Level_OnOff
-	BEQ _onoff_rts		; if 0, RTS
+	PHA			; Save off the tile we're checking
 
-	LDY #(OffTile - OnTile - 1)
-_check_all_tiles:
-	CMP OnTile,Y
-	BNE _next_tile	 	; If this is not a match, jump to PRG000_C858
+	LDY Level_Tileset
+	LDA TileAndAttrOffsByTS,Y
+	TAY			; Save our table offset into Y
+	BEQ _onoff_rts		; If we don't have support in this tileset, return
 
+	LDA <Level_OnOff
+	BEQ _onoff_rts		; if on/off is 0, we don't need to substitute, return
+
+	PLA			; Restore the tile we're checking
+	PHA			; Make sure something's on the stack, because _onoff_rts pops it
+	DEY			; dec the offset
+
+_check_on_tile:
+	CMP OnTileTS1,Y		; Check the on tile
+	BEQ _matched_tile 	; If this is not a match, check off tile
+_check_off_tile:
+	INY			; Y++
+	CMP OnTileTS1,Y		; Check the off tile
+	BNE _onoff_rts	 	; If this is not a match, return
+_matched_tile:
 	STA <Temp_Var5		; Signal we replaced
-	LDA OffAttr,Y		; Get replacement attribute
+	LDA OffAttrTS1,Y	; Get replacement attribute
 	STA <Player_Slopes	; Store into Player_Slopes
 
-	LDA OffTile,Y		; Get replacement tile
-	RTS			; Return
-
-_next_tile:
-	DEY			; Y--
-	BPL _check_all_tiles	; While Y >= 0, loop!
+	PLA			; Restore the stack
+	LDA OffTileTS1,Y	; Get replacement tile
+	RTS
 
 _onoff_rts:
+	PLA			; Restore the stack
 	RTS			; Return
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -3156,6 +3198,23 @@ Object_Move_Hook:
 	STA <Object_PrevYVel
 	JMP Object_Move
 
+LoadLevel_Custom21:
+	LDA LL_ShapeDef
+	AND #$0f
+	STA <Temp_Var4		 ; Temp_Var4 = lower 4 bits of LL_ShapeDef (width of run)
+	LDY TileAddr_Off	 ; Y = TileAddr_Off
+
+	TXA
+	SUB #59
+	TAX
+_bs_run_loop21:
+	LDA Custom_Tiles21,X	 ; Boot spike tile
+	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	JSR LoadLevel_NextColumn ; Next column
+	DEC <Temp_Var4		 ; Temp_Var4--
+	BPL _bs_run_loop21	 ; While Temp_Var4 >= 0, loop!
+	RTS			 ; Return...
+
 
 DoPSwitchVibHook:
 	LDA <Level_OnOff
@@ -3184,7 +3243,7 @@ _pswitch_dec_rts:
 	;; Removed 2-player vs and game over
 PRG030_FREE_SPACE:
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.ds 0x16a
+	.ds 0x14a
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 
 

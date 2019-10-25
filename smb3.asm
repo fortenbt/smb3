@@ -3821,6 +3821,10 @@ TILE1_ON		= $BE	; See prg015.asm - solid on block
 TILE1_ON_INACTIVE	= $82	; non-solid on block outline
 TILE1_OFF		= $FB	; solid off block
 TILE1_OFF_INACTIVE	= $D2	; non-solid off block outline
+TILE2_ON		= $19	; See prg021.asm - solid on block
+TILE2_ON_INACTIVE	= $02	; non-solid on block outline
+TILE2_OFF		= $FF	; solid off block
+TILE2_OFF_INACTIVE	= $FF	; non-solid off block outline
 
 TILE1_BLOCK_SHUR	= $C0	; Big block shadow upper-right
 TILE1_BLOCK_SHUL	= $C1	; Big block shadow upper-left (actually none, also used as a cleared P-Switch on level reload, AKA TILEA_PSWITCH_BLANK)

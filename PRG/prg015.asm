@@ -273,7 +273,7 @@ LeveLoad_FixedSizeGen_TS1:
 
 ; Rest of ROM bank was empty
 
-Custom_Tiles:
+Custom_Tiles15:
 	.byte TILE1_BOOTSPIKE, TILE1_ON, TILE1_OFF_INACTIVE
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -281,7 +281,7 @@ Custom_Tiles:
 ;
 ; Puts down 1-16 upward boot spikes
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-LoadLevel_Custom:
+LoadLevel_Custom15:
 	LDA LL_ShapeDef
 	AND #$0f
 	STA <Temp_Var4		 ; Temp_Var4 = lower 4 bits of LL_ShapeDef (width of run)
@@ -290,17 +290,17 @@ LoadLevel_Custom:
 	TXA
 	SUB #46
 	TAX
-_bs_run_loop:
-	LDA Custom_Tiles,X	 ; Boot spike tile
+_bs_run_loop15:
+	LDA Custom_Tiles15,X	 ; Boot spike tile
 	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
 	JSR LoadLevel_NextColumn ; Next column
 	DEC <Temp_Var4		 ; Temp_Var4--
-	BPL _bs_run_loop	 ; While Temp_Var4 >= 0, loop!
+	BPL _bs_run_loop15	 ; While Temp_Var4 >= 0, loop!
 	RTS			 ; Return...
 
 PRG15_DynJump_LLGen:
 	CMP #46
-	BCC _j_DynJump
+	BCC _j_DynJump15
 
 	; If we're generating our custom object, we need to JSR to DynJump with our new index
 	SUB #46
@@ -310,9 +310,9 @@ PRG15_DynJump_LLGen:
 	LDA <Temp_Var1	; restore A
 	JSR DynJump
 	; THESE MUST FOLLOW DynJump FOR THE DYNAMIC JUMP TO WORK!!
-	.word LoadLevel_Custom		; 46 - Run of boot spikes
-	.word LoadLevel_Custom		; 47 - Run of on blocks
-	.word LoadLevel_Custom		; 48 - Run of off blocks
+	.word LoadLevel_Custom15		; 46 - Run of boot spikes
+	.word LoadLevel_Custom15		; 47 - Run of on blocks
+	.word LoadLevel_Custom15		; 48 - Run of off blocks
 
-_j_DynJump:
+_j_DynJump15:
 	JMP DynJump
