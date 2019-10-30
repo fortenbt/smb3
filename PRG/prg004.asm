@@ -112,7 +112,7 @@ ObjectGroup03_CollideJumpTable:
 	.word $0000					; Object $6C - OBJ_GREENTROOPA
 	.word $0000					; Object $6D - OBJ_REDTROOPA
 	.word $0000					; Object $6E - OBJ_PARATROOPAGREENHOP
-	.word OCSPECIAL_KILLCHANGETO | OBJ_REDTROOPA	; Object $6F - OBJ_FLYINGREDPARATROOPA
+	.word $0000					; Object $6F - OBJ_FLYINGREDPARATROOPA
 	.word $0000					; Object $70 - OBJ_BUZZYBEATLE
 	.word $0000					; Object $71 - OBJ_SPINY
 	.word $0000					; Object $72 - OBJ_GOOMBA
