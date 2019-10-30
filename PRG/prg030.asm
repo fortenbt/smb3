@@ -3239,11 +3239,73 @@ DoPSwitchCntDec:
 _pswitch_dec_rts:
 	RTS
 
+
+;; These functions do much more generous comparisons to allow for pipe entry
+ShouldAllowPipeCheck:
+	PHA			; Save off the tile the caller is about to look at
+	LDA Player_HitCeiling
+	BNE _first_check
+	LDA <Player_HitCeiling2	; Did we hit our head up to 3 frames ago?
+	BNE _dec_hitceiling2
+_disallow_pipe_checks:
+	PLA			; Restore the tile
+	LDY #0
+	RTS			; Return zero
+_first_check:
+	;; The first check occurs when a player hit their head
+	LDA #4
+	STA <Player_HitCeiling2
+	LDA Level_Tile_GndR
+	STA <Player_CeilingTile2	; This is the tile we'll check against
+_dec_hitceiling2:
+	DEC <Player_HitCeiling2
+	LDA Level_Tile_GndR		; Check if the current checked tile is a pipe (we're still under the pipe)
+	SUB #TILE1_PIPETB1_L
+	CMP #$0F
+	BGE _disallow_pipe_checks	; Not under the pipe, disallow pipe checks
+	LDA <Player_CeilingTile2	; Still under the pipe, go ahead and force the check
+	STA Level_Tile_GndR		; Force our check tile to be the one from when we hit our head
+	PLA				; Restore the tile
+	LDY #1
+	RTS				; Return non-zero
+
+DoPipePosComparisons:
+	; On return, BGE is done for NOT going in the pipe
+	; A coming in is 18-1F, 0-7, 8-F, 0xF0-0xF7 (relative positions under the pipe)
+	BMI _do_r_pipe_cmp
+	PHA
+	AND #$10
+	BNE _do_l_pipe_cmp
+	PLA
+	; Otherwise, we want to allow the player in
+	CMP #$10
+	RTS
+_do_l_pipe_cmp:
+	; When A is 0x18-0x1F, we want to allow 0x1D, 0x1E, and 0x1F
+	PLA
+	SUB #$1E
+	CMP 1
+	RTS
+_do_r_pipe_cmp:
+	; When A is 0xF0-0xF7, we want to allow 0xF0, 0xF1, and 0xF2
+	SUB #$F0
+	CMP #2
+	RTS
+
+CheckYVelForDetectSolids:
+	LDA <Player_HitCeiling2
+	BNE __j__detect_head_not_feet
+	LDA <Player_YVel
+	BPL __j_PRG008_B4BD	 ; If Player_YVel >= 0 (moving downward), jump to PRG008_B4BD
+__j__detect_head_not_feet:
+	JMP _detect_head_not_feet
+__j_PRG008_B4BD:
+	JMP PRG008_B4BD
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; Removed 2-player vs and game over
 PRG030_FREE_SPACE:
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.ds 0x14a
+	.ds 0xF7
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 
 

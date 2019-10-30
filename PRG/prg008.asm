@@ -4442,8 +4442,11 @@ PRG008_B4A5:
 PRG008_B4B2:
 	LDX #$03	 ; X = 3 (the reason for +6 above)
 
-	LDA <Player_YVel 
-	BPL PRG008_B4BD	 ; If Player_YVel >= 0 (moving downward), jump to PRG008_B4BD
+	;;LDA <Player_YVel
+	;;BPL PRG008_B4BD	 ; If Player_YVel >= 0 (moving downward), jump to PRG008_B4BD
+	JMP CheckYVelForDetectSolids
+	NOP
+_detect_head_not_feet:
 
 	; Otherwise, add 16 to index
 	TYA
@@ -6226,7 +6229,8 @@ PRG008_BCAA:
 	LDY <Player_InAir
 	BEQ PRG008_BCC4	 ; If Player is NOT mid air, jump to PRG008_BCC4
 
-	LDY Player_HitCeiling
+	;;;LDY Player_HitCeiling
+	JSR ShouldAllowPipeCheck
 	BEQ PRG008_BCA7	 ; If Player has not just hit off a ceiling, jump to PRG008_BCA7
 
 	LDY Player_IsDucking
@@ -6291,7 +6295,7 @@ PRG008_BCFA:
 	ASL A
 	ASL A
 	ASL A		 ; Multiply 0/1 by 16
-	STA <Temp_Var2	 ; Temp_Var2 = 0 or 16
+	STA <Temp_Var2	 ; Temp_Var2 = 0 or 16 (0 is right tile, 16 is left tile)
 
 	LDA <Pad_Holding
 	AND Pipe_PadDirForEnter,X
@@ -6328,8 +6332,11 @@ PRG008_BD1F:
 PRG008_BD30:
 	PLA		 ; Restore Player's relative X across tile
 	ADD <Temp_Var2	 ; 0 or 16, left or right tile
-	SUB #3	 
-	CMP #10
+	;;;SUB #3
+	;;CMP #10
+	JSR DoPipePosComparisons
+	NOP
+	NOP
 	BGE PRG008_BD4B	 ; If Player_X >= 10 after subtracting 3 (??), jump to PRG008_BD4B
 
 	LDA <Temp_Var1	 ; Get pipe type

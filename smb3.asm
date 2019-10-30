@@ -400,7 +400,7 @@ PAD_RIGHT	= $01
 
 	Map_EnterViaID:		.ds 1	; Overrides whatever spot on the map you entered with something special (see Map_DoEnterViaID)
 
-				.ds 1	; $1F unused
+	Player_CeilingTile2:	.ds 1	; No longer unused. This stores the last ceiling tile hit to allow for more forgiving up-pipe entry
 
 	; $20 has a lot of different uses on the World Map...
 	Map_EnterLevelFX:		; When entering a level on the map, dictates the status of the entry (0=None, 1=Boxing in, 2=Boxing out [J only]) NOTE: Overlap/reuse
@@ -408,7 +408,7 @@ PAD_RIGHT	= $01
 	Map_ClearLevelFXCnt:		; Counter for "clear level" FX occurring (1-6: Poof, 7-9: Flip) ("poof"/"panel flip") NOTE: Overlap/reuse
 	Map_ScrollOddEven:	.ds 1	; Toggles odd/even column as it scrolls
 
-				.ds 1	; $21 unused
+	Player_HitCeiling2:	.ds 1	; No longer unused. This is a counter for the number of frames a player should be allowed to enter a pipe after hitting the ceiling
 
 	Level_Width:		.ds 1	; Width of current level, in screens (0 = don't move at all, max is 15H/16V)
 
