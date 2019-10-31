@@ -3261,7 +3261,7 @@ _dec_hitceiling2:
 	DEC <Player_HitCeiling2
 	LDA Level_Tile_GndR		; Check if the current checked tile is a pipe (we're still under the pipe)
 	SUB #TILE1_PIPETB1_L
-	CMP #$0F
+	CMP #$12
 	BGE _disallow_pipe_checks	; Not under the pipe, disallow pipe checks
 	LDA <Player_CeilingTile2	; Still under the pipe, go ahead and force the check
 	STA Level_Tile_GndR		; Force our check tile to be the one from when we hit our head
