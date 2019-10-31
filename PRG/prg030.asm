@@ -3082,14 +3082,14 @@ _check_wakeup_rts:
 	RTS
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-THROW_UP_VEL	 = -$58
+;; We currently don't allow for bobombs to be "set" down. You either kick them or throw them up.
 SetKickedBobombVel:
 	LDA <ThrowUpward
 	BEQ _norm_bobomb_kick
 	LDA #$00
 	STA <ThrowUpward	; Reset ThrowUpward
 	STA <Objects_XVel,X	; No XVel (ORANGE TODO: should this have Mario's XVel?)
-	LDA #THROW_UP_VEL
+	LDA ShellThrowYVel
 	STA <Objects_YVel,X
 	PLA
 	PLA			; Don't return to our caller
@@ -3099,15 +3099,26 @@ _norm_bobomb_kick:
 	RTS
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;			Throw upward		Set down, facing left		Set down, facing right
+ShellThrowXVel:		.byte $00,		-$0C,				$0C
+ShellThrowYVel:		.byte -$78,		$00,				$00
 
 SetKickedNonIceblockVel:
 	LDA <ThrowUpward
 	BEQ _non_iceblock_rts
-	LDA #$00
-	STA <ThrowUpward	; Reset ThrowUpward
-	STA <Objects_XVel,X	; No XVel (ORANGE TODO: should this have Mario's XVel?)
-	LDA #THROW_UP_VEL
-	STA <Objects_YVel,X
+	TAX
+	DEX			; normalize to a zero-base index
+	BEQ _set_throw_vels	; if our index is 0, we're throwing upward
+	LDA <Player_FlipBits	; otherwise, we're setting the shell down, so it needs to be nudged in the direction the player is facing
+	BEQ _set_throw_vels	; facing left if 0, so leave the index alone
+	INX			; facing right if non-zero, so inc the index
+_set_throw_vels:
+	LDA ShellThrowXVel,X
+	LDY ShellThrowYVel,X
+	LDX <SlotIndexBackup	; Restore X to the object slot index
+	STA <Objects_XVel,X
+	STY <Objects_YVel,X
+
 	LDA #OBJSTATE_SHELLED
 	STA Objects_State,X
 	PLA
@@ -3125,9 +3136,19 @@ DoHeldKick:
 _kick_or_throw_up:
 	LDA <Pad_Holding
 	AND #PAD_UP
-	BEQ _norm_kick			; Not holding up when let go of B, so do a normal kick
-	STA <ThrowUpward		; Player was holding up, so throw the shell upward during the "kick"
+	BEQ _set_down			; Not holding up when let go of B, so check down
+	LDA #1
+	BNE _set_throwval_and_kick
+_set_down:
+	LDA <Pad_Holding
+	AND #PAD_DOWN
+	BEQ _norm_kick			; Not holding down either, so do a normal kick
+	LDA #2
+	BNE _set_throwval_and_kick
 _norm_kick:
+	LDA #0
+_set_throwval_and_kick:
+	STA <ThrowUpward
 	JMP Player_KickObject
 
 DoShelledBumps:
@@ -3316,7 +3337,7 @@ __j_PRG008_B4BD:
 	;; Removed 2-player vs and game over
 PRG030_FREE_SPACE:
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.ds 0xD0
+	.ds 0xAE
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 
 
