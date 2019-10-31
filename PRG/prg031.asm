@@ -115,10 +115,13 @@ CheckForRegrab:
 	BNE _regrab_lda_rts
 
 	LDA <Pad_Input
-	AND #PAD_A			; Regrab while falling in air by pressing A
+	AND #PAD_A			; Regrab while falling in air by pressing A while holding Up
+	BEQ _regrab_rts
+	LDA <Pad_Holding		; Pressed A, are we holding Up?
+	AND #PAD_UP
 	BEQ _regrab_rts
 
-	LDA #30
+	LDA #30				; Spin for 30 frames
 	STA <Player_Regrabbing
 	BNE _regrab_lda_rts
 
@@ -138,7 +141,7 @@ _regrab_lda_rts:
 _regrab_rts:
 	RTS
 
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
