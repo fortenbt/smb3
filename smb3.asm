@@ -3755,7 +3755,6 @@ TILE1_GROUNDTL		= $55	; Ground top left
 TILE1_GROUNDML		= $56	; Ground middle-left
 TILE1_GROUNDTR		= $57	; Ground top right
 TILE1_GROUNDMR		= $58	; Ground middle-right
-TILE1_BOOTSPIKE		= $59	; Spikes that hurt regardless of kuribo's shoe
 
 TILE1_CANNONTOP1	= $76	; Upper top of cannon
 TILE1_CANNONTOP2	= $77	; Lower top of cannon
@@ -3817,7 +3816,8 @@ TILE1_PIPEHB		= $B9	; Pipe horizontal middle bottom
 TILE1_PIPEVL		= $BA	; Pipe middle vertical left
 TILE1_PIPEVR		= $BB	; Pipe middle vertical right
 
-;; -- TS1 (Plains) On/Off
+;; -- TS1 (Plains) On/Off, boot spikes
+TILE1_BOOTSPIKE		= $59	; Spikes that hurt regardless of kuribo's shoe
 TILE1_ON		= $BE	; See prg015.asm - solid on block
 TILE1_ON_INACTIVE	= $82	; non-solid on block outline
 TILE1_OFF		= $FB	; solid off block
@@ -3832,6 +3832,7 @@ TILE14_ON		= $7E	; See prg013.asm - solid on block		QUAD 2
 TILE14_ON_INACTIVE	= $5D	; non-solid on block outline
 TILE14_OFF		= $FE	; solid off block				QUAD 3
 TILE14_OFF_INACTIVE	= $98	; non-solid off block outline
+TILE14_BOOTSPIKE	= $7F	; Spikes that hurt regardless of kuribo's shoe
 
 TILE1_BLOCK_SHUR	= $C0	; Big block shadow upper-right
 TILE1_BLOCK_SHUL	= $C1	; Big block shadow upper-left (actually none, also used as a cleared P-Switch on level reload, AKA TILEA_PSWITCH_BLANK)

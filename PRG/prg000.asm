@@ -510,7 +510,7 @@ SpikesEnable:
 	.byte $FF	; 10 Giant World
 	.byte $FF	; 11 Ice level
 	.byte $FF	; 12 Sky level
-	.byte $FF	; 13 Underground
+	.byte TILE14_BOOTSPIKE+1; 13 Underground
 
 	; Index by Level_TilesetIdx
 	; Enables conveyor tiles where available (this tile and tile before it)
