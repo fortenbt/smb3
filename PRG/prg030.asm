@@ -2972,6 +2972,14 @@ _j_LATP_CoinCommon
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+; Redone slope tables to allow for added slope-level tiles
+Level_SlopeQuad40:
+	; Tile $5F+
+	.byte $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03
+	.byte $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03, $03
+	.byte $03
+
+
 OnOffOffs		.func (\1 - OnTileTS1 + 1)
 
 TileAndAttrOffsByTS:
@@ -2990,7 +2998,7 @@ TileAndAttrOffsByTS:
 	.byte $00			; 11 - Giant World [19]
 	.byte $00			; 12 - ice level [17]
 	.byte $00			; 13 - coin heaven / sky level [19]
-	.byte $00			; 14 - underground [13]
+	.byte OnOffOffs(OnTileTS14)	; 14 - underground [13]
 	.byte $00			; 15 - bonus game intro [22]
 	.byte $00			; 16 - spade game sliders [22]
 	.byte $00			; 17 - N-spade [22]
@@ -2999,12 +3007,15 @@ TileAndAttrOffsByTS:
 
 OnTileTS1:	.byte TILE1_ON,			TILE1_OFF_INACTIVE
 OnTileTS2:	.byte TILE2_ON,			TILE2_OFF_INACTIVE
+OnTileTS14:	.byte TILE14_ON,		TILE14_OFF_INACTIVE
 
 OffTileTS1:	.byte TILE1_ON_INACTIVE,	TILE1_OFF
 OffTileTS2:	.byte TILE2_ON_INACTIVE,	TILE2_OFF
+OffTileTS14:	.byte TILE14_ON_INACTIVE,	TILE14_OFF
 
 OffAttrTS1:	.byte $00,			$03
 OffAttrTS2:	.byte $00,			$03
+OffAttrTS14:	.byte $00,			$03
 
 OnOff_SubstTileAndAddr:
 	PHA			; Save off the tile we're checking
@@ -3305,7 +3316,7 @@ __j_PRG008_B4BD:
 	;; Removed 2-player vs and game over
 PRG030_FREE_SPACE:
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.ds 0xF7
+	.ds 0xD0
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 
 

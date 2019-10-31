@@ -3817,14 +3817,21 @@ TILE1_PIPEHB		= $B9	; Pipe horizontal middle bottom
 TILE1_PIPEVL		= $BA	; Pipe middle vertical left
 TILE1_PIPEVR		= $BB	; Pipe middle vertical right
 
+;; -- TS1 (Plains) On/Off
 TILE1_ON		= $BE	; See prg015.asm - solid on block
 TILE1_ON_INACTIVE	= $82	; non-solid on block outline
 TILE1_OFF		= $FB	; solid off block
 TILE1_OFF_INACTIVE	= $D2	; non-solid off block outline
+;; -- TS2 (Mini Fortress) On/Off
 TILE2_ON		= $19	; See prg021.asm - solid on block
 TILE2_ON_INACTIVE	= $05	; non-solid on block outline
 TILE2_OFF		= $7E	; solid off block
 TILE2_OFF_INACTIVE	= $4B	; non-solid off block outline
+;; -- TS14 (Underground) On/Off
+TILE14_ON		= $7E	; See prg013.asm - solid on block		QUAD 2
+TILE14_ON_INACTIVE	= $5D	; non-solid on block outline
+TILE14_OFF		= $FE	; solid off block				QUAD 3
+TILE14_OFF_INACTIVE	= $98	; non-solid off block outline
 
 TILE1_BLOCK_SHUR	= $C0	; Big block shadow upper-right
 TILE1_BLOCK_SHUL	= $C1	; Big block shadow upper-left (actually none, also used as a cleared P-Switch on level reload, AKA TILEA_PSWITCH_BLANK)
