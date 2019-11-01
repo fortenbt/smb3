@@ -2319,7 +2319,8 @@ PRG030_8E5D:
 
 	LDA Level_PauseFlag
 	EOR #$01	 
-	STA Level_PauseFlag	 ; Toggle pause flag
+	;;;STA Level_PauseFlag	 ; Toggle pause flag
+	JSR InitializePauseMenu
  
 	BNE PRG030_8E76	 ; If game is now paused, jump to PRG030_8E76
 
@@ -2334,13 +2335,20 @@ PRG030_8E79:
 
 	; When game is paused...
 
+	;; Do the new pause menu state machine:
+	;; > continue	(unpause)
+	;;   restart	(restart level)
+	;;   quit	(return to map)
+
 	; Wow, what the heck did they remove here??
-	NOP
-	NOP
-	NOP
-	NOP
-	NOP
-	NOP
+	;NOP
+	;NOP
+	;NOP
+	;NOP
+	;NOP
+	;NOP
+	JSR RunPauseMenu13
+	JMP Level_MainLoop
 	NOP
 	NOP
 	NOP
@@ -3333,86 +3341,46 @@ __j__detect_head_not_feet:
 	JMP _detect_head_not_feet
 __j_PRG008_B4BD:
 	JMP PRG008_B4BD
+
+
+InitializePauseMenu:
+	STA Level_PauseFlag	; Toggle pause flag
+	STA PauseMenuSel	; Set our menu selection (0 for unpaused, 1 for pausing)
+	RTS
+
+RunPauseMenu13:
+	LDA PAGE_A000
+	PHA
+
+	LDA #13
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+
+	JSR RunPauseMenu
+
+	PLA
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+
+	RTS
+
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; Removed 2-player vs and game over
-PRG030_FREE_SPACE:
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.ds 0xAE
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-
-
-GameOver_WhiteMapObjs:
-	.byte MAPOBJ_NSPADE, MAPOBJ_WHITETOADHOUSE, MAPOBJ_UNK0C
-
-
-GameOver_PlayerQuitCleanup:
-	LDY Total_Players	; Y = Total_Players
-	CPY #$01
-	BEQ PRG030_948F	 	; If only a 1P game, jump to PRG030_948F
-
-	; This is a 2P game
-
-	DEY		 ; Y-- (Y = 1)
-PRG030_9484:
-	LDA Player_Lives,Y
-	BPL PRG030_948E	 ; If this is the living Player, jump to PRG030_948E (RTS)
-
-	DEY		 ; Y--
-	BPL PRG030_9484	 ; While Y >= 0, loop!
-
-	BMI PRG030_948F	 ; Jump to PRG030_948F
-
-PRG030_948E:
-	RTS		 ; Return
-
-PRG030_948F:
-	; BUG!! Apparently the game is SUPPOSED to delete all 
-	; bonus objects after a game over, but code starts with
-	; the wrong index (see immediately below) and that causes
-	; this to not work correctly!  Strange, huh?
-
-	; As my brother put it:
-	; "It may have been because of the 2P mode. You can't punish
-	; the other player because one of you sucks bad."
-
-	LDX #-$04	; <-- BUG!  BAD INDEX!!  (Should be X = 2??)
-PRG030_9491:
-	LDY #(MAPOBJ_TOTAL-1)	 ; Y = (MAPOBJ_TOTAL-1) (all Map Objects)
-
-PRG030_9493:
-	LDA Map_Objects_IDs,Y
-	BEQ PRG030_94A2	 ; If this Map Object is empty, jump to PRG030_94A2
-
-	CMP GameOver_WhiteMapObjs,X
-	BNE PRG030_94A2	 ; If this is NOT one of the "white" objects (White Toad House, Coin Ship, and the ??), jump to PRG030_94A2
-
-	; Delete the bonus objects!  You don't deserve them!
-
-	LDA #MAPOBJ_EMPTY
-	STA Map_Objects_IDs,Y
-
-PRG030_94A2:
-	DEY		 ; Y--
-	BPL PRG030_9493	 ; While Y >= 0, loop
-
-	DEX		 ; X--
-	BPL PRG030_9491	 ; While X >= 0, loop	<-- BUG! This will fail on the first pass!
-
-	LDA #$00
-	STA Map_NSpade_NextScore	 ; Highest byte in the N-Spade score = 0
-	STA Map_Anchored ; Airship is no longer anchored
-
-	; N-Spade appears every 80,000 points, but the leading zero is fake, so 8000
-
-	; Middle byte of the N-Spade score
-	LDA #HIGH(8000)
-	STA Map_NSpade_NextScore+1
-
-	; Lowest byte of the N-Spade score
-	LDA #LOW(8000)
-	STA Map_NSpade_NextScore+2
-
-	RTS		 ; Return
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

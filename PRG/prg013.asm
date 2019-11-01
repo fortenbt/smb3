@@ -403,9 +403,102 @@ _j_DynJump13:
 	JMP DynJump
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; The following has nothing to do with this bank, but this bank had a tonnnn of freespace
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+PauseMenu_Sprites:
+	.byte $48, $C1, $03, $78	; c
+	.byte $48, $C3, $03, $80	; o +4
+	.byte $48, $C5, $03, $88	; n +8
+	.byte $48, $C7, $03, $90	; t +c
+	.byte $48, $C9, $03, $98	; . +10
+	.byte $58, $CB, $03, $78	; m +14
+	.byte $58, $CD, $03, $80	; a +18
+	.byte $58, $CF, $03, $88	; p +1c
+	.byte $68, $D1, $03, $78	; r +20
+	.byte $68, $D3, $03, $80	; e +24
+	.byte $68, $D5, $03, $88	; s +28
+	.byte $68, $C7, $03, $90	; t +2c
+	.byte $68, $CD, $03, $98	; a +30
+	.byte $68, $D1, $03, $A0	; r +34
+	.byte $68, $C7, $03, $A8	; t +38
+PauseMenu_CursorSprite:
+	.byte $48, $D7, $01, $6F	; > +3c
+PauseMenu_Sprites_End
+
+PauseMenu_CursorY:
+	.byte $48, $58, $68
+
+RunPauseMenu:
+	;; We have to do everything with sprites because calculating the center of the current scroll point
+	;; is definitely not fun, and then we'd have to back up the background where we replaced it with the
+	;; menu....basically far too much work for a simple menu.
+	LDA #15
+	STA PatTable_BankSel+5		; Set patterns needed for pause menu sprites
+	JSR Sprite_RAM_Clear		; Clear other sprites
+
+	; Set up our pause menu sprites
+	LDY #(PauseMenu_Sprites_End - PauseMenu_Sprites - 1)
+_load_pause_loop:
+	LDA PauseMenu_Sprites,Y
+	STA Sprite_RAM+$00,Y
+	DEY
+	BPL _load_pause_loop		;While Y >= 0, loop!
+
+	JSR DoMenuInput
+
+	; Fix the cursor's Y position based on selection
+	LDY PauseMenuSel
+	DEY
+	LDA PauseMenu_CursorY,Y
+	STA Sprite_RAM+(PauseMenu_CursorSprite-PauseMenu_Sprites)
+
+	RTS
+
+DoMenuInput:
+	LDA <Pad_Input
+	AND #PAD_DOWN
+	BEQ _menu_chk_up
+	INC PauseMenuSel
+	LDA PauseMenuSel
+	AND #%00000011
+	BNE _set_menu_sel
+	LDA #1				; When we overflow to 0, make our selection 1
+	BNE _set_menu_sel
+_menu_chk_up:
+	LDA <Pad_Input
+	AND #PAD_UP
+	BEQ _menu_chk_a
+	DEC PauseMenuSel
+	LDA PauseMenuSel
+	AND #%00000011
+	BNE _set_menu_sel
+	LDA #3				; When we underflow to 0, make our selection 3
+	BNE _set_menu_sel
+_menu_chk_a:
+	LDA <Pad_Input
+	AND #PAD_A
+	BEQ _menu_input_rts
+	LDA PauseMenuSel		; do nothing currently
+_set_menu_sel:
+	STA PauseMenuSel
+_menu_input_rts:
+	RTS
+
 PRG013_MASSIVE_FREE_SPACE:
 	.byte $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA
-	.ds 0x347
+	.ds 0x2AE
 	.byte $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA
 
 ; Rest of ROM bank was empty

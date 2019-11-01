@@ -954,7 +954,8 @@ SPR_VFLIP	= %10000000
 	Level_SkipStatusBarUpd:	.ds 1	; When set, skips updating the status bar for one frame (priority graphics buffer changes I think)
 	Raster_State:		.ds 1	; This variable's meaning depends on the Raster_Effect in use; typically 0 is first pass, then more for further scanlines
 
-				.ds 7	; $0379-$037F unused
+	PauseMenuSel:		.ds 1	; $0379-$037F unused
+				.ds 6	; $0379-$037F unused
 
 	Scroll_ToVRAMHi:	.ds 1	; High byte for when pushing a column of tile data to VRAM (Set to $20, Name Table 0, after scroll update)
 
