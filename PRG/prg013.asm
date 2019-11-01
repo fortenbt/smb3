@@ -490,15 +490,40 @@ _menu_chk_a:
 	LDA <Pad_Input
 	AND #PAD_A
 	BEQ _menu_input_rts
-	LDA PauseMenuSel		; do nothing currently
+	LDY PauseMenuSel
+	DEY
+	TYA
+	JSR DynJump
+	.word PauseMenuCont			;  0 - cont. Do nothing, just return
+	.word PauseMenuReturnToMap		;  1 - Return to map
+	.word PauseMenuCont			;  2 - Restart Level
 _set_menu_sel:
 	STA PauseMenuSel
 _menu_input_rts:
 	RTS
 
+PauseMenuCont:
+	LDA #0
+	JSR InitializePauseMenu
+	RTS
+
+PauseMenuReturnToMap:
+	; Transfer Player's current power up to the World Map counterpart
+	LDA #0
+	STA World_Map_Power
+
+	;; TODO: remove orb/cards if returned to map after beating a level?
+	;; Maybe don't allow returning to the map after getting the card?
+
+	LDA #$01
+	STA <Level_ExitToMap
+	STA Map_ReturnStatus	 ; Map_ReturnStatus = 1 (Player died, level is not clear)
+
+	JMP PRG030_8F42
+
 PRG013_MASSIVE_FREE_SPACE:
 	.byte $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA
-	.ds 0x2AE
+	.ds 0x290
 	.byte $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA
 
 ; Rest of ROM bank was empty
