@@ -3364,6 +3364,66 @@ RunPauseMenu13:
 
 	RTS
 
+RestartLevelPRG030:		; This is jumped to from RunPauseMenu->DoMenuInput->PauseMenuRestartLevel
+	PLA			; Restore the A000 page saved by RunPauseMenu13 before getting here
+	TAY
+	PLA
+	PLA			; Remove the Level_MainLoop return address
+	TYA
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+
+	LDA #$10
+	STA Map_Operation
+
+	LDA Map_Prev_XOff
+	STA <Horz_Scroll
+	LDA Map_Prev_XHi
+	STA <Horz_Scroll_Hi
+	LDA Map_Entered_Y
+	STA <World_Map_Y
+	LDA Map_Entered_XHi
+	STA <World_Map_XHi
+	LDA Map_Entered_X
+	STA <World_Map_X
+	LDA Map_Previous_UnusedPVal2
+	STA <Map_UnusedPlayerVal2
+
+	JSR Sprite_RAM_Clear
+
+	; Switch bank A000 to page 26
+	LDA #26
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+	JSR Palette_FadeOut	 		; Fade out
+	JSR GraphicsBuf_Prep_And_WaitVSync	 ; Likely just using this for VSync
+
+	; Change A000 back to whatever it was before the sound engine 
+	JSR PRGROM_Change_A000
+
+	LDA #0
+	STA Sound_IsPaused
+	STA SndCur_Pause	; Stop the pause sound hold
+	STA PAPU_EN		; Disable all sound channels
+	STA SndCur_Player	; Kill player sound
+	STA SndCur_Level1	; Kill level 1 sound
+	STA SndCur_Level2	; Kill level 2 sound
+	STA SndCur_Map
+	JSR PRG028_A087		; Clear all sound queues
+	LDA #2
+	STA Sound_QPause
+	; Switch to page 28 @ A000
+	LDA #MMC3_8K_TO_PRG_A000
+	STA MMC3_COMMAND
+	LDA #28	
+	STA MMC3_PAGE
+	; Jump to the sound engine, newly inserted at page A000!
+	JSR Sound_Engine_Begin
+	; Change A000 back to whatever it was before the sound engine 
+	JSR PRGROM_Change_A000
+
+	JMP PRG030_8732
+
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
@@ -3371,14 +3431,6 @@ RunPauseMenu13:
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; Removed 2-player vs and game over
 
