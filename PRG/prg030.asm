@@ -1128,7 +1128,8 @@ PRG030_881D:
 	STA Map_EntTran_Cnt	 ; Map_EntTran_Cnt = $30
 
 	LDA #SND_MAPENTERLEVEL
-	STA Sound_QMap	 ; Play "enter level" sound effect!
+	;;;STA Sound_QMap	 ; Play "enter level" sound effect!
+	JSR CheckPlayLevelEntrySound
 
 	; Loop until V-Blank is not occurring
 PRG030_883E:
@@ -3364,6 +3365,30 @@ RunPauseMenu13:
 
 	RTS
 
+DoSoundEngineSave13:
+	LDA PAGE_A000
+	PHA
+	LDA #13
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+	JSR DoSoundEngineSave
+	PLA
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+	RTS
+
+DoSoundEngineRestore13:
+	LDA PAGE_A000
+	PHA
+	LDA #13
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+	JSR DoSoundEngineRestore
+	PLA
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+	RTS
+
 RestartLevelPRG030:		; This is jumped to from Level_MainLoop->RunPauseMenu->DoMenuInput->PauseMenuRestartLevel
 	PLA			; Restore the A000 page saved by RunPauseMenu13 before getting here
 	TAY
@@ -3373,12 +3398,18 @@ RestartLevelPRG030:		; This is jumped to from Level_MainLoop->RunPauseMenu->DoMe
 	STA PAGE_A000
 	JSR PRGROM_Change_A000
 
+	INC LevelRestarting			; Flag that we're restarting the level
+
+	LDA SoundEngineBackedUp
+	BNE _no_sound_engine_save
+	JSR DoSoundEngineSave13			; We don't want to save if we already saved at the death song
+_no_sound_engine_save:
 	; Switch bank A000 to page 26
 	LDA #26
 	STA PAGE_A000
 	JSR PRGROM_Change_A000
-	JSR Palette_FadeOut	 		; Fade out
-	JSR GraphicsBuf_Prep_And_WaitVSync	 ; Likely just using this for VSync
+	JSR Palette_FadeOut			; Fade out
+	JSR GraphicsBuf_Prep_And_WaitVSync
 
 	JSR Sprite_RAM_Clear
 	JSR Scroll_PPU_Reset
@@ -3399,30 +3430,46 @@ RestartLevelPRG030:		; This is jumped to from Level_MainLoop->RunPauseMenu->DoMe
 	LDA Map_Previous_UnusedPVal2
 	STA <Map_UnusedPlayerVal2
 
-	LDA #0
-	STA Sound_IsPaused
-	STA SndCur_Pause	; Stop the pause sound hold
-	STA PAPU_EN		; Disable all sound channels
-	STA SndCur_Player	; Kill player sound
-	STA SndCur_Level1	; Kill level 1 sound
-	STA SndCur_Level2	; Kill level 2 sound
-	STA SndCur_Music1	; Kill BGM 1
-	STA SndCur_Music2	; Kill BGM 2
-	STA SndCur_Map		; Kill Map sounds
-	LDA #MUS1_STOPMUSIC
-	STA Sound_QMusic1	; Stop BGM
-
-
 	JMP PRG030_8732
 
+
+CheckPlayLevelEntrySound:
+	TAX
+	LDA LevelRestarting
+	BEQ _not_restarting
+	RTS				; We still have more to do before we're done restarting the level
+_not_restarting:
+	TXA
+	STA Sound_QMap	 ; Play "enter level" sound effect!
+	RTS
+
+CheckQueueLevelsMusic:
+	TAX
+	LDA LevelRestarting
+	BEQ _not_restarting2
+	JSR DoSoundEngineRestore13
+	DEC LevelRestarting		; Restarting the level done
+	RTS
+_not_restarting2:
+	TXA
+	STA Level_MusicQueue
+	STA Level_MusicQueueRestore
+	RTS
+
+AllowDeathSongToContinueMusic:
+	JSR DoSoundEngineSave13
+	LDA #1
+	STA SoundEngineBackedUp
+	; Queue death song
+	LDA Sound_QMusic1
+	ORA #MUS1_PLAYERDEATH
+	STA Sound_QMusic1
+	RTS
+
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; Removed 2-player vs and game over
 
@@ -4333,11 +4380,15 @@ PRG030_98C8:
 	BEQ PRG030_98DE		; If playing the Invincibility music, don't queue this song right now
 
 	; Queue this music to play
-	STA Level_MusicQueue
+	;;STA Level_MusicQueue
 
 PRG030_98DE:
 	; Set this as the music to "restore" to when P-Tab / Invincibility ends
-	STA Level_MusicQueueRestore
+	;;STA Level_MusicQueueRestore
+	NOP
+	NOP
+	NOP
+	JSR CheckQueueLevelsMusic
 
 	; Level_LayPtr_AddrL/H += 9 (i.e. move pointer to after the header)
 	LDA <Level_LayPtr_AddrL
