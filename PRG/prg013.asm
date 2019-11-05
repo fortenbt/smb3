@@ -526,6 +526,14 @@ PauseMenuReturnToMap:
 	;; TODO: remove orb/cards if returned to map after beating a level?
 	;; Maybe don't allow returning to the map after getting the card?
 
+	PLA
+	PLA			; Remove the RunPauseMenu return address
+	PLA
+	PLA			; Remove the RunPauseMenu13 return address
+	PLA			; Remove the saved PAGE_A000
+	PLA
+	PLA			; Remove the Level_MainLoop return address
+
 	LDA #$01
 	STA <Level_ExitToMap
 	STA Map_ReturnStatus	 ; Map_ReturnStatus = 1 (Player died, level is not clear)
@@ -652,7 +660,7 @@ _save2_loop:
 
 PRG013_MASSIVE_FREE_SPACE:
 	.byte $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA
-	.ds 0x1aa
+	.ds 0x1A3
 	.byte $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA
 
 ; Rest of ROM bank was empty
