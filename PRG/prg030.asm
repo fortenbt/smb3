@@ -3389,6 +3389,16 @@ DoSoundEngineRestore13:
 	JSR PRGROM_Change_A000
 	RTS
 
+DeathRestartLevel:
+	PLA
+	PLA			; Remove Player_DrawAndDoActions29
+	PLA
+	PLA			; Remove Player_Update
+	PLA
+	PLA			; Remove Player_DoGameplay
+	LDA #0			; This is the page that the PRG008 death routine would restore
+	PHA			; Fall into RestartLevelPRG030
+
 RestartLevelPRG030:		; This is jumped to from Level_MainLoop->RunPauseMenu->DoMenuInput->PauseMenuRestartLevel
 	PLA			; Restore the A000 page saved by RunPauseMenu13 before getting here
 	TAY
@@ -3468,8 +3478,7 @@ AllowDeathSongToContinueMusic:
 
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; Removed 2-player vs and game over
 
