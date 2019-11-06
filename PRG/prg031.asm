@@ -119,7 +119,7 @@ CheckForRegrab:
 	BEQ _regrab_rts
 	LDA <Pad_Holding		; Pressed A, are we holding Up?
 	AND #PAD_UP
-	BEQ _regrab_rts
+	BEQ _regrab_lda_rts
 
 	LDA #30				; Spin for 30 frames
 	STA <Player_Regrabbing
