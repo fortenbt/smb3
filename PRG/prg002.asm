@@ -451,8 +451,8 @@ ObjP3A:
 	.byte $71, $E1, $E3, $E1, $E3, $71
 ObjP2E:
 	.byte $E1, $E3, $E1, $E3
-ObjP41:
-	.byte $51, $51, $53, $53, $55, $55, $F7, $F7, $F9, $F9, $FB, $FB, $E3, $E3, $E5, $E5, $F5, $F5, $FD, $FD, $FD, $FD, $FD, $FD, $E3, $E3, $E5, $E5, $F5, $F5, $D1, $D3, $D5, $D7
+ObjP41:						; EndLevelCard Patterns
+	.byte $6b, $6d, $6b, $6d, $6b, $6d, $F7, $F7, $F9, $F9, $FB, $FB, $E3, $E3, $E5, $E5, $F5, $F5, $FD, $FD, $FD, $FD, $FD, $FD, $E3, $E3, $E5, $E5, $F5, $F5, $D1, $D3, $D5, $D7
 ObjP40:
 	.byte $B1, $B3, $B5, $B7, $B9, $BB, $75, $75
 
@@ -5334,7 +5334,7 @@ PlayerPushWithPlatform_XVel:	.byte $04, -$04
 
 	; Attribute by frame
 EndLevelCard_AttributeByFrame:
-	.byte $01, $02, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01
+	.byte $02, $02, $02, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01, $01
 
 EndLevelCard_AsTwinkleFrames:
 	.byte $0F, $0F, $0F, $10, $0F, $10, $10, $10
@@ -6319,7 +6319,9 @@ EndLevelCard_Draw:
 	AND #~(SPR_HFLIP | $03)	 	; Keep all attributes except horizontal flip and palette select
 	ORA EndLevelCard_AttributeByFrame,X	 ; Set attributes by frame
 	STA Sprite_RAM+$02,Y	 ; Set attributes
-	EOR #SPR_HFLIP	 ; Mirror second half
+	;EOR #SPR_HFLIP	 ; Mirror second half
+	NOP
+	NOP
 	STA Sprite_RAM+$06,Y	 ; Set attributes
 
 	LDX <SlotIndexBackup		 ; X = object slot index
