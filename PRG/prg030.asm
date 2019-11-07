@@ -5941,6 +5941,8 @@ _do_wallslide:
 	LDA Airship_JumpFrameByPup,X
 	STA <Player_Frame		; Set the correct sprite for "grabbing" the wall
 
+	JMP PRG008_BCAA			; Jump back to where we go if player is midair...
+
 
 ;; 0x11 bytes
 InAirWallslideRequirements:
