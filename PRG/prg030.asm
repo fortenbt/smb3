@@ -3460,6 +3460,11 @@ CheckQueueLevelsMusic:
 	LDA LevelRestarting
 	BEQ _not_restarting2
 	;;;JSR DoSoundEngineRestore13
+	LDA Level_MusicQueueRestore
+	CMP SndCur_Music2
+	BEQ _post_restore_music2
+	STA Sound_QMusic2
+_post_restore_music2:
 	LDA #0
 	STA Sound_IsPaused
 	STA SndCur_Pause	; Stop the pause sound hold
@@ -3482,8 +3487,7 @@ AllowDeathSongToContinueMusic:
 	RTS
 
 	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
+	.byte $ff, $ff, $ff, $ff, $ff, $ff
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; Removed 2-player vs and game over
 
