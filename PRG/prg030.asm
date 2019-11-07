@@ -3421,6 +3421,8 @@ _no_sound_engine_save:
 	JSR Palette_FadeOut			; Fade out
 	JSR GraphicsBuf_Prep_And_WaitVSync
 
+	JSR Clear_500_300_RAM
+
 	JSR Sprite_RAM_Clear
 	JSR Scroll_PPU_Reset
 
