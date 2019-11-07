@@ -5809,12 +5809,10 @@ Player_Die:
 	;;;LDA Sound_QMusic1
 	;;ORA #MUS1_PLAYERDEATH
 	;;;STA Sound_QMusic1
-	JSR AllowDeathSongToContinueMusic
-	NOP
-	NOP
-	NOP
-	NOP
-	NOP
+	;JSR AllowDeathSongToContinueMusic
+	LDA Sound_QLevel1
+	ORA #SND_LEVELSHOE
+	STA Sound_QLevel1
 
 	; Clear a bunch of stuff at time of death
 	LDA #$00

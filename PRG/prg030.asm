@@ -3457,7 +3457,10 @@ CheckQueueLevelsMusic:
 	TAX
 	LDA LevelRestarting
 	BEQ _not_restarting2
-	JSR DoSoundEngineRestore13
+	;;;JSR DoSoundEngineRestore13
+	LDA #0
+	STA Sound_IsPaused
+	STA SndCur_Pause	; Stop the pause sound hold
 	DEC LevelRestarting		; Restarting the level done
 	RTS
 _not_restarting2:
