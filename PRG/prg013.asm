@@ -610,9 +610,6 @@ _restore_loop2:
 	CPY #30
 	BNE _restore_loop2
 
-	LDA #0
-	STA SoundEngineBackedUp
-
 	RTS
 
 DoSoundEngineSave:

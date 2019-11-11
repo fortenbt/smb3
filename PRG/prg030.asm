@@ -3110,7 +3110,8 @@ _norm_bobomb_kick:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;			Throw upward		Set down, facing left		Set down, facing right
 ShellThrowXVel:		.byte $00,		-$0C,				$0C
-ShellThrowYVel:		.byte -$78,		$00,				$00
+ShellThrowYVel:		.byte -$78,		$04,				$04
+ShellDropXVel:		.byte $00,		-$30,				$30
 
 SetKickedNonIceblockVel:
 	LDA <ThrowUpward
@@ -3122,14 +3123,31 @@ SetKickedNonIceblockVel:
 	BEQ _set_throw_vels	; facing left if 0, so leave the index alone
 	INX			; facing right if non-zero, so inc the index
 _set_throw_vels:
+	TXA
+	PHA			; Store which index we're using (up, downleft, or downright)
 	LDA ShellThrowXVel,X
 	LDY ShellThrowYVel,X
 	LDX <SlotIndexBackup	; Restore X to the object slot index
 	STA <Objects_XVel,X
 	STY <Objects_YVel,X
 
+	PLA			; Restore which index we used (up, downleft, or downright)
+	PHA			; and store it again
+	TAY
 	LDA #OBJSTATE_SHELLED
+	CPY #0			; Did we throw upward?
+	BEQ _store_shell_state	; If so, just store the shelled state
+	LDY Player_InAir	; Otherwise, we dropped it downward...are we in the air?
+	BEQ _store_shell_state	; If we're not in the air, go ahead and set shelled state
+	PLA
+	TAY
+	LDA ShellDropXVel,Y	; We dropped the shell while midair, so kick it instead
+	STA <Objects_XVel,X
+	LDA #OBJSTATE_KICKED	; And set as kicked
+	PHA
+_store_shell_state:
 	STA Objects_State,X
+	PLA			; Remove the index
 	PLA
 	PLA			; Remove our caller's return address
 	JMP PRG000_CF98		; Jump back to our caller past all the setting of the XVel, shelled state, etc
@@ -3365,30 +3383,6 @@ RunPauseMenu13:
 
 	RTS
 
-DoSoundEngineSave13:
-	LDA PAGE_A000
-	PHA
-	LDA #13
-	STA PAGE_A000
-	JSR PRGROM_Change_A000
-	JSR DoSoundEngineSave
-	PLA
-	STA PAGE_A000
-	JSR PRGROM_Change_A000
-	RTS
-
-DoSoundEngineRestore13:
-	LDA PAGE_A000
-	PHA
-	LDA #13
-	STA PAGE_A000
-	JSR PRGROM_Change_A000
-	JSR DoSoundEngineRestore
-	PLA
-	STA PAGE_A000
-	JSR PRGROM_Change_A000
-	RTS
-
 DeathRestartLevel:
 	PLA
 	PLA			; Remove Player_DrawAndDoActions29
@@ -3410,10 +3404,6 @@ RestartLevelPRG030:		; This is jumped to from Level_MainLoop->RunPauseMenu->DoMe
 
 	INC LevelRestarting			; Flag that we're restarting the level
 
-	LDA SoundEngineBackedUp
-	BNE _no_sound_engine_save
-	JSR DoSoundEngineSave13			; We don't want to save if we already saved at the death song
-_no_sound_engine_save:
 	; Switch bank A000 to page 26
 	LDA #26
 	STA PAGE_A000
@@ -3459,7 +3449,6 @@ CheckQueueLevelsMusic:
 	TAX
 	LDA LevelRestarting
 	BEQ _not_restarting2
-	;;;JSR DoSoundEngineRestore13
 	LDA Level_MusicQueueRestore
 	CMP SndCur_Music2
 	BEQ _post_restore_music2
@@ -3476,18 +3465,7 @@ _not_restarting2:
 	STA Level_MusicQueueRestore
 	RTS
 
-AllowDeathSongToContinueMusic:
-	JSR DoSoundEngineSave13
-	LDA #1
-	STA SoundEngineBackedUp
-	; Queue death song
-	LDA Sound_QMusic1
-	ORA #MUS1_PLAYERDEATH
-	STA Sound_QMusic1
-	RTS
 
-	.byte $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff, $ff
-	.byte $ff, $ff, $ff, $ff, $ff, $ff
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; Removed 2-player vs and game over
 
