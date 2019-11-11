@@ -714,7 +714,8 @@ Score_Get100PlusPts:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Score_PopUp:
 ; $C467
-	PHA		 	; Save input value
+	;PHA		 	; Save input value
+	RTS
 	STY <Temp_Var15	 	; Backup 'Y' -> Temp_Var15
 
 	JSR Score_FindFreeSlot	; Get free Scores_Value slot

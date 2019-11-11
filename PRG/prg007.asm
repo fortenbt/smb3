@@ -2344,9 +2344,12 @@ PRG007_AB76:
 
 	LDA Score_PatternLeft-1,X	 ; -1 because a score value of zero is "empty"
 
-	LDX <SlotIndexBackup	 ; X = score slot index
+	;;LDX <SlotIndexBackup	 ; X = score slot index
 
-	CMP #$ff
+	;;CMP #$ff
+	LDA #0
+	NOP
+	NOP
 	BEQ PRG007_AB99	 ; If this is the "don't display" marker, jump to PRG007_AB99
 
 	; Otherwise, set the pattern
@@ -2364,8 +2367,10 @@ PRG007_AB76:
 
 PRG007_AB99:
 	LDY <Temp_Var6	 ; Y = second sprite offset
-	CPY #$ff
-	BEQ PRG007_ABC4	 ; If this sprite is marked as "don't display", jump to PRG007_ABC4
+	;;CPY #$ff
+	;;BEQ PRG007_ABC4	 ; If this sprite is marked as "don't display", jump to PRG007_ABC4
+	JMP PRG007_ABC4
+	NOP
 
 	; Score Sprite Y
 	LDA Scores_Y,X
