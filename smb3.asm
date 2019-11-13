@@ -3829,12 +3829,18 @@ TILE2_ON		= $19	; See prg021.asm - solid on block
 TILE2_ON_INACTIVE	= $05	; non-solid on block outline
 TILE2_OFF		= $7E	; solid off block
 TILE2_OFF_INACTIVE	= $4B	; non-solid off block outline
-;; -- TS14 (Underground) On/Off
-TILE14_ON		= $7E	; See prg013.asm - solid on block		QUAD 2
+;; -- TS3 (Hills) On/Off, boot spikes
+TILE3_ON		= $7D	; See prg016.asm - solid on block		QUAD 2
+TILE3_ON_INACTIVE	= $5D	; non-solid on block outline
+TILE3_OFF		= $FE	; solid off block				QUAD 3
+TILE3_OFF_INACTIVE	= $98	; non-solid off block outline
+TILE3_BOOTSPIKE		= $7E	; Spikes that hurt regardless of kuribo's shoe
+;; -- TS14 (Underground) On/Off, boot spikes
+TILE14_ON		= $7D	; See prg013.asm - solid on block		QUAD 2
 TILE14_ON_INACTIVE	= $5D	; non-solid on block outline
 TILE14_OFF		= $FE	; solid off block				QUAD 3
 TILE14_OFF_INACTIVE	= $98	; non-solid off block outline
-TILE14_BOOTSPIKE	= $7F	; Spikes that hurt regardless of kuribo's shoe
+TILE14_BOOTSPIKE	= $7E	; Spikes that hurt regardless of kuribo's shoe
 
 TILE1_BLOCK_SHUR	= $C0	; Big block shadow upper-right
 TILE1_BLOCK_SHUL	= $C1	; Big block shadow upper-left (actually none, also used as a cleared P-Switch on level reload, AKA TILEA_PSWITCH_BLANK)

@@ -2996,7 +2996,7 @@ TileAndAttrOffsByTS:
 	.byte $00			; 0 - Map
 	.byte OnOffOffs(OnTileTS1)	; 1 - Plains [15]
 	.byte OnOffOffs(OnTileTS2)	; 2 - Mini fortress style [21]
-	.byte $00			; 3 - Hills style [16]
+	.byte OnOffOffs(OnTileTS3)	; 3 - Hills style [16]
 	.byte $00			; 4 - High-Up style [17]
 	.byte $00			; 5 - pipe world plant infestation [19]
 	.byte $00			; 6 - Water world [18]
@@ -3016,14 +3016,17 @@ TileAndAttrOffsByTS:
 
 OnTileTS1:	.byte TILE1_ON,			TILE1_OFF_INACTIVE
 OnTileTS2:	.byte TILE2_ON,			TILE2_OFF_INACTIVE
+OnTileTS3:	.byte TILE3_ON,			TILE3_OFF_INACTIVE
 OnTileTS14:	.byte TILE14_ON,		TILE14_OFF_INACTIVE
 
 OffTileTS1:	.byte TILE1_ON_INACTIVE,	TILE1_OFF
 OffTileTS2:	.byte TILE2_ON_INACTIVE,	TILE2_OFF
+OffTileTS3:	.byte TILE3_ON_INACTIVE,	TILE3_OFF
 OffTileTS14:	.byte TILE14_ON_INACTIVE,	TILE14_OFF
 
 OffAttrTS1:	.byte $00,			$03
 OffAttrTS2:	.byte $00,			$03
+OffAttrTS3:	.byte $00,			$03
 OffAttrTS14:	.byte $00,			$03
 
 OnOff_SubstTileAndAddr:
