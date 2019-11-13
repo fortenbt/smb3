@@ -3084,9 +3084,13 @@ _pswitch_subst:
 
 CheckForWakeup:
 	CMP #OBJ_PARATROOPAGREENHOP
-	BNE _check_wakeup_rts
+	BNE _check_wakeup_red
 	STA Objects_Timer3,X	; Don't let the greenhop troopa wake up
-_check_wakeup_rts:
+_check_wakeup_red:
+	CMP #OBJ_FLYINGREDPARATROOPA
+	BNE _check_timer3
+	STA Objects_Timer3,X	; Don't let the greenhop troopa wake up
+_check_timer3:
 	LDA Objects_Timer3,X
 	RTS
 
