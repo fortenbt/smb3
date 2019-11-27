@@ -3086,13 +3086,23 @@ _pswitch_subst:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 CheckForWakeup:
+	PHA			; Save off the obj type
+	LDA Objects_State,X
+	CMP #OBJSTATE_HELD
+	BNE _check_wakeup_green
+	PLA
+	LDA #$FF
+	STA Objects_Timer3,X	; Don't let held shells ever wake up
+	BNE _check_timer3
+_check_wakeup_green:
+	PLA			; Restore object type
 	CMP #OBJ_PARATROOPAGREENHOP
 	BNE _check_wakeup_red
-	STA Objects_Timer3,X	; Don't let the greenhop troopa wake up
+	STA Objects_Timer3,X	; Don't let the greenhop troopa ever wake up
 _check_wakeup_red:
 	CMP #OBJ_FLYINGREDPARATROOPA
 	BNE _check_timer3
-	STA Objects_Timer3,X	; Don't let the greenhop troopa wake up
+	STA Objects_Timer3,X	; Don't let the flying red troopa ever wake up
 _check_timer3:
 	LDA Objects_Timer3,X
 	RTS
@@ -3474,9 +3484,8 @@ _not_restarting2:
 
 PRG030_FREE_SPACE:
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $AA, $AA, $AA, $AA, $AA
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; Removed 2-player vs and game over
