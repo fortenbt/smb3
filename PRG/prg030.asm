@@ -3002,7 +3002,7 @@ TileAndAttrOffsByTS:
 	.byte $00			; 6 - Water world [18]
 	.byte $00			; 7 - Toad house [18]
 	.byte $00			; 8 - Vertical pipe maze [18]
-	.byte $00			; 9 - desert level [20]
+	.byte OnOffOffs(OnTileTS9)	; 9 - desert level [20]
 	.byte $00			; 10 - airship [23]
 	.byte $00			; 11 - Giant World [19]
 	.byte $00			; 12 - ice level [17]
@@ -3017,16 +3017,19 @@ TileAndAttrOffsByTS:
 OnTileTS1:	.byte TILE1_ON,			TILE1_OFF_INACTIVE
 OnTileTS2:	.byte TILE2_ON,			TILE2_OFF_INACTIVE
 OnTileTS3:	.byte TILE3_ON,			TILE3_OFF_INACTIVE
+OnTileTS9:	.byte TILE9_ON,			TILE9_OFF_INACTIVE
 OnTileTS14:	.byte TILE14_ON,		TILE14_OFF_INACTIVE
 
 OffTileTS1:	.byte TILE1_ON_INACTIVE,	TILE1_OFF
 OffTileTS2:	.byte TILE2_ON_INACTIVE,	TILE2_OFF
 OffTileTS3:	.byte TILE3_ON_INACTIVE,	TILE3_OFF
+OffTileTS9:	.byte TILE9_ON_INACTIVE,	TILE9_OFF
 OffTileTS14:	.byte TILE14_ON_INACTIVE,	TILE14_OFF
 
 OffAttrTS1:	.byte $00,			$03
 OffAttrTS2:	.byte $00,			$03
 OffAttrTS3:	.byte $00,			$03
+OffAttrTS9:	.byte $00,			$03
 OffAttrTS14:	.byte $00,			$03
 
 OnOff_SubstTileAndAddr:
@@ -3484,7 +3487,7 @@ _not_restarting2:
 
 PRG030_FREE_SPACE:
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte $AA, $AA, $AA, $AA, $AA
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
