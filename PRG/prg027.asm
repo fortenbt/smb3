@@ -1466,7 +1466,7 @@ PalSet_Maps:
 	.byte $0F, $0F, $30, $3C, $0F, $36, $27, $2A, $0F, $11, $1A, $2A, $0F, $30, $16, $2A	; World 7
 	.byte $0F, $0F, $30, $3C, $0F, $36, $27, $17, $0F, $06, $27, $17, $0F, $35, $25, $17	; World 8
 
-	.byte $FF, $16, $36, $0F, $FF, $17, $36, $0F, $FF, $17, $27, $0F, $FF, $30, $16, $0F	; Map object colors used in World 1-7 + 9
+	.byte $FF, $16, $36, $0F, $FF, $17, $36, $0F, $FF, $15, $30, $0F, $FF, $30, $16, $0F	; Map object colors used in World 1-7 + 9
 	.byte $FF, $16, $36, $0F, $FF, $17, $36, $0F, $FF, $17, $27, $0F, $FF, $30, $16, $0F	; Map object colors used in World 8
 	.byte $FF, $16, $36, $0F, $FF, $1A, $27, $0F, $FF, $30, $36, $0F, $FF, $16, $30, $0F	; Unused?  (Same as previous anyway) 
 	.byte $FF, $16, $36, $0F, $FF, $1A, $27, $0F, $FF, $30, $36, $0F, $FF, $16, $30, $0F	; Unused?  (Same as previous anyway)
