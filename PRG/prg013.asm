@@ -335,36 +335,100 @@ LeveLoad_FixedSizeGen_TS14:
 	; Broken into another file for ease of integration in NoDice editor
 	.include "PRG/levels/Under.asm"
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;; BEGIN UNUSED PLAINS COPY DATA ;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; The following has nothing to do with this bank, but this bank had a tonnnn of freespace
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-; The following are copied fragments from PRG015 ... THEY DO NOT BELONG HERE
-; They won't load correctly (if at all) under this bank anyway...
-; My guess... massive copy/paste error? :D
+PauseMenu_Sprites:
+	.byte $48, $C1, $03, $78	; c
+	.byte $48, $C3, $03, $80	; o +4
+	.byte $48, $C5, $03, $88	; n +8
+	.byte $48, $C7, $03, $90	; t +c
+	.byte $48, $C9, $03, $98	; . +10
+	.byte $58, $CB, $03, $78	; m +14
+	.byte $58, $CD, $03, $80	; a +18
+	.byte $58, $CF, $03, $88	; p +1c
+	.byte $68, $D1, $03, $78	; r +20
+	.byte $68, $D3, $03, $80	; e +24
+	.byte $68, $D5, $03, $88	; s +28
+	.byte $68, $C7, $03, $90	; t +2c
+	.byte $68, $CD, $03, $98	; a +30
+	.byte $68, $D1, $03, $A0	; r +34
+	.byte $68, $C7, $03, $A8	; t +38
+PauseMenu_CursorSprite:
+	.byte $48, $D7, $01, $6F	; > +3c
+PauseMenu_Sprites_End
 
-	; This is (errorenously) the tail end of 1-1
-	.byte $80, $28, $6E, $80, $29, $6A, $80, $11, $67, $E4, $37, $64
-	.byte $40, $37, $68, $40, $38, $63, $41, $38, $68, $41, $39, $62, $42, $39, $68, $42
-	.byte $19, $6C, $92, $26, $71, $80, $28, $73, $80, $17, $76, $01, $38, $70, $A1, $37
-	.byte $74, $A2, $37, $7C, $12, $37, $7F, $0D, $38, $7B, $14, $39, $7A, $15, $27, $8D
-	.byte $9B, $33, $8D, $41, $37, $8D, $A2, $37, $8D, $41, $11, $88, $32, $17, $86, $22
-	.byte $39, $80, $10, $38, $83, $10, $39, $83, $11, $E8, $42, $80, $1A, $8B, $A2, $12
-	.byte $91, $E2, $38, $91, $A1, $12, $94, $02, $40, $9B, $09, $FF
+PauseMenu_CursorY:
+	.byte $48, $58, $68
 
-	; These are duplicated from the 'Plains' bank (PRG015) and don't belong here!
-	; Don't try to use these, and make sure you delete them...
-	.include "PRG/levels/Plains/1-1Bonus"	; 1-1 Bonus room
-	.include "PRG/levels/Plains/7-5"		; 7-5	
-	.include "PRG/levels/Plains/3-8End"		; 3-8 Exit
-	.include "PRG/levels/Plains/5-3End"		; 5-3 Exit
-	.include "PRG/levels/Plains/Unused2E"	; "Unused level 2" exit
-	.include "PRG/levels/Plains/Generic4"	; Generic Exit for World 4 only
-	.include "PRG/levels/Plains/W3HBD"		; World 3 Hammer Bro battle area (out of water)
-	.include "PRG/levels/Plains/W3HBC"		; World 3 Hammer Bro battle area (in water, with powerup)
-	.include "PRG/levels/Plains/WxHBx"		; ?? Unknown Hammer Bro battle area
-	.include "PRG/levels/Plains/1-4End"		; 1-4 Exit pipe
-	.include "PRG/levels/Plains/3-3"		; 3-3
-	.include "PRG/levels/Plains/3-3End"		; 3-3 Exit
+RunPauseMenu:
+	;; We have to do everything with sprites because calculating the center of the current scroll point
+	;; is definitely not fun, and then we'd have to back up the background where we replaced it with the
+	;; menu....basically far too much work for a simple menu.
+	LDA #15
+	STA PatTable_BankSel+5		; Set patterns needed for pause menu sprites
+	JSR Sprite_RAM_Clear		; Clear other sprites
 
-; Rest of ROM bank was empty
+	; Set up our pause menu sprites
+	LDY #(PauseMenu_Sprites_End - PauseMenu_Sprites - 1)
+_load_pause_loop:
+	LDA PauseMenu_Sprites,Y
+	STA Sprite_RAM+$00,Y
+	DEY
+	BPL _load_pause_loop		;While Y >= 0, loop!
+
+	JSR DoMenuInput
+
+	; Fix the cursor's Y position based on selection
+	LDY PauseMenuSel
+	DEY
+	LDA PauseMenu_CursorY,Y
+	STA Sprite_RAM+(PauseMenu_CursorSprite-PauseMenu_Sprites)
+
+	RTS
+
+DoMenuInput:
+	LDA <Pad_Input
+	AND #PAD_DOWN
+	BEQ _menu_chk_up
+	INC PauseMenuSel
+	LDA PauseMenuSel
+	AND #%00000011
+	BNE _set_menu_sel
+	LDA #1				; When we overflow to 0, make our selection 1
+	BNE _set_menu_sel
+_menu_chk_up:
+	LDA <Pad_Input
+	AND #PAD_UP
+	BEQ _menu_chk_a
+	DEC PauseMenuSel
+	LDA PauseMenuSel
+	AND #%00000011
+	BNE _set_menu_sel
+	LDA #3				; When we underflow to 0, make our selection 3
+	BNE _set_menu_sel
+_menu_chk_a:
+	LDA <Pad_Input
+	AND #PAD_A
+	BEQ _menu_input_rts
+	LDA PauseMenuSel		; do nothing currently
+_set_menu_sel:
+	STA PauseMenuSel
+_menu_input_rts:
+	RTS
+
+PRG013_MASSIVE_FREE_SPACE:
+	.byte $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA
+	.ds 0x2DD
+	.byte $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA
