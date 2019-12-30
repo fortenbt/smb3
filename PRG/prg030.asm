@@ -3131,9 +3131,61 @@ RunPauseMenu13:
 
 	RTS
 
+RestartLevelPRG030:		; This is jumped to from Level_MainLoop->RunPauseMenu->DoMenuInput->PauseMenuRestartLevel
+	PLA			; Restore the A000 page saved by RunPauseMenu13 before getting here
+	TAY
+	PLA
+	PLA			; Remove the Level_MainLoop return address
+	TYA
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+
+	; Switch bank A000 to page 26
+	LDA #26
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+	JSR Palette_FadeOut	 		; Fade out
+	JSR GraphicsBuf_Prep_And_WaitVSync	 ; Likely just using this for VSync
+
+	JSR Clear_500_300_RAM
+
+	JSR Sprite_RAM_Clear
+	JSR Scroll_PPU_Reset
+
+	LDA #$10
+	STA Map_Operation
+
+	LDA Map_Prev_XOff
+	STA <Horz_Scroll
+	LDA Map_Prev_XHi
+	STA <Horz_Scroll_Hi
+	LDA Map_Entered_Y
+	STA <World_Map_Y
+	LDA Map_Entered_XHi
+	STA <World_Map_XHi
+	LDA Map_Entered_X
+	STA <World_Map_X
+	LDA Map_Previous_UnusedPVal2
+	STA <Map_UnusedPlayerVal2
+
+	LDA #0
+	STA Sound_IsPaused
+	STA SndCur_Pause	; Stop the pause sound hold
+	STA PAPU_EN		; Disable all sound channels
+	STA SndCur_Player	; Kill player sound
+	STA SndCur_Level1	; Kill level 1 sound
+	STA SndCur_Level2	; Kill level 2 sound
+	STA SndCur_Music1	; Kill BGM 1
+	STA SndCur_Music2	; Kill BGM 2
+	STA SndCur_Map		; Kill Map sounds
+	LDA #MUS1_STOPMUSIC
+	STA Sound_QMusic1	; Stop BGM
+
+	JMP PRG030_8732
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; Removed 2-player vs and game over
-	.ds 0x208
+	.ds 0x19e
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; SetPages_ByTileset

@@ -388,13 +388,13 @@ _load_pause_loop:
 	DEY
 	BPL _load_pause_loop		;While Y >= 0, loop!
 
-	JSR DoMenuInput
-
 	; Fix the cursor's Y position based on selection
 	LDY PauseMenuSel
 	DEY
 	LDA PauseMenu_CursorY,Y
 	STA Sprite_RAM+(PauseMenu_CursorSprite-PauseMenu_Sprites)
+
+	JSR DoMenuInput
 
 	RTS
 
@@ -428,11 +428,20 @@ _menu_chk_a:
 	JSR DynJump
 	.word PauseMenuCont			;  0 - cont. Do nothing, just return
 	.word PauseMenuReturnToMap		;  1 - Return to map
-	.word PauseMenuCont			;  2 - Restart Level
+	.word PauseMenuRestartLevel		;  2 - Restart Level
 _set_menu_sel:
 	STA PauseMenuSel
 _menu_input_rts:
 	RTS
+
+PauseMenuRestartLevel:
+	JSR PauseMenuCont	; Kill the pause menu
+
+	PLA
+	PLA			; Remove the RunPauseMenu return address
+	PLA
+	PLA			; Remove the RunPauseMenu13 return address
+	JMP RestartLevelPRG030
 
 PauseMenuCont:
 	LDA #0
@@ -461,5 +470,5 @@ PauseMenuReturnToMap:
 
 PRG013_MASSIVE_FREE_SPACE:
 	.byte $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA
-	.ds 0x2b7
+	.ds 0x2ad
 	.byte $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA
