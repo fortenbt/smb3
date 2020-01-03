@@ -378,7 +378,7 @@ RunPauseMenu:
 	;; menu....basically far too much work for a simple menu.
 	LDA #15
 	STA PatTable_BankSel+5		; Set patterns needed for pause menu sprites
-	JSR Sprite_RAM_Clear		; Clear other sprites
+	JSR Sprite_RAM_Clear_PRG0	; Clear other sprites
 
 	; Set up our pause menu sprites
 	LDY #(PauseMenu_Sprites_End - PauseMenu_Sprites - 1)
@@ -425,7 +425,7 @@ _menu_chk_a:
 	LDY PauseMenuSel
 	DEY
 	TYA
-	JSR DynJump
+	JSR DynJump_PRG0
 	.word PauseMenuCont			;  0 - cont. Do nothing, just return
 	.word PauseMenuReturnToMap		;  1 - Return to map
 	.word PauseMenuRestartLevel		;  2 - Restart Level
