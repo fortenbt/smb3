@@ -24,7 +24,7 @@
 
 	.org ObjectGroup_InitJumpTable	; <-- help enforce this table *here*
 ObjectGroup03_InitJumpTable:
-	.word ObjInit_GroundTroop	; Object $6C - OBJ_GREENTROOPA
+	.word ObjInit_ShelledTroop	; Object $6C - OBJ_GREENTROOPA
 	.word ObjInit_GroundTroop	; Object $6D - OBJ_REDTROOPA
 	.word ObjInit_ShelledTroop	; Object $6E - OBJ_PARATROOPAGREENHOP
 	.word ObjInit_KickedTroop	; Object $6F - OBJ_FLYINGREDPARATROOPA
