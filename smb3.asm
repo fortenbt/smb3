@@ -2201,6 +2201,10 @@ RandomN = Random_Pool+1			; Pull a random number from the sequence (NOTE: Random
 	; ASSEMBLER BOUNDARY CHECK, END OF $0800
 .Bound_0800:	BoundCheck .Bound_0800, $0800, $07xx RAM
 
+	.org $FD7D
+	Sprite_RAM_Clear_PRG0:
+	.org $FE92
+	DynJump_PRG0:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $68xx SRAM for 2P Vs ONLY
