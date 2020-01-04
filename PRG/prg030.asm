@@ -2321,7 +2321,8 @@ PRG030_8E5D:
 	LDA Level_PauseFlag
 	EOR #$01	 
 	;;;STA Level_PauseFlag	 ; Toggle pause flag
-	JSR InitializePauseMenu
+	JMP InitializePauseMenu
+_allowed_pause:			; InitializePauseMenu jumps back here if the pause/unpause was allowed
  
 	BNE PRG030_8E76	 ; If game is now paused, jump to PRG030_8E76
 
@@ -2330,6 +2331,7 @@ PRG030_8E5D:
 PRG030_8E76:
 	STX Sound_QPause ; Set appropriately
 
+_disallowed_pause:		; InitializePauseMenu jumps back here if the pause/unpause was not allowed
 PRG030_8E79:
 	LDA Level_PauseFlag
 	BEQ PRG030_8EAD	 	; If not paused, jump to PRG030_8EAD
@@ -3383,9 +3385,13 @@ __j_PRG008_B4BD:
 
 
 InitializePauseMenu:
+	LDX EndCard_Flag
+	BEQ _initpause_allowed
+	JMP _disallowed_pause	; If we already hit the end level card, don't allow pausing
+_initpause_allowed:
 	STA Level_PauseFlag	; Toggle pause flag
 	STA PauseMenuSel	; Set our menu selection (0 for unpaused, 1 for pausing)
-	RTS
+	JMP _allowed_pause
 
 RunPauseMenu13:
 	LDA PAGE_A000
@@ -3486,8 +3492,7 @@ _not_restarting2:
 	RTS
 
 PRG030_FREE_SPACE:
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	.byte $AA, $AA, $AA, $AA, $AA
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
