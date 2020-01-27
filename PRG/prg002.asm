@@ -5628,27 +5628,40 @@ PRG002_BC6F:
 	JMP EndLevelCard_SetupXUP	 ; Setup for getting 'X' number of lives!
 
 EndLevelCard_WaitFlyAway:
-	JSR Object_ApplyYVel	 ; Apply Y Velocity
+	LDA #$40
+	STA Objects_Timer,X
+	INC <Objects_DetStat,X
+	NOP
+	NOP
 
-	LDA Objects_SprVVis,X
-	BEQ PRG002_BC8E	 ; If card is not vertically off-screen, jump to PRG002_BC8E
+	;;;JSR Object_ApplyYVel	 ; Apply Y Velocity
+
+	;;;LDA Objects_SprVVis,X
+	;;BEQ PRG002_BC8E	 ; If card is not vertically off-screen, jump to PRG002_BC8E
 
 	; Card is vertically off-screen...
 
-	INC <Objects_DetStat,X	 ; Go to next internal state
+	;;INC <Objects_DetStat,X	 ; Go to next internal state
 
 	; Set card's timer to $60
-	LDA #$60
-	STA Objects_Timer,X
+	;;LDA #$60
+	;;;STA Objects_Timer,X
 
 	; Select bank to support "YOU GOT A CARD" font
-	LDA #$5e
-	STA PatTable_BankSel+1
+	;;LDA #$5e
+	;;;STA PatTable_BankSel+1
 
-PRG002_BC8E:
-	JSR EndLevelCard_AnimateSpinAway 	; Animate the card as it spins away
+;PRG002_BC8E:
+	;;;JSR EndLevelCard_AnimateSpinAway 	; Animate the card as it spins away
 
 EndLevelCard_PlayerRunOff:
+	LDA Objects_Timer,X
+	BEQ _orb_slo_done
+	AND #3
+	BNE _orb_slo_done
+	LDA #3
+	STA Player_HaltTick
+_orb_slo_done:
 	JSR EndLevelCard_ClearPlayerIfOff	; Clear Player's sprites as he walks off-screen
 
 	; Always set Player facing correct direction
@@ -6151,7 +6164,9 @@ ObjHit_EndLevelCard:
 	STA Kill_Tally
 	STA Level_PSwitchCnt
 	STA Level_AScrlConfig
-	STA <Player_YVel
+	;;STA <Player_YVel
+	NOP
+	NOP
 	STA PlayerProj_ID	
 	STA PlayerProj_ID+1
 
@@ -6231,12 +6246,12 @@ PRG002_BF4B:
 	STA EndCard_Flag	 ; Flag end level card as grabbed
 
 	; Card actually has a slight leftward velocity?
-	LDA #-$01
-	STA <Objects_XVel,X
+	;;LDA #-$01
+	;;;STA <Objects_XVel,X
 
 	; Card moves upward
-	LDA #-$28
-	STA <Objects_YVel,X
+	;;LDA #-$28
+	;;STA <Objects_YVel,X
 
 	LDY Objects_Frame,X	 ; Y = current frame 
 
@@ -6245,8 +6260,8 @@ PRG002_BF4B:
 	STA Objects_Var1,X
 
 	; Set frame
-	LDA EndLevelCard_Frame,Y
-	STA Objects_Frame,X
+	;;;LDA EndLevelCard_Frame,Y
+	;;;STA Objects_Frame,X
 
 	INY		 ; Y++ (1-3)
 	TYA		 ; -> 'A'
@@ -6331,7 +6346,9 @@ PRG002_BFD3:
 
 	; ?? Someone wanna claim this?
 PRG002_BFD4:
-	.byte $FC, $A9, $00, $22, $0B, $01, $A9, $22, $14, $01, $A9, $22, $29, $04, $A9, $FC
-	.byte $FC, $A9, $22, $33, $04, $A9, $FC, $FC, $A9, $22, $4A, $04, $A9, $A9, $FC, $A9
-	.byte $22, $52, $04, $A9, $FC, $A9, $A9, $22, $6C, $48, $A9, $00
+	;.byte $FC, $A9, $00, $22, $0B, $01, $A9, $22, $14, $01, $A9, $22, $29, $04, $A9, $FC
+	;.byte $FC, $A9, $22, $33, $04, $A9, $FC, $FC, $A9, $22, $4A, $04, $A9, $A9, $FC, $A9
+	;.byte $22, $52, $04, $A9, $FC, $A9, $A9, $22, $6C, $48, $A9, $00
+
+	.ds 0x10
 
