@@ -1345,7 +1345,9 @@ PRG008_A6D2:
 
 	; Remove horizontal velocity and cancel controller inputs
 	LDA #$00	
-	STA <Player_XVel
+	;;STA <Player_XVel
+	NOP
+	NOP
 	STA <Pad_Holding
 	STA <Pad_Input	
 
