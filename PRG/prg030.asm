@@ -3385,13 +3385,21 @@ __j_PRG008_B4BD:
 
 
 InitializePauseMenu:
-	LDX EndCard_Flag
-	BEQ _initpause_allowed
-	JMP _disallowed_pause	; If we already hit the end level card, don't allow pausing
+	PHA
+	LDA EndCard_Flag
+	BNE _disallow_pause
+_check_wandstate:
+	LDA Level_GetWandState
+	CMP #3
+	BPL _disallow_pause
 _initpause_allowed:
+	PLA
 	STA Level_PauseFlag	; Toggle pause flag
 	STA PauseMenuSel	; Set our menu selection (0 for unpaused, 1 for pausing)
 	JMP _allowed_pause
+_disallow_pause:
+	PLA
+	JMP _disallowed_pause
 
 RunPauseMenu13:
 	LDA PAGE_A000

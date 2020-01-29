@@ -504,7 +504,8 @@ _menu_input_rts:
 
 PauseMenuRestartLevel:
 	LDA #0
-	JSR InitializePauseMenu
+	STA Level_PauseFlag
+	STA PauseMenuSel
 
 	PLA
 	PLA			; Remove the RunPauseMenu return address
@@ -515,7 +516,8 @@ PauseMenuRestartLevel:
 PauseMenuCont:
 	LDA #0
 	STA Sound_IsPaused
-	JSR InitializePauseMenu
+	STA Level_PauseFlag
+	STA PauseMenuSel
 	RTS
 
 PauseMenuReturnToMap:
