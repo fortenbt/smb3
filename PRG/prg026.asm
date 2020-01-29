@@ -3759,4 +3759,5 @@ _clear53loop:
 	CPX #$01		; If we've reached the $01xx bank, we cleared 5 and 3, so we're done
 	BNE _clear53loop	 ; ... skip the next line (don't clear the stack space!)
 	STA BigQBlock_GotIt
+	STA Music_RestH_Off
 	RTS			; Return
