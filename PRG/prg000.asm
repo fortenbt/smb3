@@ -5810,7 +5810,6 @@ Player_Die:
 	;;;LDA Sound_QMusic1
 	;;ORA #MUS1_PLAYERDEATH
 	;;;STA Sound_QMusic1
-	;JSR AllowDeathSongToContinueMusic
 	LDA Sound_QLevel1
 	ORA #SND_LEVELSHOE
 	STA Sound_QLevel1
