@@ -3452,6 +3452,8 @@ RestartLevelPRG030:		; This is jumped to from Level_MainLoop->RunPauseMenu->DoMe
 
 	LDA #$10
 	STA Map_Operation
+	LDA #PLAYERSUIT_SMALL
+	STA World_Map_Power
 
 	LDA Map_Prev_XOff
 	STA <Horz_Scroll
@@ -3500,8 +3502,7 @@ _not_restarting2:
 	RTS
 
 PRG030_FREE_SPACE:
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $AA, $AA, $AA, $AA, $AA
+	.byte $AA, $AA, $AA, $AA
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; Removed 2-player vs and game over
