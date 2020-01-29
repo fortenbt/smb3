@@ -2913,7 +2913,7 @@ PRG000_CE94:
 	STY <Objects_XVel,X	 ; Set minimum X velocity on object (to enable wall hit detection)
 
 	;;;JSR Object_WorldDetectN1 ; Detect against world
-	JSR SetKickedNonIceblockVel
+	JSR SetKickedNonIceblockVel13
 
 	JMP PRG000_CEB4
 

@@ -801,7 +801,7 @@ CineKing_DialogState:	; Toad & King Cinematic: When 1, we're doing the text vers
 	Player_X:		.ds 1	; Player X
 	Objects_X:		.ds 8	; $91-$98 Other object's X positions
 
-	ThrowUpward:		.ds 1	; $99 unused
+	ThrowUpOrDown:		.ds 1	; $99 unused
 	; Reuse of $9A
 	CineKing_Var:		; General variable
 

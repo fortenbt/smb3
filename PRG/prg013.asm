@@ -657,9 +657,53 @@ _save2_loop:
 	BNE _save2_loop
 	RTS
 
+SetKickedNonIceblockVel:
+	LDA <ThrowUpOrDown
+	BEQ _non_iceblock_rts13
+	TAX
+	DEX			; normalize to a zero-base index
+	BEQ _set_throw_vels	; if our index is 0, we're throwing upward
+	LDA <Player_FlipBits	; otherwise, we're setting the shell down, so it needs to be nudged in the direction the player is facing
+	BEQ _set_throw_vels	; facing left if 0, so leave the index alone
+	INX			; facing right if non-zero, so inc the index
+_set_throw_vels:
+	TXA
+	PHA			; Store which index we're using (up, downleft, or downright)
+	LDA ShellThrowXVel,X
+	LDY ShellThrowYVel,X
+	LDX <SlotIndexBackup	; Restore X to the object slot index
+	STA <Objects_XVel,X
+	STY <Objects_YVel,X
+
+	PLA			; Restore which index we used (up, downleft, or downright)
+	PHA			; and store it again
+	TAY
+	LDA #OBJSTATE_SHELLED
+	CPY #0			; Did we throw upward?
+	BEQ _store_shell_state	; If so, just store the shelled state
+	LDY <Player_XVel	; Otherwise, we dropped it downward...are we running?
+	CPY #$30
+	BPL _kick_the_shell	; If we're moving rightward fast, kick the shell
+	CPY #-$2F
+	BMI _kick_the_shell	; If we're moving leftward fast, kick the shell
+	BPL _store_shell_state	; We're moving slow enough, just set the shell down
+_kick_the_shell:
+	PLA
+	TAY
+	LDA ShellDropXVel,Y	; We dropped the shell while moving quickly, so kick it instead
+	STA <Objects_XVel,X
+	LDA #OBJSTATE_KICKED	; And set as kicked
+	PHA
+_store_shell_state:
+	STA Objects_State,X
+	PLA			; Remove the index
+	LDA #1
+_non_iceblock_rts13:
+	RTS
+
 PRG013_MASSIVE_FREE_SPACE:
 	.byte $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA
-	.ds 0x1A3
+	.ds 0x161
 	.byte $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA
 
 ; Rest of ROM bank was empty

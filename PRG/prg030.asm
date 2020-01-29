@@ -3115,10 +3115,10 @@ _check_timer3:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; We currently don't allow for bobombs to be "set" down. You either kick them or throw them up.
 SetKickedBobombVel:
-	LDA <ThrowUpward
+	LDA <ThrowUpOrDown
 	BEQ _norm_bobomb_kick
 	LDA #$00
-	STA <ThrowUpward	; Reset ThrowUpward
+	STA <ThrowUpOrDown	; Reset ThrowUpOrDown
 	STA <Objects_XVel,X	; No XVel (ORANGE TODO: should this have Mario's XVel?)
 	LDA ShellThrowYVel
 	STA <Objects_YVel,X
@@ -3135,41 +3135,26 @@ ShellThrowXVel:		.byte $00,		-$0C,				$0C
 ShellThrowYVel:		.byte -$78,		$04,				$04
 ShellDropXVel:		.byte $00,		-$30,				$30
 
-SetKickedNonIceblockVel:
-	LDA <ThrowUpward
-	BEQ _non_iceblock_rts
-	TAX
-	DEX			; normalize to a zero-base index
-	BEQ _set_throw_vels	; if our index is 0, we're throwing upward
-	LDA <Player_FlipBits	; otherwise, we're setting the shell down, so it needs to be nudged in the direction the player is facing
-	BEQ _set_throw_vels	; facing left if 0, so leave the index alone
-	INX			; facing right if non-zero, so inc the index
-_set_throw_vels:
-	TXA
-	PHA			; Store which index we're using (up, downleft, or downright)
-	LDA ShellThrowXVel,X
-	LDY ShellThrowYVel,X
-	LDX <SlotIndexBackup	; Restore X to the object slot index
-	STA <Objects_XVel,X
-	STY <Objects_YVel,X
-
-	PLA			; Restore which index we used (up, downleft, or downright)
-	PHA			; and store it again
-	TAY
-	LDA #OBJSTATE_SHELLED
-	CPY #0			; Did we throw upward?
-	BEQ _store_shell_state	; If so, just store the shelled state
-	LDY Player_InAir	; Otherwise, we dropped it downward...are we in the air?
-	BEQ _store_shell_state	; If we're not in the air, go ahead and set shelled state
-	PLA
-	TAY
-	LDA ShellDropXVel,Y	; We dropped the shell while midair, so kick it instead
-	STA <Objects_XVel,X
-	LDA #OBJSTATE_KICKED	; And set as kicked
+SetKickedNonIceblockVel13:
+	LDA PAGE_A000
 	PHA
-_store_shell_state:
-	STA Objects_State,X
-	PLA			; Remove the index
+
+	LDA #13
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+
+	JSR SetKickedNonIceblockVel
+	TAX
+
+	PLA
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+
+	TXA
+	LDX <SlotIndexBackup	; Restore X to the object slot index
+	CMP #0
+	BEQ _non_iceblock_rts
+
 	PLA
 	PLA			; Remove our caller's return address
 	JMP PRG000_CF98		; Jump back to our caller past all the setting of the XVel, shelled state, etc
@@ -3197,7 +3182,7 @@ _set_down:
 _norm_kick:
 	LDA #0
 _set_throwval_and_kick:
-	STA <ThrowUpward
+	STA <ThrowUpOrDown
 	JMP Player_KickObject
 
 DoShelledBumps:
@@ -3502,7 +3487,8 @@ _not_restarting2:
 	RTS
 
 PRG030_FREE_SPACE:
-	.byte $AA, $AA, $AA, $AA
+	.ds 0xD
+	.byte $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; Removed 2-player vs and game over
