@@ -2907,10 +2907,10 @@ VertLevel_ScreenL:	.byte $00, $F0, $E0, $D0, $C0, $B0, $A0, $90, $80, $70, $60, 
 
 ; This stores the four tiles which make up a card (or absense of one)
 ;              -    M    F    S
-CardUL:	.byte $FE, $E0, $E4, $AC
-CardUR:	.byte $FE, $E1, $E6, $AD
-CardLL:	.byte $FE, $E2, $E7, $AE
-CardLR:	.byte $FE, $E3, $E8, $AF
+CardUL:	.byte $FE, $E0, $E0, $E0
+CardUR:	.byte $FE, $E1, $E1, $E1
+CardLL:	.byte $FE, $E2, $E2, $E2
+CardLR:	.byte $FE, $E3, $E3, $E3
 
 ; Each card's video start offset (lower byte)
 CardVStartU:	.byte $36, $39, $3C	; Upper half of card

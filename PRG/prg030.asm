@@ -323,8 +323,8 @@ EndLevelCard_PalData:
 Video_YouGotCardH:
 	vaddr $22C7
 	.byte $13
-	;       Y    O    U         G    O    T         A         C    A    R    D         |              |
-	.byte $0D, $0E, $0A, $FC, $06, $0E, $09, $FC, $00, $FC, $05, $00, $02, $07, $FC, $26, $FE, $FE, $27
+	;       Y    O    U         G    O    T         A    N         O    R    B         |              |
+	.byte $0D, $0E, $0A, $FC, $06, $0E, $09, $FC, $00, $9B, $FC, $0E, $02, $07, $FC, $26, $FE, $FE, $27
 	vaddr $22B6
 	.byte $04 ;  _    _    _   _
 	;           |               |
@@ -343,16 +343,16 @@ Video_YouGotCardH:
 	.byte $00	; Terminator
 
 Video_CourseClear:
-	vaddr $2889
-	.byte $0E
-	;       C    O    U    R    S    E         C    L    E    A    R         !
-	.byte $85, $8E, $8A, $82, $83, $84, $FC, $85, $8B, $84, $80, $82, $FC, $9B, $00
+	vaddr $288A
+	.byte $0D
+	;       C    O    U    R    S    E         C    L    E    A    R
+	.byte $85, $8E, $8A, $82, $83, $84, $FC, $85, $8B, $84, $80, $82, $FC, $00, $00
 
 Video_YouGotCard:
 	vaddr $28E7
 	.byte $13
-	;       Y    O    U         G    O    T         A         C    A    R    D         |              |
-	.byte $8D, $8E, $8A, $FC, $86, $8E, $89, $FC, $80, $FC, $85, $80, $82, $87, $FC, $A6, $FE, $FE, $A7
+	;       Y    O    U         G    O    T         A    N         O    R    B         |              |
+	.byte $8D, $8E, $8A, $FC, $86, $8E, $89, $FC, $80, $9B, $FC, $8E, $82, $87, $FC, $A6, $FE, $FE, $A7
 
 	vaddr $28D6
 	.byte $04 ;  _    _    _   _

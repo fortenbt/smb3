@@ -5629,7 +5629,8 @@ PRG002_BC6F:
 
 EndLevelCard_WaitFlyAway:
 	LDA #$40
-	STA Objects_Timer,X
+	;;;STA Objects_Timer,X
+	JSR ELC_WaitFlyAway_Hook
 	INC <Objects_DetStat,X
 	NOP
 	NOP
@@ -6056,13 +6057,13 @@ PRG002_BE57:
 EndLevelCard_CardFace:
 	;     ATTR PAT  ATTR PAT
 	.byte $60, $E0, $61, $E1	; Mushroom top
-	.byte $64, $E4, $66, $E6	; Mushroom bottom
+	.byte $64, $E0, $66, $E1	; Flower top
 
-	.byte $2C, $AC, $2D, $AD	; Flower top
-	.byte $62, $E2, $63, $E3	; Flower bottom
+	.byte $2C, $E0, $2D, $E1	; Star top
+	.byte $62, $E2, $63, $E3	; Mushroom bottom
 
-	.byte $67, $E7, $68, $E8	; Star top
-	.byte $2E, $AE, $2F, $AF	; Star bottom
+	.byte $67, $E2, $68, $E3	; Flower bottom
+	.byte $2E, $E2, $2F, $E3	; Star bottom
 
 
 	; Draw the flashing card after it was retrieved
@@ -6344,11 +6345,11 @@ EndLevelCard_Draw:
 PRG002_BFD3:
 	RTS		 ; Return
 
-	; ?? Someone wanna claim this?
-PRG002_BFD4:
-	;.byte $FC, $A9, $00, $22, $0B, $01, $A9, $22, $14, $01, $A9, $22, $29, $04, $A9, $FC
-	;.byte $FC, $A9, $22, $33, $04, $A9, $FC, $FC, $A9, $22, $4A, $04, $A9, $A9, $FC, $A9
-	;.byte $22, $52, $04, $A9, $FC, $A9, $A9, $22, $6C, $48, $A9, $00
+;; Rest of the ROM is FREE
 
-	.ds 0x10
-
+ELC_WaitFlyAway_Hook:
+	STA Objects_Timer,X
+	; Select bank to support "YOU GOT A CARD" font
+	LDA #$5e
+	STA PatTable_BankSel+1
+	RTS
