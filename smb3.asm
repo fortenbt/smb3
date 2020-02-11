@@ -439,7 +439,7 @@ PAD_RIGHT	= $01
 	; resets to zero.
 	Graphics_Queue:		.ds 1
 
-				.ds 1	; $5F unused
+	DoingUserMessage:	.ds 1	; $5F unused
 				.ds 1	; $60 unused
 
 	Level_LayPtr_AddrL:	.ds 1	; Low byte of address to tile layout (ORIGINAL stored in Level_LayPtrOrig_AddrL)

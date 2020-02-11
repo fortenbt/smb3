@@ -312,7 +312,7 @@ Flip_MidBStatCards:
 	vaddr $2B40
 
 	; Discrepency --------v  (Pattern is ... $FE, $FE ... in PRG030 status bar)  Unimportant; inserts <M> which is replaced anyway
-	.byte  32, $FC, $A6, $74, $75, $FB, $FE, $F3, $FE, $F0, $F0, $F0, $F0, $F0, $F0	; [M/L]x  000000 c000| etc.
+	.byte $20, $FC, $A6, $74, $75, $FB, $FE, $F3, $FE, $F0, $F0, $F0, $F0, $F0, $F0	; [M/L]x  000000 c000| etc.
 	.byte $F0, $FE, $ED, $F0, $F0, $F0, $A7, $A6, $FE, $FE, $AA, $FE, $FE, $AA, $FE
 	.byte $FE, $A7, $FC
 	; Discrepency --------^  (Pattern is ... $F4, $F0 ... in PRG030 status bar graphics)
@@ -3575,7 +3575,9 @@ StatusBar_UpdTemplate:
 ; graphics buffer for commitment later on!
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 StatusBar_UpdateValues:
-	JSR StatusBar_Fill_PowerMT	; Fill in StatusBar_PMT with tiles of current Power Meter state
+	;JSR StatusBar_Fill_PowerMT	; Fill in StatusBar_PMT with tiles of current Power Meter state
+	JMP StatusBarHook
+_start_SB_Upd:
 	JSR StatusBar_Fill_Coins	; Fill in StatusBar_CoinsL/H with tiles for coins held; also applies Coins_Earned
 	JSR StatusBar_Fill_Lives	; Fill in StatusBar_LivesL/H with tiles for lives held
 	JSR StatusBar_Fill_Score 	; Fill in StatusBar_Score with tiles for score; also applies Score_Earned
@@ -3696,7 +3698,7 @@ PRG026_B4F5:
 	LDA Graphics_BufCnt
 	ADD #$21	 
 	STA Graphics_BufCnt	 
-
+_end_SB_Upd:
 	RTS		 ; Return
 
 
@@ -3761,3 +3763,82 @@ _clear53loop:
 	STA BigQBlock_GotIt
 	STA Music_RestH_Off
 	RTS			; Return
+
+StatusBarHook:
+	LDA <DoingUserMessage
+	BEQ _norm_status_bar
+	BMI _chk_sb_upd
+	JSR DoStatusBarMessage
+	LDA #$FF
+	STA <DoingUserMessage
+_chk_sb_upd:
+	CMP #$FE
+	BNE _skip_sb_upd
+	LDA #$3c		; status bar blue
+	STA Palette_Buffer+3	; Update palette color
+	LDA #$06
+	STA <Graphics_Queue
+	JSR GraphicsBuf_Prep_And_WaitVSync
+	LDA #2			; Redraw the status bar
+	STA <Graphics_Queue
+	JSR GraphicsBuf_Prep_And_WaitVSync
+	LDA #0
+	STA <DoingUserMessage
+	BEQ _norm_status_bar
+_skip_sb_upd:
+	JMP _end_SB_Upd
+_norm_status_bar:
+	JSR StatusBar_Fill_PowerMT	; Fill in StatusBar_PMT with tiles of current Power Meter state
+	JMP _start_SB_Upd
+
+DoStatusBarMessage:
+	LDX #0
+	LDY Graphics_BufCnt
+	; Load the "message bar" in place of the status bar
+_msg_tmplt_loop:
+	LDA UserMessageTemplate,X
+	STA Graphics_Buffer,Y
+	INY
+	INX
+	CPX #54
+	BNE _msg_tmplt_loop
+	STY Graphics_BufCnt
+
+	; Update the palette of the now "message bar"
+	LDA #$2b		; light green
+	STA Palette_Buffer+3	; Update palette color
+	LDA #$06		; Inform the graphics queue it needs to update the palettes
+	STA <Graphics_Queue
+
+	RTS
+
+UserMessageTemplate:
+	vaddr $2B00
+	.byte 2, $FC, $A0
+
+	vaddr $2B02
+	.byte VU_REPEAT | 29, $A1	; Bar across the top
+	vaddr $2B1F
+	.byte 3, $A2, $FC, $A6
+
+	vaddr $2B22
+	.byte VU_REPEAT | 29, $FE
+	vaddr $2B3F
+	.byte 3, $A7, $FC, $A6
+
+	vaddr $2B42
+	.byte VU_REPEAT | 29, $FE
+	vaddr $2B5F
+	.byte 3, $A7, $FC, $A6
+
+	vaddr $2B62
+	.byte VU_REPEAT | 29, $FE
+	vaddr $2B7F
+	.byte 3, $A7, $FC, $A8
+
+	vaddr $2B82
+	.byte VU_REPEAT | 29, $A4
+	vaddr $2B9F
+	.byte 1, $A5
+
+	.byte $00
