@@ -4997,3 +4997,38 @@ _init_orb_loop:
 	BPL _init_orb_loop
 	LDA #0		; return 0 for clearing vars after return
 	RTS
+
+_FindLevelOrbOffset:
+	LDX #0
+_chk_loop:
+	LDA Levels_Entered_XY,X
+	CMP Map_Entered_X
+	BNE _chk_cont
+	LDA Levels_Entered_XY+1,X
+	CMP Map_Entered_Y
+	BEQ _findorboffs_done
+_chk_cont:
+	INX
+	INX
+	CPX #(LEXY_END-Levels_Entered_XY-1)
+	BCC _chk_loop
+_findorboffs_done:
+	RTS
+
+DoCustomEndLevelCard:
+	; End level card was hit, check what level we're in and update the Level_Orbs
+	JSR _FindLevelOrbOffset
+	CPX #(LEXY_END-Levels_Entered_XY-1)
+	; If we didn't find it, there's an error somewhere, just bail out
+	BCS _restore_x_rts
+_clear_bit:
+	; X is == level offset
+	LDA Level_Orbs,X
+	AND #$01
+	BEQ _restore_x_rts		; if the bit is already cleared? go ahead and just return
+	LDA Level_Orbs,X		; otherwise, just xor off the EndLevelCard orb bit (bit 1)
+	EOR #$01
+	STA Level_Orbs,X
+_restore_x_rts:
+	LDX <SlotIndexBackup		; X = object slot index
+	RTS

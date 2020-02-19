@@ -5970,7 +5970,7 @@ PRG002_BE11:
 
 EndLevelCard_DrawCard:
 	LDY #$00	; Y = 0 (draw card back in the air, i.e. the triple card match)
-	 
+
 	LDA <Vert_Scroll
 	BPL PRG002_BE19	 ; Dodgy check to see if we're in the air; if we are, jump to PRG002_BE19
 
@@ -6108,7 +6108,7 @@ Object_ResetXToSlotIndex:
 
 	; Gets the last card since that's the card you just picked up
 EndLevelCard_SetFrameToCard:
-	JSR Player_GetInventoryOffset	  
+	JSR Player_GetInventoryOffset
 	INY
 	INY	; Start at third card slot
 
@@ -6244,7 +6244,10 @@ PRG002_BF4B:
 	; Stop the level clock and animations
 	LDA #$81
 	STA Level_TimerEn
-	STA EndCard_Flag	 ; Flag end level card as grabbed
+	;;; [ORANGE]
+	;;; We hook here so we can clear the EndLevelCard orb bit to know we've found that orb
+	;;;STA EndCard_Flag	 ; Flag end level card as grabbed
+	JSR DoCustomEndLevelCard11
 
 	; Card actually has a slight leftward velocity?
 	;;LDA #-$01

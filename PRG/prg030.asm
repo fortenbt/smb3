@@ -3229,6 +3229,7 @@ Object_Move_Hook:
 	JMP Object_Move
 
 LoadLevel_Custom21:
+	;;; There's not enough room in PRG021 to put this there
 	LDA LL_ShapeDef
 	AND #$0f
 	STA <Temp_Var4		 ; Temp_Var4 = lower 4 bits of LL_ShapeDef (width of run)
@@ -3450,6 +3451,24 @@ _not_restarting2:
 	STA Level_MusicQueueRestore
 	RTS
 
+
+DoCustomEndLevelCard11:
+	;;; This is called from PRG002::ObjHit_EndLevelCard
+	STA EndCard_Flag	 ; Flag end level card as grabbed
+	; Switch bank A000 to page 11
+	LDA PAGE_A000
+	PHA
+	LDA #11
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+
+	JSR DoCustomEndLevelCard
+
+	PLA
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+	RTS
+
 ;;; A way to get what level we're on, the index corresponds to the Level_Orbs array
 Levels_Entered_XY:
 	.byte $40, $20
@@ -3468,8 +3487,8 @@ LEXY_END
 
 
 PRG030_FREE_SPACE:
-	.ds 0xD
-	.byte $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA
+	.ds 0x17
+	.byte $AA, $AA, $AA, $AA, $AA, $AA
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; Removed 2-player vs and game over
