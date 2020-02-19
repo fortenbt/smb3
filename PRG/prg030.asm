@@ -3450,6 +3450,23 @@ _not_restarting2:
 	STA Level_MusicQueueRestore
 	RTS
 
+;;; A way to get what level we're on, the index corresponds to the Level_Orbs array
+Levels_Entered_XY:
+	.byte $40, $20
+	.byte $00, $00	; ORANGE TODO: LEVEL 2
+	.byte $00, $00	; ORANGE TODO: LEVEL 3
+	.byte $00, $00	; ORANGE TODO: LEVEL 4
+	.byte $00, $00	; ORANGE TODO: LEVEL 5
+	.byte $00, $00	; ORANGE TODO: LEVEL 6
+	.byte $00, $00	; ORANGE TODO: LEVEL 7
+	.byte $00, $00	; ORANGE TODO: LEVEL 8
+	.byte $00, $00	; ORANGE TODO: LEVEL 9
+	.byte $00, $00	; ORANGE TODO: LEVEL 10
+	.byte $00, $00	; ORANGE TODO: LEVEL 11?
+	.byte $00, $00	; ORANGE TODO: LEVEL 12?
+LEXY_END
+
+
 PRG030_FREE_SPACE:
 	.ds 0xD
 	.byte $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA

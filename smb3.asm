@@ -2788,7 +2788,9 @@ CARD_WILD	= 8	; UNUSED Wild card (can match any other!)
 	Level_UnusedSlopesTS5:	.ds 1	; UNUSED; If set to 2, forces slopes to be enabled for Level_Tileset = 5 (plant infestation)
 	PlantInfest_ACnt_Max:	.ds 1	; Always set to $1A in plant infestation levels, sets max value for animation counter
 
-				.ds 24	; $7E9E-$7EB5 unused
+	;			.ds 24	; $7E9E-$7EB5 unused
+	Level_Orbs:		.ds 12
+				.ds 12	; unused
 
 	LevelJctBQ_Flag:	.ds 1	; Set to '1' while in a Big Question block area, locks horizontal scrolling
 	Level_JctBackupTileset:	.ds 1	; Level Junction tileset backup

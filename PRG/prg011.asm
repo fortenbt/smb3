@@ -194,7 +194,9 @@ PRG011_A23E:
 	DEX		 ; X--
 	BPL PRG011_A23E	 ; As long as we have another player to init, loop!
 
-	STX Map_2PVsGame ; Map_2PVsGame = $FF (since game increments at start, this will play game style 0)
+	;;; [ORANGE] We don't need 2PVs stuff anymore, and this is the perfect spot to initialize global map things.
+	;;;STX Map_2PVsGame ; Map_2PVsGame = $FF (since game increments at start, this will play game style 0)
+	JSR InitializeLevelOrbs
 
 	; Clear the following
 	STA Map_Unused7995	; Cleared here, but never used
@@ -4978,3 +4980,20 @@ Map_NoAnimUpdate:
 
 ; Rest of ROM bank was empty
 
+;;; [ORANGE] These represent the orbs located in each level.
+;;; LSB Bit 0 is EndLevelCard Orb
+;;;     Bit 1 is TreasureChest secret Orb
+;;;     Others?
+Level_Orbs_Initial:
+	.byte $03, $03, $03, $03, $03, $03, $03, $03, $03, $01, $01, $01
+LOI_END
+
+InitializeLevelOrbs:
+	LDX #(LOI_END - Level_Orbs_Initial - 1)
+_init_orb_loop:
+	LDA Level_Orbs_Initial,X
+	STA Level_Orbs,X
+	DEX
+	BPL _init_orb_loop
+	LDA #0		; return 0 for clearing vars after return
+	RTS

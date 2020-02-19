@@ -53,7 +53,7 @@ ObjectGroup01_InitJumpTable:
 	.word ObjInit_FloatWoodenPlat	; Object $3E - OBJ_WOODENPLATFORMFLOAT
 	.word ObjInit_TowardsPlayer	; Object $3F - OBJ_DRYBONES
 	.word ObjInit_BusterBeatle	; Object $40 - OBJ_BUSTERBEATLE
-	.word ObjInit_DoNothing		; Object $41 - OBJ_ENDLEVELCARD
+	.word ELC_Init			; Object $41 - OBJ_ENDLEVELCARD
 	.word ObjInit_CheepCheepP2P	; Object $42 - OBJ_CHEEPCHEEPPOOL2POOL
 	.word ObjInit_CheepCheepP2P2	; Object $43 - OBJ_CHEEPCHEEPPOOL2POOL2
 	.word ObjInit_FallingPlatform	; Object $44 - OBJ_WOODENPLATUNSTABLE
@@ -6352,4 +6352,33 @@ ELC_WaitFlyAway_Hook:
 	; Select bank to support "YOU GOT A CARD" font
 	LDA #$5e
 	STA PatTable_BankSel+1
+	RTS
+
+;;; [ORANGE] Init function for EndLevelCard Orb so that it won't spawn
+;;; if the player already grabbed it. This forces the player to find
+;;; the secret orb.
+ELC_Init:
+	LDX #0
+_chk_loop2:
+	LDA Levels_Entered_XY,X
+	CMP Map_Entered_X
+	BNE _chk_cont2
+	LDA Levels_Entered_XY+1,X
+	CMP Map_Entered_Y
+	BEQ _elc_found_orb
+_chk_cont2:
+	INX
+	INX
+	CPX #(LEXY_END-Levels_Entered_XY-1)
+	BCC _chk_loop2
+_elc_found_orb:
+	CPX #(LEXY_END-Levels_Entered_XY-1)
+	BCS _elc_init_rts
+	LDA Level_Orbs,X
+	AND #$01
+	BNE _elc_init_rts
+	LDX <SlotIndexBackup		 ; restore X before continuing
+	JMP Object_SetDeadEmpty
+_elc_init_rts:
+	LDX <SlotIndexBackup		 ; restore X before continuing
 	RTS
