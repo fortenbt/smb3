@@ -1844,10 +1844,19 @@ PRG011_AA9C:
 	LDX #$09	 ; X = 9
 
 PRG011_AAA7:
-	LDA Map_CompleteTile,X	; Get appropriate "complete" tile for this level
+	;;; [ORANGE]
+	;;; We hook this location so we can get called when needing to "complete" a level.
+	;;; We have to check the orb state for the current level to know if we flip the
+	;;; tile to the TILE_MARIOCOMP_ tile or to the re-enterable level tile.
+	;;;LDA Map_CompleteTile,X	; Get appropriate "complete" tile for this level
+	JSR GetLevelCompleteTile
 	STA [Map_Tile_AddrL],Y	; Set it in memory
 	STA <World_Map_Tile	; ... as well as the tile detected
 
+	;;; [ORANGE]
+	;;; This marks the appropriate bits for this level in the Map_Completions variable.
+	;;; We don't care if this is marked complete, because only the tile type is looked
+	;;; at when enabling the player to enter.
 	JSR Map_MarkLevelComplete	 ; Mark this level as complete!
 
 	LDY Player_Current	 ; Y = Player_Current
@@ -1892,6 +1901,7 @@ PRG011_AAA7:
 PRG011_AAEF:
 	LDX Graphics_BufCnt	 ; X = Graphics_BufCnt
 
+	; [ORANGE TODO]: Need to replace these with the correct patterns if level is partially complete
 	; Add in the four replacement patterns to cover over the completed level
 	LDA Map_PanelCompletePats,Y
 	STA Graphics_Buffer+$03,X
@@ -5031,4 +5041,41 @@ _clear_bit:
 	STA Level_Orbs,X
 _restore_x_rts:
 	LDX <SlotIndexBackup		; X = object slot index
+	RTS
+
+; This table is used to get the sprites used to create the "level complete" panel
+; during the tile flip routine. These go away when the map is reloaded and whatever
+; tile is in Map_Tile_AddrL is used.
+Map_PanelCompletePats_new:
+	.byte $8C, $BE, $8D, $A4	; ORANGE TODO: Mario Complete panel patterns
+
+;;; Check our Level_Orbs for this level. If zero, the level is completed.
+;;; Otherwise, we need to be able to enter it again to get other orbs.
+GetLevelCompleteTile:
+	;;; NOTE we're not allowed to touch Y!
+	STY Temp_Var4			; save off Y
+	TXA
+	PHA				; save off X
+	JSR _FindLevelOrbOffset
+	CPX #(LEXY_END-Levels_Entered_XY-1)
+	; If we didn't find it, assume fully complete
+	BCS _get_mariocomp
+	; Found our level, check its Level_Orbs
+	LDA Level_Orbs,X
+	BEQ _get_mariocomp		; If it's zero, the level is totally complete
+	; Non-zero, so we need to get the re-enterable tile
+	TXA
+	TAY				; save our tile's index into Y
+	PLA
+	TAX				; restore X
+	TYA				; get our tile's index
+	LDY Temp_Var4			; restore Y
+	CLC
+	ADC #13				; tile ID is 13 more than the index
+	RTS
+_get_mariocomp:
+	PLA
+	TAX				; restore X
+	LDY Temp_Var4			; restore Y
+	LDA Map_CompleteTile,X
 	RTS
