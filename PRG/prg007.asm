@@ -5408,8 +5408,8 @@ PRG007_BB97:
 
 	; THESE MUST FOLLOW DynJump FOR THE DYNAMIC JUMP TO WORK!!
 	.word PRG007_BB80	; 00: Unused (would never get here anyway)
-	.word CFire_BulletBill	; 01: Bullet Bill cannon
-	.word CFire_BulletBill	; 02: Missile Bill (homing Bullet Bill)
+	.word CFire_Cannonball	; 01: Bullet Bill cannon
+	.word CFire_Cannonball	; 02: Missile Bill (homing Bullet Bill)
 	.word CFire_RockyWrench	; 03: Creates Rocky Wrench
 	.word CFire_4Way	; 04: 4-way cannon
 	.word CFire_GoombaPipe	; 05: Goomba pipe (left output)
@@ -6053,111 +6053,7 @@ CFire_RockyWrench:
 PRG007_BF28:
 	RTS		 ; Return
 
-Bill_XVelTowardsPlayer:	.byte $18, -$18
-Bill_FlipTowardsPlayer:	.byte SPR_HFLIP, $00
-Bill_Var4TowardsPlayer:	.byte $01, $00
-	
-CFire_BulletBill:
-	LDA CannonFire_Timer,X
-	BNE PRG007_BF28	 ; If timer not expired, jump to PRG007_BF28 (RTS)
-
-	LDA CannonFire_Y,X
-	CMP Level_VertScroll
-	LDA CannonFire_YHi,X
-	SBC Level_VertScrollH
-	BNE PRG007_BF28		; If Cannon Fire has fallen off screen vertically, jump to PRG007_BF28 (RTS)
-
-	LDA CannonFire_X,X
-	CMP <Horz_Scroll
-	LDA CannonFire_XHi,X
-	SBC <Horz_Scroll_Hi
-	BNE PRG007_BF28		; If Cannon Fire has fallen off screen horizontally, jump to PRG007_BF28 (RTS)
-
-	; Reset Cannon Fire timer to $80-$9F, random
-	LDA RandomN,X
-	AND #$1f
-	ORA #$80
-	STA CannonFire_Timer,X
-
-	LDA CannonFire_X,X
-	SUB <Horz_Scroll
-	ADD #16
-	CMP #32
-	BLT PRG007_BF28		; If Cannon Fire X + 16 is less than 32 pixels from screen edge, jump to PRG007_BF28 (RTS)
-
-	LDA <Player_X
-	SBC CannonFire_X,X
-	ADD #17
-	CMP #34
-	BLT PRG007_BF28		; If Player is standing on Bullet Bill cannon, jump to PRG007_BF28 (RTS)
-
-	JSR PrepareNewObjectOrAbort
-
-	LDY <SlotIndexBackup	 ; Y = Cannon Fire object slot
-
-	LDA CannonFire_ID,Y
-	LSR A		; Selects which Bill type
-
-	LDA #OBJ_BULLETBILL
-
-	BCS PRG007_BF80	 ; If carry set, jump to PRG007_BF80
-
-	LDA #OBJ_BULLETBILLHOMING
-
-PRG007_BF80:
-	STA Level_ObjectID,X	 ; Store Bill's ID
-
-	; Set Bill's palette
-	LDA #SPR_PAL3
-	STA Objects_SprAttr,X
-
-	; Set Bill's Y
-	LDA CannonFire_Y,Y
-	SUB #$01
-	STA <Objects_Y,X
-	LDA CannonFire_YHi,Y
-	SBC #$00
-	STA <Objects_YHi,X
-
-	; Set Bill's X
-	LDA CannonFire_XHi,Y
-	STA <Objects_XHi,X
-	LDA CannonFire_X,Y
-	STA <Objects_X,X
-	STA Objects_Var13,X	; original X hold
-
-	; Bill's timer = $0C
-	LDA #$0c
-	STA Objects_Timer,X
-
-	; Bill's Var3 = $20
-	LDA #$20
-	STA Objects_Var3,X
-
-	JSR Level_ObjCalcXDiffs
-
-	; Bill fires towards Player
-	LDA Bill_XVelTowardsPlayer,Y
-	STA <Objects_XVel,X
-
-	; Bill faces Player
-	LDA Bill_FlipTowardsPlayer,Y
-	STA Objects_FlipBits,X
-
-	; Set Bill's direction flag
-	LDA Bill_Var4TowardsPlayer,Y
-	STA <Objects_Var4,X
-
-	LDX <SlotIndexBackup	; X = Cannon Fire slot index
-
-	TYA		; 0 or 1
-	ADD #(Bill_CPXOff - CannonPoof_XOffs)
-	STA <Temp_Var1	; -> Temp_Var1
-
-	JSR CannonFire_NoiseAndSmoke	 ; Play cannon fire noise and make smoke
-
-	RTS		 ; Return
-
+;;; [ORANGE] Removed CFire_BulletBill
 
 	; Provides a newly prepared object or does not return to caller!
 PrepareNewObjectOrAbort:
@@ -6188,3 +6084,38 @@ PRG007_BFDC:
 
 ; Rest of ROM bank was empty
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+MicroGoombaInteraction:
+	LDA SpecialObj_YLo,X	; Get object's Y
+	SUB #$12		; Subtract height above object considered "stompable" range
+	ROL <Temp_Var1		; Stores the carry bit into Temp_Var1 bit 0
+	CMP <Player_Y
+
+	PHP			; Save CPU state (the comparison)
+
+	LSR <Temp_Var1		; Restore the carry bit
+	LDA SpecialObj_YHi,X
+	SBC #$00		; Aply the carry bit to the Objects_YHi as needed for the height subtraction
+
+	PLP			; Restore CPU state (the comparison)
+
+	SBC <Player_YHi		; Get the difference against the Player_YHi
+	BLT _j_Player_GetHurt	; If negative (Player_YHi > Objects_YHi, Player is lower), hurt player
+
+	LDA SpecialObj_Var1,X	; Is it stompable yet?
+	BEQ _stomp_micro
+	RTS
+_stomp_micro:
+	LDA #$01		; "Stomp" microgoomba
+	STA SpecialObj_Data,X
+	LDA #-$40
+	STA <Player_YVel
+
+	LDA Sound_QPlayer	; "Squish" sound
+	ORA #SND_PLAYERSWIM
+	STA Sound_QPlayer
+
+	RTS
+_j_Player_GetHurt:
+	JMP Player_GetHurt

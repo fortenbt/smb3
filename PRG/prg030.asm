@@ -2910,42 +2910,6 @@ _ldsnd_rts:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-MicroGoombaInteraction:
-	LDA SpecialObj_YLo,X	; Get object's Y
-	SUB #$12		; Subtract height above object considered "stompable" range
-	ROL <Temp_Var1		; Stores the carry bit into Temp_Var1 bit 0
-	CMP <Player_Y
-
-	PHP			; Save CPU state (the comparison)
-
-	LSR <Temp_Var1		; Restore the carry bit
-	LDA SpecialObj_YHi,X
-	SBC #$00		; Aply the carry bit to the Objects_YHi as needed for the height subtraction
-
-	PLP			; Restore CPU state (the comparison)
-
-	SBC <Player_YHi		; Get the difference against the Player_YHi
-	BLT _j_Player_GetHurt	; If negative (Player_YHi > Objects_YHi, Player is lower), hurt player
-
-	LDA SpecialObj_Var1,X	; Is it stompable yet?
-	BEQ _stomp_micro
-	RTS
-_stomp_micro:
-	LDA #$01		; "Stomp" microgoomba
-	STA SpecialObj_Data,X
-	LDA #-$40
-	STA <Player_YVel
-
-	LDA Sound_QPlayer	; "Squish" sound
-	ORA #SND_PLAYERSWIM
-	STA Sound_QPlayer
-
-	RTS
-_j_Player_GetHurt:
-	JMP Player_GetHurt
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 CheckSquashedGoomba:
 	LDA Level_ObjectID,X
 	SUB #OBJ_GOOMBA
