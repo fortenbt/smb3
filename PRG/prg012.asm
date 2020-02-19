@@ -400,7 +400,10 @@ PRG012_A570:
 PRG012_A57C:
 	LDX <Temp_Var4		 ; X = (tile quadrant * 2) + 0/1
 
-	LDA Map_CompleteByML_Tiles,X	; Get proper completion tile
+	;;; [ORANGE] We hook here so that when the map is reloaded, we can look at the
+	;;; Level_Orbs bits to get the proper completed tile.
+	;;;LDA Map_CompleteByML_Tiles,X	; Get proper completion tile
+	JSR GetLevelCompleteTile_Reload
 
 PRG031_A581:
 	LDY <Temp_Var5		 ; Y = Temp_Var5 (offset to tile)
@@ -1083,3 +1086,52 @@ Map_LevelLayouts:
 
 
 ; Rest of ROM bank was empty
+
+;;; NOTE This isn't a copy from prg030. This one uses the column num and row completion bit
+;;; that are being checked in Map_Reload_with_Completions
+Levels_Entered_XY_12:
+	.byte $04, $80
+	.byte $00, $00	; ORANGE TODO: LEVEL 2
+	.byte $00, $00	; ORANGE TODO: LEVEL 3
+	.byte $00, $00	; ORANGE TODO: LEVEL 4
+	.byte $00, $00	; ORANGE TODO: LEVEL 5
+	.byte $00, $00	; ORANGE TODO: LEVEL 6
+	.byte $00, $00	; ORANGE TODO: LEVEL 7
+	.byte $00, $00	; ORANGE TODO: LEVEL 8
+	.byte $00, $00	; ORANGE TODO: LEVEL 9
+	.byte $00, $00	; ORANGE TODO: LEVEL 10
+	.byte $00, $00	; ORANGE TODO: LEVEL 11?
+	.byte $00, $00	; ORANGE TODO: LEVEL 12?
+LEXY_END_12
+
+
+GetLevelCompleteTile_Reload:
+	;;; Temp_Var1 = X of level, Temp_Var2 = Y of level
+	LDX #0
+_chk_loop12:
+	LDA Levels_Entered_XY_12,X
+	CMP Temp_Var1
+	BNE _chk_cont12
+	LDA Levels_Entered_XY_12+1,X
+	CMP Temp_Var2
+	BEQ _findorboffs_done12
+_chk_cont12:
+	INX
+	INX
+	CPX #(LEXY_END_12-Levels_Entered_XY_12-1)
+	BCC _chk_loop12
+_findorboffs_done12:
+	CPX #(LEXY_END_12-Levels_Entered_XY_12-1)
+	BCS _glct_rts			; This isn't one of our tiles...
+	; Found our level, check its Level_Orbs
+	LDA Level_Orbs,X
+	BEQ _default_comp		; If it's zero, the level is totally complete
+	; Non-zero, so we need to get the re-enterable tile
+	TXA
+	ADC #13				; tile ID is 13 more than the index
+	RTS
+_default_comp:
+	LDX <Temp_Var4
+	LDA Map_CompleteByML_Tiles,X	; Get proper completion tile
+_glct_rts:
+	RTS
