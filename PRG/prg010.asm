@@ -2653,8 +2653,13 @@ PRG010_CE0D:
 	; A traversable path was found... since we're currently standing on an enterable, 
 	; non-bypassable level panel, you must be wearing a Judgem's cloud to proceed...
 
-	LDA Map_Power_Disp
-	CMP #$07	 
+	;;; [ORANGE] We hook this to allow the player to pass levels where they've gotten
+	;;; at least one orb.
+	;;;LDA Map_Power_Disp
+	;;CMP #$07
+	JSR CheckAllowedToPass
+	NOP
+	NOP
 	BEQ PRG010_CE39	 	; If Player is wearing Judgem's cloud, jump to PRG010_CE39
 
 	; Otherwise, undo the move; you're not allowed to take the path until you complete that level!
@@ -4050,3 +4055,17 @@ DMC08_End
 
 ; Rest of ROM bank was empty
 
+
+CheckAllowedToPass:
+	LDA World_Map_Tile
+	SEC
+	SBC #13
+	CMP #10			; tiles 0 - 9 (after subtracting 13) are our reenterable tiles
+	BCS _judgem_check
+	LDA #$07
+	BNE _cmp7_rts		; branch always
+_judgem_check:
+	LDA Map_Power_Disp
+_cmp7_rts:
+	CMP #$07
+	RTS
