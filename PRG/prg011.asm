@@ -5027,12 +5027,15 @@ _chk_cont:
 	CPX #(LEXY_END-Levels_Entered_XY-1)
 	BCC _chk_loop
 _findorboffs_done:
+	TXA
+	LSR A		; The offset we found is doubled, so divide by 2
+	TAX
 	RTS
 
 DoCustomEndLevelCard:
 	; End level card was hit, check what level we're in and update the Level_Orbs
 	JSR _FindLevelOrbOffset
-	CPX #(LEXY_END-Levels_Entered_XY-1)
+	CPX #(LOI_END-Level_Orbs_Initial)	; max offset is 12
 	; If we didn't find it, there's an error somewhere, just bail out
 	BCS _restore_x_rts
 _clear_bit:
@@ -5065,7 +5068,7 @@ GetLevelCompleteTile:
 	TXA
 	PHA				; save off X
 	JSR _FindLevelOrbOffset
-	CPX #(LEXY_END-Levels_Entered_XY-1)
+	CPX #(LOI_END-Level_Orbs_Initial)	; max offset is 12
 	; If we didn't find it, assume fully complete
 	BCS _get_mariocomp
 	; Found our level, check its Level_Orbs

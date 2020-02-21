@@ -1091,7 +1091,7 @@ Map_LevelLayouts:
 ;;; that are being checked in Map_Reload_with_Completions
 Levels_Entered_XY_12:
 	.byte $04, $80
-	.byte $00, $00	; ORANGE TODO: LEVEL 2
+	.byte $08, $80	; ORANGE TODO: LEVEL 2
 	.byte $00, $00	; ORANGE TODO: LEVEL 3
 	.byte $00, $00	; ORANGE TODO: LEVEL 4
 	.byte $00, $00	; ORANGE TODO: LEVEL 5
@@ -1121,7 +1121,10 @@ _chk_cont12:
 	CPX #(LEXY_END_12-Levels_Entered_XY_12-1)
 	BCC _chk_loop12
 _findorboffs_done12:
-	CPX #(LEXY_END_12-Levels_Entered_XY_12-1)
+	TXA
+	LSR A				; The offset we found is doubled, so divide by 2
+	TAX
+	CPX #12				; max offset is 11
 	BCS _glct_rts			; This isn't one of our tiles...
 	; Found our level, check its Level_Orbs
 	LDA Level_Orbs,X
