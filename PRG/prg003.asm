@@ -461,7 +461,8 @@ ObjNorm_IceBlock:
 	JMP PRG003_A4DD	 ; Jump to PRG003_A4DD
 
 ObjInit_TreasureBox:
-	LDA Level_TreasureItem	 
+	;;;LDA Level_TreasureItem
+	JSR ObjInit_TreasureBox_Hook
 	STA <Objects_Var5,X	; Var5 = what item we're gonna get
 	TAY		 ; -> 'Y'
 
@@ -6224,7 +6225,26 @@ PRG003_BFAE:
 
 ; Rest of ROM bank was empty
 
-;;; [ORANGE] This is used by GivePlayerTBoxOrb
+ObjInit_TreasureBox_Hook:
+	;;; We can't touch X
+	;;; Don't let the treasure box spawn if we've already gotten it
+	;;; This hook also sets up the treasure box item, which we're forcing to then anchor ($0A)
+	LDA #$0A
+	STA Level_TreasureItem
+	JSR _FindLevelOrbOffset03
+	CPX #12				; max offset is 11
+	; If we didn't find it, there's an error somewhere, just allow it to spawn
+	BCS _inittbox_rts
+	LDA Level_Orbs,X
+	AND #$02
+	BNE _inittbox_rts		; if it's set, allow it to spawn
+	LDX <SlotIndexBackup		; restore X before continuing
+	JMP Object_SetDeadEmpty		; otherwise, don't allow it to spawn
+_inittbox_rts:
+	LDX <SlotIndexBackup		; restore X before continuing
+	RTS
+
+;;; [ORANGE] This is used by GivePlayerTBoxOrb (prg031) and ObjInit_TreasureBox_Hook (above)
 _FindLevelOrbOffset03:
 	LDX #0
 _chk_loop03:
