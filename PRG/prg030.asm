@@ -3325,7 +3325,8 @@ _do_r_pipe_cmp:
 
 CheckYVelForDetectSolids:
 	LDA <Player_HitCeiling2
-	BNE __j__detect_head_not_feet
+	AND #$01
+	BNE __j__detect_head_not_feet	; every other frame until Player_HitCeiling2 hits 0
 	LDA <Player_YVel
 	BPL __j_PRG008_B4BD	 ; If Player_YVel >= 0 (moving downward), jump to PRG008_B4BD
 __j__detect_head_not_feet:
@@ -3487,7 +3488,7 @@ LEXY_END
 
 
 PRG030_FREE_SPACE:
-	.ds 0x17
+	.ds 0x15
 	.byte $AA, $AA, $AA, $AA, $AA, $AA
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
