@@ -1901,9 +1901,11 @@ PRG011_AAA7:
 PRG011_AAEF:
 	LDX Graphics_BufCnt	 ; X = Graphics_BufCnt
 
-	; [ORANGE TODO]: Need to replace these with the correct patterns if level is partially complete
+	; [ORANGE]: Need to replace these with the correct patterns if level is partially complete
 	; Add in the four replacement patterns to cover over the completed level
-	LDA Map_PanelCompletePats,Y
+	;;;LDA Map_PanelCompletePats,Y
+	JMP SetMapLevelCompletedPanelPats
+_panel_fully_complete:
 	STA Graphics_Buffer+$03,X
 	LDA Map_PanelCompletePats+1,Y
 	STA Graphics_Buffer+$08,X
@@ -1911,6 +1913,8 @@ PRG011_AAEF:
 	STA Graphics_Buffer+$04,X
 	LDA Map_PanelCompletePats+3,Y
 	STA Graphics_Buffer+$09,X
+
+_panel_partial_complete:
 
 	; Terminator
 	LDA #$00
@@ -5045,9 +5049,13 @@ _restore_x_rts:
 
 ; This table is used to get the sprites used to create the "level complete" panel
 ; during the tile flip routine. These go away when the map is reloaded and whatever
-; tile is in Map_Tile_AddrL is used.
-Map_PanelCompletePats_new:
-	.byte $8C, $BE, $8D, $A4	; ORANGE TODO: Mario Complete panel patterns
+; tile is in Tile_Mem is used.
+MapLevelPanelCompleteNumPats:
+	;      1    2    3    4    5    6    7    8    9    10
+	.byte $8F, $A4, $A5, $A6, $A7, $C8, $C9, $CA, $CB, $BF
+
+;Map_PartialCompletePats:
+;	.byte $8C, $BE, $8D, $XX	; XX needs to be replaced with the appropriate number sprite
 
 ;;; Check our Level_Orbs for this level. If zero, the level is completed.
 ;;; Otherwise, we need to be able to enter it again to get other orbs.
@@ -5079,3 +5087,26 @@ _get_mariocomp:
 	LDY Temp_Var4			; restore Y
 	LDA Map_CompleteTile,X
 	RTS
+
+SetMapLevelCompletedPanelPats:
+	;;; This must jump back to _panel_fully_complete or _panel_partial_complete
+	;;; We cannot touch X
+	LDA <World_Map_Tile
+	; If this is a fully complete tile (in our case, tile 0), then we use Map_PanelCompletePats
+	BEQ _do_fully_complete
+	; Otherwise, this is partially complete, build up the tile from our partial pats
+	SEC
+	SBC #$0D			; Where the partial completed tile numbers begin
+	TAY
+	LDA MapLevelPanelCompleteNumPats,Y	; bottom right is the level number pattern
+	STA Graphics_Buffer+$09,X		; stored at +9
+	LDA #$8C			; $8C (top left level panel)
+	STA Graphics_Buffer+$03,X	;     stored at +3
+	LDA #$8D			; $8D (top right level panel)
+	STA Graphics_Buffer+$04,X	;     stored at +4
+	LDA #$BE			; $BE (bottom left partial complete panel)
+	STA Graphics_Buffer+$08,X	;     stored at +8
+	JMP _panel_partial_complete
+_do_fully_complete:
+	LDA Map_PanelCompletePats,Y
+	JMP _panel_fully_complete
