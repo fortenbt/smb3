@@ -150,7 +150,7 @@ ToadItem_PalPerItem:
 	.byte $36	; 7: Judgems
 	.byte $27	; 8: P-Wing
 	.byte $30	; 9: Star
-	.byte $07	; A: Anchor
+	.byte $2A	; A: Anchor
 	.byte $36	; B: Hammer
 	.byte $27	; C: Whistle
 	.byte $27	; D: Music Box

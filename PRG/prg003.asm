@@ -402,7 +402,7 @@ ObjP65:
 ObjP66:
 	.byte $91, $93, $9D, $9F, $9D, $9F
 ObjP52:
-	.byte $AB, $AD, $85, $85, $87, $87, $9D, $9F, $81, $81, $83, $83, $8B, $8B, $B5, $B7, $91, $93, $A9, $A9, $95, $97, $99, $9B, $A1, $A3, $89, $8D
+	.byte $AB, $AD, $85, $85, $87, $87, $9D, $9F, $81, $81, $83, $83, $8B, $8B, $B5, $B7, $91, $93, $A9, $A9, $6B, $6D, $99, $9B, $A1, $A3, $89, $8D
 ObjP53:
 	.byte $8D, $8D
 ObjP5C:
@@ -467,9 +467,9 @@ ObjInit_TreasureBox:
 
 	LDA ToadItem_PalPerItem,Y
 	STA Palette_Buffer+$1A
-	LDA #$30
-	STA Palette_Buffer+$19
 	LDA #$0f
+	STA Palette_Buffer+$19
+	LDA #$00
 	STA Palette_Buffer+$1B
 
 	; Update the palette!
@@ -572,7 +572,10 @@ PRG003_A321:
 
 	; Give Player the treasure item
 	LDA Level_TreasureItem
-	JSR Player_GetItem
+	;;; [ORANGE] We don't support normal treasure boxes anymore, no need to
+	;;; give a player an item.
+	;;;JSR Player_GetItem
+	JSR GivePlayerTBoxOrb
 
 	LDX <SlotIndexBackup		 ; X = object slot index
 
@@ -6221,3 +6224,23 @@ PRG003_BFAE:
 
 ; Rest of ROM bank was empty
 
+;;; [ORANGE] This is used by GivePlayerTBoxOrb
+_FindLevelOrbOffset03:
+	LDX #0
+_chk_loop03:
+	LDA Levels_Entered_XY,X
+	CMP Map_Entered_X
+	BNE _chk_cont03
+	LDA Levels_Entered_XY+1,X
+	CMP Map_Entered_Y
+	BEQ _findorboffs_done03
+_chk_cont03:
+	INX
+	INX
+	CPX #(LEXY_END-Levels_Entered_XY-1)
+	BCC _chk_loop03
+_findorboffs_done03:
+	TXA
+	LSR A		; The offset we found is doubled, so divide by 2
+	TAX
+	RTS

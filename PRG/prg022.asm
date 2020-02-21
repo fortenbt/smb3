@@ -4994,7 +4994,12 @@ PRG022_DD65:
 	TAX		 		; Mushroom, Flower, Star index -> 'X'
 
 	LDA Card_MFSToInventory,X	; Get the appropriate inventory item for this card pair
-	JSR Player_GetItem		; Give it to Player
+	;;; [ORANGE] We've removed Player_GetItem and replaced it with GivePlayerTBoxOrb
+	;;; We won't be using the card match game anyway.
+	;;;JSR Player_GetItem		; Give it to Player
+	NOP
+	NOP
+	NOP
 
 	; Play card match sound
 	LDA #SND_MAPBONUSAPPEAR

@@ -3076,30 +3076,26 @@ PRG031_FD67:
 ; Gives Player an item specified in 'A'
 ; If Inventory is full, goes at the end.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Player_GetItem:
-	PHA		 ; Save input item
+;;; [ORANGE] We're replacing this with our GivePlayerTBoxOrb
+;;;Player_GetItem:
+GivePlayerTBoxOrb:
+	; Treasure box orb was retrieved, check what level we're in and update the Level_Orbs
+	JSR _FindLevelOrbOffset03
+	CPX #12				; max offset is 11
+	; If we didn't find it, there's an error somewhere, just bail out
+	BCS _tbox_orb_rts
+_clear_tbox_orb:
+	; X is == level offset
+	LDA Level_Orbs,X
+	AND #$02
+	BEQ _tbox_orb_rts		; if the bit is already cleared? go ahead and just return
+	LDA Level_Orbs,X		; otherwise, just xor off the EndLevelCard orb bit (bit 1)
+	EOR #$02
+	STA Level_Orbs,X
+_tbox_orb_rts:
+	RTS
 
-	LDY Player_Current
-	BEQ PRG031_FD74	 ; If not Luigi, jump to PRG031_FD74
-
-	LDY #(Inventory_Items2 - Inventory_Items)	; Luigi inventory offset
-
-PRG031_FD74:
-	LDX #(Inventory_Cards - Inventory_Items - 1)	; X = total inventory slots
-PRG031_FD76:
-	LDA Inventory_Items,Y
-	BEQ PRG031_FD7F	 ; If this slot is empty, jump to PRG031_FD7F
-
-	INY		 ; Y++ (next slot over)
-	DEX		 ; X-- (one less item slot total)
-	BNE PRG031_FD76	 ; If X > 0, loop!
-
-PRG031_FD7F:
-	PLA		 ; Restore the target item
-	STA Inventory_Items,Y	 ; Give it to the Player!
-
-	RTS		 ; Return
-
+	.byte $FF
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Sprite_RAM_Clear
