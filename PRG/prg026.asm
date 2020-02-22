@@ -3792,6 +3792,29 @@ _norm_status_bar:
 	JMP _start_SB_Upd
 
 DoStatusBarMessage:
+	LDA UserMsg_StateTimer		; Time between states
+	BEQ _um_timer2_postdec		; If UserMsg_StateTimer = 0, skip decrementing
+	DEC UserMsg_StateTimer		; UserMsg_StateTimer--
+
+_um_timer2_postdec:
+	LDA UserMsg_TextTimer
+	BEQ _um_ttimer_postdec		; If UserMsg_TextTimer = 0, skip decrementing
+	DEC UserMsg_TextTimer		; UserMsg_TextTimer--
+
+_um_ttimer_postdec:
+	JSR UserMsg_DoState		; Perform state operation for the User Message
+	RTS
+
+UserMsg_DoState:
+	LDA UserMsg_State
+	JSR DynJump
+
+	; THESE MUST FOLLOW DynJump FOR THE DYNAMIC JUMP TO WORK!!
+	.word UserMsg_Init		; 0: Initialize vars
+	.word TAndK_DoKingText		; 1: Render the text
+	.word TAndK_WaitForA		; 2: Waits for Player to push START
+
+UserMsg_Init:
 	LDX #0
 	LDY Graphics_BufCnt
 	; Load the "message bar" in place of the status bar
@@ -3810,6 +3833,17 @@ _msg_tmplt_loop:
 	LDA #$06		; Inform the graphics queue it needs to update the palettes
 	STA <Graphics_Queue
 
+	; Set the starting VRAM addresses (always the same)
+	LDA #$2B
+	STA UserMsg_VH
+	LDA #$22
+	STA UserMsg_VL
+
+	; Initialize character counter
+	LDA #$00
+	STA UserMsg_CPos
+
+	INC UserMsg_State
 	RTS
 
 UserMessageTemplate:
@@ -3842,3 +3876,6 @@ UserMessageTemplate:
 	.byte 1, $A5
 
 	.byte $00
+
+UserMessage1: ; H    e    l    l    o    ,    W    o    r    l    d    !
+	.byte $B7, $D4, $DC, $DC, $DE, $9A, $C6, $DE, $CB, $DC, $D3, $EA

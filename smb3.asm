@@ -1991,21 +1991,26 @@ OBJSTATE_POOFDEATH	= 8	; "Poof" Death (e.g. Piranha death)
 	; 18 = 2P vs
 	Level_Tileset:		.ds 1	; Different tilesets which changes the detection and meaning in levels
 
+	UserMsg_VH:			; VRAM High address for User Messages activated via the orange cheep cheep
 	Bonus_UnusedVH:			; VRAM High address ?? Seems to only be part of an unused routine
 	ToadTalk_VH:		.ds 1	; Cinematic Toad & King / "Toad House" Toad VRAM Address High
 
+	UserMsg_VL:			; VRAM Low address for User Messages activated via the orange cheep cheep
 	Bonus_UnusedVL:			; VRAM Low address ?? Seems to only be part of an unused routine
 	ToadTalk_VL:		.ds 1	; Cinematic Toad & King / "Toad House" Toad VRAM Address Low
 
+	UserMsg_CPos:			; Character position for the User Messages activated via the orange cheep cheep
 	BonusText_CPos:
 	ToadTalk_CPos:		.ds 1	; Cinematic Toad & King / "Toad House" Toad Character Position
 
+	UserMsg_TextTimer:		; Counter that decrements to zero between letters
 	BonusText_CharPause:	.ds 1	; Counter that decrements to zero between letters
 	Bonus_UnusedFlag:	.ds 1	; Doesn't do much besides block an unused subroutine
 
 	Map_Pan_Count:		.ds 1	; Map is panning, counts to zero (Scroll_LastDir sets which direction we're panning)
 
 	; NOTE sharing
+	UserMsg_StateTimer:		; User message state machine timer
 	CineKing_Timer2:		; Timer; decrements to zero
 	Bonus_Timer:			; Decrements to zero
 	Map_Intro_Tick:		.ds 1	; Counts down to zero while displaying the "World X" intro
@@ -2032,6 +2037,7 @@ OBJSTATE_POOFDEATH	= 8	; "Poof" Death (e.g. Piranha death)
 	World_Num:		.ds 1	; Current world index (0-8, where 0 = World 1, 7 = World 8, 8 = World 9 / Warp Zone)
 
 	; NOTE: sharing
+	UserMsg_State:			; State variable for status bar User Messages
 	World_EnterState:		; State variable during "world X" intro entrance, set to 3 when entering a level; overlaps GameOver_State
 	CineKing_State:			; State of King-got-his-wand-back sequence
 	GameOver_State:		.ds 1	; State variable used during "Gameover!" sequence only; overlaps World_EnterState

@@ -52,7 +52,7 @@ ObjectGroup03_InitJumpTable:
 	.word ObjInit_Set3DoNothing	; Object $85 - OBJ_SPINYEGGDUD
 	.word ObjInit_HeavyBro		; Object $86 - OBJ_HEAVYBRO
 	.word ObjInit_FireBro		; Object $87 - OBJ_FIREBRO
-	.word ObjInit_OrangeCheep	; Object $88 - OBJ_ORANGECHEEP
+	.word ObjInit_OrangeCheep_Hook	; Object $88 - OBJ_ORANGECHEEP
 	.word ObjInit_ChainChomp	; Object $89 - OBJ_CHAINCHOMP
 	.word ObjInit_Thwomp		; Object $8A - OBJ_THWOMP
 	.word ObjInit_ThwompLRSlide	; Object $8B - OBJ_THWOMPLEFTSLIDE
@@ -1687,60 +1687,19 @@ ObjNorm_OrangeCheep:
 
 	; The lost Orange Cheep...
 
-	LDA <Player_HaltGame
-	BNE PRG004_A870	 ; If gameplay is halted, jump to PRG004_A870
-
-	LDA #$10	; A = $10
-
-	LDY Objects_FlipBits,X
-	BNE PRG004_A843	 ; If Orange Cheep is flipped, jump to PRG004_A843
-
-	LDA #-$10	 ; A = -$10
-
-PRG004_A843:
-	STA <Objects_XVel,X	 ; Set proper X velocity
-
-	JSR Object_SetPaletteFromAttr	 ; Set Orange Cheep's palette
-	JSR Object_DeleteOffScreen	 ; Delete object if it falls off-screen
-
-	INC <Objects_Var5,X	 ; Var5++
-
-	JSR Object_ApplyXVel	 ; Apply X Velocity
-	JSR Object_ApplyYVel_NoLimit	 ; Apply Y Velocity
-
-	LDA <Objects_Var5,X
-	AND #$01
-	BNE PRG004_A86D	 ; Every other tick, jump to PRG004_A86D
-
-	LDA <Objects_Var4,X
-	AND #$01
-	TAY		 ; Y = 0 or 1 (vertical direction)
-
-	; Accelerate!
-	LDA <Objects_YVel,X
-	ADD OrangeCheep_Accel,Y
-	STA <Objects_YVel,X
-
-	CMP OrangeCheep_Limit,Y
-	BNE PRG004_A86D	 ; If Orange Cheep is not at his limit, jump to PRG004_A86D
-
-	INC <Objects_Var4,X	 ; Change direction
-
-PRG004_A86D: 
-	JSR Player_HitEnemy	 ; Do Player to Orange Cheep collision detection
-
-PRG004_A870:
-
-	; Toggle frame 0/1
-	LDA <Objects_Var5,X
-	LSR A
-	LSR A
-	LSR A
-	AND #$01
-	STA Objects_Frame,X
-
-	JSR Object_FlipByXVel	 ; Flip based on horizontal travel direction
-	JMP GroundTroop_DrawNormal	 ; Draw and don't come back!
+	LDA <Pad_Input
+	AND #(PAD_A | PAD_START)	; A or START closes the UserMessage
+	BEQ _keep_message_open
+	JSR Object_SetDeadEmpty		; kill this object
+	LDA #$00
+	STA Player_HaltTick
+	LDA #$FE
+	STA <DoingUserMessage		; kill the message box (causes prg026:StatusBarHook) to reset the status bar
+	RTS
+_keep_message_open:
+	LDA #$FF
+	STA Player_HaltTick
+	RTS
 
 ObjInit_FireBro:
 
@@ -1752,7 +1711,7 @@ ObjInit_FireBro:
 	LDA #$90
 	STA Objects_Var7,X
 
-ObjInit_OrangeCheep:
+;ObjInit_OrangeCheep:
 	RTS		 ; Return
 
 FireBro_FacePlayerFlip:	.byte SPR_HFLIP, $00
@@ -6034,3 +5993,10 @@ ObjInit_KickedTroop:
 	LDA #$30
 	STA <Objects_XVel,X
 	JMP ObjInit_GroundTroop
+
+ObjInit_OrangeCheep_Hook:
+	LDA #$01
+	STA <DoingUserMessage
+	LDA #$FF
+	STA Player_HaltTick
+	RTS
