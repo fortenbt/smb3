@@ -523,7 +523,7 @@ PRG003_A2DB:
 	INC <Objects_Var4,X
 
 	; Item Y velocity
-	LDA #-$30
+	LDA #-$20
 	STA <Objects_YVel,X
 
 	JSR TreasureBox_Poof	 ; Do another poof on opening
