@@ -5053,7 +5053,7 @@ _restore_x_rts:
 ; This table is used to get the sprites used to create the "level complete" panel
 ; during the tile flip routine. These go away when the map is reloaded and whatever
 ; tile is in Tile_Mem is used.
-MapLevelPanelCompleteNumPats:
+MapLevelPanelCompleteNumPatsBR:		; Bottom Right
 	;      1    2    3    4    5    6    7    8    9    10
 	.byte $8F, $A4, $A5, $A6, $A7, $C8, $C9, $CA, $CB, $BF
 
@@ -5101,11 +5101,11 @@ SetMapLevelCompletedPanelPats:
 	SEC
 	SBC #$0D			; Where the partial completed tile numbers begin
 	TAY
-	LDA MapLevelPanelCompleteNumPats,Y	; bottom right is the level number pattern
+	LDA MapLevelPanelCompleteNumPatsBR,Y	; bottom right is the level number pattern
 	STA Graphics_Buffer+$09,X		; stored at +9
 	LDA #$8C			; $8C (top left level panel)
 	STA Graphics_Buffer+$03,X	;     stored at +3
-	LDA #$8D			; $8D (top right level panel)
+	LDA #$FB			; $FB (custom top right level panel)
 	STA Graphics_Buffer+$04,X	;     stored at +4
 	LDA #$BE			; $BE (bottom left partial complete panel)
 	STA Graphics_Buffer+$08,X	;     stored at +8
