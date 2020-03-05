@@ -5330,33 +5330,18 @@ PRG005_B9E6:
 	BEQ PRG005_BA2B	 	; If object ID = OBJ_SPAWN3GREENTROOPAS, jump to PRG005_BA2B
 
 	; OBJ_SPAWN3ORANGECHEEPS specific...
+	LDY <Temp_Var13		 ; 0 - 2, loop counter
 
-	;;;=======================================================================
-	;;; [ORANGE] Use this Orange cheep cheep to initialize the UserMessages
-	;;;=======================================================================
-	;;; 19 removed bytes of code
+	LDA Spawn3YVels,Y
+	STA <Objects_YVel,X	 ; Set appropriate Y velocity
 
-	;;LDY <Temp_Var13		 ; 0 - 2, loop counter
+	LDA Spawn3Var4,Y
+	STA <Objects_Var4,X	 ; Set initial var 4 value
 
-	;;;LDA Spawn3YVels,Y
-	;;STA <Objects_YVel,X	 ; Set appropriate Y velocity
+	INC Objects_InWater,X	 ; Set object as in water
 
-	;;;LDA Spawn3Var4,Y
-	;;STA <Objects_Var4,X	 ; Set initial var 4 value
-
-	;;;INC Objects_InWater,X	 ; Set object as in water
-
-	;;LDA #OBJ_ORANGECHEEP	 ; A = OBJ_ORANGECHEEP
-	;;BNE PRG005_BA2D	 ; Jump (technically always) to PRG005_BA2D
-	;;;=======================================================================
-	;;; 12 new bytes of code to set the proper message index from the cheep
-	;;; cheep's Y position.
-	LDA <Objects_Y,X
-	STA UserMsg_Index
-	LDA #$00
-	STA <Temp_Var13		; We only want to spawn one of these
-	JMP PRG005_BA2D
-	.ds 7			; 12 new bytes + 7 unused == the 19 removed
+	LDA #OBJ_ORANGECHEEP	 ; A = OBJ_ORANGECHEEP
+	BNE PRG005_BA2D	 ; Jump (technically always) to PRG005_BA2D
 
 PRG005_BA2B:
 	LDA #OBJ_PARATROOPAGREENHOP	 ; A = OBJ_PARATROOPAGREENHOP

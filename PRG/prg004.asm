@@ -1686,20 +1686,60 @@ ObjNorm_OrangeCheep:
 	; ########################################
 
 	; The lost Orange Cheep...
+	LDA <Player_HaltGame
+	BNE PRG004_A870	 ; If gameplay is halted, jump to PRG004_A870
 
-	LDA <Pad_Input
-	AND #(PAD_A | PAD_START)	; A or START closes the UserMessage
-	BEQ _keep_message_open
-	JSR Object_SetDeadEmpty		; kill this object
-	LDA #$00
-	STA Player_HaltTick
-	LDA #$FE
-	STA <DoingUserMessage		; kill the message box (causes prg026:StatusBarHook) to reset the status bar
-	RTS
-_keep_message_open:
-	LDA #$FF
-	STA Player_HaltTick
-	RTS
+	LDA #$10	; A = $10
+
+	LDY Objects_FlipBits,X
+	BNE PRG004_A843	 ; If Orange Cheep is flipped, jump to PRG004_A843
+
+	LDA #-$10	 ; A = -$10
+
+PRG004_A843:
+	STA <Objects_XVel,X	 ; Set proper X velocity
+
+	JSR Object_SetPaletteFromAttr	 ; Set Orange Cheep's palette
+	JSR Object_DeleteOffScreen	 ; Delete object if it falls off-screen
+
+	INC <Objects_Var5,X	 ; Var5++
+
+	JSR Object_ApplyXVel	 ; Apply X Velocity
+	JSR Object_ApplyYVel_NoLimit	 ; Apply Y Velocity
+
+	LDA <Objects_Var5,X
+	AND #$01
+	BNE PRG004_A86D	 ; Every other tick, jump to PRG004_A86D
+
+	LDA <Objects_Var4,X
+	AND #$01
+	TAY		 ; Y = 0 or 1 (vertical direction)
+
+	; Accelerate!
+	LDA <Objects_YVel,X
+	ADD OrangeCheep_Accel,Y
+	STA <Objects_YVel,X
+
+	CMP OrangeCheep_Limit,Y
+	BNE PRG004_A86D	 ; If Orange Cheep is not at his limit, jump to PRG004_A86D
+
+	INC <Objects_Var4,X	 ; Change direction
+
+PRG004_A86D: 
+	JSR Player_HitEnemy	 ; Do Player to Orange Cheep collision detection
+
+PRG004_A870:
+
+	; Toggle frame 0/1
+	LDA <Objects_Var5,X
+	LSR A
+	LSR A
+	LSR A
+	AND #$01
+	STA Objects_Frame,X
+
+	JSR Object_FlipByXVel	 ; Flip based on horizontal travel direction
+	JMP GroundTroop_DrawNormal	 ; Draw and don't come back!
 
 ObjInit_FireBro:
 
@@ -5995,8 +6035,12 @@ ObjInit_KickedTroop:
 	JMP ObjInit_GroundTroop
 
 ObjInit_OrangeCheep_Hook:
-	LDA #$01
-	STA <DoingUserMessage
-	LDA #$FF
-	STA Player_HaltTick			; TODO: this doesn't stop Pirhana plants
+	JSR Object_SetDeadEmpty			; kill this object
+	LDY #$01
+	STY <DoingUserMessage			; DoingUserMessage = 1
+	DEY
+	STY UserMsg_State			; UserMsg_State = 0
+	STY UserMsg_TextTimer			; UserMsg_TextTimer = 0
+	DEY
+	STY Player_HaltTick			; Player_HaltTick = 0xFF; ORANGE TODO: this doesn't stop Pirhana plants
 	RTS

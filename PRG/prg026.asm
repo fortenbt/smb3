@@ -3767,13 +3767,9 @@ _clear53loop:
 StatusBarHook:
 	LDA <DoingUserMessage
 	BEQ _norm_status_bar
-	BMI _chk_sb_upd
-	JSR DoStatusBarMessage
-	LDA #$FF
-	STA <DoingUserMessage
+	JSR DoStatusBarMessage		; UserMsg_State != 0, we're doing a UserMessage
+	BNE _skip_sb_upd		; DoStatusBarMessage returns zero flag not set as long as it's continuing
 _chk_sb_upd:
-	CMP #$FE
-	BNE _skip_sb_upd
 	LDA #$3c		; status bar blue
 	STA Palette_Buffer+3	; Update palette color
 	LDA #$06
@@ -3784,7 +3780,7 @@ _chk_sb_upd:
 	JSR GraphicsBuf_Prep_And_WaitVSync
 	LDA #0
 	STA <DoingUserMessage
-	BEQ _norm_status_bar
+	BEQ _norm_status_bar		; always
 _skip_sb_upd:
 	JMP _end_SB_Upd
 _norm_status_bar:
@@ -3803,6 +3799,8 @@ _um_timer2_postdec:
 
 _um_ttimer_postdec:
 	JSR UserMsg_DoState		; Perform state operation for the User Message
+	LDA UserMsg_State
+	CMP #4				; Set the zero flag for StatusBarHook
 	RTS
 
 UserMsg_DoState:
@@ -3811,8 +3809,9 @@ UserMsg_DoState:
 
 	; THESE MUST FOLLOW DynJump FOR THE DYNAMIC JUMP TO WORK!!
 	.word UserMsg_Init		; 0: Initialize vars
-	.word UserMsg_DoText		; 1: Render the text
-	.word TAndK_WaitForA		; 2: Waits for Player to push START
+	.word UserMsg_NextState		; 1
+	.word UserMsg_DoText		; 2: Render the text
+	.word UserMsg_WaitForStart	; 3: Waits for Player to push START
 
 UserMsgPtr_L:
 	.byte LOW(UserMessage1)
@@ -3823,23 +3822,25 @@ UserMsgPtr_H:
 	.byte HIGH(UserMessage2)
 
 UserMsg_Init:
+	; Update the palette of the now "message bar"
+	LDA #$0F		; Black
+	STA Palette_Buffer+3	; Update palette color
+	LDA #$06		; Inform the graphics queue it needs to update the palettes
+	STA <Graphics_Queue
+	JSR GraphicsBuf_Prep_And_WaitVSync
+
 	LDX #0
 	LDY Graphics_BufCnt
+
 	; Load the "message bar" in place of the status bar
 _msg_tmplt_loop:
 	LDA UserMessageTemplate,X
 	STA Graphics_Buffer,Y
 	INY
 	INX
-	CPX #54
+	CPX #(UMT_END - UserMessageTemplate)
 	BNE _msg_tmplt_loop
 	STY Graphics_BufCnt
-
-	; Update the palette of the now "message bar"
-	LDA #$2b		; light green
-	STA Palette_Buffer+3	; Update palette color
-	LDA #$06		; Inform the graphics queue it needs to update the palettes
-	STA <Graphics_Queue
 
 	; Set the starting VRAM addresses (always the same)
 	LDA #$2B
@@ -3853,10 +3854,13 @@ _msg_tmplt_loop:
 	STA UserMsg_CPos		; current character (low byte of pointer)
 	LDA UserMsgPtr_H,X
 	STA UserMsg_Hi			; high byte of current message pointer
-
-	INC UserMsg_State
+UserMsg_NextState:
+	LDA #$00
+	STA UserMsg_Index		; This is reused for a line index
+	INC UserMsg_State		; UserMsg_State = 1, 2
 	RTS
 
+UserMsg_VL_ByLine:		.byte $22, $42, $62
 
 UserMsg_DoText:
 	LDA UserMsg_TextTimer
@@ -3868,22 +3872,25 @@ UserMsg_DoText:
 	LDA UserMsg_Hi
 	STA <Temp_Var2
 
-	INC ToadTalk_CPos	 ; ToadTalk_CPos++
-	BNE PRG027_A4B9	 	; If ToadTalk_CPos did not overflow, jump to PRG027_A4B9
-	INC CineKing_DiagHi	 ; Apply carry
-PRG027_A4B9:
+	INC UserMsg_CPos		; Next character
+	BNE _msg_post_ptr_inc		; If UserMsg_CPos did not overflow, jump to PRG027_A4B9
+	INC UserMsg_Hi			; Otherwise, apply carry
+_msg_post_ptr_inc:
 
 	; Get next character
-	LDY #$00	 ; Y = 0
+	LDY #$00
 	LDA [Temp_Var1],Y
+	BEQ _msg_line_brk
+	CMP #$FF
+	BEQ UserMsg_NextState
 
-	LDY Graphics_BufCnt	 ; Y = current graphics buffer count
+	LDY Graphics_BufCnt		; Y = current graphics buffer count
 
 	; Store character into buffer
 	STA Graphics_Buffer+$3,Y
 
 	; Store VRAM high address
-	LDA ToadTalk_VH
+	LDA UserMsg_VH
 	STA Graphics_Buffer,Y
 
 	; Run length of 1
@@ -3891,7 +3898,7 @@ PRG027_A4B9:
 	STA Graphics_Buffer+$2,Y
 
 	; Terminator
-	LSR A		 ; A = 0
+	LSR A				; A = 0
 	STA Graphics_Buffer+$4,Y
 
 	; Update Graphics_BufCnt
@@ -3900,46 +3907,39 @@ PRG027_A4B9:
 	STA Graphics_BufCnt
 
 	; Store VRAM low address
-	LDA ToadTalk_VL
+	LDA UserMsg_VL
 	STA Graphics_Buffer+$1,Y
 
-	INC ToadTalk_VL	 ; ToadTalk_VL++ (next column)
+	INC UserMsg_VL			; UserMsg_VL++ (next column)
+	BNE _msg_do_character		; Always jump
 
-	AND #$1f
-	CMP #$1a
-	BNE PRG027_A509	 ; If we're not in column 26, jump to PRG027_A509
-
+_msg_line_brk:
 	; Line break!
+	INC UserMsg_Index
+	LDX UserMsg_Index
+	LDA UserMsg_VL_ByLine,X
+	STA UserMsg_VL
 
-	LDA ToadTalk_VL
-	ADC #$0b		; Add enough bytes to get to next row
-	STA ToadTalk_VL
-	BCC PRG027_A4F5
-	INC ToadTalk_VH	; Apply carry
-PRG027_A4F5:
 
-	CMP #$67	
-	BNE PRG027_A509  ; If we haven't reached the last character, jump to PRG024_A25B
-
-	LDA #$00
-	STA ToadTalk_CPos	; ToadTalk_CPos = 0
-	STA <CineKing_Var		; CineKing_Var = 0
-
-	; CineKing_Timer2 = $FF
-	LDA #$ff
-	STA CineKing_Timer2
-
-	INC CineKing_State	 ; CineKing_State = 3
-	RTS		 ; Return
-
-PRG027_A509:
-
-	; CineKing_Timer2 = 4
+_msg_do_character:
+	; UserMsg_TextTimer = 4
 	LDA #$04
-	STA CineKing_Timer2
+	STA UserMsg_TextTimer
 
 _do_text_rts:
+	LDA #$FF
+	STA Player_HaltTick
 	RTS		 ; Return
+
+UserMsg_WaitForStart:
+	LDA <Pad_Input
+	AND #(PAD_A | PAD_START)	; A or START closes the UserMessage
+	BEQ _do_text_rts		; Just return if no press
+
+	INC UserMsg_State		; Otherwise, go to next state (4), which ends our UserMessage box
+	LDA #$00
+	STA Player_HaltTick
+	RTS
 
 
 UserMessageTemplate:
@@ -3972,8 +3972,11 @@ UserMessageTemplate:
 	.byte 1, $A5
 
 	.byte $00
+UMT_END
 
 UserMessage1: ; H    e    l    l    o    ,    W    o    r    l    d    !
-	.byte $B7, $D4, $DC, $DC, $DE, $9A, $C6, $DE, $CB, $DC, $D3, $EA
-UserMessage2: ; H    e    l    l    o    ,    W    o    r    l    d    !
-	.byte $B7, $D4, $DC, $DC, $DE, $9A, $C6, $DE, $CB, $DC, $D3, $EA
+	.byte $B7, $D4, $DB, $DB, $DE, $9A, $C6, $DE, $CB, $DB, $D3, $EA, $00
+UserMessage2: ; B    i    t    c    h    e    s    !
+	.byte $B1, $D8, $CD, $D2, $D7, $D4, $CC, $EA, $00
+UserMessage3: ; D    o    n    e    z    o    \ff
+	.byte $B3, $DE, $DD, $D4, $8F, $DE, $FF
