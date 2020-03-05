@@ -52,7 +52,7 @@ ObjectGroup03_InitJumpTable:
 	.word ObjInit_Set3DoNothing	; Object $85 - OBJ_SPINYEGGDUD
 	.word ObjInit_HeavyBro		; Object $86 - OBJ_HEAVYBRO
 	.word ObjInit_FireBro		; Object $87 - OBJ_FIREBRO
-	.word ObjInit_OrangeCheep	; Object $88 - OBJ_ORANGECHEEP
+	.word ObjInit_OrangeCheep_Hook	; Object $88 - OBJ_ORANGECHEEP
 	.word ObjInit_ChainChomp	; Object $89 - OBJ_CHAINCHOMP
 	.word ObjInit_Thwomp		; Object $8A - OBJ_THWOMP
 	.word ObjInit_ThwompLRSlide	; Object $8B - OBJ_THWOMPLEFTSLIDE
@@ -1686,7 +1686,6 @@ ObjNorm_OrangeCheep:
 	; ########################################
 
 	; The lost Orange Cheep...
-
 	LDA <Player_HaltGame
 	BNE PRG004_A870	 ; If gameplay is halted, jump to PRG004_A870
 
@@ -1752,7 +1751,7 @@ ObjInit_FireBro:
 	LDA #$90
 	STA Objects_Var7,X
 
-ObjInit_OrangeCheep:
+;ObjInit_OrangeCheep:
 	RTS		 ; Return
 
 FireBro_FacePlayerFlip:	.byte SPR_HFLIP, $00
@@ -6034,3 +6033,16 @@ ObjInit_KickedTroop:
 	LDA #$30
 	STA <Objects_XVel,X
 	JMP ObjInit_GroundTroop
+
+ObjInit_OrangeCheep_Hook:
+	JSR Object_SetDeadEmpty			; kill this object
+	LDX UserMsg_Index
+	LDA UserMsg_Completions,X		; has this message been shown?
+	BNE _occ_rts				; if so, just return
+	LDY #$01				; Otherwise, initialize the message
+	STY <DoingUserMessage			; DoingUserMessage = 1
+	DEY
+	STY UserMsg_State			; UserMsg_State = 0
+	STY UserMsg_TextTimer			; UserMsg_TextTimer = 0
+_occ_rts:
+	RTS

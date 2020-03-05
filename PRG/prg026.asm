@@ -312,7 +312,7 @@ Flip_MidBStatCards:
 	vaddr $2B40
 
 	; Discrepency --------v  (Pattern is ... $FE, $FE ... in PRG030 status bar)  Unimportant; inserts <M> which is replaced anyway
-	.byte  32, $FC, $A6, $74, $75, $FB, $FE, $F3, $FE, $F0, $F0, $F0, $F0, $F0, $F0	; [M/L]x  000000 c000| etc.
+	.byte $20, $FC, $A6, $74, $75, $FB, $FE, $F3, $FE, $F0, $F0, $F0, $F0, $F0, $F0	; [M/L]x  000000 c000| etc.
 	.byte $F0, $FE, $ED, $F0, $F0, $F0, $A7, $A6, $FE, $FE, $AA, $FE, $FE, $AA, $FE
 	.byte $FE, $A7, $FC
 	; Discrepency --------^  (Pattern is ... $F4, $F0 ... in PRG030 status bar graphics)
@@ -3575,7 +3575,9 @@ StatusBar_UpdTemplate:
 ; graphics buffer for commitment later on!
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 StatusBar_UpdateValues:
-	JSR StatusBar_Fill_PowerMT	; Fill in StatusBar_PMT with tiles of current Power Meter state
+	;JSR StatusBar_Fill_PowerMT	; Fill in StatusBar_PMT with tiles of current Power Meter state
+	JMP StatusBarHook
+_start_SB_Upd:
 	JSR StatusBar_Fill_Coins	; Fill in StatusBar_CoinsL/H with tiles for coins held; also applies Coins_Earned
 	JSR StatusBar_Fill_Lives	; Fill in StatusBar_LivesL/H with tiles for lives held
 	JSR StatusBar_Fill_Score 	; Fill in StatusBar_Score with tiles for score; also applies Score_Earned
@@ -3696,7 +3698,7 @@ PRG026_B4F5:
 	LDA Graphics_BufCnt
 	ADD #$21	 
 	STA Graphics_BufCnt	 
-
+_end_SB_Upd:
 	RTS		 ; Return
 
 
@@ -3761,3 +3763,337 @@ _clear53loop:
 	STA BigQBlock_GotIt
 	STA Music_RestH_Off
 	RTS			; Return
+
+StatusBarHook:
+	LDA <DoingUserMessage
+	BEQ _norm_status_bar
+	LDA #$FF
+	STA Player_HaltTick
+	JSR DoStatusBarMessage		; UserMsg_State != 0, we're doing a UserMessage
+	BNE _skip_sb_upd		; DoStatusBarMessage returns zero flag not set as long as it's continuing
+_norm_status_bar:
+	;;; call the hoooked StatusBar_Fill_PowerMT and then continue with the update
+	JSR StatusBar_Fill_PowerMT	; Fill in StatusBar_PMT with tiles of current Power Meter state
+	JMP _start_SB_Upd
+_skip_sb_upd:
+	JMP _end_SB_Upd
+
+
+DoStatusBarMessage:
+	LDA UserMsg_TextTimer
+	BEQ _um_ttimer_postdec		; If UserMsg_TextTimer = 0, skip decrementing
+	DEC UserMsg_TextTimer		; UserMsg_TextTimer--
+
+_um_ttimer_postdec:
+	JSR UserMsg_DoState		; Perform state operation for the User Message
+	LDA UserMsg_State
+	CMP #((UMSJmpEnd-UserMsgStateJmpTbl)/2)	; Set the zero flag for StatusBarHook
+	RTS
+
+UserMsg_DoState:
+	LDA UserMsg_State
+	JSR DynJump
+
+	; THESE MUST FOLLOW DynJump FOR THE DYNAMIC JUMP TO WORK!!
+UserMsgStateJmpTbl:
+	.word UserMsg_Init		; 0: Change palette, init UserMsg vars
+	.word UserMsg_DoTemplate	; 1: Load the User Message template, line by line
+	.word UserMsg_DoText		; 2: Render the text
+	.word UserMsg_WaitForStart	; 3: Waits for Player to push START
+	.word UserMsg_RestoreStatusBar	; 4: Restores the normal status bar, line by line
+	.word UserMsg_SetWorld		; 5: Restore the world num on the status bar
+UMSJmpEnd
+
+UserMsgPtr_L:
+	.byte LOW(UserMessage1)
+	.byte LOW(UserMessage2)
+
+UserMsgPtr_H:
+	.byte HIGH(UserMessage1)
+	.byte HIGH(UserMessage2)
+
+UserMsg_SetWorld:
+	JSR StatusBar_Fill_World	; Otherwise, fill in the world number and complete the UserMessage
+	INC UserMsg_State
+	LDX UserMsg_Index
+	INC UserMsg_Completions,X	; Mark this message complete
+	LDA #$00
+	STA <DoingUserMessage
+	STA Player_HaltTick		; Unpause the game/player
+	STA Level_PipeMove
+	RTS
+
+UserMsg_RestoreStatusBar:
+	LDA UserMsg_Line
+	ASL A				; line*2 for array of 16-bit words
+	TAX
+	LDA StatusBarRestore,X
+	STA <Temp_Var1
+	LDA StatusBarRestore+1,X
+	STA <Temp_Var2
+	JSR _DoStatusBarDrawLine
+_rsb_rts:
+	RTS
+
+
+UserMsg_DoTemplate:
+	LDA UserMsg_Line
+	ASL A				; line*2 for array of 16-bit words
+	TAX
+	LDA UserMessageTemplate,X
+	STA <Temp_Var1
+	LDA UserMessageTemplate+1,X
+	STA <Temp_Var2
+	JSR _DoStatusBarDrawLine
+	RTS
+
+
+_DoStatusBarDrawLine:
+	LDX Graphics_BufCnt
+	LDY #$00
+	; Restore the status bar
+_sb_loop:
+	LDA [Temp_Var1],Y
+	CMP #$FF			; Did we hit our termination byte?
+	BNE _store_sb_byte
+	LDA #$00			; If so, store a $00 and finish
+	STA Graphics_Buffer,X
+	BEQ _post_sb_loop		; branch always
+_store_sb_byte:
+	STA Graphics_Buffer,X
+	INX
+	INY
+	BNE _sb_loop			; branch always
+_post_sb_loop:
+	INX
+	STX Graphics_BufCnt
+	LDA UserMsg_Line
+	CMP #4				; Did we just load the 5th line of the status bar?
+	BNE _sb_cont			; If not, stay in the current state
+	INC UserMsg_State		; Otherwise, go to next state
+	LDA #$FF
+	STA UserMsg_Line		; Setting this to 0xFF forces the next instruction to make it 0
+_sb_cont:
+	INC UserMsg_Line		; Next line
+	LDA #$00
+	STA <Graphics_Queue		; Graphics_Queue = 0
+	RTS
+
+UserMsg_Init:
+	; Update the palette of the now "message bar"
+	LDA #$0F		; Black
+	STA Palette_Buffer+3	; Update palette color
+	LDA #$06		; Inform the graphics queue it needs to update the palettes
+	STA <Graphics_Queue
+
+	; Set the starting VRAM addresses (always the same)
+	LDA #$2B
+	STA UserMsg_VH
+	LDA #$22
+	STA UserMsg_VL
+
+	; Initialize message pointers
+	LDX UserMsg_Index		; Set by the orange cheep cheep's spawned Y pos in prg005
+	LDA UserMsgPtr_L,X
+	STA UserMsg_CPos		; current character (low byte of pointer)
+	LDA UserMsgPtr_H,X
+	STA UserMsg_Hi			; high byte of current message pointer
+
+UserMsg_NextState:
+	LDA #$00
+	STA UserMsg_Line
+	INC UserMsg_State		; UserMsg_State++
+	RTS
+
+UserMsg_VL_ByLine:		.byte $22, $42, $62
+
+UserMsg_DoText:
+	LDA UserMsg_TextTimer
+	BNE _do_text_rts
+
+	; Dialog address -> Temp_Var1/2
+	LDA UserMsg_CPos
+	STA <Temp_Var1
+	LDA UserMsg_Hi
+	STA <Temp_Var2
+
+	INC UserMsg_CPos		; Next character
+	BNE _msg_post_ptr_inc		; If UserMsg_CPos did not overflow, jump to PRG027_A4B9
+	INC UserMsg_Hi			; Otherwise, apply carry
+_msg_post_ptr_inc:
+
+	; Get next character
+	LDY #$00
+	LDA [Temp_Var1],Y
+	BEQ _msg_line_brk
+	CMP #$FF
+	BEQ UserMsg_NextState
+
+	LDY Graphics_BufCnt		; Y = current graphics buffer count
+
+	; Store character into buffer
+	STA Graphics_Buffer+$3,Y
+
+	; Store VRAM high address
+	LDA UserMsg_VH
+	STA Graphics_Buffer,Y
+
+	; Run length of 1
+	LDA #$01
+	STA Graphics_Buffer+$2,Y
+
+	; Terminator
+	LSR A				; A = 0
+	STA Graphics_Buffer+$4,Y
+
+	; Update Graphics_BufCnt
+	TYA
+	ADD #$04
+	STA Graphics_BufCnt
+
+	; Store VRAM low address
+	LDA UserMsg_VL
+	STA Graphics_Buffer+$1,Y
+
+	INC UserMsg_VL			; UserMsg_VL++ (next column)
+	BNE _msg_do_character		; Always jump
+
+_msg_line_brk:
+	; Line break!
+	INC UserMsg_Line
+	LDX UserMsg_Line
+	LDA UserMsg_VL_ByLine,X
+	STA UserMsg_VL
+
+
+_msg_do_character:
+	; UserMsg_TextTimer = 4
+	LDA #$04
+	STA UserMsg_TextTimer
+
+_do_text_rts:
+	LDA #$FF
+	STA Player_HaltTick		; This prevents Level_PipeMove from doing anything
+	LDA #$17
+	STA Level_PipeMove		; Hijack Level_PipeMove to halt everything
+	RTS
+
+UserMsg_WaitForStart:
+	LDA <Pad_Input
+	AND #(PAD_A | PAD_START)	; A or START closes the UserMessage
+	BEQ _do_text_rts		; Just return if no press
+	; Restore the palette here
+	LDA #$3c			; Status bar blue
+	STA Palette_Buffer+3		; Update palette color
+	LDA #$06			; Tell graphics queue it needs to update palettes
+	STA <Graphics_Queue
+	; Move to the next state to begin restoring the status bar
+	INC UserMsg_State
+	RTS
+
+StatusBarRestore:
+	.word SBR_1, SBR_2, SBR_3, SBR_4, SBR_5
+
+SBR_5:	; Status Bar Restore values, top row (we restore from the bottom up)
+	vaddr $2B00
+	.byte $02, $FC, $A0		; Upper left corner
+
+	vaddr $2B02
+	.byte VU_REPEAT | $12, $A1	; Bar across the top
+
+	vaddr $2B14
+	.byte $0C, $A2, $A0, $A1, $A1, $A3, $A1, $A1, $A3, $A1, $A1, $A2, $FC				; top of card slots
+	.byte $FF
+SBR_5_END
+
+SBR_4:
+	; Sync this with PRG026 Flip_MidTStatCards
+	vaddr $2B20
+	.byte $20, $FC, $A6, $70, $71, $72, $73, $FE, $FE, $EF, $EF, $EF, $EF, $EF, $EF, $3C		; |WORLD  >>>>>>[P] $  | |  | |  | |  | |
+	.byte $3D, $FE, $EC, $F0, $F0, $A7, $A6, $FE, $FE, $AA, $FE, $FE, $AA, $FE, $FE, $A7, $FC
+	.byte $FF
+SBR_4_END
+
+SBR_3:
+	vaddr $2B40
+	.byte $20, $FC, $A6, $74, $75, $FB, $FE, $F3, $FE, $F0, $F0, $F0, $F0, $F0, $F0, $F0		; [M/L]x  000000 c000| etc.
+	.byte $FE, $ED, $F4, $F0, $F0, $A7, $A6, $FE, $FE, $AA, $FE, $FE, $AA, $FE, $FE, $A7, $FC
+	.byte $FF
+SBR_3_END
+
+SBR_2:
+	vaddr $2B60
+	.byte $02, $FC, $A8		; Lower corner
+
+	vaddr $2B62
+	.byte VU_REPEAT | $12, $A4	; Bottom bar
+
+	vaddr $2B74
+	.byte $0C, $A5, $A8, $A4, $A4, $A9, $A4, $A4, $A9, $A4, $A4, $A5, $FC	; lower corner and card bottoms
+	.byte $FF
+SBR_2_END
+
+SBR_1:	; Status Bar Restore values, bottom row (we restore from the bottom up)
+	vaddr $2B80
+	.byte VU_REPEAT | $20, $FC	; black space
+
+	vaddr $2BA0
+	.byte VU_REPEAT | $20, $FC	; black space
+
+	; Terminator
+	.byte $FF
+SBR_1_END
+
+
+UserMessageTemplate:
+	.word UMT_TOP, UMT_ROW1, UMT_ROW2, UMT_ROW3, UMT_BOT
+
+UMT_TOP:
+	vaddr $2B00
+	.byte 2, $FC, $A0
+
+	vaddr $2B02
+	.byte VU_REPEAT | 29, $A1	; Bar across the top
+	vaddr $2B1F
+	.byte 3, $A2, $FC, $A6
+	.byte $FF
+UMT_TOP_END
+
+UMT_ROW1:
+	vaddr $2B22
+	.byte VU_REPEAT | 29, $FE	; Empty row 1
+	vaddr $2B3F
+	.byte 3, $A7, $FC, $A6
+	.byte $FF
+UMT_ROW1_END
+
+UMT_ROW2:
+	vaddr $2B42
+	.byte VU_REPEAT | 29, $FE	; Empty row 2
+	vaddr $2B5F
+	.byte 3, $A7, $FC, $A6
+	.byte $FF
+UMT_ROW2_END
+
+UMT_ROW3:
+	vaddr $2B62
+	.byte VU_REPEAT | 29, $FE	; Empty row 3
+	vaddr $2B7F
+	.byte 3, $A7, $FC, $A8
+	.byte $FF
+UMT_ROW3_END
+
+UMT_BOT:
+	vaddr $2B82
+	.byte VU_REPEAT | 29, $A4	; Bar across the bottom
+	vaddr $2B9F
+	.byte 1, $A5
+	.byte $FF
+UMT_BOT_END
+
+UserMessage1: ; H    e    l    l    o    ,    W    o    r    l    d    !
+	.byte $B7, $D4, $DB, $DB, $DE, $9A, $C6, $DE, $CB, $DB, $D3, $EA, $00
+UserMessage2: ; B    i    t    c    h    e    s    !
+	.byte $B1, $D8, $CD, $D2, $D7, $D4, $CC, $EA, $00
+UserMessage3: ; D    o    n    e    z    o    \ff
+	.byte $B3, $DE, $DD, $D4, $8F, $DE, $FF
