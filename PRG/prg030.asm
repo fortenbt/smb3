@@ -3339,6 +3339,9 @@ InitializePauseMenu:
 	PHA
 	LDA EndCard_Flag
 	BNE _disallow_pause
+_check_UserMsg:
+	LDA <DoingUserMessage
+	BNE _disallow_pause
 _check_wandstate:
 	LDA Level_GetWandState
 	CMP #3
