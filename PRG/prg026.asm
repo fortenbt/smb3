@@ -3811,8 +3811,16 @@ UserMsg_DoState:
 
 	; THESE MUST FOLLOW DynJump FOR THE DYNAMIC JUMP TO WORK!!
 	.word UserMsg_Init		; 0: Initialize vars
-	.word TAndK_DoKingText		; 1: Render the text
+	.word UserMsg_DoText		; 1: Render the text
 	.word TAndK_WaitForA		; 2: Waits for Player to push START
+
+UserMsgPtr_L:
+	.byte LOW(UserMessage1)
+	.byte LOW(UserMessage2)
+
+UserMsgPtr_H:
+	.byte HIGH(UserMessage1)
+	.byte HIGH(UserMessage2)
 
 UserMsg_Init:
 	LDX #0
@@ -3839,12 +3847,100 @@ _msg_tmplt_loop:
 	LDA #$22
 	STA UserMsg_VL
 
-	; Initialize character counter
-	LDA #$00
-	STA UserMsg_CPos
+	; Initialize message pointers
+	LDX UserMsg_Index		; Set by the orange cheep cheep's spawned Y pos in prg005
+	LDA UserMsgPtr_L,X
+	STA UserMsg_CPos		; current character (low byte of pointer)
+	LDA UserMsgPtr_H,X
+	STA UserMsg_Hi			; high byte of current message pointer
 
 	INC UserMsg_State
 	RTS
+
+
+UserMsg_DoText:
+	LDA UserMsg_TextTimer
+	BNE _do_text_rts
+
+	; Dialog address -> Temp_Var1/2
+	LDA UserMsg_CPos
+	STA <Temp_Var1
+	LDA UserMsg_Hi
+	STA <Temp_Var2
+
+	INC ToadTalk_CPos	 ; ToadTalk_CPos++
+	BNE PRG027_A4B9	 	; If ToadTalk_CPos did not overflow, jump to PRG027_A4B9
+	INC CineKing_DiagHi	 ; Apply carry
+PRG027_A4B9:
+
+	; Get next character
+	LDY #$00	 ; Y = 0
+	LDA [Temp_Var1],Y
+
+	LDY Graphics_BufCnt	 ; Y = current graphics buffer count
+
+	; Store character into buffer
+	STA Graphics_Buffer+$3,Y
+
+	; Store VRAM high address
+	LDA ToadTalk_VH
+	STA Graphics_Buffer,Y
+
+	; Run length of 1
+	LDA #$01
+	STA Graphics_Buffer+$2,Y
+
+	; Terminator
+	LSR A		 ; A = 0
+	STA Graphics_Buffer+$4,Y
+
+	; Update Graphics_BufCnt
+	TYA
+	ADD #$04
+	STA Graphics_BufCnt
+
+	; Store VRAM low address
+	LDA ToadTalk_VL
+	STA Graphics_Buffer+$1,Y
+
+	INC ToadTalk_VL	 ; ToadTalk_VL++ (next column)
+
+	AND #$1f
+	CMP #$1a
+	BNE PRG027_A509	 ; If we're not in column 26, jump to PRG027_A509
+
+	; Line break!
+
+	LDA ToadTalk_VL
+	ADC #$0b		; Add enough bytes to get to next row
+	STA ToadTalk_VL
+	BCC PRG027_A4F5
+	INC ToadTalk_VH	; Apply carry
+PRG027_A4F5:
+
+	CMP #$67	
+	BNE PRG027_A509  ; If we haven't reached the last character, jump to PRG024_A25B
+
+	LDA #$00
+	STA ToadTalk_CPos	; ToadTalk_CPos = 0
+	STA <CineKing_Var		; CineKing_Var = 0
+
+	; CineKing_Timer2 = $FF
+	LDA #$ff
+	STA CineKing_Timer2
+
+	INC CineKing_State	 ; CineKing_State = 3
+	RTS		 ; Return
+
+PRG027_A509:
+
+	; CineKing_Timer2 = 4
+	LDA #$04
+	STA CineKing_Timer2
+
+_do_text_rts:
+	RTS		 ; Return
+
 
 UserMessageTemplate:
 	vaddr $2B00
@@ -3878,4 +3974,6 @@ UserMessageTemplate:
 	.byte $00
 
 UserMessage1: ; H    e    l    l    o    ,    W    o    r    l    d    !
+	.byte $B7, $D4, $DC, $DC, $DE, $9A, $C6, $DE, $CB, $DC, $D3, $EA
+UserMessage2: ; H    e    l    l    o    ,    W    o    r    l    d    !
 	.byte $B7, $D4, $DC, $DC, $DE, $9A, $C6, $DE, $CB, $DC, $D3, $EA

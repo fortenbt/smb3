@@ -5998,5 +5998,5 @@ ObjInit_OrangeCheep_Hook:
 	LDA #$01
 	STA <DoingUserMessage
 	LDA #$FF
-	STA Player_HaltTick
+	STA Player_HaltTick			; TODO: this doesn't stop Pirhana plants
 	RTS

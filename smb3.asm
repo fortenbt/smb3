@@ -2015,7 +2015,7 @@ OBJSTATE_POOFDEATH	= 8	; "Poof" Death (e.g. Piranha death)
 	Bonus_Timer:			; Decrements to zero
 	Map_Intro_Tick:		.ds 1	; Counts down to zero while displaying the "World X" intro
 
-				.ds 1	; $0712 unused
+	UserMsg_Hi:		.ds 1	; $0712 unused (no longer unused: stores the high byte of the currently rendered UserMsgPtr (see UserMsgPtr_H in prg026)
 
 	Map_ReturnStatus:	.ds 1	; When 0, level panel is cleared; otherwise, Player is considered to have died (decrements life!)
 	MaxPower_Tick:		.ds 1	; When Player has maximum "power" charge, this counts for the flashing [P]
@@ -2044,7 +2044,7 @@ OBJSTATE_POOFDEATH	= 8	; "Poof" Death (e.g. Piranha death)
 
 	Map_Operation:		.ds 1	; Map_Operation: Current "operation" happening on map (See Map_DoOperation in PRG010)
 
-				.ds 1	; $072A unused
+	UserMsg_Index:		.ds 1	; $072A unused (no longer unused: this holds which message we'll be displaying, set by the orange cheep cheep spawned Y pos in PRG005)
 
 	Total_Players:		.ds 1	; Total players (0 = 1P, 1 = 2P)
 	Map_Unused72C:		.ds 1	; No apparent use; only assigned to, but never read back
