@@ -3767,6 +3767,8 @@ _clear53loop:
 StatusBarHook:
 	LDA <DoingUserMessage
 	BEQ _norm_status_bar
+	LDA #$FF
+	STA Player_HaltTick
 	JSR DoStatusBarMessage		; UserMsg_State != 0, we're doing a UserMessage
 	BNE _skip_sb_upd		; DoStatusBarMessage returns zero flag not set as long as it's continuing
 _norm_status_bar:
@@ -3785,7 +3787,7 @@ DoStatusBarMessage:
 _um_ttimer_postdec:
 	JSR UserMsg_DoState		; Perform state operation for the User Message
 	LDA UserMsg_State
-	CMP #6				; Set the zero flag for StatusBarHook
+	CMP #((UMSJmpEnd-UserMsgStateJmpTbl)/2)	; Set the zero flag for StatusBarHook
 	RTS
 
 UserMsg_DoState:
@@ -3793,12 +3795,14 @@ UserMsg_DoState:
 	JSR DynJump
 
 	; THESE MUST FOLLOW DynJump FOR THE DYNAMIC JUMP TO WORK!!
+UserMsgStateJmpTbl:
 	.word UserMsg_Init		; 0: Change palette, init UserMsg vars
 	.word UserMsg_DoTemplate	; 1: Load the User Message template, line by line
 	.word UserMsg_DoText		; 2: Render the text
 	.word UserMsg_WaitForStart	; 3: Waits for Player to push START
 	.word UserMsg_RestoreStatusBar	; 4: Restores the normal status bar, line by line
 	.word UserMsg_SetWorld		; 5: Restore the world num on the status bar
+UMSJmpEnd
 
 UserMsgPtr_L:
 	.byte LOW(UserMessage1)
@@ -3811,6 +3815,8 @@ UserMsgPtr_H:
 UserMsg_SetWorld:
 	JSR StatusBar_Fill_World	; Otherwise, fill in the world number and complete the UserMessage
 	INC UserMsg_State
+	LDX UserMsg_Index
+	INC UserMsg_Completions,X	; Mark this message complete
 	LDA #$00
 	STA <DoingUserMessage
 	STA Player_HaltTick		; Unpause the game/player

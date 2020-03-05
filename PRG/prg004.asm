@@ -6036,11 +6036,13 @@ ObjInit_KickedTroop:
 
 ObjInit_OrangeCheep_Hook:
 	JSR Object_SetDeadEmpty			; kill this object
-	LDY #$01
+	LDX UserMsg_Index
+	LDA UserMsg_Completions,X		; has this message been shown?
+	BNE _occ_rts				; if so, just return
+	LDY #$01				; Otherwise, initialize the message
 	STY <DoingUserMessage			; DoingUserMessage = 1
 	DEY
 	STY UserMsg_State			; UserMsg_State = 0
 	STY UserMsg_TextTimer			; UserMsg_TextTimer = 0
-	DEY
-	STY Player_HaltTick			; Player_HaltTick = 0xFF; ORANGE TODO: this doesn't stop Pirhana plants
+_occ_rts:
 	RTS

@@ -2738,6 +2738,8 @@ CFIRE_LASER		= $15	; Laser fire
 	Inventory_Score:	.ds 3	; $7D9F-$7DA1 Mario, 3 byte score
 	Inventory_Coins:	.ds 1	; Mario's coins
 
+	UserMsg_Completions:		; Reuses Luigi's inventory since we don't support 2 player anymore
+					; This marks which UserMsgs are complete so we only ever show them once.
 	Inventory_Items2:	.ds 4*7	; $7DA3-$7DBE Luigi, 4 rows of 7 items 
 	Inventory_Cards2:	.ds 3	; $7DBF-$7DC1 Luigi, 3 cards
 	Inventory_Score2:	.ds 3	; $7DC2-$7DC4 Luigi, 3 byte score
