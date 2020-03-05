@@ -954,8 +954,9 @@ SPR_VFLIP	= %10000000
 	Level_SkipStatusBarUpd:	.ds 1	; When set, skips updating the status bar for one frame (priority graphics buffer changes I think)
 	Raster_State:		.ds 1	; This variable's meaning depends on the Raster_Effect in use; typically 0 is first pass, then more for further scanlines
 
-	PauseMenuSel:		.ds 1	; $0379-$037F unused
-				.ds 6	; $0379-$037F unused
+	PauseMenuSel:		.ds 1	;
+	DisablePause:		.ds 1	; Set when we disable the pause menu from being opened
+				.ds 5	; $0379-$037F unused
 
 	Scroll_ToVRAMHi:	.ds 1	; High byte for when pushing a column of tile data to VRAM (Set to $20, Name Table 0, after scroll update)
 
@@ -2742,6 +2743,7 @@ CFIRE_LASER		= $15	; Laser fire
 	Inventory_Items2:	.ds 4*7	; $7DA3-$7DBE Luigi, 4 rows of 7 items 
 	Inventory_Cards2:	.ds 3	; $7DBF-$7DC1 Luigi, 3 cards
 	Inventory_Score2:	.ds 3	; $7DC2-$7DC4 Luigi, 3 byte score
+	Player_Orbs:			; Reuses Luigi's coins to store the number of orbs the player has retrieved
 	Inventory_Coins2:	.ds 1	; Luigi's coins
 	Map_Unused7DC6:		.ds 5	; $7DC6-$7DCA? Indexed by Map_Unused738, value used in dead routine in PRG011 @ $A2AF
 

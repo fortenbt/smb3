@@ -3346,6 +3346,9 @@ _check_wandstate:
 	LDA Level_GetWandState
 	CMP #3
 	BPL _disallow_pause
+_check_pause_disabled:
+	LDA DisablePause
+	BNE _disallow_pause
 _initpause_allowed:
 	PLA
 	STA Level_PauseFlag	; Toggle pause flag
@@ -3491,7 +3494,7 @@ LEXY_END
 
 
 PRG030_FREE_SPACE:
-	.ds 0x15
+	.ds 0xC
 	.byte $AA, $AA, $AA, $AA, $AA, $AA
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -589,7 +589,7 @@ _non_iceblock_rts13:
 
 PRG013_MASSIVE_FREE_SPACE:
 	.byte $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA
-	.ds 0x161
+	.ds 0x231
 	.byte $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA
 
 ; Rest of ROM bank was empty
