@@ -439,7 +439,7 @@ PAD_RIGHT	= $01
 	; resets to zero.
 	Graphics_Queue:		.ds 1
 
-				.ds 1	; $5F unused
+	DoingUserMessage:	.ds 1	; $5F unused
 				.ds 1	; $60 unused
 
 	Level_LayPtr_AddrL:	.ds 1	; Low byte of address to tile layout (ORIGINAL stored in Level_LayPtrOrig_AddrL)
@@ -954,8 +954,9 @@ SPR_VFLIP	= %10000000
 	Level_SkipStatusBarUpd:	.ds 1	; When set, skips updating the status bar for one frame (priority graphics buffer changes I think)
 	Raster_State:		.ds 1	; This variable's meaning depends on the Raster_Effect in use; typically 0 is first pass, then more for further scanlines
 
-	PauseMenuSel:		.ds 1	; $0379-$037F unused
-				.ds 6	; $0379-$037F unused
+	PauseMenuSel:		.ds 1	;
+	DisablePause:		.ds 1	; Set when we disable the pause menu from being opened
+				.ds 5	; $0379-$037F unused
 
 	Scroll_ToVRAMHi:	.ds 1	; High byte for when pushing a column of tile data to VRAM (Set to $20, Name Table 0, after scroll update)
 
@@ -1991,26 +1992,31 @@ OBJSTATE_POOFDEATH	= 8	; "Poof" Death (e.g. Piranha death)
 	; 18 = 2P vs
 	Level_Tileset:		.ds 1	; Different tilesets which changes the detection and meaning in levels
 
+	UserMsg_VH:			; VRAM High address for User Messages activated via the orange cheep cheep
 	Bonus_UnusedVH:			; VRAM High address ?? Seems to only be part of an unused routine
 	ToadTalk_VH:		.ds 1	; Cinematic Toad & King / "Toad House" Toad VRAM Address High
 
+	UserMsg_VL:			; VRAM Low address for User Messages activated via the orange cheep cheep
 	Bonus_UnusedVL:			; VRAM Low address ?? Seems to only be part of an unused routine
 	ToadTalk_VL:		.ds 1	; Cinematic Toad & King / "Toad House" Toad VRAM Address Low
 
+	UserMsg_CPos:			; Character position for the User Messages activated via the orange cheep cheep
 	BonusText_CPos:
 	ToadTalk_CPos:		.ds 1	; Cinematic Toad & King / "Toad House" Toad Character Position
 
+	UserMsg_TextTimer:		; Counter that decrements to zero between letters
 	BonusText_CharPause:	.ds 1	; Counter that decrements to zero between letters
 	Bonus_UnusedFlag:	.ds 1	; Doesn't do much besides block an unused subroutine
 
 	Map_Pan_Count:		.ds 1	; Map is panning, counts to zero (Scroll_LastDir sets which direction we're panning)
 
 	; NOTE sharing
+	UserMsg_Line:			; Line currently being updated
 	CineKing_Timer2:		; Timer; decrements to zero
 	Bonus_Timer:			; Decrements to zero
 	Map_Intro_Tick:		.ds 1	; Counts down to zero while displaying the "World X" intro
 
-				.ds 1	; $0712 unused
+	UserMsg_Hi:		.ds 1	; $0712 unused (no longer unused: stores the high byte of the currently rendered UserMsgPtr (see UserMsgPtr_H in prg026)
 
 	Map_ReturnStatus:	.ds 1	; When 0, level panel is cleared; otherwise, Player is considered to have died (decrements life!)
 	MaxPower_Tick:		.ds 1	; When Player has maximum "power" charge, this counts for the flashing [P]
@@ -2032,13 +2038,14 @@ OBJSTATE_POOFDEATH	= 8	; "Poof" Death (e.g. Piranha death)
 	World_Num:		.ds 1	; Current world index (0-8, where 0 = World 1, 7 = World 8, 8 = World 9 / Warp Zone)
 
 	; NOTE: sharing
+	UserMsg_State:			; State variable for status bar User Messages
 	World_EnterState:		; State variable during "world X" intro entrance, set to 3 when entering a level; overlaps GameOver_State
 	CineKing_State:			; State of King-got-his-wand-back sequence
 	GameOver_State:		.ds 1	; State variable used during "Gameover!" sequence only; overlaps World_EnterState
 
 	Map_Operation:		.ds 1	; Map_Operation: Current "operation" happening on map (See Map_DoOperation in PRG010)
 
-				.ds 1	; $072A unused
+	UserMsg_Index:		.ds 1	; $072A unused (no longer unused: this holds which message we'll be displaying, set by the orange cheep cheep spawned Y pos in PRG005)
 
 	Total_Players:		.ds 1	; Total players (0 = 1P, 1 = 2P)
 	Map_Unused72C:		.ds 1	; No apparent use; only assigned to, but never read back
@@ -2600,8 +2607,7 @@ CFIRE_LASER		= $15	; Laser fire
 
 	Object_SplashAlt:	.ds 1	; Used to alternate the "splash slots" 1 and 2 as objects hit the water
 
-	SoundEngineBackupArray:	.ds 30
-				.ds 79	; $7A73-$7ADF unused
+				.ds 109	; $7A73-$7ADF unused
 
 	Music_Start:		.ds 1	; Music start index (beginning of this song)
 	Music_End:		.ds 1	; Music end index (inclusive last index to play before loop)
@@ -2732,9 +2738,12 @@ CFIRE_LASER		= $15	; Laser fire
 	Inventory_Score:	.ds 3	; $7D9F-$7DA1 Mario, 3 byte score
 	Inventory_Coins:	.ds 1	; Mario's coins
 
+	UserMsg_Completions:		; Reuses Luigi's inventory since we don't support 2 player anymore
+					; This marks which UserMsgs are complete so we only ever show them once.
 	Inventory_Items2:	.ds 4*7	; $7DA3-$7DBE Luigi, 4 rows of 7 items 
 	Inventory_Cards2:	.ds 3	; $7DBF-$7DC1 Luigi, 3 cards
 	Inventory_Score2:	.ds 3	; $7DC2-$7DC4 Luigi, 3 byte score
+	Player_Orbs:			; Reuses Luigi's coins to store the number of orbs the player has retrieved
 	Inventory_Coins2:	.ds 1	; Luigi's coins
 	Map_Unused7DC6:		.ds 5	; $7DC6-$7DCA? Indexed by Map_Unused738, value used in dead routine in PRG011 @ $A2AF
 

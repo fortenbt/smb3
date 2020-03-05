@@ -5330,10 +5330,9 @@ PRG005_B9E6:
 	BEQ PRG005_BA2B	 	; If object ID = OBJ_SPAWN3GREENTROOPAS, jump to PRG005_BA2B
 
 	; OBJ_SPAWN3ORANGECHEEPS specific...
-
 	LDY <Temp_Var13		 ; 0 - 2, loop counter
 
-	LDA Spawn3YVels,Y	 
+	LDA Spawn3YVels,Y
 	STA <Objects_YVel,X	 ; Set appropriate Y velocity
 
 	LDA Spawn3Var4,Y

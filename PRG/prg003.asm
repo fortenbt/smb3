@@ -526,7 +526,8 @@ PRG003_A2DB:
 	LDA #-$20
 	STA <Objects_YVel,X
 
-	JSR TreasureBox_Poof	 ; Do another poof on opening
+	;;;JSR TreasureBox_Poof	 ; Do another poof on opening
+	JSR TreasureBox_Opened
 
 PRG003_A2F8:
 	LDA #$00
@@ -572,11 +573,12 @@ PRG003_A321:
 	; Timer 2 has one tick left
 
 	; Give Player the treasure item
-	LDA Level_TreasureItem
+	;;;LDA Level_TreasureItem
 	;;; [ORANGE] We don't support normal treasure boxes anymore, no need to
 	;;; give a player an item.
 	;;;JSR Player_GetItem
 	JSR GivePlayerTBoxOrb
+	INC Player_Orbs			; Increment the number of orbs the player as retrieved
 
 	LDX <SlotIndexBackup		 ; X = object slot index
 
@@ -6264,3 +6266,7 @@ _findorboffs_done03:
 	LSR A		; The offset we found is doubled, so divide by 2
 	TAX
 	RTS
+
+TreasureBox_Opened:
+	INC DisablePause	; We don't need to set this back ever because ending the level clears it
+	JMP TreasureBox_Poof	; Do another poof on opening

@@ -135,7 +135,7 @@ StatusBar	.macro
 	; Sync this with PRG026 Flip_MidBStatCards
 	vaddr \1 + $40
 	; Discrepency --------v  (Pattern is ... $FE, $FE ... in PRG030 status bar)  Unimportant; inserts <M> which is replaced anyway
-	.byte $20, $FC, $A6, $FE, $FE, $FB, $FE, $F3, $FE, $F0, $F0, $F0, $F0, $F0, $F0, $F0	; [M/L]x  000000 c000| etc.
+	.byte $20, $FC, $A6, $74, $75, $FB, $FE, $F3, $FE, $F0, $F0, $F0, $F0, $F0, $F0, $F0	; [M/L]x  000000 c000| etc.
 	.byte $FE, $ED, $F4, $F0, $F0, $A7, $A6, $FE, $FE, $AA, $FE, $FE, $AA, $FE, $FE, $A7, $FC
 	; Discrepency --------^  (Pattern is ... $F4, $F0 ... in PRG030 status bar graphics)
 
@@ -3339,10 +3339,16 @@ InitializePauseMenu:
 	PHA
 	LDA EndCard_Flag
 	BNE _disallow_pause
+_check_UserMsg:
+	LDA <DoingUserMessage
+	BNE _disallow_pause
 _check_wandstate:
 	LDA Level_GetWandState
 	CMP #3
 	BPL _disallow_pause
+_check_pause_disabled:
+	LDA DisablePause
+	BNE _disallow_pause
 _initpause_allowed:
 	PLA
 	STA Level_PauseFlag	; Toggle pause flag
@@ -3488,7 +3494,7 @@ LEXY_END
 
 
 PRG030_FREE_SPACE:
-	.ds 0x15
+	.ds 0xC
 	.byte $AA, $AA, $AA, $AA, $AA, $AA
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
