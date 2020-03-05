@@ -2010,7 +2010,7 @@ OBJSTATE_POOFDEATH	= 8	; "Poof" Death (e.g. Piranha death)
 	Map_Pan_Count:		.ds 1	; Map is panning, counts to zero (Scroll_LastDir sets which direction we're panning)
 
 	; NOTE sharing
-	UserMsg_StateTimer:		; User message state machine timer
+	UserMsg_Line:			; Line currently being updated
 	CineKing_Timer2:		; Timer; decrements to zero
 	Bonus_Timer:			; Decrements to zero
 	Map_Intro_Tick:		.ds 1	; Counts down to zero while displaying the "World X" intro
