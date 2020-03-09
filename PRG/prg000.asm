@@ -5811,7 +5811,7 @@ Player_Die:
 	;;ORA #MUS1_PLAYERDEATH
 	;;;STA Sound_QMusic1
 	LDA Sound_QLevel1
-	ORA #SND_LEVELSHOE
+	ORA #SND_LEVELSHOE		; Updated to be initial screech death sound
 	STA Sound_QLevel1
 
 	; Clear a bunch of stuff at time of death
