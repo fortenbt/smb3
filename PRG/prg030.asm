@@ -770,7 +770,7 @@ PRG012_85CE:
 	JSR StatusBar_Update_Cards	 ; Update status bar cards
 	JSR StatusBar_UpdateValues	 ; Update other status bar stuff
 	JSR StatusBar_Fill_MorL	 	 ; Patch in correct M or L on status bar
-	JSR StatusBar_Fill_Deaths_And_World	 ; Fill in correct world number (Orange - added deaths as well)
+	JSR StatusBar_Draw_DWO		 ; Fill in correct world number (Orange - added deaths and orbs as well)
 
 	LDA #$00	 		; Commit graphics in Graphics_Buffer
 	JSR Video_Do_Update		; Do it!
@@ -1481,7 +1481,7 @@ PRG030_89D1:
 	JSR StatusBar_Update_Cards	 ; Update status bar cards
 	JSR StatusBar_UpdateValues	 ; Update other status bar stuff
 	JSR StatusBar_Fill_MorL	 	 ; Patch in correct M or L on status bar
-	JSR StatusBar_Fill_Deaths_And_World	 ; Fill in correct world number (ORANGE - added deaths as well)
+	JSR StatusBar_Fill_DWO		 ; Fill in correct world number (Orange - added deaths and orbs as well)
 
 	; Push through what's in graphics buffer
 	LDA #$00
@@ -1586,7 +1586,7 @@ PRG030_8A79:
 	JSR StatusBar_Update_Cards	 ; Update status bar cards
 	JSR StatusBar_UpdateValues	 ; Update other status bar stuff
 	JSR StatusBar_Fill_MorL	 	 ; Patch in correct M or L on status bar
-	JSR StatusBar_Fill_Deaths_And_World	 ; Fill in correct world number (ORANGE - added deaths as well)
+	JSR StatusBar_Fill_DWO		 ; Fill in correct world number (Orange - added deaths and orbs as well)
 
 	; Push through what's in graphics buffer
 	LDA #$00
@@ -1682,10 +1682,11 @@ PRG030_8B03:
 	STA PAGE_A000
 	JSR PRGROM_Change_A000
 
-	JSR StatusBar_Update_Cards	 ; Update status bar cards
-	JSR StatusBar_UpdateValues	 ; Update other status bar stuff
-	JSR StatusBar_Fill_MorL	 	 ; Patch in correct M or L on status bar
-	JSR StatusBar_Fill_Deaths_And_World	 ; Fill in correct world number (ORANGE - added deaths as well)
+	;;;JSR StatusBar_Update_Cards	; Update status bar cards ([ORANGE] We don't need to update cards anymore)
+	JSR StatusBar_ForceDrawAll	; [ORANGE] When entering a level, force redraw status bar
+	JSR StatusBar_UpdateValues	; Update other status bar stuff
+	JSR StatusBar_Fill_MorL	 	; Patch in correct M or L on status bar
+	JSR StatusBar_Draw_DWO		; Fill in correct world number (Orange - added deaths and orbs as well)
 
 	LDA #$00		 ; A = 0 (Graphics buffer push)
 	JSR Video_Do_Update	 ; Push through what's in graphics buffer
