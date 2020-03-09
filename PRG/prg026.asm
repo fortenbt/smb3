@@ -4084,7 +4084,7 @@ SBR_2:
 	.byte $02, $FC, $A8		; Lower corner
 	vaddr $2B62
 	.byte VU_REPEAT | 18, $A4	; Bottom bar
-	vaddr $2B74
+	vaddr $2B74;      {    }    |    x    0    0				; orbs
 	.byte $0C, $A5, $14, $15, $A6, $FB, $FE, $FE, $A7, $FC, $FC, $FC, $FC	; lower corner and card bottoms
 	vaddr $2B95
 	.byte $07, $00, $01, $A8, $A4, $A4, $A4, $A5
@@ -4512,9 +4512,9 @@ UserMsgRestore_WorldCoinsDeaths:
 	STA Graphics_Buffer+9,X
 	; offsets 15,16 for coins
 	LDA StatusBar_CoinH
-	STA Graphics_Buffer+0x15,X
+	STA Graphics_Buffer+$15,X
 	LDA StatusBar_CoinL
-	STA Graphics_Buffer+0x16,X
+	STA Graphics_Buffer+$16,X
 
 	LDA StatusBar_Deaths+4
 	STA Graphics_Buffer+$1C+4,X	; This +$1C offset comes from the offset into SBR_5 where deaths start
@@ -4538,15 +4538,15 @@ UserMsgRestore_LivesScore:
 	STA Graphics_Buffer+9,X
 	; offsets b,c,d,e,f for score
 	LDA StatusBar_Score
-	STA Graphics_Buffer+0xb,X
+	STA Graphics_Buffer+$b,X
 	LDA StatusBar_Score+1
-	STA Graphics_Buffer+0xc,X
+	STA Graphics_Buffer+$c,X
 	LDA StatusBar_Score+2
-	STA Graphics_Buffer+0xd,X
+	STA Graphics_Buffer+$d,X
 	LDA StatusBar_Score+3
-	STA Graphics_Buffer+0xe,X
+	STA Graphics_Buffer+$e,X
 	LDA StatusBar_Score+4
-	STA Graphics_Buffer+0xf,X
+	STA Graphics_Buffer+$f,X
 	RTS
 
 UserMsgRestore_Time:

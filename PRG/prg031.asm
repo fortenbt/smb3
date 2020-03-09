@@ -2948,10 +2948,7 @@ PRG031_FCC6:
 PRG031_FCCC:
 	LDY <Temp_Var1	 ; Y = Temp_Var1
 
-	;JSR StatusBar_DrawCardPiece	 ; Draw part of the card into the status bar
-	NOP
-	NOP
-	NOP
+	JSR StatusBar_FillDrawCardPiece_Orbs	 ; Draw part of the card into the status bar
 
 	INC <Temp_Var1
 	DEC <Temp_Var2
@@ -2959,77 +2956,29 @@ PRG031_FCCC:
 
 	RTS		 ; Return
 
-StatusBar_DrawCardPiece:
-	STY <Temp_Var3	 	; Temp_Var3 = Y
-	LDX Inventory_Cards,Y	; Get next card
-
-	LDY Graphics_BufCnt 	; Current position within graphics buffer
-
-	; Store the upper tiles of the card in the buffer
-	LDA CardUL,X	 
-	STA Graphics_Buffer+3,Y	 
-	LDA CardUR,X	 
-	STA Graphics_Buffer+4,Y	 
-
-	; Store the lower tiles of the card in the buffer
-	LDA CardLL,X	 
-	STA Graphics_Buffer+8,Y	 
-	LDA CardLR,X	 
-	STA Graphics_Buffer+9,Y	 
-
-	LDX Player_Current	; X = Player_Current
-	BEQ PRG031_FCFF		; If player = 0 (Mario), jump to PRG031_FCFF
-	LDX #(Inventory_Cards2 - Inventory_Cards)
-PRG031_FCFF:
-
-	LDA <Temp_Var3		; A = Temp_Var3 (offset to current card)
-	STX <Temp_Var3		; Temp_Var3 = X
-	SUB <Temp_Var3		; A -= Temp_Var3 (offset from start to current card)
-	TAX		 	; A = X
-
-	LDA CardVStartU,X
-	STA Graphics_Buffer+1,Y	 
-
-	LDA CardVStartL,X
-	STA Graphics_Buffer+6,Y
-
-	LDA #$2b	 ; A = $2B (Not vertical)
-
-	LDX Level_7Vertical
-	BEQ PRG031_FD1C	 ; If level is not vertical, jump to PRG031_FD1C
-
-	LDA #$27	 ; A = $27 (Vertical)
-PRG031_FD1C: 
-	LDX Level_Tileset
-	CPX #16	 
-	BEQ PRG031_FD27	 ; If Level_Tileset = 16 (Spade game), jump to PRG031_FD27
-
-	CPX #17	
-	BNE PRG031_FD29	 ; If Level_Tileset = 17 (N-Spade), jump to PRG031_FD29
-
-PRG031_FD27:
-	LDA #$23	 ; A = $23 (Spade game)
-
-PRG031_FD29:
-
-	; Configure graphics buffer
-	STA Graphics_Buffer,Y
-	STA Graphics_Buffer+5,Y
-
+StatusBar_FillDrawCardPiece_Orbs:
+	;;; [ORANGE] Just update the orb count
+	JSR StatusBar_Fill_Orbs
+StatusBar_DrawCardPiece_Orbs:
+	LDX Graphics_BufCnt
+	LDA #$2B
+	STA Graphics_Buffer,X
+	LDA #$79			; orbs are at $2B79
+	STA Graphics_Buffer+1,X
 	LDA #$02
-	STA Graphics_Buffer+2,Y
-	STA Graphics_Buffer+7,Y
-
-	; Terminate
+	STA Graphics_Buffer+2,X
+	LDA StatusBar_Orbs
+	STA Graphics_Buffer+3,X
+	LDA StatusBar_Orbs+1
+	STA Graphics_Buffer+4,X
 	LDA #$00
-	STA Graphics_Buffer+$A,Y
-
-	; Set buffer count
-	TYA
-	ADD #$0a
+	STA Graphics_Buffer+5,X
+	LDA Graphics_BufCnt
+	ADD #5
 	STA Graphics_BufCnt
+	RTS
 
-	RTS		 ; Return
+	.ds 0x3c
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

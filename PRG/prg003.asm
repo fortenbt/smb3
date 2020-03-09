@@ -578,7 +578,7 @@ PRG003_A321:
 	;;; give a player an item.
 	;;;JSR Player_GetItem
 	JSR GivePlayerTBoxOrb
-	INC Player_Orbs			; Increment the number of orbs the player as retrieved
+	JSR StatusBar_DrawCardPiece_Orbs
 
 	LDX <SlotIndexBackup		 ; X = object slot index
 
@@ -6269,4 +6269,5 @@ _findorboffs_done03:
 
 TreasureBox_Opened:
 	INC DisablePause	; We don't need to set this back ever because ending the level clears it
+	INC Player_Orbs		; Increment the number of orbs the player has retrieved
 	JMP TreasureBox_Poof	; Do another poof on opening
