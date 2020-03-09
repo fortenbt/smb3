@@ -4269,7 +4269,7 @@ _fill_deaths_and_world:
 	STA <Temp_Var2
 
 	LDY #$00	 ; Y = 0
-	STY Deaths_DispZeroes		; Good place to initialize this to 0
+	STY _DispZeroes		; Good place to initialize this to 0
 	LDX #$04	 ; X = 4	0-4, 5 digits
 _death_conv1_loop:
 	LDA <Temp_Var1	 ; Get LSD -> A
@@ -4300,7 +4300,7 @@ _death_conv_get_tile:
 	PHA			; save it off
 	CMP #$F0
 	BNE _set_disp_zeroes	; For non-zero digits, we'll definitely display them, and we should set our display zeroes boolean
-	LDA Deaths_DispZeroes	; For zero digits, we have to check if we've displayed a non-zero digit yet
+	LDA _DispZeroes	; For zero digits, we have to check if we've displayed a non-zero digit yet
 	BNE _store_digit_tile	; If so, just display the saved off zero tile
 _display_space:
 	CPX #$00		; Otherwise, are we on the last digit?
@@ -4311,7 +4311,7 @@ _display_space:
 	BNE _store_digit_tile	; branch always
 
 _set_disp_zeroes:
-	STA Deaths_DispZeroes	; Set this so that we start to display zeroes rather than spaces
+	STA _DispZeroes	; Set this so that we start to display zeroes rather than spaces
 _store_digit_tile:
 	PLA			; restore the tile
 	STA StatusBar_Deaths,Y	; Store it as next digit
@@ -4348,6 +4348,90 @@ _display_deaths_loop:
 	ADD #$08
 	STA Graphics_BufCnt
 
+	JSR StatusBar_Fill_Orbs
 	JSR StatusBar_Fill_World
+
+	RTS
+
+StatusBar_Fill_Orbs:
+	LDA Inventory_Open
+	BEQ _fill_orbs
+	RTS				; Don't display these on the open inventory
+_fill_orbs:
+	LDA Player_Orbs
+	STA <Temp_Var1
+
+	LDY #$00			; Y = 0
+	STY _DispZeroes			; Good place to initialize this to 0
+	LDX #$01			; X = 1	0-1, 2 digits
+_orb_conv1_loop:
+	LDA <Temp_Var1			; Get LSD -> A
+
+	SUB PowersOf10_LSB,X
+	STA <Temp_Var1
+
+	BCC _orb_conv_get_tile		; If the subtraction didn't go negative, jump to _orb_conv_get_tile
+
+	INC Score_Temp			; Score_Temp++
+	BNE _orb_conv1_loop		; Branch always
+
+_orb_conv_get_tile:
+	LDA <Temp_Var1
+
+	ADD PowersOf10_LSB,X
+	STA <Temp_Var1
+
+	LDA Score_Temp
+	ADD #$F0	 	; A = Score_Temp + $F0 (tile to display)
+	PHA			; save it off
+	CMP #$F0
+	BNE _set_disp_zeroes2	; For non-zero digits, we'll definitely display them, and we should set our display zeroes boolean
+	LDA _DispZeroes	; For zero digits, we have to check if we've displayed a non-zero digit yet
+	BNE _store_digit_tile2	; If so, just display the saved off zero tile
+_display_space2:
+	CPX #$00		; Otherwise, are we on the last digit?
+	BEQ _store_digit_tile2	; If we are on the last digit, we'll display the zero
+	PLA			; Otherwise replace the saved tile with our space tile
+	LDA #$FE		; Set the space tile
+	PHA
+	BNE _store_digit_tile2	; branch always
+
+_set_disp_zeroes2:
+	STA _DispZeroes	; Set this so that we start to display zeroes rather than spaces
+_store_digit_tile2:
+	PLA			; restore the tile
+	STA StatusBar_Orbs,Y	; Store it as next digit
+
+	LDA #$00	 	; A = 0
+	STA Score_Temp	 	; Score_Temp = 0
+
+	INY		 	; Y++
+	DEX		 	; X--
+	BPL _orb_conv1_loop	; While digits remain, loop!
+
+	; *** Copy the graphics in
+	LDY Graphics_BufCnt	; Y = Graphics_BufCnt
+	LDX #$00	 	; X = 0
+
+	LDA #$2B
+	STA Graphics_Buffer,Y
+	LDA #$79			; The orb tiles start at $2B79
+	STA Graphics_Buffer+1,Y
+	LDA #$02			; we have 2 digits for orbs
+	STA Graphics_Buffer+2,Y
+_display_orbs_loop:
+	LDA StatusBar_Orbs,X
+	STA Graphics_Buffer+3,Y
+	INY		 ; Y++
+	INX		 ; X++
+	CPX #$02
+	BNE _display_orbs_loop	; If X <> 2, loop!
+
+	LDA #$00
+	STA Graphics_Buffer+5,Y		; Terminate these graphics
+
+	LDA Graphics_BufCnt
+	ADD #$05
+	STA Graphics_BufCnt
 
 	RTS

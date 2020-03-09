@@ -1899,7 +1899,7 @@ OBJSTATE_POOFDEATH	= 8	; "Poof" Death (e.g. Piranha death)
 				.ds 1	; $069B unused
 
 	Score_Earned:		.ds 2	; $069C-$069D (16-bit value) A "buffer" of score earned to be added to your total, total score stored in Player_Score
-	Score_Temp:		.ds 1	; Temp used when figuring out to display a 3-byte integer worth of score
+	Score_Temp:		.ds 1	; Temp used when figuring out to display a 3-byte integer worth of score, [ORANGE] and deaths, orbs
 
 				.ds 5	; $069F-$06A3 unused
 
@@ -2862,8 +2862,8 @@ MAPOBJ_TOTAL		= $0E	; Total POSSIBLE map objects
 	Map_2PVsGame:		.ds 1
 
 	StatusBar_Deaths:	.ds 5	; $7F25-$7F2C unused (ORANGE no longer unused: stores the tiles for the deaths displayed on the status bar)
-	Deaths_DispZeroes:	.ds 1	; [ORANGE] set when the first non-zero deaths tile is displayed
-				.ds 2
+	_DispZeroes:		.ds 1	; [ORANGE] set when the first non-zero tile is displayed during display loops for deaths/orbs/etc
+	StatusBar_Orbs:		.ds 2	; [ORANGE] stores the tiles for the orbs displayed on the status bar
 
 	Map_Airship_Dest:	.ds 1	; Airship travel destination; 6 X/Y map coordinates defined per world, after that it just sits still
 	THouse_OpenByID:	.ds 16	; $7F2E-$7F3D UNUSED would keep track of chests opened for a given Toad House ID (THouse_ID)
