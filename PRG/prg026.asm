@@ -114,7 +114,7 @@ Inventory_Close:
 	LDA #$fc	 	
 	STA Graphics_Buffer+3,X		; Tile $FC
 
-	;;; [ORNANGE] We hook here to remove the very bottom bar, which now has some graphics
+	;;; [ORANGE] We hook here to remove the very bottom bar, which now has some graphics
 	;;LDA #$00
 	;;;STA Graphics_Buffer+4,X		; Terminator
 
@@ -539,13 +539,20 @@ PRG026_A355:
 	STA <Temp_Var11		; Store number of items to display...
 
 	; Set pointer to proper render items
+	;;; [ORANGE] Don't redraw the cards when closing the inventory
+	;;;LDA Inventory_Open
+	;ASL A
+	;TAX		 ; X = Inventory_Open * 2 (2 byte index)
+	;;;LDA InvFlip_TileLayout_Sel,X
+	;;STA <Temp_Var15
+	;;;LDA InvFlip_TileLayout_Sel+1,X
+	;;STA <Temp_Var16		; Temp_Var15/16 point to start of pattern data for inventory items / cards
 	LDA Inventory_Open
-	ASL A		 
-	TAX		 ; X = Inventory_Open * 2 (2 byte index)
-	LDA InvFlip_TileLayout_Sel,X
-	STA <Temp_Var15	
-	LDA InvFlip_TileLayout_Sel+1,X
-	STA <Temp_Var16		; Temp_Var15/16 point to start of pattern data for inventory items / cards
+	BEQ InvFlipFrame_DoNothing
+	LDA InvFlip_TileLayout_Sel+2
+	STA <Temp_Var15
+	LDA InvFlip_TileLayout_Sel+3
+	STA <Temp_Var16
 
 PRG026_A366:
 	LDY <Temp_Var14	; Starting item/card offset
@@ -607,13 +614,13 @@ InvFlipFrame_UpdateStatusBar:
 	.word InvFlipFrame_DoNothing		; 1
 	.word InvFlipFrame_DoNothing		; 2
 	.word InvFlipFrame_DoNothing		; 3
-	.word InvFlipFrame_DrawWorldCoins	; 4
+	.word InvFlipFrame_DrawWorldCoinsDeaths	; 4
 	.word InvFlipFrame_DrawMLLivesScore	; 5
 	.word InvFlipFrame_DoNothing		; 6
-	.word InvFlipFrame_DoNothing		; 7
+	.word InvFlipFrame_DrawOrbs		; 7
 
-InvFlipFrame_DrawWorldCoins:
-	JSR StatusBar_Fill_Deaths_And_World ; Put world number in status bar (ORANGE - added deaths as well)
+InvFlipFrame_DrawWorldCoinsDeaths:
+	JSR StatusBar_Fill_World	; Put world number in status bar
 
 	LDA InvFlip_Frame
 	AND #$08
@@ -626,7 +633,9 @@ InvFlipFrame_DrawWorldCoins:
 	LDA StatusBar_CoinH
 	STA Graphics_Buffer+$15,X
 	LDA StatusBar_CoinL
-	STA Graphics_Buffer+$16,X
+	;;; [ORANGE] - Hook here to place our Deaths tiles in the status bar
+	;STA Graphics_Buffer+$16,X
+	JSR InvFlipFrame_DrawDeaths
 
 PRG026_A3CC:
 	RTS		 ; Return
@@ -3799,6 +3808,8 @@ StatusBarHook:
 _norm_status_bar:
 	;;; call the hoooked StatusBar_Fill_PowerMT and then continue with the update
 	JSR StatusBar_Fill_PowerMT	; Fill in StatusBar_PMT with tiles of current Power Meter state
+	JSR StatusBar_Fill_Deaths
+	JSR StatusBar_Fill_Orbs
 	JMP _start_SB_Upd
 _skip_sb_upd:
 	JMP _end_SB_Upd
@@ -3826,7 +3837,7 @@ UserMsgStateJmpTbl:
 	.word UserMsg_DoText		; 2: Render the text
 	.word UserMsg_WaitForStart	; 3: Waits for Player to push START
 	.word UserMsg_RestoreStatusBar	; 4: Restores the normal status bar, line by line
-	.word UserMsg_SetWorld		; 5: Restore the world num on the status bar
+	.word UserMsg_UpdateStatusBar	; 5: Draw the stat info
 UMSJmpEnd
 
 UserMsgPtr_L:
@@ -3837,8 +3848,8 @@ UserMsgPtr_H:
 	.byte HIGH(UserMessage1)
 	.byte HIGH(UserMessage2)
 
-UserMsg_SetWorld:
-	JSR StatusBar_Fill_Deaths_And_World	; Otherwise, fill in the world number and complete the UserMessage (Orange - added deaths as well)
+UserMsg_UpdateStatusBar:
+	JSR StatusBar_Fill_DWO		; Fill in the world number and complete the UserMessage (Orange - added deaths and orbs as well)
 	INC UserMsg_State
 	LDX UserMsg_Index
 	INC UserMsg_Completions,X	; Mark this message complete
@@ -3857,8 +3868,22 @@ UserMsg_RestoreStatusBar:
 	LDA StatusBarRestore+1,X
 	STA <Temp_Var2
 	JSR _DoStatusBarDrawLine
-_rsb_rts:
-	RTS
+	; The restore template was just drawn, fix the template tiles with the actual counts
+	LDA #$00
+	STA <Temp_Var9
+	LDX UserMsg_Line		; UserMsg_Line was incremented by _DoStatusBarDrawLine
+	BNE _do_rsb_updates		; If UserMsg_Line was not zero, we need to update the info on the status bar
+	RTS				; Otherwise, we're done
+_do_rsb_updates:
+	DEX				; so we have to decrement it here
+	TXA
+	JSR DynJump
+	.word InvFlipFrame_DoNothing		; 0
+	.word InvFlipFrame_DrawOrbs		; 1	; orbs (same offset used during inventory flip)
+	.word UserMsgRestore_LivesScore		; 2	; lives, score
+	.word UserMsgRestore_Time		; 3	; time
+	.word UserMsgRestore_WorldCoinsDeaths	; 4	; world, coins, deaths
+	.word InvFlipFrame_DoNothing		; 5
 
 
 UserMsg_DoTemplate:
@@ -3893,7 +3918,7 @@ _post_sb_loop:
 	INX
 	STX Graphics_BufCnt
 	LDA UserMsg_Line
-	CMP #4				; Did we just load the 5th line of the status bar?
+	CMP #5				; Did we just load the 5th line of the status bar?
 	BNE _sb_cont			; If not, stay in the current state
 	INC UserMsg_State		; Otherwise, go to next state
 	LDA #$FF
@@ -4017,9 +4042,9 @@ UserMsg_WaitForStart:
 	RTS
 
 StatusBarRestore:
-	.word SBR_1, SBR_2, SBR_3, SBR_4, SBR_5
+	.word SBR_1, SBR_2, SBR_3, SBR_4, SBR_5, SBR_6
 
-SBR_5:	; Status Bar Restore values, top row (we restore from the bottom up)
+SBR_6:	; Status Bar Restore values, top row (we restore from the bottom up)
 	vaddr $2B00
 	.byte $02, $FC, $A0		; Upper left corner
 
@@ -4029,21 +4054,29 @@ SBR_5:	; Status Bar Restore values, top row (we restore from the bottom up)
 	vaddr $2B14
 	.byte $0C, $A2, $02, $03, $A0, $A1, $A1, $A1, $A1, $A1, $A1, $A2, $FC	; top of card slots
 	.byte $FF
-SBR_5_END
+SBR_6_END
 
-SBR_4:
+SBR_5:
 	; Sync this with PRG026 Flip_MidTStatCards
 	vaddr $2B20
 	.byte $20, $FC, $A6, $70, $71, $72, $73, $FE, $FE, $EF, $EF, $EF, $EF, $EF, $EF, $3C	; |WORLD  >>>>>>[P] $  | |  | |  | |  | |
-	.byte $3D, $FE, $EC, $F0, $F0, $A7, $12, $13, $A6, $FB, $FE, $FE, $FE, $FE, $FE, $A7, $FC
+	.byte $3D, $FE, $EC, $FE, $FE, $A7, $12, $13, $A6, $FB, $FE, $FE, $FE, $FE, $FE, $A7
+	.byte $FC
+	.byte $FF
+SBR_5_END
+
+SBR_4:
+	vaddr $2B4F
+	.byte $11, $FE, $ED, $F0, $F0, $F0, $A7, $04, $05, $10, $11, $11, $11, $06, $A4
+	.byte $A4, $A5, $FC
 	.byte $FF
 SBR_4_END
 
 SBR_3:
-	vaddr $2B40
-	.byte $20, $FC, $A6, $74, $75, $FB, $FE, $F3, $FE, $F0, $F0, $F0, $F0, $F0, $F0	; [M/L]x  000000 c000| etc.
-	.byte $F0, $FE, $ED, $F0, $F0, $F0, $A7, $04, $05, $10, $11, $11, $11, $06, $A4
-	.byte $A4, $A5, $FC
+	vaddr $2B40 ;        (   M   )   x    0    4         0    0   ...
+	.byte $0F, $FC, $A6, $74, $75, $FB, $FE, $FE, $FE, $F0, $F0, $F0, $F0, $F0, $F0	; [M/L]x  000000 c000| etc.
+	.byte $F0
+	.byte $FF
 SBR_3_END
 
 SBR_2:
@@ -4071,7 +4104,7 @@ SBR_1_END
 
 
 UserMessageTemplate:
-	.word UMT_TOP, UMT_ROW1, UMT_ROW2, UMT_ROW3, UMT_BOT
+	.word UMT_TOP, UMT_ROW1, UMT_ROW2, UMT_ROW3, UMT_BOT, UMT_BOT
 
 UMT_TOP:
 	vaddr $2B00
@@ -4214,6 +4247,7 @@ Flip_TopBarCards:
 Flip_MidTStatCards:
 	vaddr $2B20
 	.byte $20, $FC, $A6, $70, $71, $72, $73, $FE, $FE, $EF, $EF, $EF, $EF, $EF, $EF, $3C	; |WORLD  >>>>>>[P] $  | |  | |  | |  | |
+	;                 $    0    0    |
 	.byte $3D, $FE, $EC, $F0, $F0, $A7, $12, $13, $A6, $FB, $FE, $FE, $FE, $FE, $FE, $A7, $FC
 	.byte $00
 
@@ -4258,11 +4292,71 @@ EraseBotBar:
 ;
 ; Puts the correct number of deaths in the status bar
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-StatusBar_Fill_Deaths_And_World:
+StatusBar_Fill_DWO:
+	JSR StatusBar_Fill_World
 	LDA Inventory_Open
-	BEQ _fill_deaths_and_world
-	RTS				; Don't display these on the open inventory
-_fill_deaths_and_world:
+	BEQ _deaths_and_orbs
+	RTS
+_deaths_and_orbs:
+	JSR StatusBar_Fill_Orbs
+	JMP StatusBar_Fill_Deaths	; tail call
+
+StatusBar_Draw_DWO:			; This will only be called on screen transitions, because there's a loooot of tiles being updated
+	JSR StatusBar_Fill_World	; Fill_World actually draws the world number
+	JSR StatusBar_Fill_Orbs
+	JSR StatusBar_Fill_Deaths
+	; *** Copy the deaths graphics in
+	LDY Graphics_BufCnt		; Y = Graphics_BufCnt
+	LDX #$00			; X = 0
+
+	LDA #$2B
+	STA Graphics_Buffer,Y
+	LDA #$39			; The deaths tiles start at $2B39
+	STA Graphics_Buffer+1,Y
+	LDA #$05			; we have 5 digits for deaths
+	STA Graphics_Buffer+2,Y
+_display_deaths_loop:
+	LDA StatusBar_Deaths,X
+	STA Graphics_Buffer+3,Y
+	INY		 ; Y++
+	INX		 ; X++
+	CPX #$05
+	BNE _display_deaths_loop	; If X <> 5, loop!
+
+	LDA #$00
+	STA Graphics_Buffer+8,Y		; Terminate these graphics
+
+	LDA Graphics_BufCnt
+	ADD #$08
+	STA Graphics_BufCnt
+
+	; *** Copy the orbs graphics in
+	TAY				; Y = Graphics_BufCnt
+	LDX #$00			; X = 0
+
+	LDA #$2B
+	STA Graphics_Buffer,Y
+	LDA #$79			; The orb tiles start at $2B79
+	STA Graphics_Buffer+1,Y
+	LDA #$02			; we have 2 digits for orbs
+	STA Graphics_Buffer+2,Y
+_display_orbs_loop:
+	LDA StatusBar_Orbs,X
+	STA Graphics_Buffer+3,Y
+	INY		 ; Y++
+	INX		 ; X++
+	CPX #$02
+	BNE _display_orbs_loop	; If X <> 2, loop!
+
+	LDA #$00
+	STA Graphics_Buffer+5,Y		; Terminate these graphics
+
+	LDA Graphics_BufCnt
+	ADD #$05
+	STA Graphics_BufCnt
+	RTS
+
+StatusBar_Fill_Deaths:
 	LDA Player_Deaths+1
 	STA <Temp_Var1
 	LDA Player_Deaths
@@ -4323,41 +4417,9 @@ _store_digit_tile:
 	DEX		 	; X--
 	BPL _death_conv1_loop	; While digits remain, loop!
 
-	; *** Copy the graphics in
-	LDY Graphics_BufCnt	; Y = Graphics_BufCnt
-	LDX #$00	 	; X = 0
-
-	LDA #$2B
-	STA Graphics_Buffer,Y
-	LDA #$39			; The deaths tiles start at $2B39
-	STA Graphics_Buffer+1,Y
-	LDA #$05			; we have 5 digits for deaths
-	STA Graphics_Buffer+2,Y
-_display_deaths_loop:
-	LDA StatusBar_Deaths,X
-	STA Graphics_Buffer+3,Y
-	INY		 ; Y++
-	INX		 ; X++
-	CPX #$05
-	BNE _display_deaths_loop	; If X <> 5, loop!
-
-	LDA #$00
-	STA Graphics_Buffer+8,Y		; Terminate these graphics
-
-	LDA Graphics_BufCnt
-	ADD #$08
-	STA Graphics_BufCnt
-
-	JSR StatusBar_Fill_Orbs
-	JSR StatusBar_Fill_World
-
 	RTS
 
 StatusBar_Fill_Orbs:
-	LDA Inventory_Open
-	BEQ _fill_orbs
-	RTS				; Don't display these on the open inventory
-_fill_orbs:
 	LDA Player_Orbs
 	STA <Temp_Var1
 
@@ -4409,29 +4471,91 @@ _store_digit_tile2:
 	DEX		 	; X--
 	BPL _orb_conv1_loop	; While digits remain, loop!
 
-	; *** Copy the graphics in
-	LDY Graphics_BufCnt	; Y = Graphics_BufCnt
-	LDX #$00	 	; X = 0
+	RTS
 
-	LDA #$2B
-	STA Graphics_Buffer,Y
-	LDA #$79			; The orb tiles start at $2B79
-	STA Graphics_Buffer+1,Y
-	LDA #$02			; we have 2 digits for orbs
-	STA Graphics_Buffer+2,Y
-_display_orbs_loop:
-	LDA StatusBar_Orbs,X
-	STA Graphics_Buffer+3,Y
-	INY		 ; Y++
-	INX		 ; X++
-	CPX #$02
-	BNE _display_orbs_loop	; If X <> 2, loop!
 
+InvFlipFrame_DrawDeaths:
+	LDX <Temp_Var9			; X = Temp_Var9 (set to Graphics_BufCnt by Inventory_DoFlipVideoUpd)
+	STA Graphics_Buffer+$16,X	; Do our hooked instruction from InvFlipFrame_DrawWorldCoinsDeaths
+	LDA StatusBar_Deaths+4
+	STA Graphics_Buffer+$1C+4,X	; This +$1C offset comes from the offset into Flip_MidTStatCards where deaths start
+	LDA StatusBar_Deaths+3
+	STA Graphics_Buffer+$1C+3,X
+	LDA StatusBar_Deaths+2
+	STA Graphics_Buffer+$1C+2,X
+	LDA StatusBar_Deaths+1
+	STA Graphics_Buffer+$1C+1,X
+	LDA StatusBar_Deaths
+	STA Graphics_Buffer+$1C,X
+	RTS
+
+InvFlipFrame_DrawOrbs:
+	LDX Temp_Var9			; X = Temp_Var9 (set to Graphics_BufCnt by Inventory_DoFlipVideoUpd)
+	LDA StatusBar_Orbs+1
+	STA Graphics_Buffer+$11+1,X	; This +$11 offset comes from the offset into Flip_BottomBarCards where orbs start
+	LDA StatusBar_Orbs
+	STA Graphics_Buffer+$11,X
+	RTS
+
+StatusBar_ForceDrawAll:
 	LDA #$00
-	STA Graphics_Buffer+5,Y		; Terminate these graphics
+	STA StatusBar_UpdFl
+	RTS
 
-	LDA Graphics_BufCnt
-	ADD #$05
-	STA Graphics_BufCnt
+UserMsgRestore_WorldCoinsDeaths:
+	; offset 9 for world
+	LDX World_Num
+	INX			; X = World_Num+1
+	TXA			; A = X
+	LDX <Temp_Var9
+	ORA #$f0		; Mark it up as a tile
+	STA Graphics_Buffer+9,X
+	; offsets 15,16 for coins
+	LDA StatusBar_CoinH
+	STA Graphics_Buffer+0x15,X
+	LDA StatusBar_CoinL
+	STA Graphics_Buffer+0x16,X
 
+	LDA StatusBar_Deaths+4
+	STA Graphics_Buffer+$1C+4,X	; This +$1C offset comes from the offset into SBR_5 where deaths start
+	LDA StatusBar_Deaths+3
+	STA Graphics_Buffer+$1C+3,X
+	LDA StatusBar_Deaths+2
+	STA Graphics_Buffer+$1C+2,X
+	LDA StatusBar_Deaths+1
+	STA Graphics_Buffer+$1C+1,X
+	LDA StatusBar_Deaths
+	STA Graphics_Buffer+$1C,X
+	RTS
+
+UserMsgRestore_LivesScore:
+	; offsets 8 and 9 for lives
+	JSR StatusBar_Fill_Score
+	LDX <Temp_Var9
+	LDA StatusBar_LivesH
+	STA Graphics_Buffer+8,X
+	LDA StatusBar_LivesL
+	STA Graphics_Buffer+9,X
+	; offsets b,c,d,e,f for score
+	LDA StatusBar_Score
+	STA Graphics_Buffer+0xb,X
+	LDA StatusBar_Score+1
+	STA Graphics_Buffer+0xc,X
+	LDA StatusBar_Score+2
+	STA Graphics_Buffer+0xd,X
+	LDA StatusBar_Score+3
+	STA Graphics_Buffer+0xe,X
+	LDA StatusBar_Score+4
+	STA Graphics_Buffer+0xf,X
+	RTS
+
+UserMsgRestore_Time:
+	; offsets 5,6,7 for time
+	LDX <Temp_Var9
+	LDA StatusBar_Time
+	STA Graphics_Buffer+5,X
+	LDA StatusBar_Time+1
+	STA Graphics_Buffer+6,X
+	LDA StatusBar_Time+2
+	STA Graphics_Buffer+7,X
 	RTS
