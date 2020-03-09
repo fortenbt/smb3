@@ -1968,7 +1968,7 @@ OBJSTATE_POOFDEATH	= 8	; "Poof" Death (e.g. Piranha death)
 
 	Scroll_UpdAttrFlag:	.ds 1	; Set when it is time to update attributes
 
-				.ds 2	; $0708-$0709 unused
+	Player_Deaths:		.ds 2	; $0708-$0709 unused (ORANGE no longer unused: stores the player's deaths)
 
 	; Tileset values:
 	; 00 = On map
@@ -2016,7 +2016,7 @@ OBJSTATE_POOFDEATH	= 8	; "Poof" Death (e.g. Piranha death)
 	Bonus_Timer:			; Decrements to zero
 	Map_Intro_Tick:		.ds 1	; Counts down to zero while displaying the "World X" intro
 
-	UserMsg_Hi:		.ds 1	; $0712 unused (no longer unused: stores the high byte of the currently rendered UserMsgPtr (see UserMsgPtr_H in prg026)
+	UserMsg_Hi:		.ds 1	; $0712 unused (ORANGE no longer unused: stores the high byte of the currently rendered UserMsgPtr (see UserMsgPtr_H in prg026)
 
 	Map_ReturnStatus:	.ds 1	; When 0, level panel is cleared; otherwise, Player is considered to have died (decrements life!)
 	MaxPower_Tick:		.ds 1	; When Player has maximum "power" charge, this counts for the flashing [P]
@@ -2045,7 +2045,7 @@ OBJSTATE_POOFDEATH	= 8	; "Poof" Death (e.g. Piranha death)
 
 	Map_Operation:		.ds 1	; Map_Operation: Current "operation" happening on map (See Map_DoOperation in PRG010)
 
-	UserMsg_Index:		.ds 1	; $072A unused (no longer unused: this holds which message we'll be displaying, set by the orange cheep cheep spawned Y pos in PRG005)
+	UserMsg_Index:		.ds 1	; $072A unused (ORANGE no longer unused: this holds which message we'll be displaying, set by the orange cheep cheep spawned Y pos in PRG005)
 
 	Total_Players:		.ds 1	; Total players (0 = 1P, 1 = 2P)
 	Map_Unused72C:		.ds 1	; No apparent use; only assigned to, but never read back
@@ -2861,7 +2861,9 @@ MAPOBJ_TOTAL		= $0E	; Total POSSIBLE map objects
 	; 11: Ladder and [?] blocks
 	Map_2PVsGame:		.ds 1
 
-				.ds 8	; $7F25-$7F2C unused
+	StatusBar_Deaths:	.ds 5	; $7F25-$7F2C unused (ORANGE no longer unused: stores the tiles for the deaths displayed on the status bar)
+	Deaths_DispZeroes:	.ds 1	; [ORANGE] set when the first non-zero deaths tile is displayed
+				.ds 2
 
 	Map_Airship_Dest:	.ds 1	; Airship travel destination; 6 X/Y map coordinates defined per world, after that it just sits still
 	THouse_OpenByID:	.ds 16	; $7F2E-$7F3D UNUSED would keep track of chests opened for a given Toad House ID (THouse_ID)
