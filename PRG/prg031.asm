@@ -2180,10 +2180,10 @@ PRG031_F7DF:
 
 	; Flags for vertical World 7 speciality levels
 	LDA Level_7Vertical
-	BEQ IntIRQ_Vertical	 ; For vertical type levels
-	JMP IntIRQ_Standard	 ; Otherwise, just do the standard thing (status bar used in level and map)
+	BEQ IntIRQ_Standard	 ; The standard bar (status bar used in level and map)
+	JMP IntIRQ_Vertical	 ; Otherwise, do the vertical thing
 
-IntIRQ_Vertical:
+IntIRQ_Standard:
 	STA MMC3_IRQENABLE ; Active IRQ
 	NOP		 ; 
 	NOP		 ; 
@@ -2222,7 +2222,7 @@ PRG031_F7F8:
 	; In this case, the location of the beginning of the status bar!
 	STY PPU_VRAM_ADDR	 ; This is $0B unless tileset = $11, which it is then $03
 	LDA #$00
-	STA PPU_VRAM_ADDR	; ... so we're now reading at $1100 or $0300
+	STA PPU_VRAM_ADDR	; ... so we're now reading at $0B00 or $0300
 	LDA PPU_VRAM_DATA
 
 	; Load status bar graphics and hide any sprites from appearing over the status bar
@@ -2322,7 +2322,7 @@ IntIRQ_Finish_NoDis:
 
 	RTI		 ; End of IRQ interrupt!
 
-IntIRQ_Standard:	; $F8DB
+IntIRQ_Vertical:	; $F8DB
 	STA MMC3_IRQENABLE ; Enable IRQ generation
 
 	; Some kind of delay loop?
@@ -2948,7 +2948,10 @@ PRG031_FCC6:
 PRG031_FCCC:
 	LDY <Temp_Var1	 ; Y = Temp_Var1
 
-	JSR StatusBar_DrawCardPiece	 ; Draw part of the card into the status bar
+	;JSR StatusBar_DrawCardPiece	 ; Draw part of the card into the status bar
+	NOP
+	NOP
+	NOP
 
 	INC <Temp_Var1
 	DEC <Temp_Var2

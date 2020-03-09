@@ -5721,7 +5721,10 @@ PRG002_BCC6:
 	BNE PRG002_BD02	 ; If Player's not there yet, jump to PRG002_BD02
 
 	JSR Player_GetInventoryOffset
-	LDA Inventory_Cards+2,Y
+	; [ORANGE] unused section of code
+	; Removed because we're no longer storing cards
+	JMP PRG002_BCFF
+	;;;LDA Inventory_Cards+2,Y
 	BEQ PRG002_BCFF	 ; If Player didn't get their third card, jump to PRG002_BCFF
 
 	; Player got their third card (not a triple match, that was checked previously)
@@ -5831,7 +5834,10 @@ EndLevelCard_Exit:
 	STA Map_ReturnStatus	 ; Return Status = 0 (clear level)
 	INC Level_ExitToMap	 ; Flag to exit to map
 
-	LDA Inventory_Cards+2,Y
+	; [ORANGE] unused section of code
+	; Removed because we're no longer storing cards
+	JMP PRG002_BD6B
+	;;;LDA Inventory_Cards+2,Y
 	BEQ PRG002_BD6B		; If we didn't have three cards, jump to PRG002_BD6B
 
 	; Otherwise, clear them out!
@@ -6095,7 +6101,10 @@ EndLevelCard_DrawFlashing:
 
 	; Reset the card to what it should be
 	LDA Objects_Frame,X
-	STA Inventory_Cards,Y
+	;;;STA Inventory_Cards,Y
+	NOP
+	NOP
+	NOP
 
 	RTS		 ; Return
 
@@ -6283,32 +6292,37 @@ PRG002_BF4B:
 
 	JSR Player_GetInventoryOffset
 
-	LDA Inventory_Cards+2,Y
-	BEQ PRG002_BF9F	 ; If Player hasn't gotten their third card, jump to PRG002_BF9F (RTS)
+	; [ORANGE] unused section of code
+	; Removed because we won't be storing cards
+	RTS
+	.ds 29
 
-	CMP Inventory_Cards,Y
-	BNE PRG002_BF9F	 ; If the first card doesn't match, jump to PRG002_BF9F (RTS)
+	;;;LDA Inventory_Cards+2,Y
+	;;BEQ PRG002_BF9F	 ; If Player hasn't gotten their third card, jump to PRG002_BF9F (RTS)
 
-	CMP Inventory_Cards+1,Y
-	BNE PRG002_BF9F	 ; If the second card doesn't match, jump to PRG002_BF9F (RTS)
+	;;;CMP Inventory_Cards,Y
+	;;BNE PRG002_BF9F	 ; If the first card doesn't match, jump to PRG002_BF9F (RTS)
+
+	;;;CMP Inventory_Cards+1,Y
+	;;BNE PRG002_BF9F	 ; If the second card doesn't match, jump to PRG002_BF9F (RTS)
 
 	; All three cards match!
 
-	STA <Objects_Var5,X	; Set Var5 to the card triple
+	;;STA <Objects_Var5,X	; Set Var5 to the card triple
 
 	; Do internal state 1 instead (big fanfare)
-	LDA #$01
-	STA <Objects_DetStat,X
+	;;LDA #$01
+	;;STA <Objects_DetStat,X
 
 	; Enable level animations
-	LSR Level_TimerEn
+	;;;LSR Level_TimerEn
 
 	; Play fanfare song
-	LDA #MUS1_BOSSVICTORY
-	STA Sound_QMusic1
+	;;LDA #MUS1_BOSSVICTORY
+	;;;STA Sound_QMusic1
 
-PRG002_BF9F:
-	RTS		 ; Return
+;PRG002_BF9F:
+	;RTS		 ; Return
 
 EndLevelCard_Draw:
 	LDA Objects_Frame,X

@@ -124,19 +124,23 @@ StatusBar	.macro
 	.byte VU_REPEAT | $12, $A1	; Bar across the top
 
 	vaddr \1 + $14
-	.byte $0C, $A2, $A0, $A1, $A1, $A3, $A1, $A1, $A3, $A1, $A1, $A2, $FC	; top of card slots
+	;.byte $0C, $A2, $A0, $A1, $A1, $A3, $A1, $A1, $A3, $A1, $A1, $A2, $FC	; top of card slots
+	.byte $0C, $A2, $02, $03, $A0, $A1, $A1, $A1, $A1, $A1, $A1, $A2, $FC	; top of card slots
 
 	; Sync this with PRG026 Flip_MidTStatCards
 	vaddr \1 + $20
 	.byte $20, $FC, $A6, $70, $71, $72, $73, $FE, $FE, $EF, $EF, $EF, $EF, $EF, $EF, $3C	; |WORLD  >>>>>>[P] $  | |  | |  | |  | |
-	.byte $3D, $FE, $EC, $F0, $F0, $A7, $A6, $FE, $FE, $AA, $FE, $FE, $AA, $FE, $FE, $A7, $FC
+	.byte $3D, $FE, $EC, $F0, $F0, $A7, $12, $13, $A6, $FB, $FE, $FE, $FE, $FE, $FE, $A7, $FC
 	; Discrepency --------^  (Pattern is ... $FE, $F0 ... in PRG026 status bar graphics)
 
 	; Sync this with PRG026 Flip_MidBStatCards
 	vaddr \1 + $40
 	; Discrepency --------v  (Pattern is ... $FE, $FE ... in PRG030 status bar)  Unimportant; inserts <M> which is replaced anyway
-	.byte $20, $FC, $A6, $74, $75, $FB, $FE, $F3, $FE, $F0, $F0, $F0, $F0, $F0, $F0, $F0	; [M/L]x  000000 c000| etc.
-	.byte $FE, $ED, $F4, $F0, $F0, $A7, $A6, $FE, $FE, $AA, $FE, $FE, $AA, $FE, $FE, $A7, $FC
+	;.byte $20, $FC, $A6, $74, $75, $FB, $FE, $F3, $FE, $F0, $F0, $F0, $F0, $F0, $F0, $F0	; [M/L]x  000000 c000| etc.
+	;.byte $FE, $ED, $F4, $F0, $F0, $A7, $A6, $FE, $FE, $AA, $FE, $FE, $AA, $FE, $FE, $A7, $FC
+	.byte $20, $FC, $A6, $74, $75, $FB, $FE, $F3, $FE, $F0, $F0, $F0, $F0, $F0, $F0	; [M/L]x  000000 c000| etc.
+	.byte $F0, $FE, $ED, $F0, $F0, $F0, $A7, $04, $05, $10, $11, $11, $11, $06, $A4
+	.byte $A4, $A5, $FC
 	; Discrepency --------^  (Pattern is ... $F4, $F0 ... in PRG030 status bar graphics)
 
 	; Sync next three with PRG026 Flip_BottomBarCards
@@ -147,12 +151,16 @@ StatusBar	.macro
 	.byte VU_REPEAT | $12, $A4	; Bottom bar
 
 	vaddr \1 + $74
-	.byte $0C, $A5, $A8, $A4, $A4, $A9, $A4, $A4, $A9, $A4, $A4, $A5, $FC	; lower corner and card bottoms
+	;.byte $0C, $A5, $A8, $A4, $A4, $A9, $A4, $A4, $A9, $A4, $A4, $A5, $FC	; lower corner and card bottoms
+	.byte $0C, $A5, $14, $15, $A6, $FB, $FE, $FE, $A7, $FC, $FC, $FC, $FC	; lower corner and card bottoms
 
 	; End PRG026 sync
 
 	vaddr \1 + $80
-	.byte VU_REPEAT | $20, $FC	; black space
+	;.byte VU_REPEAT | $20, $FC	; black space
+	.byte VU_REPEAT | $15, $FC	; black space
+	vaddr \1 + $95
+	.byte $0B, $00, $01, $A8, $A4, $A4, $A4, $A5, $FC, $FC, $FC, $FC
 
 	vaddr \1 + $A0
 	.byte VU_REPEAT | $20, $FC	; black space
@@ -163,7 +171,8 @@ StatusBar	.macro
 
 	; Typical status bar (vertical level)
 Video_DoStatusBarV:
-	StatusBar $2700
+;	StatusBar $2700
+	.ds 0x70
 
 	; Typical status bar (non-vertical level)
 Video_DoStatusBar:
@@ -171,7 +180,8 @@ Video_DoStatusBar:
 
 	; Status bar used when Horizontal Mirroring in effect (Roulette game)
 Video_DoStatusBarHM:
-	StatusBar $2300
+;	StatusBar $2300
+	.ds 0x80
 
 Video_3CMStarTop:
 	vaddr $208F
@@ -760,7 +770,7 @@ PRG012_85CE:
 	JSR StatusBar_Update_Cards	 ; Update status bar cards
 	JSR StatusBar_UpdateValues	 ; Update other status bar stuff
 	JSR StatusBar_Fill_MorL	 	 ; Patch in correct M or L on status bar
-	JSR StatusBar_Fill_World	 ; Fill in correct world number
+	JSR StatusBar_Fill_Deaths_And_World	 ; Fill in correct world number (Orange - added deaths as well)
 
 	LDA #$00	 		; Commit graphics in Graphics_Buffer
 	JSR Video_Do_Update		; Do it!
@@ -1471,7 +1481,7 @@ PRG030_89D1:
 	JSR StatusBar_Update_Cards	 ; Update status bar cards
 	JSR StatusBar_UpdateValues	 ; Update other status bar stuff
 	JSR StatusBar_Fill_MorL	 	 ; Patch in correct M or L on status bar
-	JSR StatusBar_Fill_World	 ; Fill in correct world number
+	JSR StatusBar_Fill_Deaths_And_World	 ; Fill in correct world number (ORANGE - added deaths as well)
 
 	; Push through what's in graphics buffer
 	LDA #$00
@@ -1576,7 +1586,7 @@ PRG030_8A79:
 	JSR StatusBar_Update_Cards	 ; Update status bar cards
 	JSR StatusBar_UpdateValues	 ; Update other status bar stuff
 	JSR StatusBar_Fill_MorL	 	 ; Patch in correct M or L on status bar
-	JSR StatusBar_Fill_World	 ; Fill in correct world number
+	JSR StatusBar_Fill_Deaths_And_World	 ; Fill in correct world number (ORANGE - added deaths as well)
 
 	; Push through what's in graphics buffer
 	LDA #$00
@@ -1675,7 +1685,7 @@ PRG030_8B03:
 	JSR StatusBar_Update_Cards	 ; Update status bar cards
 	JSR StatusBar_UpdateValues	 ; Update other status bar stuff
 	JSR StatusBar_Fill_MorL	 	 ; Patch in correct M or L on status bar
-	JSR StatusBar_Fill_World	 ; Fill in correct world number
+	JSR StatusBar_Fill_Deaths_And_World	 ; Fill in correct world number (ORANGE - added deaths as well)
 
 	LDA #$00		 ; A = 0 (Graphics buffer push)
 	JSR Video_Do_Update	 ; Push through what's in graphics buffer

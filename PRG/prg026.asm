@@ -113,12 +113,26 @@ Inventory_Close:
 	STA Graphics_Buffer+2,X		; Repeat 32 times
 	LDA #$fc	 	
 	STA Graphics_Buffer+3,X		; Tile $FC
-	LDA #$00	 	
-	STA Graphics_Buffer+4,X		; Terminator
 
-	LDA Graphics_BufCnt
-	ADD #$04	 
-	STA Graphics_BufCnt	; Graphics_BufCnt += 4
+	;;; [ORNANGE] We hook here to remove the very bottom bar, which now has some graphics
+	;;LDA #$00
+	;;;STA Graphics_Buffer+4,X		; Terminator
+
+	;;;LDA Graphics_BufCnt
+	;;;ADD #$04
+	;;;STA Graphics_BufCnt	; Graphics_BufCnt += 4
+	JSR EraseBotBar
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
 
 	INY			; Y++
 	TYA			; A = Y
@@ -178,9 +192,9 @@ PRG026_A135:
 	RTS		 	; Return...
 
 ; This is data in the style of the Video_Upd_Table; see "Video_Upd_Table" in PRG030 for format.
-Flip_Video_Data_Opening:	; Inventory_Open = 1
+____Flip_Video_Data_Opening:	; Inventory_Open = 1
 
-Flip_TopBarInv:	
+____Flip_TopBarInv:
 	vaddr $2B00
 	.byte $02, $FC, $A0
 
@@ -194,7 +208,7 @@ Flip_TopBarInv:
 
 
 	; If editing this, check out note under PRG026_A2E4, "MAGIC 12 OFFSET"
-Flip_MidTItems:	
+____Flip_MidTItems:
 	vaddr $2B20
 
 	;                 |    W    O   R   LD   [x]
@@ -210,7 +224,7 @@ Flip_MidTItems:
 	.byte $00
 
 	; If editing this, check out note under PRG026_A2E4, "MAGIC 12 OFFSET"
-Flip_MidBItems:	
+____Flip_MidBItems:
 	vaddr $2B40
 
 	;                 |    < M >     x  [ Lives]
@@ -225,7 +239,7 @@ Flip_MidBItems:
 
 	.byte $00
 
-Flip_BottomBarInv:	
+____Flip_BottomBarInv:
 	vaddr $2B60
 	.byte   2, $FC, $A8
 	
@@ -241,9 +255,9 @@ Flip_BottomBarInv:
 
 
 ; This is data in the style of the Video_Upd_Table; see "Video_Upd_Table" in PRG030 for format.
-Flip_Video_Data_Closing:	; Inventory_Open = 0
+____Flip_Video_Data_Closing:	; Inventory_Open = 0
 
-Flip_TopBarMid:
+____Flip_TopBarMid:
 	vaddr $2B20
 	.byte 2, $FC, $A0
 
@@ -255,7 +269,7 @@ Flip_TopBarMid:
 
 	.byte $00
 
-Flip_BotBarMid:
+____Flip_BotBarMid:
 	; Lower left corner
 	vaddr $2B40
 	.byte 2, $FC, $A8
@@ -270,20 +284,20 @@ Flip_BotBarMid:
 
 	.byte $00
 
-Flip_EraseTopBarMid:	
+____Flip_EraseTopBarMid:
 	vaddr $2B20
 	.byte VU_REPEAT | 32, $FC
 
 	.byte $00
 
-Flip_EraseBotBarMid:	
+____Flip_EraseBotBarMid:
 	vaddr $2B40
 	.byte VU_REPEAT | 32, $FC
 	
 	.byte $00
 
 	; Sync with PRG030 "StatusBar" macro
-Flip_TopBarCards:
+____Flip_TopBarCards:
 	vaddr $2B00
 	.byte 2, $FC, $A0
 
@@ -291,36 +305,39 @@ Flip_TopBarCards:
 	.byte VU_REPEAT | 18, $A1	; Bar across the top
 
 	vaddr $2B14
-	.byte 12, $A2, $A0, $A1, $A1, $A3, $A1, $A1, $A3, $A1, $A1, $A2, $FC	; top of card slots
+	;.byte 12, $A2, $A0, $A1, $A1, $A3, $A1, $A1, $A3, $A1, $A1, $A2, $FC	; top of card slots
+	.byte $0C, $A2, $02, $03, $A0, $A1, $A1, $A1, $A1, $A1, $A1, $A2, $FC	; top of card slots
 
 	.byte $00
 
 	; Sync with PRG030 "StatusBar" macro
 	; If editing this, check out note under PRG026_A2E4, "MAGIC 12 OFFSET"
-Flip_MidTStatCards:	
+____Flip_MidTStatCards:
 	vaddr $2B20
 
+	;.byte $20, $FC, $A6, $70, $71, $72, $73, $FE, $FE, $EF, $EF, $EF, $EF, $EF, $EF, $3C	; |WORLD  >>>>>>[P] $  | |  | |  | |  | |
+	;.byte $3D, $FE, $EC, $FE, $F0, $A7, $A6, $FE, $FE, $AA, $FE, $FE, $AA, $FE, $FE, $A7, $FC
 	.byte $20, $FC, $A6, $70, $71, $72, $73, $FE, $FE, $EF, $EF, $EF, $EF, $EF, $EF, $3C	; |WORLD  >>>>>>[P] $  | |  | |  | |  | |
-	.byte $3D, $FE, $EC, $FE, $F0, $A7, $A6, $FE, $FE, $AA, $FE, $FE, $AA, $FE, $FE, $A7, $FC
+	.byte $3D, $FE, $EC, $F0, $F0, $A7, $12, $13, $A6, $FB, $FE, $FE, $FE, $FE, $FE, $A7, $FC
 	; Discrepency --------^  (Pattern is ... $F0, $F0 ... in PRG030 status bar graphics)
 
 	.byte $00
 
 	; Sync with PRG030 "StatusBar" macro
 	; If editing this, check out note under PRG026_A2E4, "MAGIC 12 OFFSET"
-Flip_MidBStatCards:	
+____Flip_MidBStatCards:
 	vaddr $2B40
 
 	; Discrepency --------v  (Pattern is ... $FE, $FE ... in PRG030 status bar)  Unimportant; inserts <M> which is replaced anyway
 	.byte $20, $FC, $A6, $74, $75, $FB, $FE, $F3, $FE, $F0, $F0, $F0, $F0, $F0, $F0	; [M/L]x  000000 c000| etc.
-	.byte $F0, $FE, $ED, $F0, $F0, $F0, $A7, $A6, $FE, $FE, $AA, $FE, $FE, $AA, $FE
-	.byte $FE, $A7, $FC
+	.byte $F0, $FE, $ED, $F0, $F0, $F0, $A7, $04, $05, $10, $11, $11, $11, $06, $A4
+	.byte $A4, $A5, $FC
 	; Discrepency --------^  (Pattern is ... $F4, $F0 ... in PRG030 status bar graphics)
 
 	.byte $00
 
 	; Sync with PRG030 "StatusBar" macro
-Flip_BottomBarCards:	
+____Flip_BottomBarCards:
 	vaddr $2B60
 	.byte $02, $FC, $A8	; Lower corner
 
@@ -328,11 +345,12 @@ Flip_BottomBarCards:
 	.byte VU_REPEAT | 18, $A4	; Bottom bar
 
 	vaddr $2B74
-	.byte $0C, $A5, $A8, $A4, $A4, $A9, $A4, $A4, $A9, $A4, $A4, $A5, $FC	; lower corner and card bottoms
+	;.byte $0C, $A5, $A8, $A4, $A4, $A9, $A4, $A4, $A9, $A4, $A4, $A5, $FC	; lower corner and card bottoms
+	.byte $0C, $A5, $14, $15, $A6, $FB, $FE, $FE, $A7, $FC, $FC, $FC, $FC	; lower corner and card bottoms
 
 	.byte $00
 
-Flip_END:
+____Flip_END:
 ; ******************************************************************
 
 InvGBuf_By_Open:	; Points to two different graphics buffer data blocks depending on Inventory_Open
@@ -595,7 +613,7 @@ InvFlipFrame_UpdateStatusBar:
 	.word InvFlipFrame_DoNothing		; 7
 
 InvFlipFrame_DrawWorldCoins:
-	JSR StatusBar_Fill_World ; Put world number in status bar
+	JSR StatusBar_Fill_Deaths_And_World ; Put world number in status bar (ORANGE - added deaths as well)
 
 	LDA InvFlip_Frame
 	AND #$08
@@ -3041,10 +3059,14 @@ PRG026_B156:
 ; Fills the StatusBar_PMT array with tiles representing
 ; the current score; also applies the
 ; Score_Earned value to the active total
+;
+; Note: Powers of 10: (1, 10, 100, etc)
+;  1,  10, 100, 1000, 10000, 100000
+; $1, $A, $64, $3E8, $2710, $186A0
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-PRG026_B160:	.byte $00, $00, $00, $00, $00, $01
-PRG026_B166:	.byte $00, $00, $00, $03, $27, $86
-PRG026_B16C:	.byte $01, $0A, $64, $E8, $10, $A0
+PowersOf10_HSB:	.byte $00, $00, $00, $00, $00, $01	; highest significant byte for powers of 10
+PowersOf10_MSB:	.byte $00, $00, $00, $03, $27, $86	; middle significant byte for powers of 10
+PowersOf10_LSB:	.byte $01, $0A, $64, $E8, $10, $A0	; lowest significant byte for powers of 10
 PRG026_B172:	.byte $0F, $42, $3F 
 
 StatusBar_Fill_Score:
@@ -3073,13 +3095,13 @@ PRG026_B19A:
 	LDA <Temp_Var1	 ; Get LSD -> A
 
 	; I haven't taken time yet to discern this magic yet
-	SUB PRG026_B16C,X
+	SUB PowersOf10_LSB,X
 	STA <Temp_Var1	
 	LDA <Temp_Var2	
-	SBC PRG026_B166,X
+	SBC PowersOf10_MSB,X
 	STA <Temp_Var2	
 	LDA <Temp_Var3	
-	SBC PRG026_B160,X
+	SBC PowersOf10_HSB,X
 	STA <Temp_Var3	
 
 	BCC PRG026_B1B8	 	; If the subtraction didn't go negative, jump to PRG026_B1B8
@@ -3092,13 +3114,13 @@ PRG026_B1B8:
 	LDA <Temp_Var1
 
 	; I haven't taken time yet to discern this magic yet
-	ADD PRG026_B16C,X
+	ADD PowersOf10_LSB,X
 	STA <Temp_Var1	
 	LDA <Temp_Var2	
-	ADC PRG026_B166,X
+	ADC PowersOf10_MSB,X
 	STA <Temp_Var2	
 	LDA <Temp_Var3	
-	ADC PRG026_B160,X
+	ADC PowersOf10_HSB,X
 	STA <Temp_Var3	
 
 	LDA Score_Temp	 
@@ -3764,6 +3786,9 @@ _clear53loop:
 	STA Music_RestH_Off
 	RTS			; Return
 
+;;;==========================================================================================================
+;;;= ORANGE - The following is for our UserMessage Status Bar
+;;;==========================================================================================================
 StatusBarHook:
 	LDA <DoingUserMessage
 	BEQ _norm_status_bar
@@ -3813,7 +3838,7 @@ UserMsgPtr_H:
 	.byte HIGH(UserMessage2)
 
 UserMsg_SetWorld:
-	JSR StatusBar_Fill_World	; Otherwise, fill in the world number and complete the UserMessage
+	JSR StatusBar_Fill_Deaths_And_World	; Otherwise, fill in the world number and complete the UserMessage (Orange - added deaths as well)
 	INC UserMsg_State
 	LDX UserMsg_Index
 	INC UserMsg_Completions,X	; Mark this message complete
@@ -4002,34 +4027,34 @@ SBR_5:	; Status Bar Restore values, top row (we restore from the bottom up)
 	.byte VU_REPEAT | $12, $A1	; Bar across the top
 
 	vaddr $2B14
-	.byte $0C, $A2, $A0, $A1, $A1, $A3, $A1, $A1, $A3, $A1, $A1, $A2, $FC				; top of card slots
+	.byte $0C, $A2, $02, $03, $A0, $A1, $A1, $A1, $A1, $A1, $A1, $A2, $FC	; top of card slots
 	.byte $FF
 SBR_5_END
 
 SBR_4:
 	; Sync this with PRG026 Flip_MidTStatCards
 	vaddr $2B20
-	.byte $20, $FC, $A6, $70, $71, $72, $73, $FE, $FE, $EF, $EF, $EF, $EF, $EF, $EF, $3C		; |WORLD  >>>>>>[P] $  | |  | |  | |  | |
-	.byte $3D, $FE, $EC, $F0, $F0, $A7, $A6, $FE, $FE, $AA, $FE, $FE, $AA, $FE, $FE, $A7, $FC
+	.byte $20, $FC, $A6, $70, $71, $72, $73, $FE, $FE, $EF, $EF, $EF, $EF, $EF, $EF, $3C	; |WORLD  >>>>>>[P] $  | |  | |  | |  | |
+	.byte $3D, $FE, $EC, $F0, $F0, $A7, $12, $13, $A6, $FB, $FE, $FE, $FE, $FE, $FE, $A7, $FC
 	.byte $FF
 SBR_4_END
 
 SBR_3:
 	vaddr $2B40
-	.byte $20, $FC, $A6, $74, $75, $FB, $FE, $F3, $FE, $F0, $F0, $F0, $F0, $F0, $F0, $F0		; [M/L]x  000000 c000| etc.
-	.byte $FE, $ED, $F4, $F0, $F0, $A7, $A6, $FE, $FE, $AA, $FE, $FE, $AA, $FE, $FE, $A7, $FC
-	.byte $FF
+	.byte $20, $FC, $A6, $74, $75, $FB, $FE, $F3, $FE, $F0, $F0, $F0, $F0, $F0, $F0	; [M/L]x  000000 c000| etc.
+	.byte $F0, $FE, $ED, $F0, $F0, $F0, $A7, $04, $05, $10, $11, $11, $11, $06, $A4
+	.byte $A4, $A5, $FC
 SBR_3_END
 
 SBR_2:
 	vaddr $2B60
 	.byte $02, $FC, $A8		; Lower corner
-
 	vaddr $2B62
-	.byte VU_REPEAT | $12, $A4	; Bottom bar
-
+	.byte VU_REPEAT | 18, $A4	; Bottom bar
 	vaddr $2B74
-	.byte $0C, $A5, $A8, $A4, $A4, $A9, $A4, $A4, $A9, $A4, $A4, $A5, $FC	; lower corner and card bottoms
+	.byte $0C, $A5, $14, $15, $A6, $FB, $FE, $FE, $A7, $FC, $FC, $FC, $FC	; lower corner and card bottoms
+	vaddr $2B95
+	.byte $07, $00, $01, $A8, $A4, $A4, $A4, $A5
 	.byte $FF
 SBR_2_END
 
@@ -4097,3 +4122,232 @@ UserMessage2: ; B    i    t    c    h    e    s    !
 	.byte $B1, $D8, $CD, $D2, $D7, $D4, $CC, $EA, $00
 UserMessage3: ; D    o    n    e    z    o    \ff
 	.byte $B3, $DE, $DD, $D4, $8F, $DE, $FF
+
+;;;==========================================================================================================
+;;;= ORANGE - The following is for our new status bar
+;;;==========================================================================================================
+
+Flip_Video_Data_Opening:	; Inventory_Open = 1
+
+Flip_TopBarInv:
+	vaddr $2B00
+	.byte $02, $FC, $A0
+	vaddr $2B02
+	.byte VU_REPEAT | $1C, $A1
+	vaddr $2B1E
+	.byte $02, $A2, $FC
+	.byte $00
+
+Flip_MidTItems:
+	vaddr $2B20
+	;                 |    W    O   R   LD   [x]
+	.byte  32, $FC, $A6, $70, $71, $72, $73, $FE, $FE, $FE
+	; Top of items start rendering here (replaced at runtime)
+	;      Item 1         Item 2         Item 3         Item 4         Item 5         Item 6         Item 7
+	.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	;       |
+	.byte $A7, $FC
+	.byte $00
+
+Flip_MidBItems:
+	vaddr $2B40
+	;                 |    < M >     x  [ Lives]
+	.byte  32, $FC, $A6, $74, $75, $FB, $FE, $F3, $FE, $FE
+	;      Item 1         Item 2         Item 3         Item 4         Item 5         Item 6         Item 7
+	.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	;       |
+	.byte $A7, $FC
+	.byte $00
+
+Flip_BottomBarInv:
+	vaddr $2B60
+	.byte   2, $FC, $A8
+	vaddr $2B62
+	.byte VU_REPEAT | 28, $A4
+	vaddr $2B7E
+	.byte 2, $A5, $FC
+	.byte $00
+
+; This is data in the style of the Video_Upd_Table; see "Video_Upd_Table" in PRG030 for format.
+Flip_Video_Data_Closing:	; Inventory_Open = 0
+
+Flip_TopBarMid:
+	vaddr $2B20
+	.byte 2, $FC, $A0
+	vaddr $2B22
+	.byte VU_REPEAT | 28, $A1
+	vaddr $2B3E
+	.byte 2, $A2, $FC
+	.byte $00
+
+Flip_BotBarMid:
+	; Lower left corner
+	vaddr $2B40
+	.byte 2, $FC, $A8
+	; Bottom bar
+	vaddr $2B42
+	.byte VU_REPEAT | 28, $A4
+	; Upper right corner
+	vaddr $2B5E
+	.byte 2, $A5, $FC
+	.byte $00
+
+Flip_EraseTopBarMid:
+	vaddr $2B20
+	.byte VU_REPEAT | 32, $FC
+	.byte $00
+
+Flip_EraseBotBarMid:
+	vaddr $2B40
+	.byte VU_REPEAT | 32, $FC
+	.byte $00
+
+Flip_TopBarCards:
+	vaddr $2B00
+	.byte 2, $FC, $A0
+	vaddr $2B02
+	.byte VU_REPEAT | 18, $A1	; Bar across the top
+	vaddr $2B14
+	.byte $0C, $A2, $02, $03, $A0, $A1, $A1, $A1, $A1, $A1, $A1, $A2, $FC	; top of card slots
+	.byte $00
+
+Flip_MidTStatCards:
+	vaddr $2B20
+	.byte $20, $FC, $A6, $70, $71, $72, $73, $FE, $FE, $EF, $EF, $EF, $EF, $EF, $EF, $3C	; |WORLD  >>>>>>[P] $  | |  | |  | |  | |
+	.byte $3D, $FE, $EC, $F0, $F0, $A7, $12, $13, $A6, $FB, $FE, $FE, $FE, $FE, $FE, $A7, $FC
+	.byte $00
+
+Flip_MidBStatCards:
+	vaddr $2B40
+	.byte $20, $FC, $A6, $74, $75, $FB, $FE, $F3, $FE, $F0, $F0, $F0, $F0, $F0, $F0	; [M/L]x  000000 c000| etc.
+	.byte $F0, $FE, $ED, $F0, $F0, $F0, $A7, $04, $05, $10, $11, $11, $11, $06, $A4
+	.byte $A4, $A5, $FC
+	.byte $00
+
+Flip_BottomBarCards:
+	vaddr $2B60
+	.byte $02, $FC, $A8		; Lower corner
+	vaddr $2B62
+	.byte VU_REPEAT | 18, $A4	; Bottom bar
+	vaddr $2B74
+	.byte $0C, $A5, $14, $15, $A6, $FB, $FE, $FE, $A7, $FC, $FC, $FC, $FC	; lower corner and card bottoms
+	vaddr $2B95
+	.byte $07, $00, $01, $A8, $A4, $A4, $A4, $A5
+	.byte $00
+
+Flip_END:
+
+EraseBotBar:
+	LDA #$2B
+	STA Graphics_Buffer+4,X
+	LDA #$95
+	STA Graphics_Buffer+5,X
+	LDA #VU_REPEAT | 7
+	STA Graphics_Buffer+6,X
+	LDA #$fc
+	STA Graphics_Buffer+7,X
+	LDA #$00
+	STA Graphics_Buffer+8,X
+	LDA Graphics_BufCnt
+	ADD #$09
+	STA Graphics_BufCnt
+	RTS
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; StatusBar_Fill_Deaths
+;
+; Puts the correct number of deaths in the status bar
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+StatusBar_Fill_Deaths_And_World:
+	LDA Inventory_Open
+	BEQ _fill_deaths_and_world
+	RTS				; Don't display these on the open inventory
+_fill_deaths_and_world:
+	LDA Player_Deaths+1
+	STA <Temp_Var1
+	LDA Player_Deaths
+	STA <Temp_Var2
+
+	LDY #$00	 ; Y = 0
+	STY Deaths_DispZeroes		; Good place to initialize this to 0
+	LDX #$04	 ; X = 4	0-4, 5 digits
+_death_conv1_loop:
+	LDA <Temp_Var1	 ; Get LSD -> A
+
+	SUB PowersOf10_LSB,X
+	STA <Temp_Var1
+	LDA <Temp_Var2
+	SBC PowersOf10_MSB,X
+	STA <Temp_Var2
+
+	BCC _death_conv_get_tile	; If the subtraction didn't go negative, jump to PRG026_B1B8
+
+	INC Score_Temp			; Score_Temp++
+
+	BNE _death_conv1_loop		; Branch always
+
+_death_conv_get_tile:
+	LDA <Temp_Var1
+
+	ADD PowersOf10_LSB,X
+	STA <Temp_Var1
+	LDA <Temp_Var2
+	ADC PowersOf10_MSB,X
+	STA <Temp_Var2
+
+	LDA Score_Temp
+	ADD #$F0	 	; A = Score_Temp + $F0 (tile to display)
+	PHA			; save it off
+	CMP #$F0
+	BNE _set_disp_zeroes	; For non-zero digits, we'll definitely display them, and we should set our display zeroes boolean
+	LDA Deaths_DispZeroes	; For zero digits, we have to check if we've displayed a non-zero digit yet
+	BNE _store_digit_tile	; If so, just display the saved off zero tile
+_display_space:
+	CPX #$00		; Otherwise, are we on the last digit?
+	BEQ _store_digit_tile	; If we are on the last digit, we'll display the zero
+	PLA			; Otherwise replace the saved tile with our space tile
+	LDA #$FE		; Set the space tile
+	PHA
+	BNE _store_digit_tile	; branch always
+
+_set_disp_zeroes:
+	STA Deaths_DispZeroes	; Set this so that we start to display zeroes rather than spaces
+_store_digit_tile:
+	PLA			; restore the tile
+	STA StatusBar_Deaths,Y	; Store it as next digit
+
+	LDA #$00	 	; A = 0
+	STA Score_Temp	 	; Score_Temp = 0
+
+	INY		 	; Y++
+	DEX		 	; X--
+	BPL _death_conv1_loop	; While digits remain, loop!
+
+	; *** Copy the graphics in
+	LDY Graphics_BufCnt	; Y = Graphics_BufCnt
+	LDX #$00	 	; X = 0
+
+	LDA #$2B
+	STA Graphics_Buffer,Y
+	LDA #$39			; The deaths tiles start at $2B39
+	STA Graphics_Buffer+1,Y
+	LDA #$05			; we have 5 digits for deaths
+	STA Graphics_Buffer+2,Y
+_display_deaths_loop:
+	LDA StatusBar_Deaths,X
+	STA Graphics_Buffer+3,Y
+	INY		 ; Y++
+	INX		 ; X++
+	CPX #$05
+	BNE _display_deaths_loop	; If X <> 5, loop!
+
+	LDA #$00
+	STA Graphics_Buffer+8,Y		; Terminate these graphics
+
+	LDA Graphics_BufCnt
+	ADD #$08
+	STA Graphics_BufCnt
+
+	JSR StatusBar_Fill_World
+
+	RTS
