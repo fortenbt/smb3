@@ -5941,7 +5941,7 @@ PRG002_BDBE:
 	PHA
 	LDA #$00
 	STA Inventory_Cards,Y
-	JSR StatusBar_DrawCardPiece
+	JSR StatusBar_FillDrawCardPiece_Orbs
 	LDX <SlotIndexBackup		 ; X = object slot index
 	LDY Objects_Var2,X	 ; Y = Var2 (which card is being vanished)
 	PLA
@@ -5950,7 +5950,7 @@ PRG002_BDBE:
 	BNE PRG002_BE11	 ; Jump (technically always) to PRG002_BE11
 
 PRG002_BDF8:
-	JSR StatusBar_DrawCardPiece
+	JSR StatusBar_FillDrawCardPiece_Orbs
 
 	LDX <SlotIndexBackup		 ; X = object slot index
 	LDY Objects_Var2,X
@@ -6091,7 +6091,7 @@ EndLevelCard_DrawFlashing:
 	PHA
 
 	; Clear the card
-	JSR StatusBar_DrawCardPiece
+	JSR StatusBar_FillDrawCardPiece_Orbs
 
 	; Restore 'Y' (the card index)
 	PLA
@@ -6109,7 +6109,7 @@ EndLevelCard_DrawFlashing:
 	RTS		 ; Return
 
 PRG002_BEA3:
-	JSR StatusBar_DrawCardPiece	 ; Redraw the card
+	JSR StatusBar_FillDrawCardPiece_Orbs	 ; Redraw the card
 
 Object_ResetXToSlotIndex:
 	LDX <SlotIndexBackup		 ; X = object slot index
