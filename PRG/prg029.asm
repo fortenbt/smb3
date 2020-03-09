@@ -2110,10 +2110,8 @@ PRG029_D6FB:
 
 	;;LDA #$01
 	;;;STA Map_ReturnStatus	 ; Map_ReturnStatus = 1 (Player died, level is not clear)
+	JSR Increment_Player_Deaths
 	JMP DeathRestartLevel
-	NOP
-	NOP
-	NOP
 	NOP
 
 PRG029_D702:
@@ -2327,6 +2325,22 @@ PRG029_D7FC:
 
 	;; BEGIN HUGE UNUSED SPACE
 
+Increment_Player_Deaths:
+	LDA Player_Deaths	; Check if both are $FF first for rollover
+	CMP Player_Deaths+1
+	BNE _inc_player_deaths
+	CMP #$FF
+	BEQ _death_overflow	; We've overflowed, just saturate
+_inc_player_deaths:
+	LDA Player_Deaths+1	; Get least significant byte of deaths
+	ADD #$01		; Add 1
+	STA Player_Deaths+1	; Store into least significant digit
+	LDA Player_Deaths	; Get most significant byte of deaths
+	ADC #$00		; Add the carry to it
+	STA Player_Deaths	; Store result
+_death_overflow:
+	RTS
+
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D80A - $D819
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D81A - $D829
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D82A - $D839
@@ -2388,9 +2402,8 @@ PRG029_D7FC:
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DBAA - $DBB9
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DBBA - $DBC9
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DBCA - $DBD9
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DBDA - $DBE9
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DBEA - $DBF9
-	.byte $FF, $FF, $FF, $FF, $FF, $FF  ; $DBFA - $DBFF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+
 
 	;; END HUGE UNUSED SPACE
 
@@ -3100,4 +3113,3 @@ PRG029_DFEB:
 	RTS		 ; Return
 
 ; Rest of ROM bank was empty
-

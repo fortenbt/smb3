@@ -2856,7 +2856,8 @@ PRG030_910C:
 
 	; Player returns to map dead
 
-	LDY #$02	 ; Y = 2 (Will be the Map_Operation value)
+	;;LDY #$02	 ; Y = 2 (Will be the Map_Operation value)
+	LDY #$0D	; ORANGE - Return to map normal state (skip skid and hbro)
 
 	; Map_ReturnStatus = 0
 	LDA #$00
@@ -2868,14 +2869,21 @@ PRG030_910C:
 	LDX Player_Current	 ; X = Player_Current
 
 	; Skid backward
-	LDA #$01
+	;;LDA #$01
+	LDA #$00		; ORANGE - Don't skid
 	STA Map_Player_SkidBack,X
 
 	LDA Map_PlayerLost2PVs
 	BNE PRG030_9128	 ; If Map_PlayerLost2PVs is set, jump to PRG030_9128
 
-	DEC Player_Lives,X	; One less life for the Player...
-	BMI PRG030_9133	 	; If fell below zero, GAMEOVER!; jump to PRG030_9133
+	;;; [ORANGE] Don't lose lives. We (will) display infinite lives anyway
+	;;;DEC Player_Lives,X	; One less life for the Player...
+	;;BMI PRG030_9133	 	; If fell below zero, GAMEOVER!; jump to PRG030_9133
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
 
 PRG030_9128:
 
