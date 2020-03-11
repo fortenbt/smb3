@@ -6036,7 +6036,13 @@ ObjInit_KickedTroop:
 
 ObjInit_OrangeCheep_Hook:
 	JSR Object_SetDeadEmpty			; kill this object
-	LDX UserMsg_Index
+	LDA <Objects_Y,X
+	LSR A
+	LSR A
+	LSR A
+	LSR A
+	STA UserMsg_Index
+	TAX
 	LDA UserMsg_Completions,X		; has this message been shown?
 	BNE _occ_rts				; if so, just return
 	LDY #$01				; Otherwise, initialize the message
