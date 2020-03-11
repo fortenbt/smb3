@@ -2988,38 +2988,12 @@ StatusBar_DrawCardPiece_Orbs:
 ; A = 0 (Mushroom), 1 = (Flower), 2 = (Star)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Player_GetCard:
-	PHA		 ; Save which card we're getting
-
-	LDY Player_Current 
-	BEQ PRG031_FD4C	 ; If Player is Mario, jump to PRG031_FD4C
-
-	LDY #(Inventory_Cards2 - Inventory_Cards)
-
-PRG031_FD4C:
-	LDA Inventory_Cards,Y
-	BEQ PRG031_FD67	 ; If this card is empty, jump to PRG031_FD67
-
-	INY		 ; Y++
-	CPY #$03
-	BEQ PRG031_FD5A	 ; If Mario's cards are full, jump to PRG031_FD5A
-	CPY #(Inventory_Cards2 - Inventory_Cards + 3)
-	BNE PRG031_FD4C	 ; If Luigi's cards are NOT full, jump to PRG031_FD4C
-
-PRG031_FD5A:
-
-	; Rotate cards through
-	LDA Inventory_Cards-2,Y
-	STA Inventory_Cards-3,Y
-	LDA Inventory_Cards-1,Y
-	STA Inventory_Cards-2,Y
-
-	DEY		 ; Y--
-
-PRG031_FD67:
-	PLA		 ; Restore the card we're going to get
-	STA Inventory_Cards,Y	 ; Store the new card
-
-	RTS		 ; Return
+	;;; [ORANGE] Now we do nothing when the card is retrieved. We have unused space for other stuff here if we need it.
+	;;; We do have to place a temporary value in the Inventory_Cards to show the correct graphics
+	LDA #$01		; Show the correct graphics in the "You got an orb" location
+	STA Inventory_Cards
+	RTS
+	.ds 0x22
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

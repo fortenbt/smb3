@@ -5836,9 +5836,13 @@ EndLevelCard_Exit:
 
 	; [ORANGE] unused section of code
 	; Removed because we're no longer storing cards
-	JMP PRG002_BD6B
 	;;;LDA Inventory_Cards+2,Y
-	BEQ PRG002_BD6B		; If we didn't have three cards, jump to PRG002_BD6B
+	;;BEQ PRG002_BD6B		; If we didn't have three cards, jump to PRG002_BD6B
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
 
 	; Otherwise, clear them out!
 	LDA #$00
@@ -5941,7 +5945,7 @@ PRG002_BDBE:
 	PHA
 	LDA #$00
 	STA Inventory_Cards,Y
-	JSR StatusBar_FillDrawCardPiece_Orbs
+	JSR StatusBar_DrawCardPiece_Orbs
 	LDX <SlotIndexBackup		 ; X = object slot index
 	LDY Objects_Var2,X	 ; Y = Var2 (which card is being vanished)
 	PLA
@@ -5950,7 +5954,7 @@ PRG002_BDBE:
 	BNE PRG002_BE11	 ; Jump (technically always) to PRG002_BE11
 
 PRG002_BDF8:
-	JSR StatusBar_FillDrawCardPiece_Orbs
+	JSR StatusBar_DrawCardPiece_Orbs
 
 	LDX <SlotIndexBackup		 ; X = object slot index
 	LDY Objects_Var2,X
@@ -6091,7 +6095,7 @@ EndLevelCard_DrawFlashing:
 	PHA
 
 	; Clear the card
-	JSR StatusBar_FillDrawCardPiece_Orbs
+	JSR StatusBar_DrawCardPiece_Orbs
 
 	; Restore 'Y' (the card index)
 	PLA
@@ -6101,15 +6105,12 @@ EndLevelCard_DrawFlashing:
 
 	; Reset the card to what it should be
 	LDA Objects_Frame,X
-	;;;STA Inventory_Cards,Y
-	NOP
-	NOP
-	NOP
+	STA Inventory_Cards,Y
 
 	RTS		 ; Return
 
 PRG002_BEA3:
-	JSR StatusBar_FillDrawCardPiece_Orbs	 ; Redraw the card
+	JSR StatusBar_DrawCardPiece_Orbs	 ; Redraw the card
 
 Object_ResetXToSlotIndex:
 	LDX <SlotIndexBackup		 ; X = object slot index
