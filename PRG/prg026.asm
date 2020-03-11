@@ -3843,10 +3843,14 @@ UMSJmpEnd
 UserMsgPtr_L:
 	.byte LOW(UserMessage1)
 	.byte LOW(UserMessage2)
+	.byte LOW(UserMessage3)
+	.byte LOW(UserMessage4)
 
 UserMsgPtr_H:
 	.byte HIGH(UserMessage1)
 	.byte HIGH(UserMessage2)
+	.byte HIGH(UserMessage3)
+	.byte HIGH(UserMessage4)
 
 UserMsg_UpdateStatusBar:
 	JSR StatusBar_Fill_DWO		; Fill in the world number and complete the UserMessage (Orange - added deaths and orbs as well)
@@ -4018,7 +4022,7 @@ _msg_line_brk:
 
 _msg_do_character:
 	; UserMsg_TextTimer = 4
-	LDA #$04
+	LDA #$03
 	STA UserMsg_TextTimer
 
 _do_text_rts:
@@ -4149,12 +4153,30 @@ UMT_BOT:
 	.byte $FF
 UMT_BOT_END
 
-UserMessage1: ; H    e    l    l    o    ,    W    o    r    l    d    !
-	.byte $B7, $D4, $DB, $DB, $DE, $9A, $C6, $DE, $CB, $DB, $D3, $EA, $00
-UserMessage2: ; B    i    t    c    h    e    s    !
-	.byte $B1, $D8, $CD, $D2, $D7, $D4, $CC, $EA, $00
-UserMessage3: ; D    o    n    e    z    o    \ff
-	.byte $B3, $DE, $DD, $D4, $8F, $DE, $FF
+UserMessage2:
+	;You can also drop shells. If\nyou're running full speed,\ndropkick them to shelljump.
+	.byte $C8, $DE, $CE, $FE, $D2, $D0, $DD, $FE, $D0, $DB, $CC, $DE, $FE, $D3, $CB, $DE, $DF, $FE, $CC, $D7, $D4, $DB, $DB, $CC, $E9, $FE, $B8, $D5, $00
+	.byte $8C, $DE, $CE, $AB, $CB, $D4, $FE, $CB, $CE, $DD, $DD, $D8, $DD, $D6, $FE, $D5, $CE, $DB, $DB, $FE, $CC, $DF, $D4, $D4, $D3, $9A, $00
+	.byte $D3, $CB, $DE, $DF, $DA, $D8, $D2, $DA, $FE, $CD, $D7, $D4, $DC, $FE, $CD, $DE, $FE, $CC, $D7, $D4, $DB, $DB, $D9, $CE, $DC, $DF, $E9, $FF
+
+
+UserMessage1:
+	;If you get stuck,the new\npause menu can restart or\nreturn to the map.
+	.byte $B8, $D5, $FE, $8C, $DE, $CE, $FE, $D6, $D4, $CD, $FE, $CC, $CD, $CE, $D2, $DA, $9A, $CD, $D7, $D4, $FE, $DD, $D4, $81, $00
+	.byte $DF, $D0, $CE, $CC, $D4, $FE, $DC, $D4, $DD, $CE, $FE, $D2, $D0, $DD, $FE, $CB, $D4, $CC, $CD, $D0, $CB, $CD, $FE, $DE, $CB, $00
+	.byte $CB, $D4, $CD, $CE, $CB, $DD, $FE, $CD, $DE, $FE, $CD, $D7, $D4, $FE, $DC, $D0, $DF, $E9, $FF
+
+UserMessage3:
+	;Welcome to Super Orb Bros\!\nMany new features await. Try\nthrowing shells upward.
+	.byte $C6, $D4, $DB, $D2, $DE, $DC, $D4, $FE, $CD, $DE, $FE, $C2, $CE, $DF, $D4, $CB, $FE, $BE, $CB, $D1, $FE, $B1, $CB, $DE, $CC, $EA, $00
+	.byte $BC, $D0, $DD, $8C, $FE, $DD, $D4, $81, $FE, $D5, $D4, $D0, $CD, $CE, $CB, $D4, $CC, $FE, $D0, $81, $D0, $D8, $CD, $E9, $FE, $C3, $CB, $8C, $00
+	.byte $CD, $D7, $CB, $DE, $81, $D8, $DD, $D6, $FE, $CC, $D7, $D4, $DB, $DB, $CC, $FE, $CE, $DF, $81, $D0, $CB, $D3, $E9, $FF
+
+UserMessage4:
+	;Regrabbing A while holding\nUP when falling lets you\ntwirl to slow your fall.
+	.byte $C1, $D4, $D6, $CB, $D0, $D1, $D1, $D8, $DD, $D6, $FE, $B0, $FE, $81, $D7, $D8, $DB, $D4, $FE, $D7, $DE, $DB, $D3, $D8, $DD, $D6, $00
+	.byte $C4, $BF, $FE, $81, $D7, $D4, $DD, $FE, $D5, $D0, $DB, $DB, $D8, $DD, $D6, $FE, $DB, $D4, $CD, $CC, $FE, $8C, $DE, $CE, $00
+	.byte $CD, $81, $D8, $CB, $DB, $FE, $CD, $DE, $FE, $CC, $DB, $DE, $81, $FE, $8C, $DE, $CE, $CB, $FE, $D5, $D0, $DB, $DB, $E9, $FF
 
 ;;;==========================================================================================================
 ;;;= ORANGE - The following is for our new status bar
