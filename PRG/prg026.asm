@@ -4169,8 +4169,8 @@ UserMessage1:
 UserMessage3:
 	;Welcome to Super Orb Bros\!\nMany new features await. Try\nthrowing shells upward.
 	.byte $C6, $D4, $DB, $D2, $DE, $DC, $D4, $FE, $CD, $DE, $FE, $C2, $CE, $DF, $D4, $CB, $FE, $BE, $CB, $D1, $FE, $B1, $CB, $DE, $CC, $EA, $00
-	.byte $BC, $D0, $DD, $8C, $FE, $DD, $D4, $81, $FE, $D5, $D4, $D0, $CD, $CE, $CB, $D4, $CC, $FE, $D0, $81, $D0, $D8, $CD, $E9, $FE, $C3, $CB, $8C, $00
-	.byte $CD, $D7, $CB, $DE, $81, $D8, $DD, $D6, $FE, $CC, $D7, $D4, $DB, $DB, $CC, $FE, $CE, $DF, $81, $D0, $CB, $D3, $E9, $FF
+	.byte $BC, $D0, $DD, $8C, $FE, $DD, $D4, $81, $FE, $D5, $D4, $D0, $CD, $CE, $CB, $D4, $CC, $FE, $D0, $81, $D0, $D8, $CD, $E9, $00
+	.byte $C3, $CB, $8C, $FE, $CD, $D7, $CB, $DE, $81, $D8, $DD, $D6, $FE, $CC, $D7, $D4, $DB, $DB, $CC, $FE, $CE, $DF, $81, $D0, $CB, $D3, $E9, $FF
 
 UserMessage4:
 	;Regrabbing A while holding\nUP when falling lets you\ntwirl to slow your fall.
