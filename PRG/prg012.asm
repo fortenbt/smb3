@@ -25,12 +25,12 @@ Tile_Layout_TS0:
 
 	; Upper left 8x8 pattern per tile
 	.byte $88, $DC, $FF, $8C, $8C, $8C, $8C, $8C, $8C, $8C, $8C, $8C, $8C, $8C, $8C, $8C ; Tiles $00 - $0F
-	.byte $8C, $8C, $8C, $8C, $8C, $8C, $8C, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $10 - $1F
+	.byte $8C, $8C, $8C, $8C, $8C, $8C, $8C, $FF, $C4, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $10 - $1F
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $20 - $2F
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
 	.byte $88, $DC, $FE, $CF, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $5C, $FC, $FD, $FF, $FE ; Tiles $40 - $4F
 	.byte $90, $0C, $0C, $0C, $B6, $58, $B6, $4B, $4A, $4A, $4B, $FE, $4A, $4A, $4A, $60 ; Tiles $50 - $5F
-	.byte $68, $50, $54, $FE, $56, $FF, $FE, $C4, $04, $2E, $64, $FF, $FF, $FF, $FF, $FF ; Tiles $60 - $6F
+	.byte $68, $50, $54, $FE, $56, $FF, $FE, $C4, $04, $2E, $64, $FF, $C4, $FF, $FF, $FF ; Tiles $60 - $6F
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $70 - $7F
 	.byte $88, $DC, $9F, $9E, $AC, $9E, $9E, $10, $10, $10, $9B, $9F, $9B, $10, $10, $10 ; Tiles $80 - $8F
 	.byte $9F, $9F, $10, $9F, $9B, $10, $10, $9B, $10, $AC, $9D, $9E, $9E, $9B, $9F, $10 ; Tiles $90 - $9F
@@ -43,12 +43,12 @@ Tile_Layout_TS0:
 
 	; Lower left 8x8 pattern per tile
 	.byte $89, $DD, $FF, $8E, $8E, $8E, $8E, $8E, $8E, $8E, $8E, $8E, $8E, $BE, $BE, $BE ; Tiles $00 - $0F
-	.byte $BE, $BE, $BE, $BE, $BE, $BE, $BE, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $10 - $1F
+	.byte $BE, $BE, $BE, $BE, $BE, $BE, $BE, $FF, $C5, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $10 - $1F
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $20 - $2F
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
 	.byte $89, $DD, $FE, $CF, $FE, $E1, $FE, $E1, $FE, $E1, $E1, $5D, $FC, $FD, $CE, $CE ; Tiles $40 - $4F
 	.byte $91, $0D, $0D, $0D, $B7, $59, $B7, $48, $4A, $49, $4D, $4C, $49, $4A, $4A, $61 ; Tiles $50 - $5F
-	.byte $BB, $51, $55, $42, $56, $42, $E1, $C5, $05, $2F, $65, $FF, $FF, $FF, $FF, $FF ; Tiles $60 - $6F
+	.byte $BB, $51, $55, $42, $56, $42, $E1, $C5, $05, $2F, $65, $FF, $C5, $FF, $FF, $FF ; Tiles $60 - $6F
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $70 - $7F
 	.byte $89, $DD, $96, $97, $99, $1E, $10, $1E, $97, $97, $99, $97, $99, $1E, $1E, $1E ; Tiles $80 - $8F
 	.byte $1E, $1E, $1E, $97, $AE, $96, $96, $99, $97, $9B, $97, $1E, $97, $99, $1E, $97 ; Tiles $90 - $9F
@@ -61,12 +61,12 @@ Tile_Layout_TS0:
 
 	; Upper right 8x8 pattern per tile	
 	.byte $8A, $DE, $FF, $8D, $8D, $8D, $8D, $8D, $8D, $8D, $8D, $8D, $8D, $FB, $FB, $FB ; Tiles $00 - $0F
-	.byte $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $10 - $1F
+	.byte $FB, $FB, $FB, $FB, $FB, $FB, $FB, $FF, $C6, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $10 - $1F
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $20 - $2F
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
 	.byte $8A, $DE, $FE, $CF, $FE, $FE, $C0, $FE, $C0, $FE, $C0, $5E, $FC, $FD, $FF, $FE ; Tiles $40 - $4F
 	.byte $92, $0E, $0E, $0E, $B8, $5A, $B8, $4A, $4B, $4A, $4A, $FE, $4B, $4A, $4A, $62 ; Tiles $50 - $5F
-	.byte $69, $52, $54, $FE, $57, $FF, $FE, $C6, $06, $30, $66, $FF, $FF, $FF, $FF, $FF ; Tiles $60 - $6F
+	.byte $69, $52, $54, $FE, $57, $FF, $FE, $C6, $06, $30, $66, $FF, $C6, $FF, $FF, $FF ; Tiles $60 - $6F
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $70 - $7F
 	.byte $8A, $DE, $9C, $9D, $9D, $9D, $AD, $11, $11, $11, $9C, $9A, $11, $11, $9A, $9C ; Tiles $80 - $8F
 	.byte $11, $9C, $9C, $11, $11, $11, $9A, $11, $9A, $9E, $AD, $9D, $9D, $9A, $11, $9C ; Tiles $90 - $9F
@@ -79,12 +79,12 @@ Tile_Layout_TS0:
 
 	; Lower right 8x8 pattern per tile
 	.byte $8B, $DF, $FF, $8F, $A4, $A5, $A6, $A7, $C8, $C9, $CA, $CB, $BF, $8F, $A4, $A5 ; Tiles $00 - $0F
-	.byte $A6, $A7, $C8, $C9, $CA, $CB, $BF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $10 - $1F
+	.byte $A6, $A7, $C8, $C9, $CA, $CB, $BF, $FF, $C7, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $10 - $1F
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $20 - $2F
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
 	.byte $8B, $DF, $FE, $CF, $CD, $E1, $C0, $CD, $CD, $E1, $CD, $5F, $FC, $FD, $CE, $CE ; Tiles $40 - $4F
 	.byte $93, $0F, $0F, $0F, $B9, $5B, $B9, $FE, $4F, $49, $4A, $49, $48, $4A, $4A, $63 ; Tiles $50 - $5F
-	.byte $BD, $53, $55, $43, $57, $43, $CD, $C7, $07, $31, $67, $FF, $FF, $FF, $FF, $FF ; Tiles $60 - $6F
+	.byte $BD, $53, $55, $43, $57, $43, $CD, $C7, $07, $31, $67, $FF, $DF, $FF, $FF, $FF ; Tiles $60 - $6F
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $70 - $7F
 	.byte $8B, $DF, $95, $94, $1F, $1F, $98, $94, $1F, $94, $94, $98, $1F, $1F, $98, $1F ; Tiles $80 - $8F
 	.byte $1F, $1F, $94, $1F, $95, $95, $AF, $94, $98, $94, $9A, $94, $1F, $98, $94, $1F ; Tiles $90 - $9F
@@ -366,7 +366,9 @@ PRG031_A54C:
 
 PRG031_A556:
 	LDA Map_RemoveTo_Tiles,X	; Get the replacement tile
-	JMP PRG031_A581			; Jump to PRG031_A581
+	;;; [ORANGE] Always check our custom reload tiles
+	;;;JMP PRG031_A581			; Jump to PRG031_A581
+	JMP _check_custom_reload_tiles
 
 PRG012_A55C:
 	LDA <Temp_Var2
@@ -402,12 +404,13 @@ PRG012_A57C:
 
 	;;; [ORANGE] We hook here so that when the map is reloaded, we can look at the
 	;;; Level_Orbs bits to get the proper completed tile.
-	;;;LDA Map_CompleteByML_Tiles,X	; Get proper completion tile
-	JSR GetLevelCompleteTile_Reload
-
-PRG031_A581:
-	LDY <Temp_Var5		 ; Y = Temp_Var5 (offset to tile)
-	STA [Map_Tile_AddrL],Y	 ; Set proper completion tile!
+	LDA Map_CompleteByML_Tiles,X	; Get proper completion tile
+	;PRG031_A581:
+	;;LDY <Temp_Var5		 ; Y = Temp_Var5 (offset to tile)
+	;;;STA [Map_Tile_AddrL],Y	 ; Set proper completion tile!
+_check_custom_reload_tiles:
+	JSR SetLevelCompleteTile_Reload
+	NOP
 
 PRG012_A585:
 	LSR <Temp_Var2	 ; Temp_Var2 >>= 1
@@ -1101,12 +1104,14 @@ Levels_Entered_XY_12:
 	.byte $00, $00	; ORANGE TODO: LEVEL 9
 	.byte $00, $00	; ORANGE TODO: LEVEL 10
 	.byte $00, $00	; ORANGE TODO: LEVEL 11?
-	.byte $00, $00	; ORANGE TODO: LEVEL 12?
+	.byte $06, $08	; ORANGE TODO: LEVEL 12?
 LEXY_END_12
 
-
-GetLevelCompleteTile_Reload:
+SetLevelCompleteTile_Reload:
 	;;; Temp_Var1 = X of level, Temp_Var2 = Y of level
+	;;; A is the tile we need to use to replace the completed tile
+	;;; if the tile is actually complete.
+	PHA					; Save off our replacement tile
 	LDX #0
 _chk_loop12:
 	LDA Levels_Entered_XY_12,X
@@ -1125,16 +1130,23 @@ _findorboffs_done12:
 	LSR A				; The offset we found is doubled, so divide by 2
 	TAX
 	CPX #12				; max offset is 11
-	BCS _glct_rts			; This isn't one of our tiles...
+	BCS _slct_orig_tile	; This isn't one of our tiles...
 	; Found our level, check its Level_Orbs
 	LDA Level_Orbs,X
-	BEQ _default_comp		; If it's zero, the level is totally complete
+	BEQ _slct_orig_tile	; If it's zero, the level is totally complete
 	; Non-zero, so we need to get the re-enterable tile
+	PLA					; Remove our stored tile from the stack
+	CMP #TILE_FORTRUBBLE	; If this was a destroyed fort, we have a custom tile for the partially destroyed fort
+	BNE _slct_non_fort
+	LDA #$6C
+	BNE _slct_set_tile	; always branch
+_slct_non_fort:
 	TXA
 	ADC #13				; tile ID is 13 more than the index
-	RTS
-_default_comp:
-	LDX <Temp_Var4
-	LDA Map_CompleteByML_Tiles,X	; Get proper completion tile
-_glct_rts:
+	BNE _slct_set_tile	; always branch
+_slct_orig_tile:
+	PLA					; This is actually complete, restore our replacement tile
+_slct_set_tile:
+	LDY <Temp_Var5		 ; Y = Temp_Var5 (offset to tile)
+	STA [Map_Tile_AddrL],Y	 ; Set proper completion tile!
 	RTS

@@ -3508,7 +3508,7 @@ Levels_Entered_XY:
 	.byte $00, $00	; ORANGE TODO: LEVEL 9
 	.byte $00, $00	; ORANGE TODO: LEVEL 10
 	.byte $00, $00	; ORANGE TODO: LEVEL 11?
-	.byte $00, $00	; ORANGE TODO: LEVEL 12?
+	.byte $60, $60	; 1-fort
 LEXY_END
 
 

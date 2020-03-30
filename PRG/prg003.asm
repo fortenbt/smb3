@@ -45,7 +45,7 @@ ObjectGroup02_InitJumpTable:
 	.word ObjInit_RotoDiscDualCW	; Object $5A - OBJ_ROTODISCCLOCKWISE
 	.word ObjInit_RotoDiscDualCCW	; Object $5B - OBJ_ROTODISCCCLOCKWISE
 	.word ObjInit_DoNothing		; Object $5C - OBJ_ICEBLOCK
-	.word ObjInit_Tornado		; Object $5D - OBJ_TORNADO
+	.word ObjInit_DoNothing		; Object $5D - OBJ_TORNADO
 	.word ObjInit_RotoDiscDualCW	; Object $5E - OBJ_ROTODISCDUALOPPOSE
 	.word ObjInit_RotoDiscDualCW	; Object $5F - OBJ_ROTODISCDUALOPPOSE2
 	.word ObjInit_RotoDiscDualCW	; Object $60 - OBJ_ROTODISCDUALCCLOCK
@@ -87,7 +87,7 @@ ObjectGroup02_NormalJumpTable:
 	.word ObjNorm_RotoDisc		; Object $5A - OBJ_ROTODISCCLOCKWISE
 	.word ObjNorm_RotoDisc		; Object $5B - OBJ_ROTODISCCCLOCKWISE
 	.word ObjNorm_IceBlock		; Object $5C - OBJ_ICEBLOCK
-	.word ObjNorm_Tornado		; Object $5D - OBJ_TORNADO
+	.word ObjNorm_DoNothing		; Object $5D - OBJ_TORNADO
 	.word ObjNorm_RotoDiscDualOpp	; Object $5E - OBJ_ROTODISCDUALOPPOSE
 	.word ObjNorm_RotoDiscDualOpp2	; Object $5F - OBJ_ROTODISCDUALOPPOSE2
 	.word ObjNorm_RotoDiscDual	; Object $60 - OBJ_ROTODISCDUALCCLOCK
@@ -1787,7 +1787,7 @@ PRG003_A8FF:
 
 	STA Player_VibeDisable	 ; Clear Player vibrationally disabled flag
 
-	JSR DoTimeBonus	 ; Convert remaining time into score
+	JSR DoTimeBonus_AndUpdateOrbs	 ; Convert remaining time into score
 	BNE PRG003_A910	 ; If not done converting, jump to PRG003_A910 (RTS)
 
 	; Set timer to $40
@@ -1816,7 +1816,9 @@ PRG003_A911:
 	STA RotatingColor_Cnt
 
 	; Victory fanfare
-	LDA Sound_QMusic1
+	;;; [ORANGE] Good place to hook to give player the orb
+	;;;LDA Sound_QMusic1
+	JSR GivePlayerQBallOrb
 	ORA #MUS1_BOSSVICTORY
 	STA Sound_QMusic1
 
@@ -4031,487 +4033,22 @@ PRG003_B471:
 PRG003_B47A:
 	RTS		 ; Return
 
-Tornado_InitXVel:	.byte $08, -$08
+;;; [ORANGE] Removed the tornado
 
-ObjInit_Tornado:
-	JSR Level_ObjCalcXDiffs
+	;;; This is called from ObjNorm_BoomBoomQBall
+GivePlayerQBallOrb:
+	JSR DoCustomEndLevelCard11
+	LDA Sound_QMusic1
+	RTS
 
-	; Set initial X velocity towards Player
-	LDA Tornado_InitXVel,Y
-	STA <Objects_XVel,X
+	;;; This is called from ObjNorm_BoomBoomQBall
+DoTimeBonus_AndUpdateOrbs:
+	JSR StatusBar_DrawCardPiece_Orbs	; Redraw the card
+	LDX <SlotIndexBackup	 			; restore X = object slot index
+	JMP DoTimeBonus						; tail call DoTimeBonus
 
-	; Var4 = $A5
-	LDA #$a5
-	STA <Objects_Var4,X
+	.ds 0x2CB
 
-	RTS		 ; Return
-
-Tornado_ParticleOffsets:
-	.byte $18, $18, $17, $17, $16, $15, $14, $13, $11, $0F, $0D, $0B, $09, $07, $05, $02
-	.byte $12, $12, $11, $11, $10, $0F, $0F, $0E, $0C, $0B, $09, $08, $06, $05, $03, $01
-	.byte $0E, $0E, $0D, $0D, $0C, $0C, $0B, $0B, $09, $08, $07, $06, $05, $04, $02, $01
-	.byte $0A, $0A, $09, $09, $09, $08, $08, $07, $07, $06, $05, $04, $03, $02, $02, $00
-	.byte $07, $07, $06, $06, $06, $06, $05, $05, $04, $04, $03, $03, $02, $02, $01, $00
-	.byte $03, $03, $02, $02, $02, $02, $02, $02, $02, $01, $01, $01, $01, $00, $00, $00
-	.byte $02, $02, $01, $01, $01, $01, $01, $01, $01, $01, $01, $00, $00, $00, $00, $00
-	.byte $01, $01, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
-
-Tornado_ScatterY:
-	.byte $00, $0C, $18, $24, $30, $3C, $48, $54
-
-	; Causes wider to narrow spreading based on position of tornado particle
-Tornado_SpreadFreq:
-	.byte $38, $30, $28, $20, $18, $10, $08, $00
-
-Tornado_ParticleDivCnt:
-	.byte $01, $02
-
-PRG003_B51C:
-	.byte $01, $02, $01, $FF, $20, $E0
-
-Tornado_MaskOffset:
-	.byte $09, $09, $09, $08, $07, $06, $07, $08
-
-ObjNorm_Tornado:
-	JSR Object_DeleteOffScreen	 ; Delete object if it falls too far off-screen
-
-	LDA <Player_HaltGame
-	BNE PRG003_B534	 ; If gameplay is halted, jump to PRG003_B534
-
-	JSR Object_ApplyXVel	 ; Apply X velocity
-
-PRG003_B534:
-	LDY <Objects_Var4,X	 ; Y = Var4
-	BNE PRG003_B53B	 ; If Var4 <> 0, jump to PRG003_B53B
-
-	JMP Object_Delete	 ; Delete object and don't come back!
-
-PRG003_B53B:
-	LDA <Counter_1
-	AND #$01
-	BNE PRG003_B543	 ; Every other tick, jump to PRG003_B543
-
-	DEC <Objects_Var4,X	 ; Var4--
-
-PRG003_B543:
-	CPY #$40
-	BGE PRG003_B551	 ; If Var4 >= $40, jump to PRG003_B551
-
-	; They possibly intended this to divide Counter_1, but because of
-	; the previous AND instruction, this will shift it to nothing...
-	LSR A
-	LSR A
-	LSR A
-	LSR A
-
-	ADD #$03
-	JMP PRG003_B55D	 ; Jump to PRG003_B55D
-
-PRG003_B551:
-	LDA <Counter_1
-	LSR A
-	LSR A
-	LSR A
-	LSR A
-	AND #$07
-	TAY		 ; Y = 0 to 7, by counter / 16
-
-	LDA Tornado_MaskOffset,Y
-
-PRG003_B55D:
-	STA <Objects_Var5,X	 ; -> Var5
-
-	ADD <Objects_VarBSS,X
-	STA <Objects_VarBSS,X
-
-	STA <Temp_Var15		 ; -> Temp_Var15
-
-	LDA <Counter_1
-	LSR A
-	LSR A
-	LSR A
-	AND #$01
-	TAY		 ; Y = 0 or 1
-
-	LDA Tornado_ParticleDivCnt,Y
-	STA <Temp_Var13		 ; -> Temp_Var13
-
-	JSR Object_CalcSpriteXY_NoHi	 ; Calculate sprites
-
-	; Draw 7 scatter particles to represent the tornado
-	LDX #$07	 ; X = 7
-PRG003_B578:
-	STX <Temp_Var16	 ; -> Temp_Var16
-
-	JSR Tornado_ScatterParticle	 ; Scatters tornado particle
-	JSR Tornado_DrawParticle	 ; Draw the tornado particle
-
-	DEX		 ; X--
-	BPL PRG003_B578	 ; While X >= 0, loop
- 
-	LDX <SlotIndexBackup		 ; X = object slot index
-
-	LDA Player_IsDying
-	ORA Player_OffScreen
-	BNE PRG003_B5C2	 ; If Player is dead or off-screen, jump to PRG003_B5C2 (RTS)
-
-	LDA Objects_Var3,X
-	BEQ PRG003_B5C3	 ; If Var3 = 0, jump to PRG003_B5C3
-
-	LDA <Counter_1
-	AND #$1f
-	ORA #$20
-	STA Player_TwisterSpin	 ; Set Player as twirling from Tornado
-
-	LDY #$00	 ; Y = 0
-
-	LDA <Player_Y
-	CMP #48
-	BLT PRG003_B5A4	 ; If Player Y < 48, jump to PRG003_B5A4
-
-	INY		 ; Y = 1
-
-PRG003_B5A4:
-
-	; Var6 keeps a copy of how it has accelerate the Player
-	LDA Objects_Var6,X
-	CMP Tornado_PlayerYLimit,Y
-	BEQ PRG003_B5B3	 ; If Var6 = Player Y limit, jump to PRG003_B5B3
-
-	ADD Tornado_PlayerYAccel,Y	 ; Accelerate!
-	STA Objects_Var6,X	 ; Update Var6
-
-PRG003_B5B3:
-	STA <Player_YVel	 ; Set same to Player's Y velocity
-
-	; Halt Player's horizontal movement
-	LDA #$00
-	STA <Player_XVel
-
-	JSR Level_ObjCalcXDiffs	
-
-	; Set a little plug-along value to the Player
-	LDA Tornado_PlayerXVelAdj,Y
-	STA Player_XVelAdj
-
-PRG003_B5C2:
-	RTS		 ; Return
-
-
-PRG003_B5C3:
-	JSR Level_ObjCalcXDiffs	
-
-	; Palette select 0/1 depending on which side the particle is on
-	TYA
-	STA Objects_FlipBits,X
-
-	BEQ PRG003_B5D3	 ; If on the zero side, jump to PRG003_B5D3
-
-	; Otherwise, negate Temp_Var16
-	LDA <Temp_Var16
-	JSR Negate
-	STA <Temp_Var16
-
-PRG003_B5D3:
-
-	LDA <Temp_Var16
-	CMP #$10
-	BGE PRG003_B5EF	 ; If Temp_Var16 >= $10, jump to PRG003_B5EF
-
-	LDA <Player_Y
-	CMP #112
-	BLT PRG003_B5EF	 ; If Player Y < 112, jump to PRG003_B5EF
-
-	INC Objects_Var3,X	 ; Var3++
-
-	; Push Player upward
-	DEC <Player_Y
-	DEC <Player_Y
-
-	STA <Player_InAir ; Flag Player as mid-air
-
-	; Upward Player!
-	LDA #-$20
-	STA <Player_YVel
-
-	; Var6 = last set Player Y velocity
-	STA Objects_Var6,X
-
-PRG003_B5EF:
-	LDA <Temp_Var16
-	LSR A
-	LSR A
-	LSR A
-	LSR A
-	LSR A
-	TAY		 ; Y = 0-7, based on upper 3 bits of Temp_Var16
-	STY <Temp_Var1	 ; -> Temp_Var1
-
-	LDA Tornado_PlayerXVelAdj2,Y
-
-	LDY Objects_FlipBits,X
-	BNE PRG003_B604	 ; If on the 1 side, jump to PRG003_B604
-
-	JSR Negate	 ; Otherwise, negate value from Tornado_PlayerXVelAdj2
-
-PRG003_B604:
-	STA Player_XVelAdj	 ; -> Player_XVelAdj
-
-	LDA <Temp_Var16	
-	CMP #$10
-	BGE PRG003_B61C	 ; If Temp_Var16 >= $10, jump to PRG003_B61C
-
-	LDA <Player_Y
-	LSR A	
-	LSR A	
-	LSR A	
-	LSR A	
-	TAY		 ; Y = upper 4 bits of Player's position (i.e. the tile grid row)
-
-	; Accelerate Player based on his vertical position
-	LDA <Player_YVel
-	ADD Tornado_PlayerYVelAccelByRow,Y
-	STA <Player_YVel
-
-PRG003_B61C:
-	RTS		 ; Return
-
-Tornado_PlayerYLimit:	.byte $40, -$40
-Tornado_PlayerYAccel:	.byte $04, -$04
-Tornado_PlayerXVelAdj:	.byte -$08, $08
-
-Tornado_PlayerXVelAdj2:
-	.byte $18, $10, $0A, $06, $00, $00, $00, $00
-
-Tornado_PlayerYVelAccelByRow:
-	.byte $10, $04, -$08, -$08, -$08, -$08, -$08, -$08, -$02, -$02, -$02, -$02, $10, $10, $10, $10
-
-Tornado_ScatterParticle:
-	TXA		  
-	ASL A
-	ASL A
-	ASL A
-	ASL A
-	STA <Temp_Var14	 ; Temp_Var14 = 'X' << 4
-
-	; Temp_Var15 += Tornado_SpreadFreq[X]
-	LDA <Temp_Var15
-	ADD Tornado_SpreadFreq,X
-	STA <Temp_Var15
-
-	LDA <Temp_Var15
-	AND #%00001111
-	TAY		 ; Y = lower 4 bits of Temp_Var15
-
-	LDA <Temp_Var15
-	AND #%00010000
-	BEQ PRG003_B659	 ; If Temp_Var15 bit 4 is NOT set, jump to PRG003_B659
-
-	; Sort of negates 'Y'
-	TYA
-	EOR #$ff
-	TAY
-
-PRG003_B659:
-	LDA #$00
-
-	CPY #$10
-	BEQ PRG003_B668	 ; If 'Y' = $10, jump to PRG003_B668
-
-	TYA
-
-	AND #%00001111
-	ORA <Temp_Var14	 ; OR in Temp_Var14
-
-	TAY
-
-	LDA Tornado_ParticleOffsets,Y	 ; A = Tornado_ParticleOffsets[Y]
-
-PRG003_B668:
-	STA <Temp_Var10		 ; -> Temp_Var10 (particle offset X)
-
-	LDA <Temp_Var15
-	AND #%00001111
-	TAY		 ; Y = lower 4 bits of Temp_Var15 
-
-	LDA <Temp_Var15
-	AND #%00010000
-	BNE PRG003_B679	 ; If Temp_Var15 bit 4 is set, jump to PRG003_B679
-
-	; Sort of negates 'Y'
-	TYA
-	EOR #$ff
-	TAY
-
-PRG003_B679:
-	LDA #$00
-
-	CPY #$10
-	BEQ PRG003_B693	 ; If 'Y' = $10, jump to PRG003_B693
-
-	TYA
-
-	AND #%00001111
-	ORA <Temp_Var14	 ; OR in Temp_Var14
-
-	TAY
-
-	LDA Tornado_ParticleOffsets,Y
-
-	LSR A
-	LSR A
-
-	LDY <Temp_Var13	 ; Y = Temp_Var13
-
-	DEY		 ; Y--
-
-	BEQ PRG003_B693	 ; If Y = 0, jump to PRG003_B693
-
-	LSR A
-
-	DEY		 ; Y--
-	BEQ PRG003_B693	 ; If Y = 0, jump to PRG003_B693 (... next line)
-
-PRG003_B693:
-	STA <Temp_Var9	; -> Temp_Var9 (particle offset Y)
-
-	LDA <Temp_Var15
-	AND #%00110000
-	BEQ PRG003_B6B1	 ; If neither bit 4 or 5 is set, jump to PRG003_B6B1
-
-	CMP #%00010000
-	BEQ PRG003_B6A6	 ; If bit 4 is not set, jump to PRG003_B6A6
-
-	CMP #%00110000
-	BEQ PRG003_B6B2	 ; If bit 4 and 5 are not set, jump to PRG003_B6B2
-
-	JSR PRG003_B6B2	 ; Negate Temp_Var10
-
-PRG003_B6A6:
-	LDY #$01	 ; Y = 1
-
-PRG003_B6A8:
-	; Negate Temp_Var9/10
-	LDA Temp_Var9,Y
-	JSR Negate
-	STA Temp_Var9,Y
-
-PRG003_B6B1:
-	RTS		 ; Return
-
-PRG003_B6B2:
-	LDY #$00	 ; Y = 0
-	BEQ PRG003_B6A8	 ; Jump (technically always) to PRG003_B6A8
-
-PRG003_B6B6:
-	.byte $00, $02, $04, $06, $08, $06, $04, $02, $00, $02, $04, $06, $08, $06, $04, $50
-
-Tornado_Masks:
-	.byte $0F, $03, $01, $00, $00, $00, $00, $00
-
-Tornado_DrawParticle:
-	LDY <SlotIndexBackup 	; Y = object's slot index
-
-	LDA Objects_Var5,Y
-	BEQ PRG003_B6B1	 ; If Var5 = 0, jump to PRG003_B6B1 (RTS)
-
-	LSR A
-	AND #$07
-	TAY		 ; Y = 0 to 7
-
-	TXA	; object slot index -> 'A'
-	AND Tornado_Masks,Y
-	STA <Temp_Var1	 ; -> Temp_Var1
-
-	LDA <Counter_1
-	AND Tornado_Masks,Y
-	CMP <Temp_Var1
-	BNE PRG003_B6B1	 ; If masked counter value = Temp_Var1, jump to PRG003_B6B1 (RTS)
-
-	CPX #$06
-	BLT PRG003_B6F3	 ; If object slot < 6, jump to PRG003_B6F3
-
-	JSR Object_GetRandNearUnusedSpr
-
-	LDX <SlotIndexBackup		 ; X = object slot index
-	BGS PRG003_B6FD	 ; Jump (technically always) to PRG003_B6FD
-
-PRG003_B6F3:
-	TXA
-
-	ASL A
-	ASL A	; A *= 4 (next sprite over)
-
-	LDX <SlotIndexBackup	 ; X = object slot index
-	ADD Object_SprRAM,X	 ; Base Sprite_RAM offset
-
-	TAY		 ; Sprite_RAM offset -> 'Y'
-
-PRG003_B6FD:
-	STY <Temp_Var14	 ; -> Temp_Var14
-
-	LDA <Counter_1
-	AND #$0f		; 0-15 counter value
-	ADD Objects_SpriteY,X	; Add 0-15 to SpriteY
-
-	; Temp_Var1 (Sprite Y) = Temp_Var16 + Tornado_ScatterY[X] + Temp_Var9
-	LDX <Temp_Var16	
-	ADD Tornado_ScatterY,X
-	ADD <Temp_Var9
-	STA <Temp_Var1
-
-	BCS PRG003_B753	 	; If carry set, jump to PRG003_B753 (went too low, so skip it)
-
-	LDA <Counter_1
-	LSR A	
-	LSR A	
-	LSR A	
-	AND #$07	 ; A = 0-7
-	ADD <Temp_Var16	 ; 'A' += Temp_Var16
-	TAX		 ; -> 'X'
-
-	; Temp_Var2 (Sprite X) = Tornado's Sprite X + Temp_Var10
-	LDA PRG003_B6B6,X ; A = PRG003_B6B6[X]
-	CLC		 ; Clear carry
-	LDX <SlotIndexBackup		 ; X = object slot index
-	ADC Objects_SpriteX,X
-	ADD <Temp_Var10
-	STA <Temp_Var2
-
-	JSR Sprite_NoCarryIfVisible	
-	BCS PRG003_B753	 ; If this particle is not visible, jump to PRG003_B753
-
-	LDY <Temp_Var14		 ; Y = Temp_Var14
-
-	; Set particle sprite Y
-	LDA <Temp_Var1
-	STA Sprite_RAM+$00,Y
-
-	; Set particle sprite X
-	LDA <Temp_Var2	
-	STA Sprite_RAM+$03,Y
-
-	; Pattern $17
-	LDA #$17
-	STA Sprite_RAM+$01,Y
-
-	LDX #$03	 ; X = 3
-
-	LDA <Temp_Var15
-	AND #$3F
-	CMP #$20
-	BLT PRG003_B74F	 ; If lower 5 bits of Temp_Var15 < $20, jump to PRG003_B74F
-
-	LDX #$01	 ; Otherwise, X = 1
-
-PRG003_B74F:
-
-	; Set particle sprite attributes
-	TXA
-	STA Sprite_RAM+$02,Y
-
-PRG003_B753:
-	LDX <Temp_Var16	 ; X = Temp_Var16
 
 ObjInit_Blooper:
 	RTS		 ; Return
