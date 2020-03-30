@@ -4995,11 +4995,11 @@ Map_NoAnimUpdate:
 ; Rest of ROM bank was empty
 
 ;;; [ORANGE] These represent the orbs located in each level.
-;;; LSB Bit 0 is EndLevelCard Orb
+;;; LSB Bit 0 is EndLevelCard Orb (or fortress boom boom)
 ;;;     Bit 1 is TreasureChest secret Orb
 ;;;     Others?
 Level_Orbs_Initial:
-	.byte $03, $03, $03, $03, $03, $03, $03, $03, $03, $01, $01, $01
+	.byte $03, $03, $03, $03, $03, $03, $03, $03, $03, $01, $01, $03
 LOI_END
 
 InitializeLevelOrbs:
@@ -5069,7 +5069,7 @@ GetLevelCompleteTile:
 	TXA
 	PHA				; save off X
 	JSR _FindLevelOrbOffset
-	CPX #(LOI_END-Level_Orbs_Initial)	; max offset is 12
+	CPX #(LOI_END-Level_Orbs_Initial)	; max valid index is 11
 	; If we didn't find it, assume fully complete
 	BCS _get_mariocomp
 	; Found our level, check its Level_Orbs
@@ -5081,9 +5081,10 @@ GetLevelCompleteTile:
 	PLA
 	TAX				; restore X
 	TYA				; get our tile's index
-	LDY Temp_Var4			; restore Y
 	CLC
 	ADC #13				; tile ID is 13 more than the index
+_partial_comp_rts
+	LDY Temp_Var4			; restore Y
 	RTS
 _get_mariocomp:
 	PLA
@@ -5098,6 +5099,8 @@ SetMapLevelCompletedPanelPats:
 	LDA <World_Map_Tile
 	; If this is a fully complete tile (in our case, tile 0), then we use Map_PanelCompletePats
 	BEQ _do_fully_complete
+	CMP #$18			; $18 is our partially complete fort
+	BEQ _do_partial_fort
 	; Otherwise, this is partially complete, build up the tile from our partial pats
 	SEC
 	SBC #$0D			; Where the partial completed tile numbers begin
@@ -5114,3 +5117,13 @@ SetMapLevelCompletedPanelPats:
 _do_fully_complete:
 	LDA Map_PanelCompletePats,Y
 	JMP _panel_fully_complete
+_do_partial_fort:
+	LDA #$DF			; bottom right of partial fort
+	STA Graphics_Buffer+$09,X		; stored at +9
+	LDA #$C4			; top left
+	STA Graphics_Buffer+$03,X	;     stored at +3
+	LDA #$C6			; top right
+	STA Graphics_Buffer+$04,X	;     stored at +4
+	LDA #$C5			; bottom left
+	STA Graphics_Buffer+$08,X	;     stored at +8
+	JMP _panel_partial_complete

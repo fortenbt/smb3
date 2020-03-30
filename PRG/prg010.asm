@@ -4058,10 +4058,13 @@ DMC08_End
 
 CheckAllowedToPass:
 	LDA World_Map_Tile
+	CMP #TILE_FORTPARTIAL
+	BEQ _allow_pass
 	SEC
 	SBC #13
-	CMP #10			; tiles 0 - 9 (after subtracting 13) are our reenterable tiles
+	CMP #12			; tiles 0 - 11 (after subtracting 13) are our reenterable tiles
 	BCS _judgem_check
+_allow_pass:
 	LDA #$07
 	BNE _cmp7_rts		; branch always
 _judgem_check:

@@ -3614,6 +3614,7 @@ TILE_FORTRUBBLE		= $60	; Mini-Fortress Rubble
 TILE_PATHANDNUB		= $66	; Path with nub (I think this is unused... in fact, you can "enter" it!)
 TILE_FORT		= $67	; Mini-Fortress
 TILE_LARGEFORT		= $6A	; UNUSED "Large Fortress" tile (usually gets visually corrupt by map animation)
+TILE_FORTPARTIAL	= $6C	; [ORANGE] Mini-Fortress, partially complete
 TILE_MARIOCOMP_G	= $80	; Mario Completed, green color
 TILE_LUIGICOMP_G	= $81	; Luigi Completed, green color
 TILE_WATER_INVT		= $82	; Water meeting at inverted 'T' shape

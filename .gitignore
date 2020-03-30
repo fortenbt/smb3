@@ -14,4 +14,7 @@ _smb3ws/
 *.c
 *.nes
 *.patch
-tags
+*tags
+*.cdl
+*.fns
+*.deb
