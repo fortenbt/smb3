@@ -586,8 +586,8 @@ PlayerSnd_Stop:
 	STX SndCur_Player	; Clear Player sound hold
 	LDX #$1e	 	; 
 	STX PAPU_EN	 	; Disable square wave 1
-	LDX #$0f	 	; 
-	STX PAPU_EN	 	; Enable every channel
+	LDX #$1f
+	STX PAPU_EN	 	; Enable every channel (ORANGE - except dmc??! we fixed this)
 
 PRG028_A363:
 	RTS		 ; Return
@@ -1232,10 +1232,10 @@ MS2ASegHedr05:	MusSeg $30, M12ASegData05, $20, $0A, $61, $65
 MS2ASegHedr06:	MusSeg $30, M12ASegData06, $56, $2D, $7A, $81
 MS2ASegHedr07:	MusSeg $00, M12ASegData07, $1B, $0E, $2F, $33
 MS2ASegHedr08:	MusSeg $30, M12ASegData08, $00, $00, $00, $07
-MS2ASegHedr09:	MusSeg $50, M12ASegData09, $7F, $31, $B5, $CE
+MS2ASegHedr09:	MusSeg $50, M12ASegData09, $7F, $31, $B5, $00
 MS2ASegHedr0A:	MusSeg $30, M12ASegData0A, $40, $37, $60, $72
 MS2ASegHedr0B:	MusSeg $30, M12ASegData0B, $40, $37, $60, $85
-MS2ASegHedr0C:	MusSeg $50, M12ASegData0C, $40, $1C, $5B, $84
+MS2ASegHedr0C:	MusSeg $50, M12ASegData0C, $40, $1C, $5B, $00
 MS2ASegHedr0D:	MusSeg $50, M12ASegData0D, $07, $04, $10, $00
 MS2ASegHedr0E:	MusSeg $00, M12ASegData0E, $13, $0A, $00, $1C
 
@@ -1248,7 +1248,7 @@ MS2ASegHedr12:	MusSeg $80, M12ASegData12, $37, $1A, $49, $4F
 MS1_40SegHedr:	MusSeg $80, M12ASegData13, $35, $18, $00, $00
 MS1_01SegHedr:	MusSeg $30, M12ASegData14, $26, $11, $00, $38
 MS1_04SegHedr:	MusSeg $30, M12ASegData15, $21, $11, $00, $31
-MS1_20SegHedr:	MusSeg $30, M12ASegData16, $1F, $10, $2E, $3C
+MS1_20SegHedr:	MusSeg $00, M12ASegData16, $00, $00, $00, $03
 
 ; MS1_80SegHedr is the "stop music" request; have to look into this
 ; a little bit more to figure out how it works
@@ -1330,13 +1330,10 @@ M12ASegData02:
 	.byte $D8, $7E, $D9, $66, $D9, $64, $DA ; $A9D9 - $A9E8
 	.byte $60, $7E, $00, $D8, $30, $D9, $40, $44, $48, $D4, $3E, $D8, $3E, $30
 
-M12ASegData16:
-	.byte $94, $48 ; $A9E9 - $A9F8
-	.byte $4C, $50, $98, $52, $C4, $56, $5A, $5E, $98, $60, $7E, $9A, $48, $00, $94, $42 ; $A9F9 - $AA08
-	.byte $46, $48, $98, $4C, $C4, $50, $52, $56, $98, $50, $7E, $9A, $38, $94, $3A, $7E ; $AA09 - $AA18
-	.byte $7E, $88, $34, $84, $34, $3E, $3E, $98, $30, $7E, $9A, $30, $94, $02, $02, $02 ; $AA19 - $AA28
-	.byte $02, $01, $02, $02, $02, $98, $06, $01, $9A, $01, $94, $05, $05, $05, $05, $7E ; $AA29 - $AA38
-	.byte $05, $05, $05, $9C, $05, $7E
+M12ASegData16:	; [ORANGE] This is Poo's OOORRRBB sound, replacing the end-level fanfare
+	.byte $8C, $7E, $00
+	.byte $8F, $01, $8C, $7E, $7E, $7E, $00
+	.ds 0x3E
 
 M12ASegData04:
 	.byte $C8, $3E, $CA, $56, $C8, $3E, $40, $CA, $58, $C8 ; $AA39 - $AA48
@@ -1613,41 +1610,41 @@ Music_Set2B_Headers:
 	; Note that Triangle, Noise, and DCM tracks are allowed to be disabled by using an offset of 0, but Squares 1/2 are not.
 	; Of course, this wouldn't be hard to implement or anything, it's just the way it was coded...
 M2BSegHedr00:	MusSeg $30, M2BSegData00, $21, $11, $00, $00
-M2BSegHedr01:	MusSeg $30, M2BSegData01, $32, $15, $73, $83
-M2BSegHedr02:	MusSeg $30, M2BSegData02, $23, $12, $32, $42
-M2BSegHedr03:	MusSeg $30, M2BSegData01, $32, $29, $73, $83
-M2BSegHedr04:	MusSeg $30, M2BSegData03, $52, $29, $7B, $8B
-M2BSegHedr05:	MusSeg $30, M2BSegData04, $26, $15, $68, $6E
-M2BSegHedr06:	MusSeg $30, M2BSegData05, $23, $13, $32, $38
-M2BSegHedr07:	MusSeg $30, M2BSegData06, $36, $1C, $46, $59
-M2BSegHedr08:	MusSeg $00, M2BSegData07, $1F, $10, $00, $2E
-M2BSegHedr09:	MusSeg $00, M2BSegData08, $15, $0A, $00, $1E
-M2BSegHedr0A:	MusSeg $00, M2BSegData09, $19, $0D, $00, $29
-M2BSegHedr0B:	MusSeg $00, M2BSegData0A, $51, $29, $7D, $88
+M2BSegHedr01:	MusSeg $30, M2BSegData01, $32, $15, $73, $00
+M2BSegHedr02:	MusSeg $30, M2BSegData02, $23, $12, $32, $00
+M2BSegHedr03:	MusSeg $30, M2BSegData01, $32, $29, $73, $00
+M2BSegHedr04:	MusSeg $30, M2BSegData03, $52, $29, $7B, $00
+M2BSegHedr05:	MusSeg $30, M2BSegData04, $26, $15, $68, $00
+M2BSegHedr06:	MusSeg $30, M2BSegData05, $23, $13, $32, $00
+M2BSegHedr07:	MusSeg $30, M2BSegData06, $36, $1C, $46, $00
+M2BSegHedr08:	MusSeg $00, M2BSegData07, $1F, $10, $00, $00
+M2BSegHedr09:	MusSeg $00, M2BSegData08, $15, $0A, $00, $00
+M2BSegHedr0A:	MusSeg $00, M2BSegData09, $19, $0D, $00, $00
+M2BSegHedr0B:	MusSeg $00, M2BSegData0A, $51, $29, $7D, $00
 M2BSegHedr0C:	MusSeg $00, M2BSegData0B, $19, $0D, $00, $00
-M2BSegHedr0D:	MusSeg $00, M2BSegData0C, $37, $1C, $B2, $B8
-M2BSegHedr0E:	MusSeg $00, M2BSegData0D, $39, $1D, $5A, $60
-M2BSegHedr0F:	MusSeg $30, M2BSegData0E, $29, $18, $41, $45
-M2BSegHedr10:	MusSeg $30, M2BSegData0F, $54, $2C, $AF, $BE
-M2BSegHedr11:	MusSeg $30, M2BSegData10, $50, $2B, $95, $A4
-M2BSegHedr12:	MusSeg $30, M2BSegData11, $21, $12, $2F, $48
-M2BSegHedr13:	MusSeg $30, M2BSegData12, $69, $35, $7A, $89
-M2BSegHedr14:	MusSeg $30, M2BSegData13, $5F, $30, $72, $81
-M2BSegHedr15:	MusSeg $00, M2BSegData14, $27, $14, $00, $70
-M2BSegHedr16:	MusSeg $00, M2BSegData15, $27, $14, $00, $38
-M2BSegHedr17:	MusSeg $30, M2BSegData16, $0D, $07, $00, $13
-M2BSegHedr18:	MusSeg $30, M2BSegData17, $2B, $00, $3C, $42
-M2BSegHedr19:	MusSeg $30, M2BSegData18, $28, $16, $39, $3F
-M2BSegHedr1A:	MusSeg $30, M2BSegData19, $43, $22, $64, $85
-M2BSegHedr1B:	MusSeg $50, M2BSegData1A, $4B, $00, $AE, $95
-M2BSegHedr1C:	MusSeg $40, M2BSegData1B, $31, $19, $3C, $59
-M2BSegHedr1D:	MusSeg $40, M2BSegData1C, $45, $23, $5C, $62
-M2BSegHedr1E:	MusSeg $40, M2BSegData1D, $45, $23, $64, $6A
+M2BSegHedr0D:	MusSeg $00, M2BSegData0C, $37, $1C, $B2, $00
+M2BSegHedr0E:	MusSeg $00, M2BSegData0D, $39, $1D, $5A, $00
+M2BSegHedr0F:	MusSeg $30, M2BSegData0E, $29, $18, $41, $00
+M2BSegHedr10:	MusSeg $30, M2BSegData0F, $54, $2C, $AF, $00
+M2BSegHedr11:	MusSeg $30, M2BSegData10, $50, $2B, $95, $00
+M2BSegHedr12:	MusSeg $30, M2BSegData11, $21, $12, $2F, $00
+M2BSegHedr13:	MusSeg $30, M2BSegData12, $69, $35, $7A, $00
+M2BSegHedr14:	MusSeg $30, M2BSegData13, $5F, $30, $72, $00
+M2BSegHedr15:	MusSeg $00, M2BSegData14, $27, $14, $00, $00
+M2BSegHedr16:	MusSeg $00, M2BSegData15, $27, $14, $00, $00
+M2BSegHedr17:	MusSeg $30, M2BSegData16, $0D, $07, $00, $00
+M2BSegHedr18:	MusSeg $30, M2BSegData17, $2B, $00, $3C, $00
+M2BSegHedr19:	MusSeg $30, M2BSegData18, $28, $16, $39, $00
+M2BSegHedr1A:	MusSeg $30, M2BSegData19, $43, $22, $64, $00
+M2BSegHedr1B:	MusSeg $50, M2BSegData1A, $4B, $00, $AE, $00
+M2BSegHedr1C:	MusSeg $40, M2BSegData1B, $31, $19, $3C, $00
+M2BSegHedr1D:	MusSeg $40, M2BSegData1C, $45, $23, $5C, $00
+M2BSegHedr1E:	MusSeg $40, M2BSegData1D, $45, $23, $64, $00
 M2BSegHedr1F:	MusSeg $70, M2BSegData1E, $1B, $0E, $28, $00
-M2BSegHedr20:	MusSeg $70, M2BSegData1F, $43, $22, $6E, $78
-M2BSegHedr21:	MusSeg $70, M2BSegData1F, $48, $22, $6E, $78
-M2BSegHedr22:	MusSeg $70, M2BSegData1F, $53, $22, $6E, $78
-M2BSegHedr23:	MusSeg $70, M2BSegData1F, $65, $22, $6E, $78
+M2BSegHedr20:	MusSeg $70, M2BSegData1F, $43, $22, $6E, $00
+M2BSegHedr21:	MusSeg $70, M2BSegData1F, $48, $22, $6E, $00
+M2BSegHedr22:	MusSeg $70, M2BSegData1F, $53, $22, $6E, $00
+M2BSegHedr23:	MusSeg $70, M2BSegData1F, $65, $22, $6E, $00
 M2BSegHedr24:	MusSeg $40, M2BSegData1B, $31, $19, $00, $00
 
 	; Music in Set 2B is played by "index", which is a segment of music.
