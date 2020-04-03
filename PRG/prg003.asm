@@ -4047,7 +4047,25 @@ DoTimeBonus_AndUpdateOrbs:
 	LDX <SlotIndexBackup	 			; restore X = object slot index
 	JMP DoTimeBonus						; tail call DoTimeBonus
 
-	.ds 0x2CB
+TreasureBox_Opened:
+	INC DisablePause	; We don't need to set this back ever because ending the level clears it
+	INC Player_Orbs		; Increment the number of orbs the player has retrieved
+	LDX #$04
+_tbox_poof_objs:
+	LDA Objects_State,X
+	BEQ _tbox_next_obj			; If this object isn't active, continue
+	LDA Level_ObjectID,X
+	CMP #OBJ_TREASUREBOX
+	BEQ _tbox_next_obj			; Don't poof the treasure box item(s)
+	LDA #OBJSTATE_POOFDEATH		; A = 8 ("Poof" death the object)
+	STA Objects_State,X			; Poof shells so player can't kill himself after getting the orb
+_tbox_next_obj:
+	DEX
+	BPL _tbox_poof_objs
+	LDX <SlotIndexBackup		; restore X before continuing
+	JMP TreasureBox_Poof		; Do another poof on opening
+
+	.ds 0x2AA
 
 
 ObjInit_Blooper:
@@ -5803,8 +5821,3 @@ _findorboffs_done03:
 	LSR A		; The offset we found is doubled, so divide by 2
 	TAX
 	RTS
-
-TreasureBox_Opened:
-	INC DisablePause	; We don't need to set this back ever because ending the level clears it
-	INC Player_Orbs		; Increment the number of orbs the player has retrieved
-	JMP TreasureBox_Poof	; Do another poof on opening
