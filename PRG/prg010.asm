@@ -4001,6 +4001,7 @@ _findnpc_looplist:
 	BPL _findnpc_loopdir
 	RTS							; Didn't find anything, return with our zero flag not set
 _findnpc_found:
+	STX <Map_NPCType
 	LDA #$00
 	RTS							; Found NPC, return with our zero flag set
 
@@ -4020,6 +4021,10 @@ DoNPCMessage:
 	; TODO: We'll have a state machine here that controls drawing the message box,
 	; then drawing the NPC's message, then handling input to scroll the message,
 	; then we'll INC Map_Operation
+	LDA <Map_NPCTextTimer
+	BEQ _post_npctimerdec
+	DEC <Map_NPCTextTimer
+_post_npctimerdec:
 	LDY <Map_DoNPC
 	DEY
 	TYA
@@ -4027,7 +4032,8 @@ DoNPCMessage:
 
 	; THESE MUST FOLLOW DynJump FOR THE DYNAMIC JUMP TO WORK!!
 	.word NPC_DrawBox
-	.word NPC_DoTalk
+	.word NPC_DialogInit
+	.word NPC_DoDialog
 	.word NPC_WaitForInput
 	.word NPC_Draw1Strip
 
@@ -4186,10 +4192,99 @@ _npc_draw_box_cont:
 	STA <Graphics_Queue
 	RTS
 
-NPC_DoTalk:
+NPCMessage1:
+	.byte $00, $D8, $F0, $F0, $DA, $FF
+NPCMessage2:
+	.byte $00, $D8, $F0, $F0, $DA, $FF
 
+NPCMsgPtr_L:
+	.byte LOW(NPCMessage1)
+	.byte LOW(NPCMessage2)
+
+NPCMsgPtr_H:
+	.byte HIGH(NPCMessage1)
+	.byte HIGH(NPCMessage2)
+
+NPC_DialogInit:
+	LDA #$29
+	STA <Map_NPCMsg_VH
+	LDA #$26
+	STA <Map_NPCMsg_VL
+
+	LDX <Map_NPCType
+	LDA NPCMsgPtr_L,X
+	STA <Map_NPCCPos			; current character (low byte of pointer)
+	LDA NPCMsgPtr_H,X
+	STA <Map_NPCMsgHi			; high byte of current message pointer
+
+NPC_DialogNextState:
+	LDA #$00
+	STA <Map_NPCLine
 	INC <Map_DoNPC
+	RTS
 
+NPC_VL_ByLine:
+	.byte $26, $46, $66, $86, $A6, $C6, $E6
+
+NPC_DoDialog:
+	LDA <Map_NPCTextTimer
+	BNE _npc_text_rts
+
+	INC <Map_NPCCPos			; Next character
+	BNE _npc_post_ptr_inc		; If <Map_NPCCPos did not overflow, jump to PRG027_A4B9
+	INC <Map_NPCMsgHi			; Otherwise, apply carry
+_npc_post_ptr_inc:
+
+	; Get next character
+	LDY #$00
+	LDA [Map_NPCCPos],Y
+	BEQ _npc_line_brk
+	CMP #$FF
+	BEQ NPC_DialogNextState
+
+	LDY Graphics_BufCnt		; Y = current graphics buffer count
+
+	; Store character into buffer
+	STA Graphics_Buffer+$3,Y
+
+	; Store VRAM high address
+	LDA <Map_NPCMsg_VH
+	STA Graphics_Buffer,Y
+
+	; Run length of 1
+	LDA #$01
+	STA Graphics_Buffer+$2,Y
+
+	; Terminator
+	LSR A				; A = 0
+	STA Graphics_Buffer+$4,Y
+
+	; Update Graphics_BufCnt
+	TYA
+	ADD #$04
+	STA Graphics_BufCnt
+
+	; Store VRAM low address
+	LDA <Map_NPCMsg_VL
+	STA Graphics_Buffer+$1,Y
+
+	INC <Map_NPCMsg_VL			; next column
+	BNE _npc_do_character		; Always jump
+
+_npc_line_brk:
+	; Line break!
+	INC <Map_NPCLine
+	LDX <Map_NPCLine
+	DEX
+	LDA NPC_VL_ByLine,X
+	STA <Map_NPCMsg_VL
+
+_npc_do_character:
+	; Map_NPCTextTimer = 1
+	LDA #$01
+	STA <Map_NPCTextTimer
+
+_npc_text_rts:
 	RTS
 
 NPC_WaitForInput:

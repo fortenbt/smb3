@@ -639,7 +639,7 @@ PAD_RIGHT	= $01
 	Map_Skid_DeltaFracY:	.ds 1	; Fractional delta Y
 	Map_Skid_FracY:		.ds 1	; Fractional Y accumulator
 
-				.ds 1	; $91 unused
+	Map_NPCTextTimer:		.ds 1	; $91 unused [ORANGE] no longer unused, counts down for each letter
 
 	Map_Skid_DeltaX:	.ds 1	; Delta applied directly to X
 	Map_Skid_DeltaFracX:	.ds 1	; Fractional delta X
@@ -653,16 +653,16 @@ PAD_RIGHT	= $01
 	; Bit 1 Set = Player must travel downward versus upward
 	Map_Skid_TravDirs:	.ds 1
 
-				.ds 1	; $99 unused
-				.ds 1	; $9A unused
+	Map_NPCMsg_VL:		.ds 1	; $99 unused [ORANGE] no longer unused, stores the NCPs dialog video lsb
+	Map_NPCMsg_VH:		.ds 1	; $9A unused [ORANGE] no longer unused, stores the NCPs dialog video msb
 
 	Map_StarsX:		.ds 8	; $9B-$A2 During World Intro, X position of each star
 	Map_StarsY:		.ds 8	; $A3-$AA During World Intro, Y position of each star
 	Map_StarsOutRad:	.ds 1	; During World Intro, stars take off radius (0 = smallest, increments for larger)
 
-				.ds 1	; $AC unused
-				.ds 1	; $AD unused
-				.ds 1	; $AE unused
+	Map_NPCLine:		.ds 1	; $AC unused [ORANGE] no longer unused, stores the current line being "typed" out
+	Map_NPCCPos:		.ds 1	; $AD unused [ORANGE] no longer unused, current location (lsb) of the NPC's dialog
+	Map_NPCMsgHi:		.ds 1	; $AE unused [ORANGE] no longer unused, stores the msb of the npc dialog ptr
 
 	Map_StarsXSteps:	.ds 1	; During World Intro, number of "steps" remaining in the X position adjustment
 	Map_StarsRadCnt:	.ds 1	; During World Intro, adds $70 per display frame and adds 1 to the radius when it overflows
@@ -691,7 +691,9 @@ PAD_RIGHT	= $01
 
 	Map_DoNPC:			.ds 1	; $C8 unused [ORANGE] no longer unused, boolean flag specifying we're doing an NPC interaction
 	Map_NPCLineNo:		.ds 1	; $C9 unused [ORANGE] no longer unused, index into which line we're drawing for NPC interaction
-				.ds 1	; $CA unused
+
+NPCTYPE_DOG	= $00
+	Map_NPCType:		.ds 1	; $CA unused [ORANGE] no longer unused, this is the NPC ID found around the player
 				.ds 1	; $CB unused
 
 	Map_Intro_CurStripe:	.ds 1	; Current stripe of the "World X" intro box to be erased (0 - 7)
