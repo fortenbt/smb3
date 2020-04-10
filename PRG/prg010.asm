@@ -3976,7 +3976,7 @@ _no_npc_interaction:
 	RTS
 
 NPCTileIDList:
-	.byte TILE_PIRHANAPLANT
+	.byte TILE_NPCDOG
 NPC_END
 
 ;;; [ORANGE] This function checks all the directions around the player on the map for

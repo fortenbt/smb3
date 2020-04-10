@@ -690,7 +690,7 @@ PAD_RIGHT	= $01
 	Map_UnusedGOFlag:	.ds 1	; Set at map initialization or if Player gets Game Over and selects CONTINUE/END, no apparent purpose
 
 	Map_DoNPC:			.ds 1	; $C8 unused [ORANGE] no longer unused, boolean flag specifying we're doing an NPC interaction
-				.ds 1	; $C9 unused
+	Map_NPCLineNo:		.ds 1	; $C9 unused [ORANGE] no longer unused, index into which line we're drawing for NPC interaction
 				.ds 1	; $CA unused
 				.ds 1	; $CB unused
 
@@ -3615,6 +3615,7 @@ TILE_PATHANDNUB		= $66	; Path with nub (I think this is unused... in fact, you c
 TILE_FORT		= $67	; Mini-Fortress
 TILE_LARGEFORT		= $6A	; UNUSED "Large Fortress" tile (usually gets visually corrupt by map animation)
 TILE_FORTPARTIAL	= $6C	; [ORANGE] Mini-Fortress, partially complete
+TILE_NPCDOG			= $6D	; [ORANGE] NPC Dog
 TILE_MARIOCOMP_G	= $80	; Mario Completed, green color
 TILE_LUIGICOMP_G	= $81	; Luigi Completed, green color
 TILE_WATER_INVT		= $82	; Water meeting at inverted 'T' shape
