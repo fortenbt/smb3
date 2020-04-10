@@ -4020,14 +4020,190 @@ DoNPCMessage:
 	; TODO: We'll have a state machine here that controls drawing the message box,
 	; then drawing the NPC's message, then handling input to scroll the message,
 	; then we'll INC Map_Operation
+	LDY <Map_DoNPC
+	DEY
+	TYA
+	JSR DynJump
+
+	; THESE MUST FOLLOW DynJump FOR THE DYNAMIC JUMP TO WORK!!
+	.word NPC_DrawBox
+	.word NPC_DoTalk
+	.word NPC_WaitForInput
+	.word NPC_Draw1Strip
+
 	LDA #$0e
 	JSR Video_Do_Update
+	INC World_EnterState
 	DEC <Map_DoNPC
 	RTS
 
+NPCBox1:
+	vaddr $2904
+	.byte $01, $A0
+	vaddr $2905
+	.byte VU_REPEAT | 22, $A1
+	vaddr $291B
+	.byte $01, $A2
+	.byte $FF
 
+NPCBox2:
+	vaddr $2924
+	.byte $01, $E6
+	vaddr $2925
+	.byte VU_REPEAT | 22, $FE
+	vaddr $293B
+	.byte $01, $E7
+	vaddr $2944
+	.byte $01, $E6
+	vaddr $2945
+	.byte VU_REPEAT | 22, $FE
+	vaddr $295B
+	.byte $01, $E7
+	.byte $FF
 
+NPCBox3:
+	vaddr $2BD1
+	.byte $06, $00, $00, $00, $00, $00, $00
+	.byte $FF
 
+NPCBox4:
+	vaddr $2964
+	.byte $01, $E6
+	vaddr $2965
+	.byte VU_REPEAT | 22, $FE
+	vaddr $297B
+	.byte $01, $E7
+	vaddr $2984
+	.byte $01, $E6
+	vaddr $2985
+	.byte VU_REPEAT | 22, $FE
+	vaddr $299B
+	.byte $01, $E7
+	.byte $FF
+
+NPCBox5:
+	vaddr $29A4
+	.byte $01, $E6
+	vaddr $29A5
+	.byte VU_REPEAT | 22, $FE
+	vaddr $29BB
+	.byte $01, $E7
+	vaddr $29C4
+	.byte $01, $E6
+	vaddr $29C5
+	.byte VU_REPEAT | 22, $FE
+	vaddr $29DB
+	.byte $01, $E7
+	.byte $FF
+
+NPCBox6:
+	vaddr $2BD9
+	.byte $06, $00, $00, $00, $00, $00, $00
+	.byte $FF
+
+NPCBox7:
+	vaddr $29E4
+	.byte $01, $E6
+	vaddr $29E5
+	.byte VU_REPEAT | 22, $FE
+	vaddr $29FB
+	.byte $01, $E7
+	vaddr $2A04
+	.byte $01, $E6
+	vaddr $2A05
+	.byte VU_REPEAT | 22, $FE
+	vaddr $2A1B
+	.byte $01, $E7
+	.byte $FF
+
+NPCBox8:
+	vaddr $2A24
+	.byte $01, $E6
+	vaddr $2A25
+	.byte VU_REPEAT | 22, $FE
+	vaddr $2A3B
+	.byte $01, $E7
+	vaddr $2A44
+	.byte $01, $E6
+	vaddr $2A45
+	.byte VU_REPEAT | 22, $FE
+	vaddr $2A5B
+	.byte $01, $E7
+	.byte $FF
+
+NPCBox9:
+	vaddr $2A64
+	.byte $01, $E3
+	vaddr $2A65
+	.byte VU_REPEAT | 22, $E4
+	vaddr $2A7B
+	.byte $01, $E5
+	vaddr $2BE1
+	.byte $06, $00, $00, $00, $00, $00, $00
+	.byte $FF
+
+NPCBoxTemplate:
+	.word NPCBox1, NPCBox2, NPCBox3, NPCBox4, NPCBox5, NPCBox6, NPCBox7, NPCBox8, NPCBox9
+
+NPC_DrawBox:
+	LDA <Map_NPCLineNo
+	ASL A
+	TAX
+	LDA NPCBoxTemplate,X
+	STA <Temp_Var1
+	LDA NPCBoxTemplate+1,X
+	STA <Temp_Var2
+	JSR _NPC_DrawBoxLine
+	RTS
+
+_NPC_DrawBoxLine:
+	LDX Graphics_BufCnt
+	LDY #$00
+_boxline_loop:
+	LDA [Temp_Var1],Y
+	CMP #$FF
+	BNE _store_boxbyte
+	LDA #$00
+	STA Graphics_Buffer,X
+	BEQ _post_box_loop
+_store_boxbyte:
+	STA Graphics_Buffer,X
+	INX
+	INY
+	BNE _boxline_loop
+_post_box_loop:
+	INX
+	STX Graphics_BufCnt
+	LDA Map_NPCLineNo
+	CMP #8						; 9 frames total
+	BNE _npc_draw_box_cont
+	INC <Map_DoNPC				; Go to next NPC state when we've drawn the whole box
+	LDA #$FF
+	STA <Map_NPCLineNo
+_npc_draw_box_cont:
+	INC <Map_NPCLineNo
+	LDA #$00
+	STA <Graphics_Queue
+	RTS
+
+NPC_DoTalk:
+
+	INC <Map_DoNPC
+
+	RTS
+
+NPC_WaitForInput:
+	LDA <Pad_Input
+	AND #(PAD_A | PAD_B)	; A or B closes the NPC message
+	BEQ _npcwait_rts
+	LDA #$00
+	STA <Map_Intro_CurStripe
+	INC <Map_DoNPC			; Close the NPC message box
+_npcwait_rts:
+	RTS
+
+NPC_ColorStrip:
+	.byte $A7, $99, $AA, $95, $A4, $A9, $5A, $55, $A5, $AB, $AA, $BA, $55, $55, $55, $99, $55, $9B
 NPC_Draw1Strip:
 	; Set page @ A000 to 12
 	LDA #12
@@ -4035,14 +4211,12 @@ NPC_Draw1Strip:
 	JSR PRGROM_Change_A000
 
 	LDA <Map_IntBoxErase
-	BNE _PRG010_C5A9	 	; If Map_IntBoxErase <> 0, jump to PRG010_C5A9
+	BNE _PRG010_C5C5	 	; If Map_IntBoxErase <> 0, jump to PRG010_C5A9
 
 	; Map_IntBoxErase is set to offset of upper-left corner of "World X"
 	; intro box to tell where to start copying the map tiles from!
-	LDA <Scroll_ColumnR
-	AND #$08
-	ADD #$34
-	STA <Map_IntBoxErase	; Map_IntBoxErase = (Scroll_ColumnR & 8) + $34
+	LDA #$32
+	STA <Map_IntBoxErase
 
 	LDA <Scroll_ColumnL
 	AND #$f0
@@ -4059,13 +4233,9 @@ NPC_Draw1Strip:
 
 	INC <Map_Tile_AddrH	; Effectively adds $100 to the address (maps get loaded at screen base + $110)
 
-
-	; Calculates the base offset into the nametable for erasing the "World X" intro box
-	LDA <Scroll_ColumnR
-	AND #$08	 	; 0 or 8, depending if we're scrolled "halfway" across two screens
-	ASL A		 	; Now 0 or 16
-	ADD #$08	 	; Now 8 or 24
-	STA <Map_Intro_NTOff	; Map_Intro_NTOff = 8 or 24
+	; The base offset into the nametable for erasing the NPC box
+	LDA #$04
+	STA <Map_Intro_NTOff
 
 	; Calculates the corresponding offset to the attribute table
 	LDA <Horz_Scroll
@@ -4074,32 +4244,11 @@ NPC_Draw1Strip:
 	LSR A
 	LSR A
 	LSR A			; Divide by 32 because EACH attribute BYTE defines FOUR 8x8 tiles (4 * 8 = 32)
-	ADD #$d2
+	ADD #$d1
 	STA <Map_Intro_ATOff		; Map_Intro_ATOff = (Horz_Scroll / 32) + $D2
 
-	LDA #$02
-	STA <Map_StarsState		; Map_StarsState = 2
-
-_PRG010_C5A9:
-	LDA World_8_Dark
-	BEQ _PRG010_C5C5		; If World_8_Dark = 0 (no darkness effect), jump to PRG010_C5C5
-
-	; The World 8 Darkness effect version of clearing the World X intro box...
-
-	; Copy Map_W8Dark_IntroCover into the Graphics_Buffer
-	LDY #$15
-_PRG010_C5B0:
-	LDA Map_W8Dark_IntroCover,Y
-	STA Graphics_Buffer,Y
-	DEY		 		; Y--
-	BPL _PRG010_C5B0	 		; While Y >= 0, loop!
-
-	; Patch in the correct low byte for the video address
-	LDX <Map_Intro_NTOff
-	STX Graphics_Buffer+1
-	INX
-	STX Graphics_Buffer+$C
-	JMP _PRG010_C622	 		; Jump to PRG010_C622
+	;LDA #$02
+	;STA <Map_StarsState		; Map_StarsState = 2
 
 _PRG010_C5C5:
 	LDA Map_IntBoxErase
@@ -4140,12 +4289,12 @@ _PRG010_C5CC:
 	; Upper-right
 	INC <Temp_Var16		; Jump to next layout chunk
 	LDA [Temp_Var15],Y	 	; Get next 8x8
-	STA Scroll_PatStrip+$B,X	; Store into vertical strip
+	STA Scroll_PatStrip+$F,X	; Store into vertical strip
 
 	; Lower-right
 	INC <Temp_Var16		; Jump to next layout chunk
 	LDA [Temp_Var15],Y	 	; Get next 8x8
-	STA Scroll_PatStrip+$C,X	; Store into vertical strip
+	STA Scroll_PatStrip+$10,X	; Store into vertical strip
 
 	LDA <Temp_Var1
 	ADD #16
@@ -4154,11 +4303,11 @@ _PRG010_C5CC:
 	INX
 	INX		; X += 2 (next block down in Scroll_PatStrip)
 
-	CPX #$08
+	CPX #12
 	BNE _PRG010_C5CC	; If X <> 8 (4 tiles downward in Scroll_PatStrip), loop!
 
 	; Pushes the Scroll_PatStrip memory into the Graphics_Buffer
-	LDX #$12	 		; X = $12
+	LDX #$1A	 		; tile data goes from [03 - 1A] (12 total tiles)
 _PRG010_C609:
 	LDA Scroll_PatStrip,X
 	STA Graphics_Buffer+3,X
@@ -4168,64 +4317,62 @@ _PRG010_C609:
 	; Used VRAM addr $29xx for both strips
 	LDA #$29
 	STA Graphics_Buffer
-	STA Graphics_Buffer+$B
+	STA Graphics_Buffer+$F
 
-	LDA #(VU_VERT | 8)		; 8 8x8s vertically applied
+	LDA #(VU_VERT | 12)		; 8 8x8s vertically applied
 	STA Graphics_Buffer+2
-	STA Graphics_Buffer+$D
+	STA Graphics_Buffer+$11
 
 _PRG010_C622:
 	LDX <Map_Intro_NTOff
 	STX Graphics_Buffer+1	 	; Store lower part of VRAM address
 	INX
-	STX Graphics_Buffer+$C	 	; Store lower part of VRAM address
+	STX Graphics_Buffer+$10	 	; Store lower part of VRAM address
 
 
 	; Now it's the attribute table's turn...
+	; We hardcoded these for the values we need in W1
 
 	; Store VRAM addr $2Bxx
+	LDA #$00
+	STA Graphics_Buffer+$1E
+	LDA <Map_Intro_CurStripe
+	CLC
+	ROR A
+	TAX							; X = Map_Intro_CurStripe/2
+	BCS _PRG010_C66A			; Odd columns skip updating attributes
+
 	LDA #$2b
-	STA Graphics_Buffer+$16
-	STA Graphics_Buffer+$1A
+	STA Graphics_Buffer+$1E
+	STA Graphics_Buffer+$22
+	STA Graphics_Buffer+$26
 
 	; Store lower part of VRAM address
 	LDA <Map_Intro_ATOff
-	STA Graphics_Buffer+$17
+	STA Graphics_Buffer+$1F
 	ADD #$08
-	STA Graphics_Buffer+$1B
+	STA Graphics_Buffer+$23
+	ADD #$08
+	STA Graphics_Buffer+$27
 
 	; Just one byte to copy
 	LDA #$01
-	STA Graphics_Buffer+$18
-	STA Graphics_Buffer+$1C
+	STA Graphics_Buffer+$20
+	STA Graphics_Buffer+$24
+	STA Graphics_Buffer+$28
 
-	LDA <Map_Intro_CurStripe
-	AND #$06
-	LSR A
-	TAX		 ; X = (Map_Intro_CurStripe & 6) >> 1
+	LDA NPC_ColorStrip,X
+	STA Graphics_Buffer+$21
 
-	LDA <Scroll_ColorStrip,X
-	STA Graphics_Buffer+$19
+	LDA NPC_ColorStrip+6,X
+	STA Graphics_Buffer+$25
 
-	LDA <Scroll_ColorStrip+4,X
-	STA Graphics_Buffer+$1D
-
-	LDA <Map_Intro_CurStripe
-	AND #$01
-	BNE _PRG010_C66A	 	; If Map_Intro_CurStripe bit 0 set, jump to PRG010_C66A
-
-	; Otherwise...
-	LDA <Scroll_ColorStrip,X
-	AND #$33
-	STA Graphics_Buffer+$19
-
-	LDA <Scroll_ColorStrip+4,X
-	AND #$33
-	STA Graphics_Buffer+$1D
+	LDA NPC_ColorStrip+12,X
+	STA Graphics_Buffer+$29
 
 _PRG010_C66A:
 	LDA #$00
-	STA Graphics_Buffer+$1E
+	STA Graphics_Buffer+$2A
 
 	; If, on the next increment to Map_IntBoxErase, the lower 4 bits are "zero",
 	; it has wrapped to a new row.  This should only happen when the "World X"
@@ -4234,20 +4381,6 @@ _PRG010_C66A:
 	INX
 	TXA
 	AND #$0f
-	BNE _PRG010_C689	 	; If (Map_IntBoxErase + 1) & $0F is non-zero, jump to PRG010_C689
-
-	; Otherwise, we need to update the address
-	LDA <Map_Tile_AddrL
-	ADD #$b0
-	STA <Map_Tile_AddrL	; Map_Tile_AddrL += $B0 (11 tiles over)
-
-	LDA <Map_Tile_AddrH
-	ADC #$01
-	STA <Map_Tile_AddrH	; Next screen plus add carry if needed
-
-	LDA <Map_IntBoxErase
-	AND #$f0
-	TAX		 	; X = (Map_IntBoxErase & $F0); current row within map "screen" of tiles
 
 _PRG010_C689:
 	STX <Map_IntBoxErase	; Update Map_IntBoxErase
@@ -4265,11 +4398,6 @@ _PRG010_C689:
 	INX
 	TXA
 	AND #$07
-	BNE _PRG010_C69D	 	; If (Map_Intro_ATOff + 1) & 7 <> 0, jump to PRG010_C69D
-
-	LDA <Map_Intro_ATOff
-	AND #$f0
-	TAX		 	; X contains just the upper 4 bits of Map_Intro_ATOff
 
 _PRG010_C69D:
 	STX <Map_Intro_ATOff	; Update Map_Intro_ATOff
@@ -4285,9 +4413,6 @@ _PRG010_C69F
 	INX
 	TXA
 	AND #$1f
-	BNE _PRG010_C6AA		; If (Map_Intro_NTOff + 1) & $1f <> 0, jump to PRG010_C6AA
-
-	LDX #$00	 	; X = 0
 
 _PRG010_C6AA:
 	STX <Map_Intro_NTOff	; Update Map_Intro_NTOff
@@ -4295,13 +4420,17 @@ _PRG010_C6AA:
 	INC <Map_Intro_CurStripe ; Map_Intro_CurStripe++
 
 	LDA <Map_Intro_CurStripe
-	CMP #$08
+	CMP #12
 	BNE _PRG010_C6BB	 	; If Map_Intro_CurStripe <> 8, jump to PRG010_C6BB
 
 	; Otherwise, we're done!  The stupid box is erased!
 	LDA #$00
 	STA <Map_IntBoxErase	; Map_IntBoxErase = 0
-	INC World_EnterState	; Next state!  (NOTE: Gameover uses this too, so GameOver_State, which is the same memory)
+	STA <Map_DoNPC			; Done with NPC message
+	STA <Graphics_Queue		; Push out our last graphics update since we're jumping straight to MO_NORMAL
+	JSR GraphicsBuf_Prep_And_WaitVSync
+	LDA #$0D
+	STA Map_Operation
 
 _PRG010_C6BB:
 	; In any case, put page 11 back in at A000
