@@ -689,7 +689,7 @@ PAD_RIGHT	= $01
 
 	Map_UnusedGOFlag:	.ds 1	; Set at map initialization or if Player gets Game Over and selects CONTINUE/END, no apparent purpose
 
-				.ds 1	; $C8 unused
+	Map_DoNPC:			.ds 1	; $C8 unused [ORANGE] no longer unused, boolean flag specifying we're doing an NPC interaction
 				.ds 1	; $C9 unused
 				.ds 1	; $CA unused
 				.ds 1	; $CB unused
@@ -3634,6 +3634,7 @@ TILE_VERTPATHWLB	= $BA	; Standard vertical path over water, land on both ends
 TILE_DANCINGPALM	= $BB	; Dancing Palm Tree (World 2)
 TILE_PIPE		= $BC	; Pipe
 TILE_DANCINGFLOWER	= $BD	; Dancing Flower
+TILE_PIRHANAPLANT	= $BE
 TILE_POOL		= $BF	; Pool / Oasis
 TILE_MARIOCOMP_R	= $C0	; Mario Completed, red color
 TILE_LUIGICOMP_R	= $C1	; Luigi Completed, red color

@@ -1026,7 +1026,9 @@ PRG010_C52D:
 	RTS		 ; Return
 
 WorldIntro_EraseAndStars:
-	JSR Map_Intro_Erase1Strip	; Erase one strip of the "World X" Intro box
+	;;; [ORANGE] Utilize this state to allow us to interact with NPCs
+	;;;JSR Map_Intro_Erase1Strip	; Erase one strip of the "World X" Intro box
+	JSR WorldIntro_Or_NPCInteraction
 	JMP MapStarsIntro_DoStarFX	 		; Jump to PRG010_B76C
 
 	; Provides "Video_Upd_Table" format Graphics_Buffer data specifically
@@ -2592,7 +2594,9 @@ MO_NormalMoveEnter:
 	JMP PRG010_CEE4	 	; Otherwise, jump to PRG010_CEE4...
 
 PRG010_CDDC:
-	LDA Map_Pan_Count	
+	;;; [ORANGE] Hook here to check for NPC interaction via a select push
+	;;;LDA Map_Pan_Count
+	JSR CheckForNPCInteraction
 	BNE PRG010_CD6E	 	; If map is panning, jump to PRG010_CD6E (indirect to WorldMap_UpdateAndDraw)
 
 	LDA <Pad_Input	
@@ -3930,129 +3934,6 @@ PRG010_D535:
 
 	RTS		 ; Return
 
-
-	; BEGIN UNUSED SPACE
-
-	; Some additional DMC samples; large unused space is due to the simplistic address
-	; register which requires a particular alignment inside the bank... 
-
-	; There's quite a bit of unused space here; I removed it because it is safe for data
-	; to expand from the ending address above ($D542) up to the DMC data.  But the DMC
-	; data itself must not leave an alignment divisible by $40.
-
-	; NOTE NOTE NOTE!!
-	; If you're creating a custom hack, use the following line instead of the "BoundCheck" and "org":
-; .AlignDMC07:	DMCAlign .AlignDMC07
-
-	; END UNUSED SPACE
-
-	; ASSEMBLER BOUNDARY CHECK, END OF $D800
-.Bound_D800:	BoundCheck .Bound_D800, $D800, PRG010: ROM encroaching DMC space
-	org $D800	; <-- Modify to suit, but must align to an address evenly divisible by $40 (assembler needs an ALIGN directive!)
-DMC07:
-	.byte $4A, $53, $55, $55, $55, $55, $55, $55, $55, $55, $AB, $4A, $55, $AA, $DA, $EE
-	.byte $2D, $55, $82, $00, $01, $B5, $DD, $BE, $EF, $FB, $AE, $55, $97, $48, $00, $04
-	.byte $00, $51, $AB, $DA, $FE, $DF, $BF, $6F, $2F, $09, $89, $00, $08, $00, $5A, $F5
-	.byte $7D, $FF, $BE, $EF, $BB, $4A, $91, $20, $00, $00, $A4, $AA, $76, $DF, $BE, $7F
-	.byte $7F, $37, $55, $22, $20, $02, $00, $28, $95, $FD, $BA, $7F, $FF, $F7, $56, $93
-	.byte $44, $00, $04, $00, $A8, $6C, $BB, $FD, $FF, $FE, $ED, $AD, $54, $02, $04, $08
-	.byte $80, $84, $AA, $ED, $FB, $BF, $7F, $DF, $75, $4A, $24, $08, $00, $20, $48, $96
-	.byte $7A, $BF, $7F, $FF, $FE, $76, $A5, $48, $02, $04, $00, $90, $50, $AB, $7D, $FF
-	.byte $BF, $EF, $EF, $56, $4A, $24, $40, $00, $04, $08, $95, $7B, $F7, $FE, $FB, $FE
-	.byte $6D, $5B, $25, $82, $00, $08, $00, $22, $A9, $BD, $DB, $BF, $7F, $FF, $F6, $56
-	.byte $2A, $41, $80, $00, $01, $82, $54, $AB, $F7, $FB, $FE, $EF, $DB, $AB, $AA, $84
-	.byte $08, $10, $20, $00, $51, $65, $B7, $EF, $DF, $BF, $EF, $DB, $56, $4A, $22, $08
-	.byte $02, $20, $08, $52, $DA, $BB, $EF, $FB, $F7, $BD, $DB, $AA, $52, $24, $08, $10
-	.byte $20, $08, $49, $6D, $DB, $FD, $FB, $BE, $EF, $6D, $AB, $4A, $22, $41, $80, $20
-	.byte $40, $92, $AA, $B6, $77, $FF, $BE, $6F, $DF, $DA, $4A, $25, $21, $82, $00, $41
-	.byte $90, $A4, $5A, $BD, $FB, $BE, $6F, $DF, $DE, $6A, $55, $49, $88, $10, $08, $82
-	.byte $84, $54, $55, $DB, $B7, $EF, $FB, $F6, $6D, $6B, $55, $8A, $84, $08, $82, $04
-	.byte $21, $49, $55, $DB, $EE, $FB, $F6, $ED, $DB, $B6, $AA, $2A, $49, $82, $20, $48
-	.byte $10, $92, $54, $B5, $DB, $DE, $7D, $EF, $DE, $AE, $AD, $2A, $95, $24, $41, $88
-	.byte $20, $44, $92, $D2, $DA, $76, $7B, $F7, $ED, $ED, $B6, $56, $2D, $25, $49, $24
-	.byte $48, $90, $10, $49, $A9, $6A, $DB, $6D, $DF, $BB, $B7, $6D, $5B, $55, $95, $54
-	.byte $88, $84, $08, $91, $90, $4A, $69, $6D, $DB, $EE, $DD, $BB, $6D, $D7, $5A, $55
-	.byte $2A, $49, $12, $22, $21, $12, $92, $4A, $55, $DB, $B6, $77, $7B, $B7, $5D, $DB
-	.byte $AA, $AA, $2A, $49, $42, $22, $41, $12, $92, $2A, $B5, $DA, $B6, $B7, $DB, $BB
-	.byte $6D, $5B, $AB, $AA, $52, $49, $92, $24, $44, $42, $92, $A4, $AA, $5A, $DB, $B6
-	.byte $DB, $DB, $6D, $DB, $5A, $AD, $2A, $25, $15, $25, $24, $12, $92, $24, $95, $AA
-	.byte $D6, $B6, $DB, $F6, $B6, $DB, $D6, $6A, $55, $55, $A9, $24, $49, $42, $22, $49
-	.byte $92, $52, $55, $B5, $D5, $DE, $B6, $DB, $B6, $6D, $AB, $56, $A9, $2A, $29, $49
-	.byte $92, $48, $92, $24, $29, $55, $D5, $DA, $EA, $6D, $B7, $6D, $DB, $56, $AD, $AA
-	.byte $2A, $95, $92, $24, $49, $92, $48, $49, $AA, $AA, $AA, $AD, $B6, $ED, $6D, $DB
-	.byte $B6, $55, $B5, $AA, $54, $A5, $92, $24, $49, $92, $24, $29, $A9, $AA, $5A, $B5
-	.byte $6D, $DB, $B6, $5D, $DB, $6A, $55, $55, $55, $A5, $54, $92, $A2, $24, $92, $92
-	.byte $4A, $A9, $55, $D5, $56, $BB, $B6, $6D, $D7, $B6, $AA, $55, $55, $A9, $2A, $25
-	.byte $A9, $24, $49, $92, $52, $29, $55, $55, $AB, $B5, $6D, $DB, $6A, $DB, $DA, $AA
-	.byte $5A, $55, $AA, $52, $29, $49, $25, $49, $49, $2A, $A9, $52, $D5, $AA, $B5, $AD
-	.byte $B6, $6D, $6B, $AB, $B5, $AA, $AA, $AA, $52, $A9, $92, $92, $4A, $92, $92, $4A
-	.byte $A9, $AA, $AA, $56, $6B, $5B, $6D, $6B, $5B, $AD, $AD, $AA, $AA, $2A, $55, $4A
-	.byte $A5, $54, $92, $92, $54, $52, $95, $AA, $AA, $D5, $5A, $AD, $6B, $AB, $6D, $AD
-	.byte $56, $AD, $AA, $4A, $55, $2A, $55, $52, $52, $49, $49, $A5, $54, $95, $5A, $D5
-	.byte $AA, $AD, $B6, $B6, $D5, $D6, $AA, $55, $55, $55, $55, $A9, $52, $2A, $A5, $92
-	.byte $92, $4A, $A9, $54, $A5, $55, $AD, $5A, $AD, $AD, $B6, $B6, $5A, $AB, $55, $55
-	.byte $55, $95, $AA, $54, $4A, $A5, $54, $52, $2A, $A5, $4A, $55, $55, $B5, $5A, $AB
-	.byte $B5, $D5, $DA, $6A, $AD, $5A, $55, $55, $55, $AA, $54, $A9, $52, $2A, $25, $95
-	.byte $52, $A9, $52, $55, $D5, $AA, $D5, $5A, $AD, $D5, $DA, $6A, $AD, $5A, $55, $55
-	.byte $A9, $4A, $55, $29, $95, $52, $29, $95, $2A, $A5, $AA, $2A, $AB, $AA, $D5, $5A
-	.byte $AD, $D5, $DA, $AA, $AD, $5A, $55, $55, $A5, $AA, $54, $A9, $52, $AA, $54, $4A
-	.byte $A5, $54, $A9, $AA, $AA, $6A, $D5, $AA, $B5, $5A, $AB, $B5, $5A, $B5, $AA, $55
-	.byte $A9, $AA, $52, $A5, $4A, $95, $4A, $95, $52, $A5, $52, $55, $A9, $AA, $55, $B5
-	.byte $6A, $AD, $DA, $AA, $D5, $AA, $55, $AB, $AA, $AA, $AA, $54, $A9, $2A, $55, $4A
-	.byte $55, $29, $95, $2A, $55, $95, $55, $55, $55, $AB, $D6, $AA, $D5, $5A, $AD, $5A
-	.byte $D5, $AA, $AA, $AA, $4A, $55, $A9, $52, $A5, $4A, $95, $2A, $55, $AA, $54, $55
-	.byte $55, $55, $B5, $AA, $D5, $AA, $55, $6B, $B5, $6A, $55, $35, $55, $55, $55, $A9
-DMC07_End
-
-	; BEGIN UNUSED SPACE
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	; END UNUSED SPACE
-
-DMC03:
-	.byte $D5, $12, $87, $AA, $1F, $3F, $06, $E0, $F8, $71, $FC, $00, $A8, $FF, $FB, $0F
-	.byte $00, $C0, $FF, $1F, $00, $A0, $FF, $3C, $0F, $00, $F8, $01, $FE, $FF, $01, $FC
-	.byte $FF, $81, $43, $00, $80, $FF, $3F, $88, $03, $C0, $FF, $17, $C0, $FA, $FF, $FA
-	.byte $71, $00, $C0, $F9, $FF, $07, $00, $90, $A7, $4E, $E9, $C0, $8F, $FE, $EF, $09
-	.byte $00, $E8, $FF, $4F, $00, $00, $7C, $FF, $2F, $00, $F8, $7F, $E8, $17, $00, $FC
-	.byte $3F, $00, $EC, $C0, $FF, $FF, $00, $80, $FF, $43, $0B, $10, $F8, $FF, $03, $00
-	.byte $BE, $EB, $FF, $05, $00, $FF, $8B, $42, $18, $A5, $7F, $D7, $09, $80, $D5, $2F
-	.byte $1D, $40, $B7, $FF, $07, $C0, $4E, $2F, $45, $96, $64, $BB, $8B, $C4, $AA, $72
-DMC03_End
-
-DMC08:
-	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $05, $FC, $07, $F0, $FF
-	.byte $2F, $09, $00, $00, $FE, $FF, $07, $80, $FF, $02, $5F, $F6, $2B, $30, $4A, $D8
-	.byte $AF, $57, $04, $5A, $5D, $BB, $08, $AD, $2D, $55, $4D, $D5, $54, $AA, $EA, $BE
-	.byte $02, $F8, $7F, $00, $00, $FE, $FF, $03, $F0, $FF, $00, $A0, $FF, $05, $F0, $17
-	.byte $C0, $AB, $AF, $1B, $80, $E2, $5F, $A1, $E9, $15, $C9, $B2, $57, $55, $40, $ED
-	.byte $5F, $11, $AC, $36, $55, $15, $F5, $56, $25, $D4, $F2, $07, $86, $E3, $2B, $F0
-	.byte $FF, $3F, $00, $80, $FF, $7F, $00, $C0, $FF, $03, $00, $F0, $FF, $03, $80, $FF
-	.byte $62, $81, $FF, $22, $78, $BD, $24, $09, $BD, $DD, $4A, $08, $FA, $3F, $80, $D5
-	.byte $4B, $B6, $2A, $2B, $4D, $24, $3F, $E8, $EF, $00, $7C, $FF, $05, $00, $FF, $0F
-	.byte $00, $C0, $FF, $1F, $00, $F0, $FF, $07, $F0, $1F, $28, $7E, $FE, $07, $00, $E0
-	.byte $3F, $7E, $E0, $00, $8E, $FF, $00, $FE, $1F, $80, $2E, $FE, $E7, $07, $00, $FF
-	.byte $8F, $1E, $00, $7E, $A0, $F8, $FF, $03, $00, $FE, $A3, $00, $FF, $02, $EF, $7F
-	.byte $01, $00, $F0, $FF, $07, $80, $FF, $27, $80, $EB, $FF, $01, $00, $FD, $7F, $00
-	.byte $F8, $7F, $02, $2C, $CE, $1F, $04, $46, $FE, $3F, $00, $F0, $3F, $70, $BE, $07
-	.byte $F8, $0B, $44, $8F, $FF, $C0, $7A, $00, $07, $FA, $FF, $07, $00, $FC, $3F, $40
-	.byte $FE, $40, $FF, $1F, $00, $80, $FF, $27, $00, $EC, $BF, $7A, $80, $FF, $0B, $00
-	.byte $FF, $81, $BF, $00, $A7, $42, $FF, $0B, $A0, $EA, $3F, $E0, $C4, $D1, $ED, $20
-	.byte $F4, $9F, $00, $F7, $03, $FB, $0B, $E0, $D3, $07, $E8, $EA, $57, $00, $7F, $C1
-	.byte $AF, $78, $01, $A0, $FF, $2F, $E8, $00, $FE, $42, $57, $B7, $49, $44, $55, $6D
-	.byte $AF, $58, $01, $DA, $FF, $15, $80, $AA, $FD, $07, $40, $FE, $52, $4B, $75, $2A
-	.byte $B4, $55, $AB, $26, $A9, $BA, $58, $4A, $DB, $56, $95, $D0, $A6, $17, $2B, $D9
-	.byte $B2, $52, $D5, $92, $DA, $D1, $96, $98, $B4, $4A, $7B, $27, $89, $6C, $29, $EA
-	.byte $FD, $0A, $01, $DA, $FE, $17, $00, $F5, $BD, $44, $49, $ED, $AD, $04, $69, $FB
-	.byte $04, $EA, $BD, $54, $92, $D0, $BE, $4B, $92, $DA, $92, $DA, $A4, $B6, $95, $A4
-	.byte $AA, $DA, $5A, $12, $D5, $AA, $B7, $24, $29, $B5, $AD, $26, $B1, $2D, $A5, $55
-	.byte $2B, $25, $B5, $DD, $44, $AA, $6A, $2B, $69, $A5, $DA, $B6, $24, $A8, $BD, $25
-	.byte $A9, $B2, $DD, $48, $52, $6D, $AB, $52, $55, $25, $6D, $5B, $49, $AA, $AD, $2A
-	.byte $49, $6D, $AB, $52, $53, $A5, $B2, $AD, $2A, $55, $55, $49, $6D, $57, $21, $B6
-DMC08_End
-
 ; Rest of ROM bank was empty
 
 
@@ -4072,3 +3953,360 @@ _judgem_check:
 _cmp7_rts:
 	CMP #$07
 	RTS
+
+;;; [ORANGE] This section for Map NPCs
+CheckForNPCInteraction:
+	;;; This function needs to LDA Map_Pan_Count if we're returning
+	LDA <Pad_Input
+	AND #PAD_SELECT					; If we're pressing select, look for an NPC around us
+	BEQ _no_npc_interaction
+	JSR FindNPCNearby
+	BNE _no_npc_interaction
+_do_npc_interaction:
+	LDA #$01
+	STA World_EnterState
+	STA <Map_DoNPC
+	LDA #$00
+	STA Map_Operation				; Back to opening sequence
+	PLA
+	PLA								; return to our caller's caller...
+	RTS								; We don't want to continue the MO_NormalMoveEnter state (unless to draw?)
+_no_npc_interaction:
+	LDA Map_Pan_Count
+	RTS
+
+NPCTileIDList:
+	.byte TILE_PIRHANAPLANT
+NPC_END
+
+;;; [ORANGE] This function checks all the directions around the player on the map for
+;;; one of the tiles in the NPCTileIDList. It returns zero flag set if found.
+FindNPCNearby:
+	LDY #$03
+_findnpc_loopdir:
+	TYA
+	PHA							; Save off Y
+	JSR MapTile_Get_By_Offset	; 3 = up, 2 = down, 1 = left, 0 = right, returns the tile in A
+	TAX							; Save off A so we can use it to restore Y
+	PLA
+	TAY							; Restore Y
+	TXA							; Restore A
+	LDX #(NPC_END-NPCTileIDList-1)
+_findnpc_looplist:
+	CMP NPCTileIDList,X			; Does the tile around us match an NPC tile?
+	BEQ _findnpc_found
+	DEX
+	BPL _findnpc_looplist
+	DEY
+	BPL _findnpc_loopdir
+	RTS							; Didn't find anything, return with our zero flag not set
+_findnpc_found:
+	LDA #$00
+	RTS							; Found NPC, return with our zero flag set
+
+
+WorldIntro_Or_NPCInteraction:
+	LDA <Map_DoNPC
+	BEQ _world_intro
+	JSR DoNPCMessage
+	PLA
+	PLA
+	RTS							; Don't return to WorldIntro_EraseAndStars
+_world_intro:
+	JSR Map_Intro_Erase1Strip
+	RTS
+
+DoNPCMessage:
+	; TODO: We'll have a state machine here that controls drawing the message box,
+	; then drawing the NPC's message, then handling input to scroll the message,
+	; then we'll INC Map_Operation
+	LDA #$0e
+	JSR Video_Do_Update
+	DEC <Map_DoNPC
+	RTS
+
+
+
+
+NPC_Draw1Strip:
+	; Set page @ A000 to 12
+	LDA #12
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+
+	LDA <Map_IntBoxErase
+	BNE _PRG010_C5A9	 	; If Map_IntBoxErase <> 0, jump to PRG010_C5A9
+
+	; Map_IntBoxErase is set to offset of upper-left corner of "World X"
+	; intro box to tell where to start copying the map tiles from!
+	LDA <Scroll_ColumnR
+	AND #$08
+	ADD #$34
+	STA <Map_IntBoxErase	; Map_IntBoxErase = (Scroll_ColumnR & 8) + $34
+
+	LDA <Scroll_ColumnL
+	AND #$f0
+	LSR A
+	LSR A
+	LSR A
+	TAY		 	; Y = (Scroll_ColumnL & $F0) >> 3 (basically current "screen" of map * 2, for indexing Tile_Mem_Addr)
+
+	; Store starting offset for this map screen into Map_Tile_AddrL/H
+	LDA Tile_Mem_Addr,Y
+	STA <Map_Tile_AddrL
+	LDA Tile_Mem_Addr+1,Y
+	STA <Map_Tile_AddrH
+
+	INC <Map_Tile_AddrH	; Effectively adds $100 to the address (maps get loaded at screen base + $110)
+
+
+	; Calculates the base offset into the nametable for erasing the "World X" intro box
+	LDA <Scroll_ColumnR
+	AND #$08	 	; 0 or 8, depending if we're scrolled "halfway" across two screens
+	ASL A		 	; Now 0 or 16
+	ADD #$08	 	; Now 8 or 24
+	STA <Map_Intro_NTOff	; Map_Intro_NTOff = 8 or 24
+
+	; Calculates the corresponding offset to the attribute table
+	LDA <Horz_Scroll
+	LSR A
+	LSR A
+	LSR A
+	LSR A
+	LSR A			; Divide by 32 because EACH attribute BYTE defines FOUR 8x8 tiles (4 * 8 = 32)
+	ADD #$d2
+	STA <Map_Intro_ATOff		; Map_Intro_ATOff = (Horz_Scroll / 32) + $D2
+
+	LDA #$02
+	STA <Map_StarsState		; Map_StarsState = 2
+
+_PRG010_C5A9:
+	LDA World_8_Dark
+	BEQ _PRG010_C5C5		; If World_8_Dark = 0 (no darkness effect), jump to PRG010_C5C5
+
+	; The World 8 Darkness effect version of clearing the World X intro box...
+
+	; Copy Map_W8Dark_IntroCover into the Graphics_Buffer
+	LDY #$15
+_PRG010_C5B0:
+	LDA Map_W8Dark_IntroCover,Y
+	STA Graphics_Buffer,Y
+	DEY		 		; Y--
+	BPL _PRG010_C5B0	 		; While Y >= 0, loop!
+
+	; Patch in the correct low byte for the video address
+	LDX <Map_Intro_NTOff
+	STX Graphics_Buffer+1
+	INX
+	STX Graphics_Buffer+$C
+	JMP _PRG010_C622	 		; Jump to PRG010_C622
+
+_PRG010_C5C5:
+	LDA Map_IntBoxErase
+	STA <Temp_Var1		 	; Temp_Var1 = Map_IntBoxErase
+
+	LDX #$00	 		; X = 0
+
+_PRG010_C5CC:
+	; CHECKME: Isn't Level_Tileset always equal to zero on world maps??
+	; Probably wouldn't matter since PAGE_A000 is hard-coded to 12,
+	; instead of using Page_Per_Tileset like it ought to :)
+	LDA Level_Tileset
+	ASL A
+	TAY		 		; Y = Level_Tileset << 1 (for indexing TileLayout_ByTileset)
+
+	; Set Temp_Var15 to point to the 16x16 tile 8x8 layout data
+	LDA TileLayout_ByTileset,Y
+	STA <Temp_Var15
+	LDA TileLayout_ByTileset+1,Y
+	STA <Temp_Var16
+
+	LDY <Temp_Var1		 	; Get offset to current 16x16 tile we want to grab
+	LDA [Map_Tile_AddrL],Y	 	; Grab it!
+	TAY		 		; Y = tile
+
+	; The 16x16 tile is laid out in four 256 byte sized "chunks" which define each 8x8
+	; in the order of upper-left, lower-left, upper-right, lower-right
+
+	; Upper-left
+	LDA [Temp_Var15],Y	 	; Get first 8x8
+	STA Scroll_PatStrip,X	 	; Store this 8x8 into the vertical strip
+
+	; Lower-left
+	INC <Temp_Var16		; Jump to next layout chunk
+	LDA [Temp_Var15],Y	 	; Get next 8x8
+	STA Scroll_PatStrip+1,X	; Store this 8x8 into vertical strip, next slot to the right
+
+	; Upper-right
+	INC <Temp_Var16		; Jump to next layout chunk
+	LDA [Temp_Var15],Y	 	; Get next 8x8
+	STA Scroll_PatStrip+$B,X	; Store into vertical strip
+
+	; Lower-right
+	INC <Temp_Var16		; Jump to next layout chunk
+	LDA [Temp_Var15],Y	 	; Get next 8x8
+	STA Scroll_PatStrip+$C,X	; Store into vertical strip
+
+	LDA <Temp_Var1
+	ADD #16
+	STA <Temp_Var1		 	; Temp_Var1 += 16 (get next tile one row down)
+
+	INX
+	INX		; X += 2 (next block down in Scroll_PatStrip)
+
+	CPX #$08
+	BNE _PRG010_C5CC	; If X <> 8 (4 tiles downward in Scroll_PatStrip), loop!
+
+	; Pushes the Scroll_PatStrip memory into the Graphics_Buffer
+	LDX #$12	 		; X = $12
+_PRG010_C609:
+	LDA Scroll_PatStrip,X
+	STA Graphics_Buffer+3,X
+	DEX		 		; X--
+	BPL _PRG010_C609	 		; If X >= 0, loop!
+
+	; Used VRAM addr $29xx for both strips
+	LDA #$29
+	STA Graphics_Buffer
+	STA Graphics_Buffer+$B
+
+	LDA #(VU_VERT | 8)		; 8 8x8s vertically applied
+	STA Graphics_Buffer+2
+	STA Graphics_Buffer+$D
+
+_PRG010_C622:
+	LDX <Map_Intro_NTOff
+	STX Graphics_Buffer+1	 	; Store lower part of VRAM address
+	INX
+	STX Graphics_Buffer+$C	 	; Store lower part of VRAM address
+
+
+	; Now it's the attribute table's turn...
+
+	; Store VRAM addr $2Bxx
+	LDA #$2b
+	STA Graphics_Buffer+$16
+	STA Graphics_Buffer+$1A
+
+	; Store lower part of VRAM address
+	LDA <Map_Intro_ATOff
+	STA Graphics_Buffer+$17
+	ADD #$08
+	STA Graphics_Buffer+$1B
+
+	; Just one byte to copy
+	LDA #$01
+	STA Graphics_Buffer+$18
+	STA Graphics_Buffer+$1C
+
+	LDA <Map_Intro_CurStripe
+	AND #$06
+	LSR A
+	TAX		 ; X = (Map_Intro_CurStripe & 6) >> 1
+
+	LDA <Scroll_ColorStrip,X
+	STA Graphics_Buffer+$19
+
+	LDA <Scroll_ColorStrip+4,X
+	STA Graphics_Buffer+$1D
+
+	LDA <Map_Intro_CurStripe
+	AND #$01
+	BNE _PRG010_C66A	 	; If Map_Intro_CurStripe bit 0 set, jump to PRG010_C66A
+
+	; Otherwise...
+	LDA <Scroll_ColorStrip,X
+	AND #$33
+	STA Graphics_Buffer+$19
+
+	LDA <Scroll_ColorStrip+4,X
+	AND #$33
+	STA Graphics_Buffer+$1D
+
+_PRG010_C66A:
+	LDA #$00
+	STA Graphics_Buffer+$1E
+
+	; If, on the next increment to Map_IntBoxErase, the lower 4 bits are "zero",
+	; it has wrapped to a new row.  This should only happen when the "World X"
+	; intro is being performed in "halfway off-centered" mode...
+	LDX <Map_IntBoxErase
+	INX
+	TXA
+	AND #$0f
+	BNE _PRG010_C689	 	; If (Map_IntBoxErase + 1) & $0F is non-zero, jump to PRG010_C689
+
+	; Otherwise, we need to update the address
+	LDA <Map_Tile_AddrL
+	ADD #$b0
+	STA <Map_Tile_AddrL	; Map_Tile_AddrL += $B0 (11 tiles over)
+
+	LDA <Map_Tile_AddrH
+	ADC #$01
+	STA <Map_Tile_AddrH	; Next screen plus add carry if needed
+
+	LDA <Map_IntBoxErase
+	AND #$f0
+	TAX		 	; X = (Map_IntBoxErase & $F0); current row within map "screen" of tiles
+
+_PRG010_C689:
+	STX <Map_IntBoxErase	; Update Map_IntBoxErase
+
+	TXA
+	AND #$01
+	BNE _PRG010_C69F	 	; If (Map_IntBoxErase & 1) <> 0 (if we're on an "odd" tile), jump to PRG010_C69F
+
+	; Otherwise need to update the attribute stuff!
+
+	; If, on the next increment to Map_Intro_ATOff, the lower 3 bits are "zero",
+	; it has wrapped to a new row.  This should only happen when the "World X"
+	; intro is being performed in "halfway off-centered" mode...
+	LDX <Map_Intro_ATOff
+	INX
+	TXA
+	AND #$07
+	BNE _PRG010_C69D	 	; If (Map_Intro_ATOff + 1) & 7 <> 0, jump to PRG010_C69D
+
+	LDA <Map_Intro_ATOff
+	AND #$f0
+	TAX		 	; X contains just the upper 4 bits of Map_Intro_ATOff
+
+_PRG010_C69D:
+	STX <Map_Intro_ATOff	; Update Map_Intro_ATOff
+
+
+_PRG010_C69F
+
+	; If, on the next +2 to Map_Intro_NTOff, the lower 5 bits are "zero",
+	; it has wrapped to a new row.  This should only happen when the "World X"
+	; intro is being performed in "halfway off-centered" mode...
+	LDX <Map_Intro_NTOff
+	INX
+	INX
+	TXA
+	AND #$1f
+	BNE _PRG010_C6AA		; If (Map_Intro_NTOff + 1) & $1f <> 0, jump to PRG010_C6AA
+
+	LDX #$00	 	; X = 0
+
+_PRG010_C6AA:
+	STX <Map_Intro_NTOff	; Update Map_Intro_NTOff
+
+	INC <Map_Intro_CurStripe ; Map_Intro_CurStripe++
+
+	LDA <Map_Intro_CurStripe
+	CMP #$08
+	BNE _PRG010_C6BB	 	; If Map_Intro_CurStripe <> 8, jump to PRG010_C6BB
+
+	; Otherwise, we're done!  The stupid box is erased!
+	LDA #$00
+	STA <Map_IntBoxErase	; Map_IntBoxErase = 0
+	INC World_EnterState	; Next state!  (NOTE: Gameover uses this too, so GameOver_State, which is the same memory)
+
+_PRG010_C6BB:
+	; In any case, put page 11 back in at A000
+	LDA #11
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+
+	RTS		 ; Return
