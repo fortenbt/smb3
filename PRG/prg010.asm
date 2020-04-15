@@ -4298,7 +4298,7 @@ _npcwait_rts:
 	RTS
 
 NPC_ColorStrip:
-	.byte $A7, $99, $AA, $95, $A4, $A9, $5A, $55, $A5, $AB, $AA, $BA, $55, $55, $55, $99, $55, $9B
+	.byte $A7, $A8, $9A, $99, $AA, $55, $AA, $A8, $A8, $AA, $AA, $7A, $AA, $AA, $AA, $A8, $68, $A8
 NPC_Draw1Strip:
 	; Set page @ A000 to 12
 	LDA #12
