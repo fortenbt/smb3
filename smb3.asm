@@ -3655,6 +3655,7 @@ TILE_BORDER2		= $E7
 TILE_SPADEBONUS		= $E8	; Spade bonus panel
 TILE_WORLD5STAR		= $E9	; Star used on World 5 Sky map
 TILE_ALTFORT		= $EB	; Alternate color Mini-Fortress
+TILE_NPCGIRL1		= $EC	; [ORANGE] NPC Girl 1 (dragon warrior)
 
 
 ; Commons (not really comprehensive)

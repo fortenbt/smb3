@@ -3976,7 +3976,7 @@ _no_npc_interaction:
 	RTS
 
 NPCTileIDList:
-	.byte TILE_NPCDOG
+	.byte TILE_NPCGIRL1, TILE_NPCDOG
 NPC_END
 
 ;;; [ORANGE] This function checks all the directions around the player on the map for
@@ -4192,10 +4192,37 @@ _npc_draw_box_cont:
 	STA <Graphics_Queue
 	RTS
 
+;Welcome,stranger,to
+;our town. Are you
+;here to help figure
+;out what's going on
+;with all these orbs?
+;Some say Old Man
+;Grimm is behind
+;them,but no one
+;knows what they are.
 NPCMessage1:
-	.byte $00, $D8, $F0, $F0, $DA, $FF
+	.byte $00
+	.byte $D8, $DC, $90, $E2, $93, $91, $DC, $B4, $A9, $AA, $A8, $E0, $92, $DE, $DC, $A8, $B4, $AA, $93, $00
+	.byte $93, $AB, $A8, $FE, $AA, $93, $B1, $92, $58, $FE, $BC, $A8, $DC, $FE, $B3, $93, $AB, $00
+	.byte $FA, $DC, $A8, $DC, $FE, $AA, $93, $FE, $FA, $DC, $90, $D9, $FE, $DD, $84, $DE, $AB, $A8, $DC, $00
+	.byte $93, $AB, $AA, $FE, $B1, $FA, $E0, $AA, $B5, $A9, $FE, $DE, $93, $84, $92, $DE, $FE, $93, $92, $00
+	.byte $B1, $84, $AA, $FA, $FE, $E0, $90, $90, $FE, $AA, $FA, $DC, $A9, $DC, $FE, $93, $A8, $E1, $A9, $56, $00
+	.byte $C1, $93, $91, $DC, $FE, $A9, $E0, $B3, $FE, $F0, $90, $EF, $FE, $BA, $E0, $92, $00
+	.byte $EB, $A8, $84, $91, $91, $FE, $84, $A9, $FE, $E1, $DC, $FA, $84, $92, $EF, $00
+	.byte $AA, $FA, $DC, $91, $B4, $E1, $AB, $AA, $FE, $92, $93, $FE, $93, $92, $DC, $FE, $85, $92, $93, $B1, $A9, $00
+	.byte $B1, $FA, $E0, $AA, $FE, $AA, $FA, $DC, $B3, $FE, $E0, $A8, $DC, $58, $FF
+
+;Please continue
+;searching until you
+;have found all the
+;orbs.
 NPCMessage2:
-	.byte $00, $D8, $F0, $F0, $DA, $FF
+	.byte $00
+	.byte $D9, $90, $DC, $E0, $A9, $DC, $FE, $E2, $93, $92, $AA, $84, $92, $AB, $DC, $00
+	.byte $A9, $DC, $E0, $A8, $E2, $FA, $84, $92, $DE, $FE, $AB, $92, $AA, $84, $90, $FE, $B3, $93, $AB, $00
+	.byte $FA, $E0, $B0, $DC, $FE, $DD, $93, $AB, $92, $EF, $FE, $E0, $90, $90, $FE, $AA, $FA, $DC, $00
+	.byte $93, $A8, $E1, $A9, $58, $FF
 
 NPCMsgPtr_L:
 	.byte LOW(NPCMessage1)
@@ -4223,8 +4250,10 @@ NPC_DialogNextState:
 	INC <Map_DoNPC
 	RTS
 
+NPC_VH_ByLine:
+	.byte $29, $29, $29, $29, $29, $29, $2A, $2A, $2A
 NPC_VL_ByLine:
-	.byte $26, $46, $66, $86, $A6, $C6, $E6
+	.byte $46, $66, $86, $A6, $C6, $E6, $06, $26, $46
 
 NPC_DoDialog:
 	LDA <Map_NPCTextTimer
@@ -4278,6 +4307,8 @@ _npc_line_brk:
 	DEX
 	LDA NPC_VL_ByLine,X
 	STA <Map_NPCMsg_VL
+	LDA NPC_VH_ByLine,X
+	STA <Map_NPCMsg_VH
 
 _npc_do_character:
 	; Map_NPCTextTimer = 1
@@ -4298,7 +4329,7 @@ _npcwait_rts:
 	RTS
 
 NPC_ColorStrip:
-	.byte $A7, $99, $AA, $95, $A4, $A9, $5A, $55, $A5, $AB, $AA, $BA, $55, $55, $55, $99, $55, $9B
+	.byte $AF, $A8, $9A, $99, $AA, $55, $AA, $A8, $A8, $AA, $AA, $7A, $AA, $AA, $AA, $A8, $68, $A8
 NPC_Draw1Strip:
 	; Set page @ A000 to 12
 	LDA #12
