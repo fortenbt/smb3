@@ -1457,7 +1457,7 @@ PRG027_ABD1:
 
 PalSet_Maps:	
 	; Refer to Map_Tile_ColorSets and Map_Object_ColorSets in PRG012 to change these selections
-	.byte $0F, $0F, $30, $3C, $0F, $37, $17, $10, $0F, $11, $19, $10, $0F, $37, $05, $10	; World 1, 3
+	.byte $0F, $0F, $30, $3C, $0F, $37, $17, $31, $0F, $11, $19, $31, $0F, $37, $05, $31	; World 1, 3
 	.byte $0F, $0F, $30, $3C, $0F, $36, $27, $28, $0F, $12, $2A, $28, $0F, $30, $16, $28	; World 2
 	.byte $0F, $0F, $30, $3C, $0F, $36, $27, $21, $0F, $21, $10, $37, $0F, $21, $10, $37	; World 9
 	.byte $0F, $0F, $30, $3C, $0F, $36, $27, $3A, $0F, $12, $2A, $3A, $0F, $30, $16, $3A	; World 4
