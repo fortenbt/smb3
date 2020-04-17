@@ -3975,10 +3975,6 @@ _no_npc_interaction:
 	LDA Map_Pan_Count
 	RTS
 
-NPCTileIDList:
-	.byte TILE_NPCGIRL1, TILE_NPCDOG
-NPC_END
-
 ;;; [ORANGE] This function checks all the directions around the player on the map for
 ;;; one of the tiles in the NPCTileIDList. It returns zero flag set if found.
 FindNPCNearby:
@@ -4192,6 +4188,10 @@ _npc_draw_box_cont:
 	STA <Graphics_Queue
 	RTS
 
+NPCTileIDList:
+	.byte TILE_NPCGIRL1, TILE_NPCGIRL2, TILE_NPCGIRL3, TILE_NPCBOY1, TILE_NPCBOY2, TILE_NPCDOG
+NPC_END
+
 ;Welcome,stranger,to
 ;our town.Are you here
 ;to help us with the
@@ -4222,18 +4222,46 @@ NPCMessage2:
 	.byte $FA, $E0, $B0, $DC, $FE, $DD, $93, $AB, $92, $EF, $FE, $E0, $90, $90, $FE, $AA, $FA, $DC, $00
 	.byte $93, $A8, $E1, $A9, $58, $FF
 
+;It's so sad,what's\n
+;happened to Mr. Grimm.\n
+;He used to be such a\n
+;kind man,but what he's\n
+;become now...
+NPCMessage3:
+	.byte $00
+	.byte $FC, $AA, $B5, $A9, $FE, $A9, $93, $FE, $A9, $E0, $EF, $B4, $B1, $FA, $E0, $AA, $B5, $A9, $00
+	.byte $FA, $E0, $D9, $D9, $DC, $92, $DC, $EF, $FE, $AA, $93, $FE, $BA, $A8, $58, $FE, $EB, $A8, $84, $91, $91, $58, $00
+	.byte $CF, $DC, $FE, $AB, $A9, $DC, $EF, $FE, $AA, $93, $FE, $E1, $DC, $FE, $A9, $AB, $E2, $FA, $FE, $E0, $00
+	.byte $85, $84, $92, $EF, $FE, $91, $E0, $92, $B4, $E1, $AB, $AA, $FE, $B1, $FA, $E0, $AA, $FE, $FA, $DC, $B5, $A9, $00
+	.byte $E1, $DC, $E2, $93, $91, $DC, $FE, $92, $93, $B1, $58, $58, $58, $FF
+
+;Old Man Grimm?
+;
+;That dude's lost his
+;marbles.
+NPCMessage4:
+	.byte 00
+	.byte $F0, $90, $EF, $FE, $BA, $E0, $92, $FE, $EB, $A8, $84, $91, $91, $56, $00
+	.byte $00
+	.byte $EA, $FA, $E0, $AA, $FE, $EF, $AB, $EF, $DC, $B5, $A9, $FE, $90, $93, $A9, $AA, $FE, $FA, $84, $A9, $00
+	.byte $91, $E0, $A8, $E1, $90, $DC, $A9, $58, $FF
+
 NPCMsgPtr_L:
 	.byte LOW(NPCMessage1)
 	.byte LOW(NPCMessage2)
+	.byte LOW(NPCMessage3)
+	.byte LOW(NPCMessage4)
 
 NPCMsgPtr_H:
 	.byte HIGH(NPCMessage1)
 	.byte HIGH(NPCMessage2)
+	.byte HIGH(NPCMessage3)
+	.byte HIGH(NPCMessage4)
 
 NPC_DialogInit:
 	LDA #$29
 	STA <Map_NPCMsg_VH
-	LDA #$26
+	LDA #$25
 	STA <Map_NPCMsg_VL
 
 	LDX <Map_NPCType
@@ -4251,7 +4279,7 @@ NPC_DialogNextState:
 NPC_VH_ByLine:
 	.byte $29, $29, $29, $29, $29, $29, $2A, $2A, $2A
 NPC_VL_ByLine:
-	.byte $46, $66, $86, $A6, $C6, $E6, $06, $26, $46
+	.byte $45, $65, $85, $A5, $C5, $E5, $05, $25, $45
 
 NPC_DoDialog:
 	LDA <Map_NPCTextTimer
