@@ -847,7 +847,10 @@ PRG030_8676:
 	TXA		 	; A = X ($0E/$0F, $10/$11)
 	JSR Video_Do_Update	; Do the World X intro box!
 
-	JSR Map_ConfigWorldIntro	; Apply the world number and lives count
+	;;;JSR Map_ConfigWorldIntro	; Apply the world number and lives count
+	NOP
+	NOP
+	NOP
 
 	; Push the buffered update
 	LDA #$00
