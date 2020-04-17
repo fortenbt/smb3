@@ -4193,25 +4193,23 @@ _npc_draw_box_cont:
 	RTS
 
 ;Welcome,stranger,to
-;our town. Are you
-;here to help figure
-;out what's going on
-;with all these orbs?
+;our town.Are you here
+;to help us with the
+;orbs?
 ;Some say Old Man
-;Grimm is behind
-;them,but no one
-;knows what they are.
+;Grimm is behind them,
+;but no one knows what
+;they are.
 NPCMessage1:
 	.byte $00
 	.byte $D8, $DC, $90, $E2, $93, $91, $DC, $B4, $A9, $AA, $A8, $E0, $92, $DE, $DC, $A8, $B4, $AA, $93, $00
-	.byte $93, $AB, $A8, $FE, $AA, $93, $B1, $92, $58, $FE, $BC, $A8, $DC, $FE, $B3, $93, $AB, $00
-	.byte $FA, $DC, $A8, $DC, $FE, $AA, $93, $FE, $FA, $DC, $90, $D9, $FE, $DD, $84, $DE, $AB, $A8, $DC, $00
-	.byte $93, $AB, $AA, $FE, $B1, $FA, $E0, $AA, $B5, $A9, $FE, $DE, $93, $84, $92, $DE, $FE, $93, $92, $00
-	.byte $B1, $84, $AA, $FA, $FE, $E0, $90, $90, $FE, $AA, $FA, $DC, $A9, $DC, $FE, $93, $A8, $E1, $A9, $56, $00
+	.byte $93, $AB, $A8, $FE, $AA, $93, $B1, $92, $58, $BC, $A8, $DC, $FE, $B3, $93, $AB, $FE, $FA, $DC, $A8, $DC, $00
+	.byte $AA, $93, $FE, $FA, $DC, $90, $D9, $FE, $AB, $A9, $FE, $B1, $84, $AA, $FA, $FE, $AA, $FA, $DC, $00
+	.byte $93, $A8, $E1, $A9, $56, $00
 	.byte $C1, $93, $91, $DC, $FE, $A9, $E0, $B3, $FE, $F0, $90, $EF, $FE, $BA, $E0, $92, $00
-	.byte $EB, $A8, $84, $91, $91, $FE, $84, $A9, $FE, $E1, $DC, $FA, $84, $92, $EF, $00
-	.byte $AA, $FA, $DC, $91, $B4, $E1, $AB, $AA, $FE, $92, $93, $FE, $93, $92, $DC, $FE, $85, $92, $93, $B1, $A9, $00
-	.byte $B1, $FA, $E0, $AA, $FE, $AA, $FA, $DC, $B3, $FE, $E0, $A8, $DC, $58, $FF
+	.byte $EB, $A8, $84, $91, $91, $FE, $84, $A9, $FE, $E1, $DC, $FA, $84, $92, $EF, $FE, $AA, $FA, $DC, $91, $B4, $00
+	.byte $E1, $AB, $AA, $FE, $92, $93, $FE, $93, $92, $DC, $FE, $85, $92, $93, $B1, $A9, $FE, $B1, $FA, $E0, $AA, $00
+	.byte $AA, $FA, $DC, $B3, $FE, $E0, $A8, $DC, $58, $FF
 
 ;Please continue
 ;searching until you
