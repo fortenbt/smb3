@@ -56,14 +56,16 @@ Video_DoWXMario00:
 
 	; ----
 
-	vaddr $294C
-	.byte $05, $D8, $F0, $E9, $EC, $EE	; WORLD
+	vaddr $2949
+	;.byte $05, $D8, $F0, $E9, $EC, $EE	; WORLD
+	; "Super Orb Bros"
+	.byte $0E, $C1, $AB, $D9, $DC, $A8, $FE, $F0, $A8, $E1, $FE, $10, $A8, $93, $A9
 
-	vaddr $29AA
-	.byte $05, $BA, $BC, $E9, $FC, $F0	; MARIO
+	;vaddr $29AA
+	;.byte $05, $BA, $BC, $E9, $FC, $F0	; MARIO
 
-	vaddr $29B3
-	.byte $01, $FB
+	;vaddr $29B3
+	;.byte $01, $FB
 
 	; ----
 
@@ -987,13 +989,13 @@ PRG010_C51B:
 
 	; This defines two sprites to make up the Player's current powerup
 Map_WorldIntro_PSpr:
-	.byte $60, $2D, $00, $84	; Left half of Player sprite
-	.byte $60, $2F, $00, $8C	; Right half of Player sprite
+	.byte $63, $ED, $03, $78	; Left half of Player sprite
+	.byte $63, $EF, $03, $80	; Right half of Player sprite
 
 	; This defines the first pattern to use for the Player sprite based on powerup
 	; The second pattern is implicitly +2 to this value
 Map_WorldIntro_PSPat:
-	.byte $2D	; 0 - Small
+	.byte $ED	; 0 - Small
 	.byte $2D	; 1 - Big
 	.byte $2D	; 2 - Fire
 	.byte $2D	; 3 - Leaf
