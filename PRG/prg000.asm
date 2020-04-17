@@ -3687,7 +3687,7 @@ PRG000_D19E:
 	JSR Score_Get100PlusPts 
 
 PRG000_D1B7:
-	JMP Object_SetShellState	 ; Jump to Object_SetShellState ("dies" into shelled state) 
+	JMP Object_SetShellState_SkipNotes	 ; Jump to Object_SetShellState ("dies" into shelled state)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Player_HitEnemy
@@ -6676,89 +6676,38 @@ Inventory_DestX:
 
 
 	; This sets up the "pop out" item you get when you open a treasure box
+	;;; [ORANGE] Removed this for space
 ToadHouse_GiveItem:
-
-	; X = Inventory item index you are getting from Toad
-	; A = X position of box
-
-	STX Objects_Frame	; Store item you are getting
-	STA <Objects_X		; X position of box that was opened
-
+Object_SetShellState_SkipNotes:
+	;;; [ORANGE] If our object was bumped by a noteblock, allow it to keep its state
+	LDX #6						; Check object 6...OBJ_BOUNCEDOWNUP is special and is spawned in 6 or 7
+_obj_sss_loop:
+	LDA Level_ObjectID,X
+	CMP #OBJ_BOUNCEDOWNUP
+	BEQ _obj_sss_checkrestore
+	INX							; Check object 7...OBJ_BOUNCEDOWNUP is special and is spawned in 6 or 7
+	CPX #8
+	BNE _obj_sss_loop
+_j_Object_SetShellState:
+	LDX <SlotIndexBackup		; Restore the slot index
+	JMP Object_SetShellState	; Do normal set shell state
+_obj_sss_checkrestore:
+	LDA Objects_Var1,X
 	LSR A
 	LSR A
-	STA <Temp_Var1	 ; Temp_Var1 = X position / 4
-
-	LDY Player_Current
-	BEQ PRG000_DDE7	 ; If Player is Mario, jump to PRG000_DDE7
-
-	LDY #(Inventory_Items2 - Inventory_Items)	 ; Y = offset to Luigi's items
-
-PRG000_DDE7:
-	LDX #$00	 	; X = 0
-
-PRG000_DDE9:
-	LDA Inventory_Items,Y	; Get item currently in slot
-	BEQ PRG000_DDF4	 	; If slot is empty, jump to PRG000_DDF4
-
-	INY		 ; Y++ (next item slot)
-	INX		 ; X++ (counter)
-	CPX #(Inventory_Cards - Inventory_Items - 1)
-	BLT PRG000_DDE9	 ; While potential item slots remain, loop!
-
-PRG000_DDF4:
-	STY Objects_Var1	 ; Obj var 1 stores target inventory index
-
-	; The following basically does a MOD 7 against the non-offsetted inventory index
-	TXA		; non-offset inventory index -> 'A'
-	LDY #$03	; Y = 3 (up to four rows of inventory)
-PRG000_DDFA:
-	CMP #$07
-	BLT PRG000_DE03	 ; If index has arrived in a inventory row-relative spot, jump to PRG000_DE03
-	SBC #$07	 ; Otherwise subtract 7...
-	DEY		 ; Y-- (go one row higher!)
-	BNE PRG000_DDFA	 ; If not out of rows, loop!
-PRG000_DE03:
-
-	TAX		 ; Mod value -> 'X'
-
-	LDA InventoryRow_BaseIndex,Y	 ; Get base inventory index for this row
-	STA Objects_Var2	 ; -> Objects_Var2
-
-	; Configure the treasure box item to pop out!
-	LDA #OBJSTATE_NORMAL
-	STA Objects_State
-
-	LDA #OBJ_TOADHOUSEITEM
-	STA Level_ObjectID
-
-	LDA #$90
-	STA <Objects_Y
-
-	; Calculates a good fly rate so item lands in the inventory slot
-	LDA Inventory_DestX,X	 ; Get target X coordinate for object
 	LSR A
 	LSR A
-	SUB <Temp_Var1		 ; was object X / 4
-	STA <Objects_XVel	 ; Set as X velocity
-
-	LDA #-$30
-	STA <Objects_YVel	 ; Object's Y velocity = -$30
-
-	LDA #$00
-	STA Objects_XVelFrac	; Objects_XVelFrac = 0
-	STA THouse_UnusedFlag	; THouse_UnusedFlag = 0 (set here, never used otherwise)
-
-	LDA #$ff	 
-	STA Objects_Timer	 ; Objects_Timer = $FF
-	STA <Objects_Var4	 ; Objects_Var4 = $FF
-
-	; Play Inventory flip noise
-	LDA Sound_QMap
-	ORA #SND_MAPINVENTORYFLIP
-	STA Sound_QMap
-
-	RTS		 ; Return
-
+	CMP #4						; Bounce_TileReplacements,4 == CHNGTILE_TONOTEBLOCK
+	BNE _j_Object_SetShellState
+	LDX <SlotIndexBackup		; Restore the slot index
+	LDA #-$28
+	STA <Objects_YVel,X
+	LDA #SPR_HFLIP				; Don't vertically flip the shell
+	STA Objects_FlipBits,X
+	RTS							; If this was caused by a noteblock, just return
+;[ORANGE] Free space from removing ToadHouse_GiveItem
+PRG000_FREE_SPACE:
+	.ds 0x3d
 
 AScrlURDiag_HandleWrap:
 	LDA AScrlURDiag_WrapState
