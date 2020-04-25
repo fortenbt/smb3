@@ -166,61 +166,20 @@ MLEN .func ((\2 - \1) >> 4)
 	; Sample 3.  Whether this is a mistake or a "lost DMC sample" I don't
 	; know.  In any case, Sample 1 plays DMC02 correctly, Sample 3 would
 	; play DMC02 and just continue on through code, which would be noisy.
-
 DMC_MODADDR_LUT:
-	.byte MADR(DMC_ORB)	; Sample  0 (DMC01)
-	.byte MADR(DMC_ORB)	; Sample  1 (DMC02)
-	.byte MADR(DMC_ORB)	; Sample  2 (DMC03)
-	.byte MADR(DMC_ORB)	; Sample  3 (DMC02 BAD SAMPLE LENGTH)
-	.byte MADR(DMC_ORB)	; Sample  4 (DMC04)
-	.byte MADR(DMC_ORB)	; Sample  5 (DMC05)
-	.byte MADR(DMC_ORB)	; Sample  6 (DMC05 3/4 length)
-	.byte MADR(DMC_ORB)	; Sample  7 (DMC06)
-	.byte MADR(DMC_ORB)	; Sample  8 (DMC06 slower)
-	.byte MADR(DMC_ORB)	; Sample  9 (DMC07)
-	.byte MADR(DMC_ORB)	; Sample 10 (DMC07 slower)
-	.byte MADR(DMC_ORB)	; Sample 11 (DMC05 1/2 length)
-	.byte MADR(DMC_ORB)	; Sample 12 (DMC08)
-	.byte MADR(DMC_ORB)	; Sample 13 (DMC09)
-	.byte MADR(DMC_ORB)	; Sample 14 (DMC09 slower)
-	.byte MADR(DMC_ORB)	; Sample 15 (DMC09 even slower)
+	.byte MADR(DMC_ORB)		; Sample  0 (DMC_ORB)
+	.byte MADR(DMC_SILENCE)	; Sample  1 (DMC_SILENCE)
+
 
 DMC_MODLEN_LUT:
 	; these are (value << 4) + 1, that is minimum 1 byte long to FF1 bytes
-	.byte MLEN(DMC_ORB, DMC_ORB_End)	; Sample  0 (DMC01)
-	.byte MLEN(DMC_ORB, DMC_ORB_End)	; Sample  1 (DMC02)
-	.byte MLEN(DMC_ORB, DMC_ORB_End)	; Sample  2 (DMC03)
-	.byte MLEN(DMC_ORB, DMC_ORB_End)	; Sample  3 (DMC02 BAD SAMPLE LENGTH)
-	.byte MLEN(DMC_ORB, DMC_ORB_End)	; Sample  4 (DMC04)
-	.byte MLEN(DMC_ORB, DMC_ORB_End)	; Sample  5 (DMC05)
-	.byte MLEN(DMC_ORB, DMC_ORB_End)	; Sample  6 (DMC05 3/4 length)
-	.byte MLEN(DMC_ORB, DMC_ORB_End)	; Sample  7 (DMC06)
-	.byte MLEN(DMC_ORB, DMC_ORB_End)	; Sample  8 (DMC06 slower)
-	.byte MLEN(DMC_ORB, DMC_ORB_End)	; Sample  9 (DMC07)
-	.byte MLEN(DMC_ORB, DMC_ORB_End)	; Sample 10 (DMC07 slower)
-	.byte MLEN(DMC_ORB, DMC_ORB_End)	; Sample 11 (DMC05 1/2 length)
-	.byte MLEN(DMC_ORB, DMC_ORB_End)	; Sample 12 (DMC08)
-	.byte MLEN(DMC_ORB, DMC_ORB_End)	; Sample 13 (DMC09)
-	.byte MLEN(DMC_ORB, DMC_ORB_End)	; Sample 14 (DMC09 slower)
-	.byte MLEN(DMC_ORB, DMC_ORB_End)	; Sample 15 (DMC09 even slower)
+	.byte MLEN(DMC_ORB, DMC_ORB_End)		; Sample  0 (DMC_ORB)
+	.byte MLEN(DMC_SILENCE, DMC_ORB_End)	; Sample  1 (DMC_SILENCE)
+
 
 DMC_MODCTL_LUT:
-	.byte $0E	; Sample  0 (DMC01)
-	.byte $0F	; Sample  1 (DMC02)
-	.byte $0F	; Sample  2 (DMC03)
-	.byte $0F	; Sample  3 (DMC02 BAD SAMPLE LENGTH)
-	.byte $0F	; Sample  4 (DMC04)
-	.byte $0F	; Sample  5 (DMC05)
-	.byte $0E	; Sample  6 (DMC05 3/4 length)
-	.byte $0F	; Sample  7 (DMC06)
-	.byte $0E	; Sample  8 (DMC06 slower)
-	.byte $0F	; Sample  9 (DMC07)
-	.byte $0E	; Sample 10 (DMC07 slower)
-	.byte $0D	; Sample 11 (DMC05 1/2 length)
-	.byte $0F	; Sample 12 (DMC08)
-	.byte $0F	; Sample 13 (DMC09)
-	.byte $0E	; Sample 14 (DMC09 slower)
-	.byte $0D	; Sample 15 (DMC09 even slower)
+	.byte $0E	; Sample  0 (DMC_ORB)
+	.byte $0E	; Sample  0 (DMC_SILENCE)
 
 	.byte $60	; ???
 
@@ -1293,7 +1252,7 @@ PRG031_E870:
 	;   must have a correct row +$10 if it plans on being "low time warning compatible"
 Music_RestH_LUT:
 	.byte $10, $20, $0F, $80, $40, $4F, $21, $01, $02, $1E, $06, $16, $03, $15, $1D, $05 ; $00 - $0F
-	.byte $10, $30, $7F, $20, $40, $01, $08, $07, $09, $02, $0E, $03, $0D, $4D, $00, $00 ; $10 - $1F
+	.byte $10, $30, $7F, $20, $40, $01, $08, $07, $09, $02, $0E, $03, $0D, $4D, $00, $2C ; $10 - $1F
 	.byte $10, $30, $20, $08, $80, $60, $0F, $21, $41, $01, $11, $02, $0E, $1E, $03, $0D ; $20 - $2F
 	.byte $10, $20, $0F, $01, $07, $09, $08, $03, $0D, $02, $0E, $48, $60, $04, $02, $16 ; $30 - $3F
 	.byte $10, $20, $80, $08, $07, $09, $02, $0E, $03, $0D, $2E, $3C, $50, $03, $01, $13 ; $40 - $4F
@@ -1387,8 +1346,6 @@ _norm_bounce_vel:
 	LDA PRG000_D16B,Y
 	STA <Objects_XVel,X
 	RTS
-
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 
 	; END UNUSED SPACE
 .dmc_orb_align: DMCAlign .dmc_orb_align
@@ -1503,7 +1460,11 @@ DMC_ORB:
 	.byte $AA, $54, $B5, $AA, $AA, $AA, $AA, $AA, $54, $D5, $AA, $2A, $55, $55, $55, $55, $55, $55, $55, $55
 	.byte $A5, $A6, $5A, $AA, $AA, $AA, $AA, $5A, $55, $55, $55, $55, $55, $55, $B5, $AA, $AA, $AA, $AA, $AA
 	.byte $AA, $AA, $AA, $2A, $55, $55, $55, $55, $55, $55, $55, $55, $55, $95, $AA, $AA, $AA, $5A, $55, $55
-	.byte $55, $55, $55, $55, $CB, $AA, $AA, $AA, $AA, $AA, $AA, $2A, $55
+	.byte $55, $55, $55, $55, $CB, $AA, $AA, $AA, $AA, $AA, $AA, $2A
+DMC_SILENCE:
+	.byte $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
 DMC_ORB_End
 
 	.ds 0x25B
@@ -3337,29 +3298,7 @@ Read_Joypad_Loop:
 
 	RTS		 ; Return
 
-	; Most likely filler / reserved space here
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; IntReset
@@ -3502,13 +3441,13 @@ PRGROM_Change_C000:	; $FFD1
 	RTS				; Return
 
 
-	.byte $FF, $FF, $FF
+	;.byte $FF, $FF, $FF
 
 	; A marker of some kind? :)
-	.byte "SUPER MARIO 3"
+	;.byte "SUPER MARIO 3"
 
 	; Signature?
-	.byte $00, $00, $6C, $56, $03, $00, $01, $0C, $01, $2D
+	;.byte $00, $00, $6C, $56, $03, $00, $01, $0C, $01, $2D
 
 	; ASSEMBLER BOUNDARY CHECK, END OF $FFFA
 .Bound_FFFA:	BoundCheck .Bound_FFFA, $FFFA, PRG031: Vector space
