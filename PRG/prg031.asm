@@ -169,19 +169,27 @@ MLEN .func ((\2 - \1) >> 4)
 DMC_MODADDR_LUT:
 	.byte MADR(DMC_ORB)		; Sample  0 (DMC_ORB)
 	.byte MADR(DMC_SILENCE)	; Sample  1 (DMC_SILENCE)
+	.byte MADR(DMC_MOTHER1)
+	.byte MADR(DMC_MOTHER2)
+	.byte MADR(DMC_GRADIUS1)
 
 
 DMC_MODLEN_LUT:
 	; these are (value << 4) + 1, that is minimum 1 byte long to FF1 bytes
 	.byte MLEN(DMC_ORB, DMC_ORB_End)		; Sample  0 (DMC_ORB)
 	.byte MLEN(DMC_SILENCE, DMC_ORB_End)	; Sample  1 (DMC_SILENCE)
+	.byte MLEN(DMC_MOTHER1, DMC_MOTHER1_End)	; Sample 2 (DMC_MOTHER1)
+	.byte MLEN(DMC_MOTHER2, DMC_MOTHER2_End)	; Sample 2 (DMC_MOTHER2)
+	.byte MLEN(DMC_GRADIUS1, DMC_GRADIUS1_End)
 
 
 DMC_MODCTL_LUT:
 	.byte $0E	; Sample  0 (DMC_ORB)
 	.byte $0E	; Sample  0 (DMC_SILENCE)
+	.byte $0F	; Sample  0 (DMC_MOTHER1)
+	.byte $0F	; Sample  0 (DMC_MOTHER2)
+	.byte $0F
 
-	.byte $60	; ???
 
 Music_GetRestTicks:
 	; A is a byte from the music segment, $80-$fe/$ff on non-squares
@@ -194,11 +202,11 @@ Music_GetRestTicks:
 	; Music_RestH_Off is always $00 or $10 (low time warning)
 
 	AND #$0f	 	; Get lower 4 bits
-	ADD Music_RestH_Base	; Add this to Music_RestH_Base
-	ADC Music_RestH_Off	; Add this to Music_RestH_Off
+	;ADD Music_RestH_Base	; Add this to Music_RestH_Base
+	;;;ADC Music_RestH_Off	; Add this to Music_RestH_Off
 
 	TAY			; Y = A
-	LDA Music_RestH_LUT,Y 	; Get value from Music_RestH_LUT 
+	LDA [Music_Rest_PtrL],Y 	; Get value from the rest array 
 	RTS		 	; Return
 
 SndMus_QueueCommonJ:
@@ -299,6 +307,9 @@ SndMus2B_Next:
 	; If loop = 0, stop music
 	JMP Music_StopAll
 
+PRG031_E3EB:
+	JMP Music_Sq2Track
+
 SndMus2B_LoadNext:
 	; Load next "index" (Y) of Music Set 2 song...
 
@@ -307,36 +318,45 @@ SndMus2B_LoadNext:
 
 	; Get and store rest lookup base index for this segment in Music_RestH_Base
 	LDA Music_Set2B_Headers,Y
-	STA Music_RestH_Base	
+	STA <Music_Rest_PtrL
+	LDA Music_Set2B_Headers+1,Y
+	STA <Music_Rest_PtrH
 
 	; Get and store the base address into [Music_Base_H][Music_Base_L]
-	LDA Music_Set2B_Headers+1,Y
-	STA <Music_Base_L
 	LDA Music_Set2B_Headers+2,Y
+	STA <Music_Base_L
+	LDA Music_Set2B_Headers+3,Y
 	STA <Music_Base_H
 
 	; Get and store triangle track offset
-	LDA Music_Set2B_Headers+3,Y
+	LDA Music_Set2B_Headers+4,Y
 	STA Music_TriTrkPos
 
 	; Get and store square 1 track offset
-	LDA Music_Set2B_Headers+4,Y
+	LDA Music_Set2B_Headers+5,Y
 	STA Music_Sq1TrkOff
 
 	; Set and store noise track offset
-	LDA Music_Set2B_Headers+5,Y
-	STA Music_NseTrkPos
-	STA Music_NseStart	; Retain starting position for possible restoration later
+	LDA Music_Set2B_Headers+6,Y
+	STA <Music_NSETrkLo
+	STA Music_NseStartLo
+	LDA Music_Set2B_Headers+7,Y
+	STA <Music_NSETrkHi
+	STA Music_NseStartHi
+	;STA Music_NseStart	; Retain starting position for possible restoration later
 
 	; Set and store DMC track offset
-	LDA Music_Set2B_Headers+6,Y
-	STA Music_PCMTrkPos
-	STA Music_PCMStart	; Retain starting position for possible restoration later
+	LDA Music_Set2B_Headers+8,Y
+	STA <Music_PCMTrkLo
+	STA Music_PCMStartLo
+	LDA Music_Set2B_Headers+9,Y
+	STA <Music_PCMTrkHi
+	STA Music_PCMStartHi
+	;STA Music_PCMTrkPos
+	;STA Music_PCMStart	; Retain starting position for possible restoration later
 
 	JMP PRG031_E48C
 
-PRG031_E3EB:
-	JMP Music_Sq2Track
 
 SndMus_QueueCommon:
 	; Music has been queued!
@@ -365,8 +385,8 @@ PRG031_E401:
 	CMP #$0a
 	BEQ PRG031_E411	 ; If queueing song $0A Invincibility, jump to PRG031_E411
 
-	LDY #$00
-	STY Music_RestH_Off	 ; Reset the rest lookup offset adjust value
+	;LDY #$00
+	;STY Music_RestH_Off	 ; Reset the rest lookup offset adjust value
 
 PRG031_E411:
 	LDY #$00	
@@ -408,7 +428,7 @@ SndMus_Queue1:
 	STY Music2_Hold	 	; If a "set 2" song is playing, back up which one it is; we'll restart it after this song finishes (only really used for the "time low" song)
 	LDY #$00	 	; 
 	STY SndCur_Music2	; Stop "set 2" song (if any)
-	STY Music_RestH_Off	; Clear the rest lookup base offset value
+	;STY Music_RestH_Off	; Clear the rest lookup base offset value
 
 	; The following loop transforms the queue value into an index value.
 	; This is the same basic procedure used for sound effects, and even
@@ -431,34 +451,46 @@ SndMus2A_LoadNext:
 
 	; Set rest lookup base index
 	LDA Music_Set1_Set2A_Headers,Y
-	STA Music_RestH_Base
+	STA <Music_Rest_PtrL
+	LDA Music_Set1_Set2A_Headers+1,Y
+	STA <Music_Rest_PtrH
 
 	; Set music base address
-	LDA Music_Set1_Set2A_Headers+1,Y
-	STA <Music_Base_L
 	LDA Music_Set1_Set2A_Headers+2,Y
+	STA <Music_Base_L
+	LDA Music_Set1_Set2A_Headers+3,Y
 	STA <Music_Base_H
 
 	; Set triangle track position
-	LDA Music_Set1_Set2A_Headers+3,Y
+	LDA Music_Set1_Set2A_Headers+4,Y
 	STA Music_TriTrkPos
 
 	; Set square 1 track position
-	LDA Music_Set1_Set2A_Headers+4,Y
+	LDA Music_Set1_Set2A_Headers+5,Y
 	STA Music_Sq1TrkOff
 
 	; Set noise track position
-	LDA Music_Set1_Set2A_Headers+5,Y
-	STA Music_NseTrkPos
+	LDA Music_Set1_Set2A_Headers+6,Y
+	STA <Music_NSETrkLo
+	STA Music_NseStartLo
+	LDA Music_Set1_Set2A_Headers+7,Y
+	STA <Music_NSETrkHi
+	STA Music_NseStartHi
 
 DMC02_Bad:	; Sample 3 in the DMC table suggests a sample ending here; likely a mistake or lost DMC sound?
 
-	STA Music_NseStart
+	;STA Music_NseStart
 
 	; Set PCM track position
-	LDA Music_Set1_Set2A_Headers+6,Y
-	STA Music_PCMTrkPos
-	STA Music_PCMStart
+	LDA Music_Set1_Set2A_Headers+8,Y
+	STA <Music_PCMTrkLo
+	STA Music_PCMStartLo
+	LDA Music_Set1_Set2A_Headers+9,Y
+	STA <Music_PCMTrkHi
+	STA Music_PCMStartHi
+
+	;STA Music_PCMTrkPos
+	;STA Music_PCMStart
 
 
 PRG031_E48C:
@@ -528,8 +560,8 @@ Music_EndSegment:
 	BNE Music_StopAll	; If we NOT were playing the "time warning" song, jump to Music_StopAll
 
 	; If we were playing the "time warning" song, we need to restart the song which was playing...
-	LDA #$10
-	STA Music_RestH_Off	; Set the rest lookup offset to $10 (should play song slightly faster!)
+	;LDA #$10
+	;STA Music_RestH_Off	; Set the rest lookup offset to $10 (should play song slightly faster!)
 	LDA Music2_Hold	 	; Get which song we ought to be playing right now
 
 	; OF NOTE: Since this jumps straight to SndMus_QueueSet2B, this prevents "time warning" from
@@ -555,7 +587,7 @@ Music_StopAll:
 	STA SndCur_Music1	; Stop any Set 1 song
 	STA SndCur_Music2	; Stop any Set 2 song
 	STA Music2_Hold	 	; Clear any hold on a Set 2 song
-	STA Music_RestH_Off	; Clear any rest lookup offset
+	;STA Music_RestH_Off	; Clear any rest lookup offset
  
 	STA PAPU_EN	 ; Disable all tracks
 	LDX #$0f	 
@@ -870,16 +902,20 @@ PRG031_E6B4:
 ; Noise's music track code
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Music_NseTrack:
-	LDA Music_NseTrkPos	; Music_NseTrack 
+	LDA <Music_NSETrkHi	; Music_NseTrack 
 	BEQ Music_PCMTrack	; If Music_NseTrack = 0 (disabled), jump to Music_PCMTrack
 
 	DEC Music_NoiseRest	; Music_NoiseRest--
 	BNE Music_PCMTrack	; If track is not done resting, just jump to Music_PCMTrack
  
 PRG031_E6C7:
-	LDY Music_NseTrkPos	; Y = Music_NseTrkPos
-	INC Music_NseTrkPos	; Music_NseTrkPos++
-	LDA [Music_Base_L],Y	; Get next byte from music segment track
+	LDY #$00
+	LDA [Music_NSETrkLo],Y
+	INC <Music_NSETrkLo
+	BNE _nse_post_inc
+	INC <Music_NSETrkHi
+_nse_post_inc:
+	CMP #$00			; compare the byte we read to 0
 
 	BEQ PRG031_E700	 	; If next byte is $00, jump to PRG031_E700
 	BPL Music_NseNoteOn 	; $01 - $7f is note on, jump to Music_NseNoteOn
@@ -889,9 +925,13 @@ PRG031_E6C7:
 	JSR Music_GetRestTicks
 	STA Music_NseRestH	 ; Update rest hold
 
-	LDY Music_NseTrkPos	; Y = Music_NseTrkPos
-	INC Music_NseTrkPos	; Music_NseTrkPos++
-	LDA [Music_Base_L],Y	; Get next byte in music segment track
+	LDY #$00
+	LDA [Music_NSETrkLo],Y
+	INC <Music_NSETrkLo
+	BNE _nse_post_inc2
+	INC <Music_NSETrkHi
+_nse_post_inc2:
+	CMP #$00			; compare the byte we read to 0
 	BEQ PRG031_E700	 	; If byte $00 comes up, jump to PRG031_E700
 
 Music_NseNoteOn:
@@ -922,31 +962,40 @@ Music_PCMTrack:
 
 PRG031_E700:
 	; When byte $00 read, Reset noise track to start
-	LDA Music_NseStart
-	STA Music_NseTrkPos
+	LDA Music_NseStartLo
+	STA <Music_NSETrkLo
+	LDA Music_NseStartHi
+	STA <Music_NSETrkHi
 	JMP PRG031_E6C7	 ; Back into the fray...
 
 PRG031_E709:
-	LDA Music_PCMTrkPos
+	LDA <Music_PCMTrkHi
 	BEQ PRG031_E738	 	; If Music_PCMTrkPos = 0 (disabled), jump to PRG031_E738
 
 	DEC Music_DMCRest	; Music_DMCRest--
 	BNE PRG031_E738	 	; If not done resting, jump to PRG031_E738
 
 PRG031_E713:
-	LDY Music_PCMTrkPos	; Y = Music_PCMTrkPos
-	INC Music_PCMTrkPos	; Music_PCMTrkPos++
-	LDA [Music_Base_L],Y	; Get next byte in music segment track
-
+	LDY #$00
+	LDA [Music_PCMTrkLo],Y
+	INC <Music_PCMTrkLo
+	BNE _pcm_post_inc
+	INC <Music_PCMTrkHi
+_pcm_post_inc:
+	CMP #$00			; compare the byte we read to 0
 	BEQ PRG031_E741		; If next byte is $00, jump to PRG031_E741
 	BPL PRG031_E72F		; If byte is $01 - $7f, jump to PRG031_E72F
 
 	JSR Music_GetRestTicks
 	STA Music_DMCRestH	; Update rest hold value
 
-	LDY Music_PCMTrkPos	; Y = Music_PCMTrkPos
-	INC Music_PCMTrkPos	; Music_PCMTrkPos++
-	LDA [Music_Base_L],Y	; Get next byte in music segment track
+	LDY #$00
+	LDA [Music_PCMTrkLo],Y
+	INC <Music_PCMTrkLo
+	BNE _pcm_post_inc2
+	INC <Music_PCMTrkHi
+_pcm_post_inc2:
+	CMP #$00			; compare the byte we read to 0
 	BEQ PRG031_E741	 	; If next byte is $00, jump to PRG031_E741
 
 PRG031_E72F:
@@ -963,8 +1012,10 @@ PRG031_E738:
 
 PRG031_E741:
 	; When byte $00 read, reset DMC track to start
-	LDA Music_PCMStart
-	STA Music_PCMTrkPos
+	LDA Music_PCMStartLo
+	STA <Music_PCMTrkLo
+	LDA Music_PCMStartHi
+	STA <Music_PCMTrkHi
 	JMP PRG031_E713	 	; Back into the fray...
 
 
@@ -1240,39 +1291,7 @@ PRG031_E870:
 	RTS		 ; Return
 
 
-	; Music_RestH_LUT is indexed by (Music_RestH_Base + Music_RestH_Off + [0 to 15])
-	; * Music_RestH_Base is always divisible by $10, Music_RestH_Off is $00 or $10
-	;
-	; * Offset (0 to 15) comes from the lower 4 bits of $80+ values
-	;   (The upper 4 bits set a patch value, unrelated)
-	;
-	; * Result is a "rest" (in ticks) for the pause between events
-	;
-	; * Obviously that means a song is "optimized" by selecting the best set, and
-	;   must have a correct row +$10 if it plans on being "low time warning compatible"
-Music_RestH_LUT:
-	.byte $10, $20, $0F, $80, $40, $4F, $21, $01, $02, $1E, $06, $16, $03, $15, $1D, $05 ; $00 - $0F
-	.byte $10, $30, $7F, $20, $40, $01, $08, $07, $09, $02, $0E, $03, $0D, $4D, $00, $2C ; $10 - $1F
-	.byte $10, $30, $20, $08, $80, $60, $0F, $21, $41, $01, $11, $02, $0E, $1E, $03, $0D ; $20 - $2F
-	.byte $10, $20, $0F, $01, $07, $09, $08, $03, $0D, $02, $0E, $48, $60, $04, $02, $16 ; $30 - $3F
-	.byte $10, $20, $80, $08, $07, $09, $02, $0E, $03, $0D, $2E, $3C, $50, $03, $01, $13 ; $40 - $4F
-	.byte $18, $0C, $24, $26, $3A, $06, $2A, $12, $2A, $10, $30, $48, $60, $04, $02, $16 ; $50 - $5F
-	.byte $18, $0C, $24, $06, $07, $05, $60, $3C, $2A, $29, $1D, $23, $50, $03, $01, $13 ; $60 - $6F
-	.byte $18, $0C, $24, $06, $3C, $2A, $12, $04, $60, $3B, $2A, $29, $1D, $1E, $03, $00 ; $70 - $7F
-	.byte $18, $0C, $24, $26, $3A, $06, $60, $2A, $12, $12, $20, $30, $40, $00, $00, $00 ; $80 - $8F
-	.byte $07, $0E, $2A, $06, $01, $15, $31, $05, $09, $02, $10, $17, $0B, $04, $03, $FF ; $90 - $9F
-	.byte $07, $06, $08, $2A, $0E, $15, $30, $0F, $05, $09, $02, $10, $17, $01, $0B, $04 ; $a0 - $aF
-	.byte $07, $0E, $1C, $03, $0B, $15, $2A, $05, $02, $10, $09, $00, $00, $00, $00, $00 ; $b0 - $bF
-	.byte $07, $0E, $1C, $2A, $05, $02, $10, $09, $00, $00, $00, $00, $00, $00, $00, $00 ; $c0 - $cF
-	.byte $14, $01, $0D, $06, $1D, $2B, $10, $00, $00, $00, $00, $00, $00, $00, $07, $00 ; $d0 - $dF
-	.byte $05, $02, $54, $07, $0E, $06, $08, $32, $24, $23, $00, $00, $00, $00, $00, $00 ; $e0 - $eF
-	.byte $05, $02, $54, $07, $0E, $31, $15, $06, $08, $0F, $32, $24, $01				 ; $f0 - $fC
-
-	; BEGIN UNUSED SPACE (alignment for DMC04)
-
-	; NOTE NOTE NOTE!!
-	; If you're creating a custom hack, delete these $FFs and use the following line instead:
-; .AlignDMC04:	DMCAlign .AlignDMC04
+;;; [ORANGE] Moved the rest lookup table to prg029.asm
 
 FALLRATE_SPIN = $20
 FallrateHook:
@@ -1347,7 +1366,37 @@ _norm_bounce_vel:
 	STA <Objects_XVel,X
 	RTS
 
-	; END UNUSED SPACE
+.mother1_align: DMCAlign .mother1_align
+DMC_MOTHER1:
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $B6, $42, $04, $00, $00, $00, $00, $00, $20, $49, $B5, $AA, $AA, $4A, $24, $01, $51, $DA, $B6, $AA, $6D, $F7, $FF, $FF, $FF
+	.byte $FF, $FF, $F6, $76, $DB, $AB, $55, $A5, $44, $10, $20, $00, $00, $04, $08, $90, $28, $51, $AA, $5A, $B5, $6D, $7B, $F7, $EE, $DD, $B7, $77, $5B, $5B, $B5, $52
+	.byte $49, $12, $12, $09, $12, $22, $49, $48, $A5, $2A, $55, $65, $B5, $B5, $AD, $B6, $6D, $DB, $B6, $6D, $DB, $B6, $B5, $AD, $D6, $AA, $2A, $55, $4A, $A5, $24, $49
+	.byte $2A, $09, $95, $A2, $54, $49, $53, $B5, $44, $6A, $D5, $6A, $AD, $D6, $44, $00, $AB
+DMC_MOTHER1_End
+
+.mother2_align: DMCAlign .mother2_align
+DMC_MOTHER2:
+	.byte $FF, $B7, $20, $0B, $00, $00, $00, $00, $C0, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $00, $00, $00, $00, $00, $00, $C0, $0B, $00, $00, $80, $FD, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $17, $00, $00, $00, $00, $00, $00, $00, $F0, $FF, $FF, $FF, $FF, $FF, $7E, $51, $ED, $44, $81, $10, $01, $82, $18, $2B, $42, $53, $81
+	.byte $6F, $D8, $DB, $EB, $E7, $BF, $EB, $1F, $FB, $95, $24, $48, $00, $02, $00, $E0, $C5, $C0, $BF, $F8, $FF, $FF, $BA, $0E, $7E, $C4, $50, $68, $2A, $56, $02, $6F
+	.byte $77, $4E, $F8, $45, $95, $20, $56, $50, $63, $3F, $F4, $FF, $F0, $9D, $F8, $21, $B2, $20, $8E, $0D, $18, $CF, $82, $AF, $8A, $E3, $3F, $78, $FD, $18, $CE, $02
+	.byte $87, $58, $E0, $C4, $47, $E9, $DF, $F1, $53, $3B, $8A, $97, $38, $08, $A9, $03, $DE, $E2, $F8, $0F, $9E, $EC, $89, $B2, $07, $38, $E2, $63, $F1, $E3, $C3, $7B
+    .byte $42, $AF, $28, $8E, $2A, $8E, $42, $83, $5A, $1D, $FA, $B1, $EB, $AB, $D6, $62, $DA, $A1, $E2, $D0, $34, $9C, $85, $8E, $AE, $C4, $7A, $72, $1D, $A6, $55, $1C
+	.byte $B9, $52, $3D, $8B, $9E, $9D, $4E, $96, $2A, $0B, $E2, $A8, $A4, $95, $2D, $BB, $72, $AD, $F4, $91, $5A, $8B, $52, $25, $4E, $9C, $5A, $79, $6A, $D7, $A4, $8E
+	.byte $9C, $74, $B0, $A2, $B4, $89, $67, $35, $6D, $2B, $37, $B6, $45, $A5, $A9, $C5, $A4
+DMC_MOTHER2_End
+
+.gradius1_align: DMCAlign .gradius1_align
+DMC_GRADIUS1:
+	.byte $AA, $AA, $AA, $AA, $AA, $AF, $F0, $9E, $9F, $F0, $06, $AE, $7C, $1B, $98, $F0, $00, $03, $00, $0C, $01, $CE, $01, $80, $00, $00, $00, $00, $00, $0F, $1F, $FF
+	.byte $FB, $F3, $CF, $F3, $EF, $DE, $B8, $F9, $A6, $A2, $24, $39, $81, $43, $80, $86, $19, $02, $38, $51, $87, $86, $15, $39, $8C, $A6, $55, $4D, $16, $8C, $A3, $45
+	.byte $45, $90, $CA, $56, $22, $52, $70, $D6, $53, $16, $D3, $54, $D7, $4B, $37, $4B, $5B, $6B, $56, $CE, $B5, $5B, $5D, $59, $B6, $D5, $AB, $D6, $B5, $D7, $6B, $6D
+	.byte $AD, $AE, $B6, $D6, $B5, $B5, $AA, $D6, $AA, $AC, $AA, $A9, $54, $A9, $94, $A4, $A9, $4A, $4A, $8A, $92, $54, $A5, $49, $29, $4A, $54, $A5, $29, $52, $A5, $4A
+	.byte $A5, $54, $A9, $54, $AA, $95, $2A, $AA, $94, $95, $2A, $AA, $55, $55, $2A, $56, $66, $AA, $9A, $AA, $B5, $5A, $AD, $AB, $5A, $B5, $6B, $6B, $6B, $5A, $B5, $AA
+	.byte $B5, $56, $AA, $D5, $55, $56, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $95, $55, $55, $B5, $56, $AA, $D5, $55, $56, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $95, $55, $55
+	.byte $AD
+DMC_GRADIUS1_End
+
 .dmc_orb_align: DMCAlign .dmc_orb_align
 DMC_ORB:
 	.byte $55, $55, $55, $55, $65, $D5, $AA, $AA, $D2, $D4, $D5, $94, $00, $81, $EF, $FF, $DF, $02, $02, $25
@@ -1466,8 +1515,6 @@ DMC_SILENCE:
 	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
 	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
 DMC_ORB_End
-
-	.ds 0x25B
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	; The following two LUTs are used together via Update_Request
