@@ -1780,27 +1780,9 @@ Setup_PalData:
 	LDA Palette_By_Tileset+1,Y
 	STA <Temp_Var2	
 
-	LDY <Pal_Force_Set12	; Palette override
-	BEQ PRG027_B86D	 	; If Pal_Force_Set12 = 0, jump to PRG027_B86D
-
-	; If Pal_Force_Set12 <> 0...
-	; Point to the palette associated with this override!
-	LDA Palette_By_Tileset,Y
-	STA <Temp_Var1		
-	LDA Palette_By_Tileset+1,Y
-	STA <Temp_Var2		
-
-	; Copy 32 bytes of data into Pal_Data
-	LDY #31	 ; Y = 31 (32 bytes total, a whole bg/sprite palette set)
-PRG027_B85E:
-	LDA [Temp_Var1],Y
-	STA Pal_Data,Y	
-	DEY		 ; Y--
-	BPL PRG027_B85E	 ; While Y >= 0, loop
-
-	LDA #$00	 
-	STA <Pal_Force_Set12 ; Pal_Force_Set12 = 0
-	JMP PRG027_B8F9	 ; Jump to PRG027_B8F9 (RTS)
+	; [ORANGE] Remove the Pal_Force_Set12 palette override stuff
+	JMP PRG027_B86D
+	.ds 0x1c
 
 PRG027_B86D:
 	LDA PalSel_Tile_Colors	 ; A = PalSel_Tile_Colors

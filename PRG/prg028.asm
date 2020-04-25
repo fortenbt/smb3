@@ -1198,7 +1198,7 @@ SndLev2_SkidNCtl:
 MusSeg .macro
    .word \1	; Music Rests table pointer
    .word \2	; Address of music segment data (all tracks this segment, offsets to follow, except implied Square 2 zero)
-   .byte \3	; Triangle track starting offset ($00 means disabled)
+   .word \3	; Triangle track pointer ($00 means disabled)
    .byte \4	; Square 1 track starting offset (cannot be disabled)
    .word \5	; Noise track pointer (hi [2nd] byte zero means disabled)
    .word \6	; DCM track pointer (hi [2nd] byte zero means disabled)
@@ -1230,19 +1230,20 @@ Music_Set1_Set2A_IndexOffs:
 
 Music_Set1_Set2A_Headers:
 
-MS1_01SegHedr:			MusSeg Music_RestH_LUT, M12ASegData14, $26, $11, $0000, M12ASegData14PCM
+MS1_01SegHedr:			MusSeg Music_RestH_LUT, M12ASegData14, $0026, $11, $0000, M12ASegData14PCM
+						;	  sq1, tri, nse, dpcm
 						Rests $00, $00, $00, $00
-MS1_02SegHedr:			MusSeg Music_RestH_LUT, M12ASegData18, $20, $12, $0000, $0000
+MS1_02SegHedr:			MusSeg Music_RestH_LUT, M12ASegData18, $0020, $12, $0000, $0000
 						Rests $00, $00, $00, $00
-MS1_04SegHedr:			MusSeg Music_RestH_LUT, M12ASegData15, $21, $11, $0000, M12ASegData15PCM
+MS1_04SegHedr:			MusSeg Music_RestH_LUT, M12ASegData15, $0021, $11, $0000, M12ASegData15PCM
 						Rests $00, $00, $00, $00
-MS1_08SegHedr:			MusSeg Music_RestH_LUT, M12ASegData19, $4D, $27, $0000, $0000
+MS1_08SegHedr:			MusSeg Music_RestH_LUT, M12ASegData19, $004D, $27, $0000, $0000
 						Rests $00, $00, $00, $00
-MS1_10SegHedr:			MusSeg Music_RestH_LUT, M12ASegData24, $6F, $4C, $0000, M12ASegData24PCM
+MS1_10SegHedr:			MusSeg Music_RestH_LUT, M12ASegData24, $006F, $4C, $0000, M12ASegData24PCM
 						Rests $00, $00, $00, $00
-PooOrb_Hdr:				MusSeg PooOrb_R, PooOrb, $00, $00, $0000, PooOrbPCM
+PooOrb_Hdr:				MusSeg PooOrb_R, PooOrb, $0000, $00, $0000, PooOrbPCM
 						Rests $00, $00, $00, $00
-MS1_40SegHedr:			MusSeg Music_RestH_LUT, M12ASegData13, $35, $18, $0000, $0000
+MS1_40SegHedr:			MusSeg Music_RestH_LUT, M12ASegData13, $0035, $18, $0000, $0000
 						Rests $00, $00, $00, $00
 
 ; MS1_80SegHedr is the "stop music" request; have to look into this
@@ -1251,15 +1252,16 @@ MS1_80SegHedr:	.byte $60
 		.word M12ASegData17		; Just lands at a $00 stop
 		.byte $00			; Incomplete header??
 
-MotherPolyanna1_Hdr:	MusSeg MotherPolyanna1_R, MotherPolyanna1, $38, $15, MotherPolyanna1NSE, $0000 ;MotherPolyanna1PCM
+MotherPolyanna1_Hdr:	MusSeg MotherPolyanna1_R, MotherPolyanna1, MotherPolyanna1Tri, $15, MotherPolyanna1NSE, $0000 ;MotherPolyanna1PCM
+						;	  sq1, tri, nse, dpcm
 						Rests $00, $00, $00, $00
-MotherPolyanna2_Hdr:	MusSeg MotherPolyanna2_R, MotherPolyanna2, $34, $18, MotherPolyanna2NSE, $0000
+MotherPolyanna2_Hdr:	MusSeg MotherPolyanna2_R, MotherPolyanna2, MotherPolyanna2Tri, $18, MotherPolyanna2NSE, $0000
 						Rests $00, $00, $00, $00
-MotherPolyanna3_Hdr:	MusSeg MotherPolyanna3_R, MotherPolyanna3, $3A, $1B, MotherPolyanna3NSE, $0000
+MotherPolyanna3_Hdr:	MusSeg MotherPolyanna3_R, MotherPolyanna3, MotherPolyanna3Tri, $1B, MotherPolyanna3NSE, $0000
 						Rests $00, $00, $00, $00
-MotherPolyanna4_Hdr:	MusSeg MotherPolyanna4_R, MotherPolyanna4, $24, $12, MotherPolyanna4NSE, $0000
+MotherPolyanna4_Hdr:	MusSeg MotherPolyanna4_R, MotherPolyanna4, MotherPolyanna4Tri, $12, MotherPolyanna4NSE, $0000
 						Rests $00, $00, $00, $00
-MotherPolyanna5_Hdr:	MusSeg MotherPolyanna5_R, MotherPolyanna5, $30, $17, MotherPolyanna5NSE, $0000
+MotherPolyanna5_Hdr:	MusSeg MotherPolyanna5_R, MotherPolyanna5, MotherPolyanna5Tri, $17, MotherPolyanna5NSE, $0000
 						Rests $00, $00, $00, $00
 
 
@@ -1384,7 +1386,9 @@ MotherPolyanna1:
         .byte $B1, $3C, $42, $50, $B0, $4A, $B3, $4C, $B0, $7E, $B1, $46, $4C, $54, $B0, $4C
         .byte $B4, $42, $B5, $3E, $00, $D0, $3C, $3C, $42, $D1, $4C, $D0, $7E, $42, $4A, $7E
         .byte $34, $3C, $46, $7E, $34, $3C, $42, $3E, $46, $4C, $3E, $3C, $42, $4C, $3C, $3A
-        .byte $42, $48, $42, $38, $42, $32, $D2, $42, $B2, $34, $B6, $7E, $B2, $34, $B7, $7E
+        .byte $42, $48, $42, $38, $42, $32, $D2, $42
+MotherPolyanna1Tri:
+		.byte $B2, $34, $B6, $7E, $B2, $34, $B7, $7E
         .byte $B2, $32, $B6, $7E, $B2, $32, $B7, $7E, $B2, $2E, $B6, $7E, $B2, $2E, $B7, $7E
         .byte $B2, $2A, $B6, $7E, $B2, $2A, $B7, $7E, $B2, $26, $B6, $7E, $B2, $26, $B7, $7E
         .byte $B2, $24, $B6, $7E, $B2, $24, $B7, $7E, $B2, $22, $B6, $7E, $B2, $22, $B7, $7E
@@ -1404,7 +1408,9 @@ MotherPolyanna2:
         .byte $B0, $3C, $38, $34, $38, $B3, $3C, $46, $4C, $54, $B4, $5E, $B0, $4C, $4A, $46
         .byte $4A, $4C, $4A, $46, $4A, $B2, $4C, $00, $D0, $7E, $2E, $34, $3C, $7E, $2C, $34
         .byte $3C, $7E, $2A, $34, $3C, $7E, $28, $2E, $34, $B0, $46, $42, $3E, $D1, $42, $D0, $3E
-        .byte $42, $D2, $3C, $B5, $7E, $B6, $2E, $7E, $B7, $2E, $B8, $7E, $B7, $2E, $B8, $7E
+        .byte $42, $D2, $3C
+MotherPolyanna2Tri:
+		.byte $B5, $7E, $B6, $2E, $7E, $B7, $2E, $B8, $7E, $B7, $2E, $B8, $7E
         .byte $B7, $2E, $B8, $7E, $B7, $2C, $B8, $7E, $B7, $2C, $B8, $7E, $B7, $2C, $B8, $7E
         .byte $B7, $2C, $B8, $7E, $B7, $2A, $B8, $7E, $B6, $2A, $7E, $2A, $7E, $B7, $2A, $B8
         .byte $7E, $B7, $28, $B8, $7E, $B7, $28, $B8, $7E, $B7, $28, $B8, $7E, $B7, $28, $B8
@@ -1424,7 +1430,9 @@ MotherPolyanna3:
         .byte $B0, $42, $42, $42, $7E, $B3, $42, $7E, $B0, $3C, $38, $B4, $34, $B0, $7E, $42
         .byte $42, $42, $42, $50, $4C, $4A, $B5, $4C, $B0, $7E, $00, $D0, $32, $1A, $24, $D1
         .byte $32, $D2, $1A, $D0, $34, $1C, $26, $D1, $34, $D2, $1C, $D0, $32, $1A, $24, $2A
-        .byte $32, $12, $20, $2A, $24, $12, $1C, $24, $2A, $1C, $B6, $24, $B7, $7E, $B6, $24
+        .byte $32, $12, $20, $2A, $24, $12, $1C, $24, $2A, $1C
+MotherPolyanna3Tri:
+		.byte $B6, $24, $B7, $7E, $B6, $24
         .byte $B8, $7E, $B6, $26, $B7, $7E, $B6, $26, $B8, $7E, $B6, $24, $B7, $7E, $B6, $24
         .byte $B9, $7E, $B6, $2A, $B7, $7E, $B6, $2A, $B9, $7E, $B6, $34, $B7, $7E, $B6, $34
         .byte $B9, $7E, $B6, $34, $BA, $7E
@@ -1440,7 +1448,9 @@ MotherPolyanna3NSE:
 MotherPolyanna4:
         .byte $B0, $46, $4A, $4C, $4A, $46, $4A, $4C, $4A, $46, $4A, $4C, $4A, $46, $4A, $B1
         .byte $4C, $00, $D0, $24, $2A, $46, $3E, $34, $3E, $42, $3C, $D1, $34, $D0, $3E, $34
-        .byte $2E, $34, $42, $3C, $B2, $34, $B3, $7E, $B4, $26, $B5, $7E, $B4, $26, $B5, $7E
+        .byte $2E, $34, $42, $3C
+MotherPolyanna4Tri:
+		.byte $B2, $34, $B3, $7E, $B4, $26, $B5, $7E, $B4, $26, $B5, $7E
         .byte $B6, $26, $7E, $26, $7E, $B4, $24, $B5, $7E, $B4, $24, $B5, $7E, $B4, $24, $B5
         .byte $7E, $B4, $24, $B5, $7E, $B4, $20, $B5, $7E, $B4, $20, $B5, $7E, $B4, $20, $B5
         .byte $7E, $B4, $20, $B5, $7E, $B6, $24, $7E, $24, $7E
@@ -1455,6 +1465,7 @@ MotherPolyanna5:
         .byte $B0, $42, $42, $4C, $4A, $46, $4A, $4C, $4A, $46, $4A, $4C, $7E, $4C, $4C, $54
         .byte $B1, $4C, $B2, $4C, $B0, $7E, $00, $D0, $3C, $D1, $34, $D0, $46, $3E, $34, $3E
         .byte $42, $3C, $D1, $34, $D0, $46, $46, $46, $46, $4C, $D1, $3E, $D2, $3C, $D0, $7E
+MotherPolyanna5Tri:
         .byte $B3, $24, $7E, $B4, $24, $B5, $7E, $B4, $24, $B5, $7E, $B4, $26, $B5, $7E, $B4
         .byte $26, $B5, $7E, $B4, $26, $B5, $7E, $B4, $26, $B5, $7E, $B4, $24, $B5, $7E, $B3
         .byte $24, $7E, $24, $7E, $24, $7E, $B4, $20, $B5, $7E, $B4, $20, $B5, $7E, $B4, $20
@@ -1569,13 +1580,29 @@ M2BSH .func \1-Music_Set2B_Headers	; "Music Set 2B Segment Header Offset"
 	; reused where repetitious musical notes exist.  The segment headers are apparently not
 	; stored in any particular order.  This table connects an index to a header:
 Music_Set2B_IndexOffs:
-	.byte M2BSH(M2BSegHedr12), M2BSH(M2BSegHedr0F), M2BSH(M2BSegHedr10), M2BSH(M2BSegHedr11)
-	.byte M2BSH(M2BSegHedr12), M2BSH(M2BSegHedr13), M2BSH(M2BSegHedr14)							; 0-6 is TGL
+	; TGL
+	.word TGLHedr4			; $00 small intro (forced due to zero index, where 0 loop ends the segment)
+	.word TGLHedr1
+	.word TGLHedr2
+	.word TGLHedr3
+	.word TGLHedr4
+	.word TGLHedr5
+	.word TGLHedr6			; $06
 
-	.byte M2BSH(M2BSegHedr1B), M2BSH(M2BSegHedr0C), M2BSH(M2BSegHedr0D), M2BSH(M2BSegHedr0E)	; 7-E is Castlevania
-	.byte M2BSH(M2BSegHedr08), M2BSH(M2BSegHedr09), M2BSH(M2BSegHedr1C), M2BSH(M2BSegHedr1D)
+	.word CVampireHedr1		; $07
+	.word CVampireHedr2
+	.word CVampireHedr3
+	.word CVampireHedr4
+	.word CVampireHedr5
+	.word CVampireHedr6
+	.word CVampireHedr7
+	.word CVampireHedr8		; $0E
 
-	.byte M2BSH(M2BSegHedrG2_1)	; 8
+	.word G2Hedr1			; $0F
+	.word G2Hedr2
+	.word G2Hedr1
+	.word G2Hedr2
+;	.word G2Hedr3			; $13
 
 
 Music_Set2B_Headers:
@@ -1585,40 +1612,47 @@ Music_Set2B_Headers:
 	; Of course, this wouldn't be hard to implement or anything, it's just the way it was coded...
 
 ; TGL
-M2BSegHedr0F:	MusSeg TGL1_Rests1, TGL1_1, $5B, $42, TGL1_Nse1, $0000
-				Rests $00, $00, $00, $00
-M2BSegHedr10:	MusSeg TGL1_Rests1, TGL1_2, $59, $42, TGL1_Nse2, $0000
-				Rests $00, $00, $00, $00
-M2BSegHedr11:	MusSeg TGL1_Rests2, TGL1_3, $73, $56, TGL1_Nse3, $0000
-				Rests $00, $00, $00, $00
-M2BSegHedr12:	MusSeg TGL1_Rests3, TGL1_4, $5D, $44, TGL1_Nse4, $0000
-				Rests $00, $00, $00, $00
-M2BSegHedr13:	MusSeg TGL1_Rests4, TGL1_5, $5B, $42, TGL1_Nse5, $0000
-				Rests $00, $00, $00, $00
-M2BSegHedr14:	MusSeg TGL1_Rests4, TGL1_6, $59, $42, TGL1_Nse6, $0000
-				Rests $00, $00, $00, $00
+TGLHedr1:	MusSeg TGL1_Rests1, TGL1_1, TGL1_Tri1, $42, TGL1_Nse1, $0000
+			;	  sq1, tri, nse, dpcm
+			Rests $00, $00, $00, $00
+TGLHedr2:	MusSeg TGL1_Rests1, TGL1_2, TGL1_Tri2, $42, TGL1_Nse2, $0000
+			Rests $00, $00, $00, $00
+TGLHedr3:	MusSeg TGL1_Rests2, TGL1_3, TGL1_Tri3, $56, TGL1_Nse3, $0000
+			Rests $00, $00, $00, $00
+TGLHedr4:	MusSeg TGL1_Rests3, TGL1_4, TGL1_Tri4, $44, TGL1_Nse4, $0000
+			Rests $00, $00, $00, $00
+TGLHedr5:	MusSeg TGL1_Rests4, TGL1_5, TGL1_Tri5, $42, TGL1_Nse5, $0000
+			Rests $00, $00, $00, $00
+TGLHedr6:	MusSeg TGL1_Rests4, TGL1_6, TGL1_Tri6, $42, TGL1_Nse6, $0000
+			Rests $00, $00, $00, $00
 
 ; Castlevania
-M2BSegHedr1B:	MusSeg CVampire_R1, CVampire1, $31, $18, CVampire1_Nse, $0000
+CVampireHedr1:	MusSeg CVampire_R1, CVampire1, CVampire1_Tri, $18, CVampire1_Nse, $0000
+				;	  sq1, tri, nse, dpcm
 				Rests $00, $00, $00, $00
-M2BSegHedr0C:	MusSeg CVampire_R2, CVampire2, $3B, $1E, CVampire2_Nse, $0000
+CVampireHedr2:	MusSeg CVampire_R2, CVampire2, CVampire2_Tri, $1E, CVampire2_Nse, $0000
 				Rests $00, $00, $00, $00
-M2BSegHedr0D:	MusSeg CVampire_R3, CVampire3, $4F, $25, CVampire3_Nse, $0000
+CVampireHedr3:	MusSeg CVampire_R3, CVampire3, CVampire3_Tri, $25, CVampire3_Nse, $0000
 				Rests $00, $00, $00, $00
-M2BSegHedr0E:	MusSeg CVampire_R4, CVampire4, $45, $23, CVampire4_Nse, $0000
+CVampireHedr4:	MusSeg CVampire_R4, CVampire4, CVampire4_Tri, $23, CVampire4_Nse, $0000
 				Rests $00, $00, $00, $00
-M2BSegHedr08:	MusSeg CVampire_R5, CVampire5, $5E, $2F, CVampire5_Nse, $0000
+CVampireHedr5:	MusSeg CVampire_R5, CVampire5, CVampire5_Tri, $2F, CVampire5_Nse, $0000
 				Rests $00, $00, $00, $00
-M2BSegHedr09:	MusSeg CVampire_R5, CVampire6, $61, $31, CVampire6_Nse, $0000
+CVampireHedr6:	MusSeg CVampire_R5, CVampire6, CVampire6_Tri, $31, CVampire6_Nse, $0000
 				Rests $00, $00, $00, $00
-M2BSegHedr1C:	MusSeg CVampire_R6, CVampire7, $51, $29, CVampire7_Nse, $0000
+CVampireHedr7:	MusSeg CVampire_R6, CVampire7, CVampire7_Tri, $29, CVampire7_Nse, $0000
 				Rests $00, $00, $00, $00
-M2BSegHedr1D:	MusSeg CVampire_R7, CVampire8, $4B, $29, CVampire8_Nse, $0000
+CVampireHedr8:	MusSeg CVampire_R7, CVampire8, CVampire8_Tri, $29, CVampire8_Nse, $0000
 				Rests $00, $00, $00, $00
 
 ; Gradius II
-M2BSegHedrG2_1:	MusSeg G2_R1, Gradius2_1, $00, $00, $0000, $0000
+G2Hedr1:		MusSeg G2_R1, Gradius2_1, $0067, $37, Gradius2_Nse1, $0000
+				;	  sq1, tri, nse, dpcm
 				Rests $00, $00, $00, $00
+G2Hedr2: 		MusSeg G2_R2, Gradius2_2, $006D, $35, Gradius2_Nse2, $0000
+				Rests $00, $00, $00, $00
+;G2Hedr3:		MusSeg G2_R3, Gradius2_3, $6D, $35, Gradius2_Nse3, $0000
+;				Rests $00, $00, $10, $00
 
 	; Music in Set 2B is played by "index", which is a segment of music.
 	; The index always advances, though what that index actually represents
@@ -1628,13 +1662,16 @@ M2BSegHedrG2_1:	MusSeg G2_R1, Gradius2_1, $00, $00, $0000, $0000
 	; be played ($10, $20, $30, ... $C0), so that song $10 uses a start
 	; index of $00, an end index of $06, and a loop index of $01.
 Music_Set2B_Starts:
-	.byte $00, $07, $08, $0C, $0F, $13, $15, $1B, $1E, $1B, $27, $2C
+	;.byte $00, $07, $0F, $0C, $0F, $13, $15, $1B, $1E, $1B, $27, $2C
+	.byte $0F, $07, $0F, $0C, $0F, $13, $15, $1B, $1E, $1B, $27, $2C
 
 Music_Set2B_Ends:
-	.byte $06, $0E, $08, $0E, $12, $14, $1A, $1D, $26, $1D, $2B, $2C
+	;.byte $06, $0E, $08, $0E, $12, $14, $1A, $1D, $26, $1D, $2B, $2C
+	.byte $12, $0E, $08, $0E, $12, $14, $1A, $1D, $26, $1D, $2B, $2C
 
 Music_Set2B_Loops:
-	.byte $01, $07, $08, $0C, $10, $13, $18, $1B, $1F, $1B, $28, $2C
+	;.byte $01, $07, $08, $0C, $10, $13, $18, $1B, $1F, $1B, $28, $2C
+	.byte $0F, $07, $08, $0C, $10, $13, $18, $1B, $1F, $1B, $28, $2C
 
 
 	; These are Set 2B music segments.  Note that more exist on page 29.
@@ -1646,7 +1683,9 @@ TGL1_1:
 	.byte $18, $04, $7E, $1C, $1C, $04, $7E, $1C, $1C, $04, $7E, $1C, $1C, $04, $7E, $1C
 	.byte $1C, $16, $7E, $0C, $24, $06, $06, $1E, $1E, $08, $08, $20, $20, $0A, $0A, $22
 	.byte $22, $00, $B0, $3E, $3C, $B1, $38, $B2, $34, $B3, $30, $B4, $7E, $B2, $2A, $34
-	.byte $B0, $7E, $3E, $B1, $7E, $B0, $3C, $B1, $3E, $B0, $42, $80, $46, $81, $7E, $82
+	.byte $B0, $7E, $3E, $B1, $7E, $B0, $3C, $B1, $3E, $B0, $42
+TGL1_Tri1:
+	.byte $80, $46, $81, $7E, $82
 	.byte $46, $80, $7E, $38, $81, $7E, $82, $38, $80, $7E, $3C, $81, $7E, $82, $3C, $80
 	.byte $7E, $36, $81, $7E, $82, $36, $80, $7E
 TGL1_Nse1:
@@ -1660,7 +1699,9 @@ TGL1_2:
 	.byte $18, $04, $7E, $1C, $1C, $04, $7E, $1C, $1C, $04, $7E, $1C, $1C, $04, $7E, $1C
 	.byte $1C, $16, $7E, $0C, $24, $06, $06, $1E, $1E, $08, $08, $20, $20, $0A, $0A, $22
 	.byte $22, $00, $B0, $3E, $3C, $B1, $38, $B2, $34, $B3, $30, $B4, $7E, $B2, $2A, $34
-	.byte $B0, $7E, $B2, $3E, $B0, $3C, $3E, $B1, $7E, $80, $46, $81, $7E, $82, $46, $80
+	.byte $B0, $7E, $B2, $3E, $B0, $3C, $3E, $B1, $7E
+TGL1_Tri2:
+	.byte $80, $46, $81, $7E, $82, $46, $80
 	.byte $7E, $38, $81, $7E, $82, $38, $80, $7E, $3C, $81, $7E, $82, $3C, $80, $7E, $36
 	.byte $81, $7E, $82, $36, $80, $7E
 TGL1_Nse2:
@@ -1676,7 +1717,9 @@ TGL1_3:
 	.byte $7E, $D4, $16, $D5, $7E, $D4, $16, $D5, $7E, $D4, $16, $D5, $7E, $D4, $16, $D5
 	.byte $7E, $D4, $16, $D5, $7E, $00, $B0, $4C, $B1, $7E, $B2, $3E, $B0, $7E, $B2, $3C
 	.byte $3E, $B0, $3C, $34, $B1, $7E, $B2, $3C, $B0, $7E, $3E, $B1, $7E, $B0, $3C, $B1
-	.byte $3E, $B0, $42, $86, $56, $82, $54, $50, $80, $4C, $86, $42, $82, $4E, $87, $46
+	.byte $3E, $B0, $42
+TGL1_Tri3:
+	.byte $86, $56, $82, $54, $50, $80, $4C, $86, $42, $82, $4E, $87, $46
 TGL1_Nse3:
 	.byte $80, $01, $83, $02, $88, $01, $83, $02, $88, $01, $83, $02, $88, $01, $83, $02
 	.byte $88, $01, $83, $02, $88, $01, $84, $02, $89, $01, $84, $02, $8A, $01, $84, $02
@@ -1688,7 +1731,9 @@ TGL1_4:
 	.byte $18, $01, $01, $04, $7E, $1C, $1C, $04, $7E, $1C, $1C, $04, $7E, $1C, $1C, $04
 	.byte $7E, $1C, $1C, $24, $24, $1E, $1E, $16, $16, $0C, $0C, $08, $08, $06, $06, $08
 	.byte $08, $0A, $0A, $00, $B0, $4C, $B1, $7E, $B2, $3E, $B0, $7E, $B2, $3C, $3E, $B0
-	.byte $3C, $34, $B1, $7E, $B2, $3C, $B0, $7E, $B2, $3E, $3C, $B0, $7E, $80, $38, $3C
+	.byte $3C, $34, $B1, $7E, $B2, $3C, $B0, $7E, $B2, $3E, $3C, $B0, $7E
+TGL1_Tri4:
+	.byte $80, $38, $3C
 	.byte $3E, $42, $82, $3E, $84, $48, $81, $42, $3C, $34, $42, $3C, $34, $42, $80, $3C
 	.byte $81, $36, $2E, $3C, $38, $36, $38, $3C
 TGL1_Nse4:
@@ -1703,7 +1748,9 @@ TGL1_5:
 	.byte $18, $04, $7E, $1C, $1C, $04, $7E, $1C, $1C, $04, $7E, $1C, $1C, $04, $7E, $1C
 	.byte $1C, $16, $7E, $0C, $24, $06, $06, $1E, $1E, $08, $08, $20, $20, $0A, $0A, $22
 	.byte $22, $00, $B0, $3E, $3C, $B1, $38, $B2, $34, $B3, $30, $B4, $7E, $B2, $42, $34
-	.byte $B0, $7E, $3E, $B1, $7E, $B0, $3C, $B1, $3E, $B0, $42, $80, $46, $81, $7E, $82
+	.byte $B0, $7E, $3E, $B1, $7E, $B0, $3C, $B1, $3E, $B0, $42
+TGL1_Tri5:
+	.byte $80, $46, $81, $7E, $82
 	.byte $46, $80, $7E, $56, $54, $81, $50, $82, $4C, $86, $54, $80, $36, $81, $7E, $80
 	.byte $4E, $81, $50, $80, $54
 TGL1_Nse5:
@@ -1717,7 +1764,9 @@ TGL1_6:
 	.byte $18, $04, $7E, $1C, $1C, $04, $7E, $1C, $1C, $04, $7E, $1C, $1C, $04, $7E, $1C
 	.byte $1C, $16, $7E, $0C, $24, $06, $06, $1E, $1E, $08, $08, $20, $20, $0A, $0A, $22
 	.byte $22, $00, $B0, $3E, $3C, $B1, $38, $B2, $34, $B3, $30, $B4, $7E, $B2, $2A, $34
-	.byte $B0, $7E, $B2, $3E, $B0, $3C, $3E, $B1, $7E, $80, $46, $81, $7E, $82, $46, $80
+	.byte $B0, $7E, $B2, $3E, $B0, $3C, $3E, $B1, $7E
+TGL1_Tri6:
+	.byte $80, $46, $81, $7E, $82, $46, $80
 	.byte $7E, $56, $54, $81, $50, $82, $4C, $86, $54, $80, $34, $3C, $81, $42, $3E, $3C
 	.byte $42
 TGL1_Nse6:
@@ -1730,7 +1779,9 @@ CVampire2:
 	.byte $B0, $4C, $B1, $4C, $B2, $7E, $B1, $48, $B2, $7E, $B3, $46, $B4, $34, $B0, $38
 	.byte $3A, $3E, $B5, $42, $34, $B4, $42, $B0, $3E, $B6, $30, $B7, $7E, $00, $B0, $42
 	.byte $B1, $42, $B2, $7E, $B1, $3E, $B2, $7E, $B3, $3E, $B4, $34, $B0, $34, $30, $30
-	.byte $B5, $34, $2C, $B4, $34, $B0, $30, $B6, $3E, $B7, $7E, $B8, $34, $B9, $7E, $B8
+	.byte $B5, $34, $2C, $B4, $34, $B0, $30, $B6, $3E, $B7, $7E
+CVampire2_Tri:
+	.byte $B8, $34, $B9, $7E, $B8
 	.byte $34, $BA, $7E, $B8, $34, $BA, $7E, $B8, $34, $BB, $7E, $B8, $34, $BA, $7E, $B8
 	.byte $34, $B9, $7E, $B8, $34, $BA, $7E, $B8, $34, $BA, $7E, $B8, $34, $BA, $7E, $B8
 	.byte $34, $BA, $7E, $B8, $34, $BA, $7E, $B8, $34, $BA, $7E, $B8, $2C, $B9, $7E, $B8
@@ -1747,7 +1798,9 @@ CVampire3:
 	.byte $52, $4C, $B1, $7E, $B0, $3A, $34, $7E, $52, $4C, $52, $4C, $52, $4C, $52, $B1
 	.byte $7E, $00, $B0, $42, $B1, $7E, $B0, $4C, $B1, $7E, $B0, $4A, $4C, $4A, $48, $7E
 	.byte $7E, $7E, $7E, $B0, $5A, $7E, $5A, $58, $7E, $58, $56, $7E, $B3, $5A, $B4, $7E, $B0, $5A
-	.byte $B3, $58, $B4, $7E, $B0, $58, $56, $7E, $7E, $7E, $B7, $34, $B8, $7E, $B7, $34, $B8
+	.byte $B3, $58, $B4, $7E, $B0, $58, $56, $7E, $7E, $7E
+CVampire3_Tri:
+	.byte $B7, $34, $B8, $7E, $B7, $34, $B8
 	.byte $7E, $B7, $34, $B9, $7E, $B7, $34, $B8, $7E, $B7, $34, $BA, $7E, $B7, $34, $B8
 	.byte $7E, $B7, $34, $B8, $7E, $B7, $34, $B8, $7E, $B7, $34, $B8, $7E, $B7, $34, $B8
 	.byte $7E, $B7, $34, $B8, $7E, $B7, $2C, $BA, $7E, $B7, $2C, $B8, $7E, $B7, $2C, $B8
@@ -1764,6 +1817,7 @@ CVampire4:
 	.byte $52, $4C, $B1, $7E, $B0, $3A, $34, $7E, $52, $4C, $52, $4C, $52, $4C, $52, $00
 	.byte $B0, $42, $B1, $7E, $B0, $4C, $B1, $7E, $B0, $4A, $4C, $4A, $48, $7E, $7E, $7E, $7E, $B0
 	.byte $5A, $7E, $5A, $58, $7E, $58, $56, $7E, $5A, $7E, $5A, $58, $7E, $58, $56, $7E
+CVampire4_Tri:
 	.byte $B4, $34, $B5, $7E, $B4, $34, $B5, $7E, $B4, $34, $B6, $7E, $B4, $34, $B5, $7E
 	.byte $B4, $34, $B7, $7E, $B4, $34, $B5, $7E, $B4, $34, $B5, $7E, $B4, $34, $B5, $7E
 	.byte $B4, $34, $B5, $7E, $B4, $34, $B5, $7E, $B4, $34, $B5, $7E, $B4, $2C, $B7, $7E
@@ -1781,7 +1835,9 @@ CVampire7:
 	.byte $B0, $38, $B1, $7E, $B4, $3E, $B3, $7E, $00, $B0, $5A, $B1, $7E, $B0, $5A, $B1
 	.byte $7E, $B0, $42, $B1, $7E, $B2, $42, $B3, $7E, $22, $7E, $22, $7E, $B0, $2C, $B1
 	.byte $7E, $B4, $34, $B3, $7E, $26, $7E, $26, $7E, $B0, $30, $B1, $7E, $B4, $38, $B3
-	.byte $7E, $B5, $34, $B6, $7E, $B3, $34, $B4, $7E, $B3, $34, $B4, $30, $B5, $34, $B7
+	.byte $7E
+CVampire7_Tri:
+	.byte $B5, $34, $B6, $7E, $B3, $34, $B4, $7E, $B3, $34, $B4, $30, $B5, $34, $B7
 	.byte $7E, $B5, $2C, $B6, $7E, $B5, $2C, $B8, $7E, $B3, $30, $7E, $30, $B9, $7E
 CVampire7_Nse:
 	.byte $B3, $01, $02, $06, $01, $02, $06, $01, $06, $01, $01, $02, $02, $02, $02, $02
@@ -1793,7 +1849,9 @@ CVampire8:
 	.byte $2C, $7E, $2C, $7E, $B0, $34, $B1, $7E, $B4, $3A, $B3, $7E, $30, $7E, $7E, $7E, $B0
 	.byte $12, $B1, $7E, $B4, $18, $B3, $7E, $00, $B0, $5A, $B1, $7E, $B0, $5A, $B1, $7E
 	.byte $B0, $42, $B1, $7E, $B2, $42, $B3, $7E, $22, $7E, $22, $7E, $B0, $2C, $B1, $7E
-	.byte $B4, $34, $B3, $7E, $26, $7E, $B4, $7E, $7E, $7E, $B7, $34, $B8, $7E, $B7, $34, $B9, $7E, $B3
+	.byte $B4, $34, $B3, $7E, $26, $7E, $B4, $7E, $7E, $7E
+CVampire8_Tri:
+	.byte $B7, $34, $B8, $7E, $B7, $34, $B9, $7E, $B3
 	.byte $34, $B4, $30, $B7, $34, $BA, $7E, $B3, $2C, $7E, $B7, $2C, $BB, $7E, $B7, $30
 	.byte $B8, $7E, $B7, $30, $B8, $7E, $B7, $2A, $BC, $7E, $B6, $30
 CVampire8_Nse:
@@ -1803,6 +1861,65 @@ CVampire8_Nse:
 
 ; [ORANGE] Gradius II
 Gradius2_1:
+	.byte $C0, $7E, $C5, $46, $54, $5E, $46, $CA, $5A, $C7, $5A, $C1, $5A, $C0, $58, $C8
+	.byte $5A, $C0, $58, $C8, $5A, $C0, $58, $C4, $5A, $C5, $58, $54, $50, $58, $CA, $54
+	.byte $C7, $54, $C8, $54, $C5, $50, $4E, $4A, $CA, $4A, $C7, $4A, $CB, $4A, $C2, $3E
+	.byte $C3, $40, $C2, $42, $C3, $44, $00, $C0, $7E, $C9, $3C, $C5, $46, $54, $5E, $46
+	.byte $CA, $5A, $C7, $5A, $C1, $5A, $C0, $58, $C8, $5A, $C0, $58, $C8, $5A, $C0, $58
+	.byte $C4, $5A, $C5, $58, $54, $50, $58, $CA, $54, $C7, $54, $C8, $54, $C5, $50, $4E
+	.byte $4A, $CA, $4A, $C7, $4A, $CB, $4A, $C0, $7E, $C4, $46, $C1, $7E, $C4, $2E, $C1
+	.byte $7E, $C4, $3C, $C1, $7E, $C4, $42, $C1, $7E, $C4, $46, $C1, $7E, $C4, $2E, $C1
+	.byte $7E, $C4, $3C, $C1, $7E, $C4, $42, $C1, $7E, $C4, $46, $C1, $7E, $C4, $2E, $C1
+	.byte $7E, $C4, $3C, $C1, $7E, $C4, $42, $C1, $7E, $C4, $46, $C1, $7E, $C4, $2E, $C1
+	.byte $7E, $C4, $3C, $C1, $7E, $C4, $42, $C1, $7E, $C4, $46, $C1, $7E, $C4, $2E, $C1
+	.byte $7E, $C4, $3C, $C1, $7E, $C4, $42, $C1, $7E, $C4, $46, $C1, $7E, $C4, $2E, $C1
+	.byte $7E, $C4, $3C, $C1, $7E, $C4, $42, $C1, $7E, $C4, $46, $C1, $7E, $C4, $2E, $C1
+	.byte $7E, $C4, $3C, $C1, $7E, $C4, $42, $C1, $7E, $C4, $46, $C1, $7E, $C4, $2E, $C1
+	.byte $7E, $C4, $3C, $C1, $7E, $C4, $42, $C1, $7E
+Gradius2_Nse1:
+	.byte $86, $01, $83, $02, $82, $01, $84, $02, $03, $83, $01, $88, $02, $82, $01, $02
+	.byte $81, $01, $84, $03, $81, $01, $8A, $03, $80, $01, $82, $02, $81, $01, $84, $03
+	.byte $83, $01, $88, $02, $82, $01, $02, $81, $01, $84, $03, $81, $01, $8A, $03, $80
+	.byte $01, $82, $02, $81, $01, $84, $03, $83, $01, $88, $02, $82, $01, $02, $81, $01
+	.byte $84, $03, $81, $01, $8A, $03, $80, $01, $82, $02, $81, $01, $84, $03, $83, $01
+	.byte $88, $02, $82, $01, $02, $81, $01, $84, $03, $81, $01, $03, $00
+
+Gradius2_2:
+	.byte $C7, $46, $54, $5E, $46, $CD, $5A, $C9, $5A, $C2, $5A, $C1, $58, $CA, $5A, $C1
+	.byte $58, $CA, $5A, $C1, $58, $C5, $5A, $C7, $58, $54, $50, $54, $CD, $5A, $C9, $5A
+	.byte $C2, $5A, $C1, $58, $C8, $5A, $C7, $52, $50, $52, $CD, $4C, $C9, $4C, $CF, $4C
+	.byte $C3, $4A, $C4, $48, $00, $CC, $3C, $C7, $46, $54, $5E, $46, $CD, $5A, $C9, $5A
+	.byte $C2, $5A, $C1, $58, $CA, $5A, $C1, $58, $CA, $5A, $C1, $58, $C5, $5A, $C7, $58
+	.byte $54, $CD, $4C, $C9, $4C, $C0, $4C, $CD, $46, $C7, $46, $C6, $46, $C5, $44, $C2
+	.byte $46, $C5, $42, $C2, $46, $C5, $40, $C2, $46, $C5, $3E, $C2, $44, $C5, $46, $C2
+	.byte $7E, $C5, $2E, $C2, $7E, $C5, $3C, $C2, $7E, $C5, $42, $C2, $7E, $C5, $46, $C2
+	.byte $7E, $C5, $2E, $C2, $7E, $C5, $3C, $C2, $7E, $C5, $42, $C2, $7E, $C5, $46, $C2
+	.byte $7E, $C5, $2E, $C2, $7E, $C5, $3C, $C2, $7E, $C5, $42, $C2, $7E, $C5, $46, $C2
+	.byte $7E, $C5, $2E, $C2, $7E, $C5, $3C, $C2, $7E, $C5, $42, $C2, $7E, $C5, $3E, $C2
+	.byte $7E, $C5, $26, $C2, $7E, $C5, $34, $C2, $7E, $C5, $3A, $C2, $7E, $C5, $3E, $C2
+	.byte $7E, $C5, $26, $C2, $7E, $C5, $34, $C2, $7E, $C5, $3A, $C2, $7E, $C5, $3E, $C2
+	.byte $7E, $C5, $26, $C2, $7E, $C5, $34, $C2, $7E, $C5, $3A, $C2, $7E, $C5, $3E, $C2
+	.byte $7E, $C5, $26, $C2, $7E, $C3, $26, $C4, $28, $C3, $2A, $C4, $2C
+Gradius2_Nse2:
+	.byte $81, $01, $83, $02, $82, $01, $85, $03, $84, $01, $8A, $02, $83, $01, $02, $82
+	.byte $01, $85, $03, $82, $01, $8D, $03, $81, $01, $83, $02, $82, $01, $85, $03, $82
+	.byte $01, $8B, $03, $83, $01, $02, $82, $01, $85, $03, $82, $01, $8D, $03, $81, $01
+	.byte $83, $02, $82, $01, $85, $03, $84, $01, $8A, $02, $83, $01, $02, $82, $01, $85
+	.byte $03, $82, $01, $8D, $03, $81, $01, $83, $02, $82, $01, $85, $03, $84, $01, $8A
+	.byte $02, $83, $01, $02, $82, $01, $85, $03, $82, $01, $03, $00
+
+; rest 7 becomes rest 4
+; rest b becomes rest 7
+Gradius2_Nse3:
+        .byte $C4, $01, $C2, $02, $C3, $01, $CA, $02, $C2, $01, $C5, $02, $C1, $01, $CA, $02
+        .byte $C2, $01, $C3, $02, $C9, $01, $C2, $02, $C3, $01, $CA, $02, $C2, $01, $C7, $02
+        .byte $C0, $01, $CA, $02, $C2, $01, $C3, $02, $C9, $01, $C2, $02, $C3, $01, $CA, $02
+        .byte $C2, $01, $C7, $02, $C0, $01, $CA, $02, $C2, $01, $C3, $02, $C9, $01, $C2, $02
+        .byte $C3, $01, $CA, $02, $C2, $01, $C7, $02, $C0, $01, $CA, $02, $C2, $01, $C3, $02
+        .byte $C9, $01, $C2, $02, $C3, $01, $CA, $02, $C2, $01, $C7, $02, $C0, $01, $CA, $02
+        .byte $C2, $01, $C3, $02, $C9, $01, $C2, $02, $C3, $01, $CA, $02, $C2, $01, $C7, $02
+        .byte $C0, $01, $CA, $02, $C2, $01, $C3, $02, $C9, $01, $C2, $02, $C3, $01, $CA, $02
+        .byte $C2, $01, $C7, $02, $C0, $01, $C6, $02, $00
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;; BEGIN UNUSED COPY/PASTED CODE ;;;;;;;;;;;;;;;;;;;;;
