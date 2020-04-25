@@ -1249,7 +1249,7 @@ MS2ASegHedr12:	MusSeg $80, M12ASegData12, $37, $1A, $49, $4F
 MS1_40SegHedr:	MusSeg $80, M12ASegData13, $35, $18, $00, $00
 MS1_01SegHedr:	MusSeg $30, M12ASegData14, $26, $11, $00, $38
 MS1_04SegHedr:	MusSeg $30, M12ASegData15, $21, $11, $00, $31
-MS1_20SegHedr:	MusSeg $00, M12ASegData16, $00, $00, $00, $03
+MS1_20SegHedr:	MusSeg $10, M12ASegData16, $00, $00, $00, $04
 
 ; MS1_80SegHedr is the "stop music" request; have to look into this
 ; a little bit more to figure out how it works
@@ -1332,9 +1332,8 @@ M12ASegData02:
 	.byte $60, $7E, $00, $D8, $30, $D9, $40, $44, $48, $D4, $3E, $D8, $3E, $30
 
 M12ASegData16:	; [ORANGE] This is Poo's OOORRRBB sound, replacing the end-level fanfare
-	.byte $8C, $7E, $00
-	.byte $8F, $01, $8C, $7E, $7E, $7E, $00
-	.ds 0x3E
+	.byte $8F, $7E, $7E, $00
+	.byte $8F, $01, $8F, $02, $00
 
 M12ASegData04:
 	.byte $C8, $3E, $CA, $56, $C8, $3E, $40, $CA, $58, $C8 ; $AA39 - $AA48
