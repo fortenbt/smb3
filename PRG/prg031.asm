@@ -1075,7 +1075,7 @@ PRG031_E741:
 	; only 1.) The first note value is $01 (which shifted becomes zero),
 	; so basically $01, $02-$03, $04-$05, $06-$07 are the only valid "notes"
 	; $01 (first triple) is used as a "rest" / Note Off
-Music_NoiseLUTA:	.byte $10, $1E, $1F, $19	; ctl
+Music_NoiseLUTA:	.byte $10, $17, $18, $19	; ctl
 Music_NoiseLUTB:	.byte $00, $03, $0A, $06	; freq1
 Music_NoiseLUTC:	.byte $00, $18, $18, $58	; freq2 ($18 = 3, $58 = 11)
 
