@@ -6701,13 +6701,33 @@ _obj_sss_checkrestore:
 	BNE _j_Object_SetShellState
 	LDX <SlotIndexBackup		; Restore the slot index
 	LDA #-$28
-	STA <Objects_YVel,X
-	LDA #SPR_HFLIP				; Don't vertically flip the shell
+	STA <Objects_YVel,X			; Lessen the bump amount (typical is $30)
+	LDA #-$30
+	LDY <Objects_XVel,X
+	BMI _obj_sss_set_xvel
+	LDA #$30
+_obj_sss_set_xvel:
+	STA <Objects_XVel,X			; Give it an XVel boost
+	LDA Objects_FlipBits,X		; We have to reset FlipBits to the correct value
+								; because the bump code already VFLIP'd the object
+	LDY <Objects_XVel,X			; Note that this "doesn't work" (as you'd expect) for
+								; spinys or red troopas because we always set their
+								; velocities to positive on every bump in
+								; prg031::DoBounceYVel
+	BMI _obj_sss_hflip
+	AND #~SPR_HFLIP				; for positive velocities, remove hflip
+	JMP _obj_sss_no_vert
+_obj_sss_hflip:
+	ORA #SPR_HFLIP				; for negative velocities, set hflip
+_obj_sss_no_vert:
+	AND #~SPR_VFLIP				; Don't vertically flip the shell
 	STA Objects_FlipBits,X
+
 	RTS							; If this was caused by a noteblock, just return
+
 ;[ORANGE] Free space from removing ToadHouse_GiveItem
 PRG000_FREE_SPACE:
-	.ds 0x3d
+	.ds 0x20
 
 AScrlURDiag_HandleWrap:
 	LDA AScrlURDiag_WrapState
