@@ -2762,18 +2762,18 @@ StatusBar_Fill_Time:
 	STA Level_TimerLSD
 
 PRG026_AFDC:
-	LDA Level_TimerMSD	
-	CMP #$01	 	
-	BNE Timer_NoChange	; If Level_TimerMSD <> 1, jump to Timer_NoChange
+	;LDA Level_TimerMSD
+	;CMP #$01
+	;BNE Timer_NoChange	; If Level_TimerMSD <> 1, jump to Timer_NoChange
 
 	; MSD is 1...
-	LDA Level_TimerMid
-	ORA Level_TimerLSD
-	BNE Timer_NoChange	; If !(Level_TimerMid == 0 && Level_TimerLSD == 0), jump to Timer_NoChange
+	;LDA Level_TimerMid
+	;ORA Level_TimerLSD
+	;BNE Timer_NoChange	; If !(Level_TimerMid == 0 && Level_TimerLSD == 0), jump to Timer_NoChange
 
 	; Time is running out!
-	LDA #MUS1_TIMEWARNING	 
-	STA Sound_QMusic1	; Queue low-time warning music!
+	;LDA #MUS1_TIMEWARNING
+	;STA Sound_QMusic1	; Queue low-time warning music!
 Timer_NoChange:
 	; For all 3 digits of time, write their tiles...
 	LDX #$02	 	; X = 2
