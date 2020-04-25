@@ -381,6 +381,7 @@ PAD_RIGHT	= $01
 	Pad_Holding:		.ds 1	; Active player's inputs (i.e. 1P or 2P, whoever's playing) buttons being held in (continuous)
 	Pad_Input:		.ds 1	; Active player's inputs (i.e. 1P or 2P, whoever's playing) buttons newly pressed only (one shot)
 
+	Music_TriTrkLo:				; [ORANGE] We also use this for our triangle music track pointer
 	Roulette_RowIdx:	.ds 1	; Roulette Bonus Game only obviously
 
 ; Pal_Force_Set12:
@@ -389,6 +390,7 @@ PAD_RIGHT	= $01
 ; Pal_Force_Set12 to a non-zero value will select as the index instead of
 ; Level_Tileset, and then it will copy the first two sets of 16 colors from
 ; the palette data as bg / sprite colors.  FIXME is this used though??
+	Music_TriTrkHi:				; [ORANGE] We also use this for our triangle music track pointer
 	Pal_Force_Set12:	.ds 1
 
 	PlantInfest_ACnt:	.ds 1	; Plant infestation level animation counter
@@ -488,7 +490,7 @@ PAD_RIGHT	= $01
 	Controller1:		.ds 1	; Player 1's controller inputs -- R01 L02 D04 U08 S10 E20 B40 A80
 	Controller2:		.ds 1	; Player 2's controller inputs -- R01 L02 D04 U08 S10 E20 B40 A80
 
-				.ds 1	; $F9 unused
+	CurrRestOff:		.ds 1	; $F9 unused [ORANGE] No longer unused; holds the current track's rest offset when getting the rest ticks
 	Music_Rest_PtrL:	.ds 1	; $FA unused [ORANGE] No longer unused; holds a full pointer to the Rests for a specfic song
 	Music_Rest_PtrH:	.ds 1	; $FB unused
 

@@ -202,6 +202,7 @@ Music_GetRestTicks:
 	; Music_RestH_Off is always $00 or $10 (low time warning)
 
 	AND #$0f	 	; Get lower 4 bits
+	ADD <CurrRestOff
 	;ADD Music_RestH_Base	; Add this to Music_RestH_Base
 	;;;ADC Music_RestH_Off	; Add this to Music_RestH_Off
 
@@ -312,48 +313,79 @@ PRG031_E3EB:
 
 SndMus2B_LoadNext:
 	; Load next "index" (Y) of Music Set 2 song...
-
+	TYA
+	ASL A
+	TAY
+	LDA Music_Set2B_IndexOffs-2,Y	; Get offset for the current index; it is always one ahead, so -1 from the LUT
+	;TAY		 ; Use this offset value in Y
+	STA <Temp_Var1
 	LDA Music_Set2B_IndexOffs-1,Y	; Get offset for the current index; it is always one ahead, so -1 from the LUT
-	TAY		 ; Use this offset value in Y
+	STA <Temp_Var2
 
 	; Get and store rest lookup base index for this segment in Music_RestH_Base
-	LDA Music_Set2B_Headers,Y
+	;LDA Music_Set2B_Headers,Y
+	LDY #$00
+	LDA [Temp_Var1],Y
 	STA <Music_Rest_PtrL
-	LDA Music_Set2B_Headers+1,Y
+	INY
+	;LDA Music_Set2B_Headers+1,Y
+	LDA [Temp_Var1],Y
 	STA <Music_Rest_PtrH
+	INY
 
 	; Get and store the base address into [Music_Base_H][Music_Base_L]
-	LDA Music_Set2B_Headers+2,Y
+	LDA [Temp_Var1],Y
 	STA <Music_Base_L
-	LDA Music_Set2B_Headers+3,Y
+	INY
+	LDA [Temp_Var1],Y
 	STA <Music_Base_H
+	INY
 
 	; Get and store triangle track offset
-	LDA Music_Set2B_Headers+4,Y
-	STA Music_TriTrkPos
+	LDA [Temp_Var1],Y
+	STA <Music_TriTrkLo
+	INY
+	LDA [Temp_Var1],Y
+	STA <Music_TriTrkHi
+	INY
 
 	; Get and store square 1 track offset
-	LDA Music_Set2B_Headers+5,Y
+	LDA [Temp_Var1],Y
 	STA Music_Sq1TrkOff
+	INY
 
 	; Set and store noise track offset
-	LDA Music_Set2B_Headers+6,Y
+	LDA [Temp_Var1],Y
 	STA <Music_NSETrkLo
 	STA Music_NseStartLo
-	LDA Music_Set2B_Headers+7,Y
+	INY
+	LDA [Temp_Var1],Y
 	STA <Music_NSETrkHi
 	STA Music_NseStartHi
+	INY
 	;STA Music_NseStart	; Retain starting position for possible restoration later
 
 	; Set and store DMC track offset
-	LDA Music_Set2B_Headers+8,Y
+	LDA [Temp_Var1],Y
 	STA <Music_PCMTrkLo
 	STA Music_PCMStartLo
-	LDA Music_Set2B_Headers+9,Y
+	INY
+	LDA [Temp_Var1],Y
 	STA <Music_PCMTrkHi
 	STA Music_PCMStartHi
+	INY
 	;STA Music_PCMTrkPos
 	;STA Music_PCMStart	; Retain starting position for possible restoration later
+
+	LDA [Temp_Var1],Y
+	STA Sq1RestOff
+	INY
+	LDA [Temp_Var1],Y
+	STA TriRestOff
+	INY
+	LDA [Temp_Var1],Y
+	STA NseRestOff
+	INY
 
 	JMP PRG031_E48C
 
@@ -463,17 +495,19 @@ SndMus2A_LoadNext:
 
 	; Set triangle track position
 	LDA Music_Set1_Set2A_Headers+4,Y
-	STA Music_TriTrkPos
+	STA <Music_TriTrkLo
+	LDA Music_Set1_Set2A_Headers+5,Y
+	STA <Music_TriTrkHi
 
 	; Set square 1 track position
-	LDA Music_Set1_Set2A_Headers+5,Y
+	LDA Music_Set1_Set2A_Headers+6,Y
 	STA Music_Sq1TrkOff
 
 	; Set noise track position
-	LDA Music_Set1_Set2A_Headers+6,Y
+	LDA Music_Set1_Set2A_Headers+7,Y
 	STA <Music_NSETrkLo
 	STA Music_NseStartLo
-	LDA Music_Set1_Set2A_Headers+7,Y
+	LDA Music_Set1_Set2A_Headers+8,Y
 	STA <Music_NSETrkHi
 	STA Music_NseStartHi
 
@@ -482,10 +516,10 @@ DMC02_Bad:	; Sample 3 in the DMC table suggests a sample ending here; likely a m
 	;STA Music_NseStart
 
 	; Set PCM track position
-	LDA Music_Set1_Set2A_Headers+8,Y
+	LDA Music_Set1_Set2A_Headers+9,Y
 	STA <Music_PCMTrkLo
 	STA Music_PCMStartLo
-	LDA Music_Set1_Set2A_Headers+9,Y
+	LDA Music_Set1_Set2A_Headers+10,Y
 	STA <Music_PCMTrkHi
 	STA Music_PCMStartHi
 
@@ -618,7 +652,8 @@ PRG031_E528:
 	STA Music_Sq2Patch	 ; Music_Sq2Patch is just the upper 4 bits
 
 	TXA			 ; A = X (restoring A)
-
+	LDY #$00
+	STY <CurrRestOff	; Sq2 rest offset is always 0
 	JSR Music_GetRestTicks
 	STA Music_Sq2RestH	 ; Update Music_Sq2RestH
 
@@ -728,6 +763,8 @@ PRG031_E5C5:
 	AND #$f0		; A &= $f0 
 	STA Music_Sq1Patch	; Result -> Music_Sq1Patch
 	TXA		 	; Restore A (current byte of music data)
+	LDY Sq1RestOff
+	STY <CurrRestOff
 	JSR Music_GetRestTicks
 	STA Music_Sq1RestH	; Store new rest value (returned by Music_GetRestTicks)
 
@@ -835,29 +872,39 @@ PRG031_E660:
 ; Triangle's music track code
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Music_TriTrack:
-	LDA Music_TriTrkPos	; Get triangle track's position
-	BEQ Music_NseTrack	; If Music_TriTrkPos = 0 (Disabled!), jump to Music_NseTrack
+	LDA <Music_TriTrkHi	; Music_TriTrackHi
+	BEQ Music_NseTrack	; If Music_TriTrackHi = 0 (Disabled!), jump to Music_NseTrack
 
 	DEC Music_TriRest	; Music_TriRest--
 	BNE Music_NseTrack	; If not done resting, jump to the noise track
 
-	LDY Music_TriTrkPos	; Y = Music_TriTrkPos
-	INC Music_TriTrkPos	; Music_TriTrkPos++
-	LDA [Music_Base_L],Y	; Get next byte from triangle track
+	LDY #$00
+	LDA [Music_TriTrkLo],Y	; Get next byte from triangle track
+	INC <Music_TriTrkLo
+	BNE _tri_post_inc
+	INC <Music_TriTrkHi
+_tri_post_inc:
+	CMP #$00			; compare the byte we read to 0
 
 	BPL Music_TriNoteOn	; Byte $00 - $7f, jump to Music_TriNoteOn
 
 	; Byte $80 - $ff... goes directly to the rest value routine
 	; No "patches" available on the triangle track
+	LDY TriRestOff
+	STY <CurrRestOff
 	JSR Music_GetRestTicks	
 	STA Music_TriRestH		; Update rest hold value
 
 	LDA #$1f	 
 	STA PAPU_TCR1	 ; $1f written to PAPU_TCR1
 
-	LDY Music_TriTrkPos	; Y = Music_TriTrkPos
-	INC Music_TriTrkPos	; Music_TriTrkPos++
-	LDA [Music_Base_L],Y	; Get next byte from music segment
+	LDY #$00
+	LDA [Music_TriTrkLo],Y	; Get next byte from triangle track
+	INC <Music_TriTrkLo
+	BNE _tri_post_inc2
+	INC <Music_TriTrkHi
+_tri_post_inc2:
+	CMP #$00			; compare the byte we read to 0
 	BEQ PRG031_E6B4	 	; If $00 came up, jump to PRG031_E6B4
 
 Music_TriNoteOn:
@@ -922,6 +969,8 @@ _nse_post_inc:
 
 	; Byte $80 - $ff... goes directly to the rest value routine
 	; No "patches" available on the noise track
+	LDY NseRestOff
+	STY <CurrRestOff
 	JSR Music_GetRestTicks
 	STA Music_NseRestH	 ; Update rest hold
 
@@ -986,6 +1035,8 @@ _pcm_post_inc:
 	BEQ PRG031_E741		; If next byte is $00, jump to PRG031_E741
 	BPL PRG031_E72F		; If byte is $01 - $7f, jump to PRG031_E72F
 
+	LDY PCMRestOff
+	STY <CurrRestOff
 	JSR Music_GetRestTicks
 	STA Music_DMCRestH	; Update rest hold value
 
