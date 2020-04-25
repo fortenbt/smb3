@@ -439,8 +439,8 @@ PAD_RIGHT	= $01
 	; resets to zero.
 	Graphics_Queue:		.ds 1
 
-	DoingUserMessage:	.ds 1	; $5F unused
-				.ds 1	; $60 unused
+	Music_NSETrkLo:		.ds 1	; $5F unused [ORANGE] No longer unused; holds a full pointer to the NSE Track position
+	Music_NSETrkHi:		.ds 1	; $60 unused
 
 	Level_LayPtr_AddrL:	.ds 1	; Low byte of address to tile layout (ORIGINAL stored in Level_LayPtrOrig_AddrL)
 	Level_LayPtr_AddrH:	.ds 1	; High byte of address to tile layout (ORIGINAL stored in Level_LayPtrOrig_AddrH)
@@ -458,8 +458,8 @@ PAD_RIGHT	= $01
 	Level_ObjPtr_AddrL:	.ds 1	; Low byte of address to object set (ORIGINAL stored in Level_ObjPtrOrig_AddrL)
 	Level_ObjPtr_AddrH:	.ds 1	; High byte of address to object set (ORIGINAL stored in Level_ObjPtrOrig_AddrH)
 
-				.ds 1	; $67 unused
-				.ds 1	; $68 unused
+	Music_PCMTrkLo:		.ds 1	; $67 unused [ORANGE] No longer unused; holds a full pointer to the PCM Track position
+	Music_PCMTrkHi:		.ds 1	; $68 unused
 
 	Video_Upd_AddrL:	.ds 1	; Video_Misc_Updates routine uses this as an address, low byte
 	Video_Upd_AddrH:	.ds 1	; Video_Misc_Updates routine uses this as an address, hi byte
@@ -489,13 +489,13 @@ PAD_RIGHT	= $01
 	Controller2:		.ds 1	; Player 2's controller inputs -- R01 L02 D04 U08 S10 E20 B40 A80
 
 				.ds 1	; $F9 unused
-				.ds 1	; $FA unused
-				.ds 1	; $FB unused
+	Music_Rest_PtrL:	.ds 1	; $FA unused [ORANGE] No longer unused; holds a full pointer to the Rests for a specfic song
+	Music_Rest_PtrH:	.ds 1	; $FB unused
 
 	Vert_Scroll:		.ds 1	; Vertical scroll of name table; typically at $EF (239, basically showing the bottom half)
 	Horz_Scroll:		.ds 1	; Horizontal scroll of name table
 
-				.ds 1	; $FE unused
+	DoingUserMessage:	.ds 1	; $FE unused [ORANGE] No longer unused
 
 	PPU_CTL1_Copy:		.ds 1	; Holds PPU_CTL1 register data 
 
@@ -1323,7 +1323,7 @@ Level_MusicQueueRestore:	.ds 1	; What to "restore" the BGM to when it changes (e
 	Music_NseRestH:		.ds 1	; Noise Track hold for rest values to be applied after each event
 	Music_DMCRest:		.ds 1	; DMC Track "Rest" period (counts down to zero)
 	Music_DMCRestH:		.ds 1	; DMC Track hold for rest values to be applied after each event
-	Music_PCMStart:		.ds 1	; Holds the starting offset of the DMC track
+	;Music_PCMStart:		.ds 1	; Holds the starting offset of the DMC track [ORANGE] Replaced by Music_PCMStartLo/Hi
 	Music_NextIndex:	.ds 1	; Next "index" to be played
 
 	SFX_Counter1:		.ds 1	; Generic purpose SFX counter
@@ -1338,14 +1338,15 @@ Level_MusicQueueRestore:	.ds 1	; What to "restore" the BGM to when it changes (e
 	SFX_Counter3:		.ds 1	; Generic purpose SFX counter
 	SFX_Counter4:		.ds 1	; Generic purpose SFX counter
 
-				.ds 1	; $04EB unused
-				.ds 1	; $04EC unused
+	Music_PCMStartLo:	.ds 1	; $04EB unused [ORANGE] No longer unused, stores the full starting pointer to the PCM track
+	Music_PCMStartHi:	.ds 1	; $04EC unused
 
 	Sound_IsPaused:		.ds 1	; When set, sound processing is PAUSED
 
-				.ds 1	; $04EE ununsed
-				.ds 1	; $04EF ununsed
-				.ds 1	; $04F0 ununsed
+	;;; [ORANGE] PCMRestOff is at $0611
+	NseRestOff:			.ds 1	; $04EE unused
+	TriRestOff:			.ds 1	; $04EF unused
+	Sq1RestOff:			.ds 1	; $04F0 unused
 
 ; For any of these queues, the value is a bit value, which offers
 ; a simple prioritization system; lowest value plays over any other
@@ -1837,7 +1838,7 @@ ASCONFIG_HDISABLE	= $80	; Disables horizontal auto scroll coordinate adjustment 
 	; 3: "in front" of Player ("upper", at face)
 	Level_Tile_Slope:	.ds 4	; $060D-$0610
 
-				.ds 1	; $0611 unused
+	PCMRestOff:			.ds 1	; $0611 unused [ORANGE] No longer unused
 
 	Scroll_Cols2Upd:	.ds 1	; Number of 8x8 columns to update (typically set to 32 for a full dirty update)
 
@@ -2187,10 +2188,10 @@ RandomN = Random_Pool+1			; Pull a random number from the sequence (NOTE: Random
 	DMC_Current:		.ds 1	; Currently playing DMC sound
 
 	Sound_Sq1_CurFL:	.ds 1	; Holds current "low" frequency of Square Wave 1 (Warning: Must be +4 to Sound_Sq2_CurFL, see PRG031_E808)
-
-	Music_NseStart:		.ds 1	; Holds the starting offset of the noise track (CHECK: Reuse of $07F3, is this bad??)
-
-				.ds 1	; $07F4 unused, but required for padding
+	; [ORANGE] Music_NseStart replaced by Music_NseStartLo/Hi
+	;Music_NseStart:		.ds 1	; Holds the starting offset of the noise track (CHECK: Reuse of $07F3, is this bad??)
+	Music_NseStartLo:		.ds 1
+	Music_NseStartHi:		.ds 1	; $07F4 unused, but required for padding [ORANGE] No longer unused
 
 	Music2_Hold:		.ds 1	; A very little used feature, Music Set 1 overrides Music Set 2, but after a M1 song finishes, it restarts the M2 song
 	Sound_Sq2_CurFL:	.ds 1	; Holds current "low" frequency of Square Wave 1 (Warning: Must be +4 from Sound_Sq1_CurFL, see PRG031_E808)
