@@ -14,44 +14,10 @@
 ; DMC sounds are here!
 ; Note that due to limitation of the register, these sounds must be aligned on 64-byte ($40) boundaries
 
-DMC01:	.byte $55, $55, $55, $95, $AA, $2A, $95, $E0, $7F, $FC, $C0, $F1, $03, $28, $FE, $FF 
-	.byte $FF, $F1, $5F, $3F, $00, $00, $00, $00, $00, $00, $08, $80, $C0, $F1, $FF, $C7 
-	.byte $8B, $1F, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $AB, $6A, $9B, $AA, $92, $52, $25 
-	.byte $95, $24, $25, $92, $80, $4A, $50, $05, $00, $00, $80, $20, $42, $04, $08, $E2 
-	.byte $FF, $01, $80, $6D, $AB, $6D, $DF, $BB, $77, $7B, $AB, $AF, $DD, $D5, $7D, $DD 
-	.byte $BF, $FF, $EF, $B6, $6D, $6F, $BB, $6D, $AF, $2A, $95, $94, $24, $49, $92, $88 
-	.byte $42, $84, $48, $88, $04, $09, $49, $92, $24, $51, $22, $A5, $92, $22, $49, $AA 
-	.byte $52, $A9, $AA, $5A, $55, $AD, $55, $55, $AD, $6D, $B5, $AD, $6D, $B5, $6D, $DB 
+DMC01:
 DMC01_End
 
-DMC02:	.byte $55, $60, $6B, $79, $EA, $F8, $FF, $43, $82, $24, $00, $20, $8E, $ED, $C7, $A5 
-	.byte $1F, $10, $B7, $7F, $FF, $FF, $4D, $63, $C1, $15, $24, $41, $92, $28, $09, $4D 
-	.byte $25, $44, $42, $10, $CA, $BE, $FB, $FF, $7F, $DF, $F5, $EE, $D3, $31, $0E, $FF 
-	.byte $41, $10, $00, $21, $92, $20, $00, $F4, $38, $56, $5D, $EB, $F9, $9D, $3C, $BF 
-	.byte $ED, $E7, $D7, $AA, $6C, $59, $16, $A2, $00, $61, $83, $F0, $72, $3A, $0B, $81 
-	.byte $45, $41, $09, $DA, $F1, $FD, $FF, $FF, $5E, $AF, $C4, $4B, $D3, $C9, $8A, $82 
-	.byte $24, $89, $28, $06, $02, $47, $55, $E1, $3D, $AE, $EF, $BC, $F4, $52, $D5, $55 
-	.byte $BD, $BC, $7A, $1E, $57, $51, $0A, $25, $29, $A8, $A8, $38, $69, $D3, $88, $AA 
-	.byte $18, $78, $6C, $BA, $DE, $7D, $ED, $FB, $43, $E7, $34, $4C, $2C, $25, $AD, $92 
-	.byte $A4, $51, $A5, $C8, $62, $E2, $06, $8D, $C7, $F1, $AD, $65, $37, $B4, $AC, $5A 
-	.byte $4D, $9F, $3E, $6D, $3C, $A5, $B2, $24, $A9, $A2, $92, $86, $A9, $44, $45, $EE 
-	.byte $2C, $5E, $AA, $2D, $AE, $53, $9F, $4A, $9D, $3D, $4E, $8D, $3B, $8A, $A9, $E5 
-	.byte $C8, $B2, $2C, $34, $52, $D4, $59, $B1, $D2, $8A, $55, $C3, $5B, $A9, $55, $8B 
-	.byte $76, $7C, $79, $6C, $2B, $CE, $F2, $64, $31, $8E, $64, $45, $72, $64, $D1, $92 
-	.byte $E3, $54, $AD, $5A, $35, $55, $D7, $58, $1E, $1D, $55, $4E, $1D, $57, $56, $55 
-	.byte $CB, $AA, $AA, $2A, $69, $A5, $4A, $AA, $AA, $4A, $4D, $6A, $31, $4D, $D3, $A9 
-	.byte $6A, $AD, $7A, $5C, $65, $AB, $AA, $AC, $CA, $72, $AA, $4A, $B5, $D0, $8A, $95 
-	.byte $AC, $54, $95, $6C, $D9, $52, $5B, $A5, $AA, $D5, $4A, $B5, $2C, $4B, $B6, $D4 
-	.byte $34, $9D, $95, $56, $55, $55, $55, $55, $9A, $2A, $15, $A7, $AA, $52, $2D, $55 
-	.byte $69, $95, $B6, $AA, $65, $D5, $6A, $AA, $5A, $EA, $58, $55, $69, $6A, $A9, $96 
-	.byte $D2, $34, $95, $53, $A9, $A9, $2A, $35, $55, $D3, $AA, $6A, $55, $B5, $E2, $AA 
-	.byte $34, $B5, $9C, $C6, $B1, $95, $AA, $A9, $AA, $B4, $52, $55, $8B, $A9, $9A, $A6 
-	.byte $AA, $9A, $5A, $6A, $A5, $56, $56, $65, $55, $55, $AD, $B4, $B2, $AA, $54, $55 
-	.byte $2D, $D5, $AA, $AC, $AA, $52, $2B, $4B, $95, $AA, $AA, $B2, $2A, $AB, $AA, $6A 
-	.byte $A5, $55, $D5, $B4, $AA, $AA, $AA, $A9, $AA, $AA, $52, $55, $59, $A9, $A5, $AA 
-	.byte $56, $5A, $A5, $95, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55 
-	.byte $55, $55, $55, $55, $55, $55, $53, $35, $55, $D5, $54, $55, $55, $55, $A9, $A5 
-	.byte $AA, $AA, $6A, $59, $69, $55, $55, $B5, $AA, $AA, $B2, $2C, $2B, $55, $55, $55 
+DMC02:
 DMC02_End
 
 	;
@@ -1048,9 +1014,36 @@ PRG031_E741:
 	; only 1.) The first note value is $01 (which shifted becomes zero),
 	; so basically $01, $02-$03, $04-$05, $06-$07 are the only valid "notes"
 	; $01 (first triple) is used as a "rest" / Note Off
-Music_NoiseLUTA:	.byte $10, $1E, $1F, $1F
-Music_NoiseLUTB:	.byte $00, $03, $0A, $02
-Music_NoiseLUTC:	.byte $00, $18, $18, $58
+Music_NoiseLUTA:	.byte $10, $1E, $1F, $19	; ctl
+Music_NoiseLUTB:	.byte $00, $03, $0A, $06	; freq1
+Music_NoiseLUTC:	.byte $00, $18, $18, $58	; freq2 ($18 = 3, $58 = 11)
+
+	; ctl is $400C			--LC.VVVV	Noise channel volume/envelope (write)
+	; bit 5		--L- ----	APU Length Counter halt flag/envelope loop flag
+	; bit 4		---C ----	Constant volume flag (0: use volume from envelope; 1: use constant volume)
+	; bits 3-0	---- VVVV	Used as the volume in constant volume (C set) mode. Also used as the reload value for the envelope's divider (the period becomes V + 1 quarter frames).
+
+	; freq1 is $400E	M---.PPPP	Mode and period (write)
+	; Period setting	Sample rate	Fundamental	MIDI note	Pitch
+	; $0	447443.2 Hz	4811.2 Hz	110.41	d'''''
+	; $1	223721.6 Hz	2405.6 Hz	98.41	d''''
+	; $2	111860.8 Hz	1202.8 Hz	86.41	d'''
+	; $3	55930.4 Hz	601.4 Hz	74.41	d''
+	; $4	27965.2 Hz	300.7 Hz	62.41	d'
+	; $5	18643.5 Hz	200.5 Hz	55.39	g
+	; $6	13982.6 Hz	150.4 Hz	50.41	d
+	; $7	11186.1 Hz	120.3 Hz	46.55	a#,
+	; $8	8860.3 Hz	95.3 Hz	42.51	f#,
+	; $9	7046.3 Hz	75.8 Hz	38.55	d,
+	; $A	4709.9 Hz	50.6 Hz	31.57	g,,
+	; $B	3523.2 Hz	37.9 Hz	26.55	d,,
+	; $C	2348.8 Hz	25.3 Hz	19.53	g,,,
+	; $D	1761.6 Hz	18.9 Hz	14.55	d,,,
+	; $E	879.9 Hz	9.5 Hz	2.53	d,,,,
+	; $F	440.0 Hz	4.7 Hz	-9.47	d,,,,,
+
+	; freq2 is $400F	llll.l---	Length counter load and envelope restart (write)
+
 
 Music_CalcNoteLen:
 	; Just played a note which was not a rest
@@ -1304,11 +1297,17 @@ Music_RestH_LUT:
 	.byte $10, $30, $20, $08, $80, $60, $0F, $21, $41, $01, $11, $02, $0E, $1E, $03, $0D ; $20 - $2F
 	.byte $10, $20, $0F, $01, $07, $09, $08, $03, $0D, $02, $0E, $48, $60, $04, $02, $16 ; $30 - $3F
 	.byte $10, $20, $80, $08, $07, $09, $02, $0E, $03, $0D, $2E, $3C, $50, $03, $01, $13 ; $40 - $4F
-	.byte $04, $05, $06, $06, $09, $0D, $0C, $0C, $12, $1B, $24, $36, $48, $1E, $03, $00 ; $50 - $5F
-	.byte $04, $04, $05, $06, $08, $0C, $0B, $0A, $10, $18, $20, $30, $40, $00, $00, $00 ; $60 - $6F
-	.byte $03, $04, $05, $04, $07, $0A, $09, $0A, $0E, $15, $1C, $2A, $38, $0B, $00, $00 ; $70 - $7F
-	.byte $03, $03, $04, $04, $06, $09, $08, $08, $0C, $12, $18, $24, $30, $02, $00, $00 ; $80 - $8F
-	.byte $02, $02, $03, $02, $04, $06, $05, $06, $08, $0C, $10, $18, $20		     ; $90 - $9C
+	.byte $18, $0C, $24, $26, $3A, $06, $2A, $12, $2A, $10, $30, $48, $60, $04, $02, $16 ; $50 - $5F
+	.byte $18, $0C, $24, $06, $07, $05, $60, $3C, $2A, $29, $1D, $23, $50, $03, $01, $13 ; $60 - $6F
+	.byte $18, $0C, $24, $06, $3C, $2A, $12, $04, $60, $3B, $2A, $29, $1D, $1E, $03, $00 ; $70 - $7F
+	.byte $18, $0C, $24, $26, $3A, $06, $60, $2A, $12, $12, $20, $30, $40, $00, $00, $00 ; $80 - $8F
+	.byte $07, $0E, $2A, $06, $01, $15, $31, $05, $09, $02, $10, $17, $0B, $04, $03, $FF ; $90 - $9F
+	.byte $07, $06, $08, $2A, $0E, $15, $30, $0F, $05, $09, $02, $10, $17, $01, $0B, $04 ; $a0 - $aF
+	.byte $07, $0E, $1C, $03, $0B, $15, $2A, $05, $02, $10, $09, $00, $00, $00, $00, $00 ; $b0 - $bF
+	.byte $07, $0E, $1C, $2A, $05, $02, $10, $09, $00, $00, $00, $00, $00, $00, $00, $00 ; $c0 - $cF
+	.byte $14, $01, $0D, $06, $1D, $2B, $10, $00, $00, $00, $00, $00, $00, $00, $07, $00 ; $d0 - $dF
+	.byte $05, $02, $54, $07, $0E, $06, $08, $32, $24, $23, $00, $00, $00, $00, $00, $00 ; $e0 - $eF
+	.byte $05, $02, $54, $07, $0E, $31, $15, $06, $08, $0F, $32, $24, $01				 ; $f0 - $fC
 
 	; BEGIN UNUSED SPACE (alignment for DMC04)
 
