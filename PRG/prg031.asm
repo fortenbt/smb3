@@ -1077,7 +1077,7 @@ PRG031_E741:
 	; $01 (first triple) is used as a "rest" / Note Off
 Music_NoiseLUTA:	.byte $10, $17, $18, $19	; ctl
 Music_NoiseLUTB:	.byte $00, $03, $0A, $06	; freq1
-Music_NoiseLUTC:	.byte $00, $18, $18, $58	; freq2 ($18 = 3, $58 = 11)
+Music_NoiseLUTC:	.byte $00, $18, $18, $48	; freq2 ($18 = 3, $58 = 11, $48 = 9)
 
 	; ctl is $400C			--LC.VVVV	Noise channel volume/envelope (write)
 	; bit 5		--L- ----	APU Length Counter halt flag/envelope loop flag
