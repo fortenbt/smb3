@@ -167,28 +167,31 @@ MLEN .func ((\2 - \1) >> 4)
 	; know.  In any case, Sample 1 plays DMC02 correctly, Sample 3 would
 	; play DMC02 and just continue on through code, which would be noisy.
 DMC_MODADDR_LUT:
-	.byte MADR(DMC_ORB)		; Sample  0 (DMC_ORB)
-	.byte MADR(DMC_SILENCE)	; Sample  1 (DMC_SILENCE)
-	.byte MADR(DMC_MOTHER1)
-	.byte MADR(DMC_MOTHER2)
-	.byte MADR(DMC_GRADIUS1)
+	.byte MADR(DMC_ORB)		; Sample  1 (DMC_ORB)
+	.byte MADR(DMC_SILENCE)	; Sample  2 (DMC_SILENCE)
+	.byte MADR(DMC_MOTHER1)			; 3
+	.byte MADR(DMC_MOTHER2)			; 4
+	.byte MADR(DMC_GRADIUS1)		; 5
+	.byte MADR(DMC_METAL_GEAR1)		; 6
 
 
 DMC_MODLEN_LUT:
 	; these are (value << 4) + 1, that is minimum 1 byte long to FF1 bytes
-	.byte MLEN(DMC_ORB, DMC_ORB_End)		; Sample  0 (DMC_ORB)
-	.byte MLEN(DMC_SILENCE, DMC_ORB_End)	; Sample  1 (DMC_SILENCE)
-	.byte MLEN(DMC_MOTHER1, DMC_MOTHER1_End)	; Sample 2 (DMC_MOTHER1)
-	.byte MLEN(DMC_MOTHER2, DMC_MOTHER2_End)	; Sample 2 (DMC_MOTHER2)
-	.byte MLEN(DMC_GRADIUS1, DMC_GRADIUS1_End)
+	.byte MLEN(DMC_ORB, DMC_ORB_End)		; Sample  1 (DMC_ORB)
+	.byte MLEN(DMC_SILENCE, DMC_ORB_End)	; Sample  2 (DMC_SILENCE)
+	.byte MLEN(DMC_MOTHER1, DMC_MOTHER1_End)	; Sample 3 (DMC_MOTHER1)
+	.byte MLEN(DMC_MOTHER2, DMC_MOTHER2_End)	; Sample 4 (DMC_MOTHER2)
+	.byte MLEN(DMC_GRADIUS1, DMC_GRADIUS1_End)			; 5
+	.byte MLEN(DMC_METAL_GEAR1, DMC_METAL_GEAR1_End)	; 6
 
 
 DMC_MODCTL_LUT:
-	.byte $0E	; Sample  0 (DMC_ORB)
-	.byte $0E	; Sample  0 (DMC_SILENCE)
-	.byte $0F	; Sample  0 (DMC_MOTHER1)
-	.byte $0F	; Sample  0 (DMC_MOTHER2)
-	.byte $0F
+	.byte $0E	; Sample  1 (DMC_ORB)
+	.byte $0E	; Sample  2 (DMC_SILENCE)
+	.byte $0F	; Sample  3 (DMC_MOTHER1)
+	.byte $0F	; Sample  4 (DMC_MOTHER2)
+	.byte $0F		; 5
+	.byte $0F		; 6
 
 
 Music_GetRestTicks:
@@ -202,7 +205,7 @@ Music_GetRestTicks:
 	; Music_RestH_Off is always $00 or $10 (low time warning)
 
 	AND #$0f	 	; Get lower 4 bits
-	ADD <CurrRestOff
+	;ADD <CurrRestOff
 	;ADD Music_RestH_Base	; Add this to Music_RestH_Base
 	;;;ADC Music_RestH_Off	; Add this to Music_RestH_Off
 
@@ -377,15 +380,15 @@ SndMus2B_LoadNext:
 	;STA Music_PCMTrkPos
 	;STA Music_PCMStart	; Retain starting position for possible restoration later
 
-	LDA [Temp_Var1],Y
-	STA Sq1RestOff
-	INY
-	LDA [Temp_Var1],Y
-	STA TriRestOff
-	INY
-	LDA [Temp_Var1],Y
-	STA NseRestOff
-	INY
+	;LDA [Temp_Var1],Y
+	;STA Sq1RestOff
+	;INY
+	;LDA [Temp_Var1],Y
+	;STA TriRestOff
+	;INY
+	;LDA [Temp_Var1],Y
+	;STA NseRestOff
+	;INY
 
 	JMP PRG031_E48C
 
@@ -652,8 +655,8 @@ PRG031_E528:
 	STA Music_Sq2Patch	 ; Music_Sq2Patch is just the upper 4 bits
 
 	TXA			 ; A = X (restoring A)
-	LDY #$00
-	STY <CurrRestOff	; Sq2 rest offset is always 0
+	;LDY #$00
+	;STY <CurrRestOff	; Sq2 rest offset is always 0
 	JSR Music_GetRestTicks
 	STA Music_Sq2RestH	 ; Update Music_Sq2RestH
 
@@ -763,8 +766,8 @@ PRG031_E5C5:
 	AND #$f0		; A &= $f0 
 	STA Music_Sq1Patch	; Result -> Music_Sq1Patch
 	TXA		 	; Restore A (current byte of music data)
-	LDY Sq1RestOff
-	STY <CurrRestOff
+	;LDY Sq1RestOff
+	;STY <CurrRestOff
 	JSR Music_GetRestTicks
 	STA Music_Sq1RestH	; Store new rest value (returned by Music_GetRestTicks)
 
@@ -890,8 +893,8 @@ _tri_post_inc:
 
 	; Byte $80 - $ff... goes directly to the rest value routine
 	; No "patches" available on the triangle track
-	LDY TriRestOff
-	STY <CurrRestOff
+	;LDY TriRestOff
+	;STY <CurrRestOff
 	JSR Music_GetRestTicks	
 	STA Music_TriRestH		; Update rest hold value
 
@@ -969,8 +972,8 @@ _nse_post_inc:
 
 	; Byte $80 - $ff... goes directly to the rest value routine
 	; No "patches" available on the noise track
-	LDY NseRestOff
-	STY <CurrRestOff
+	;LDY NseRestOff
+	;STY <CurrRestOff
 	JSR Music_GetRestTicks
 	STA Music_NseRestH	 ; Update rest hold
 
@@ -1035,8 +1038,8 @@ _pcm_post_inc:
 	BEQ PRG031_E741		; If next byte is $00, jump to PRG031_E741
 	BPL PRG031_E72F		; If byte is $01 - $7f, jump to PRG031_E72F
 
-	LDY PCMRestOff
-	STY <CurrRestOff
+	;LDY PCMRestOff
+	;STY <CurrRestOff
 	JSR Music_GetRestTicks
 	STA Music_DMCRestH	; Update rest hold value
 
@@ -1416,6 +1419,15 @@ _norm_bounce_vel:
 	LDA PRG000_D16B,Y
 	STA <Objects_XVel,X
 	RTS
+
+.dmc_metal_gear_align: DMCAlign .dmc_metal_gear_align
+DMC_METAL_GEAR1:
+	.byte 0x00, 0xE0, 0xDD, 0x2C, 0x79, 0x9B, 0xA3, 0x0C, 0xF0, 0xF1, 0x87, 0xCF, 0x7F, 0xBE, 0x3F, 0xC3, 0xC7, 0x8E, 0x3B, 0xE1, 0xC3, 0x20, 0x51, 0x12, 0x91, 0x22, 0x4A, 0xAA, 0x55, 0x52, 0x51, 0x93
+	.byte 0x06, 0x10, 0x38, 0x30, 0x61, 0x18, 0xE3, 0xF0, 0x73, 0x87, 0xC3, 0xE7, 0xF7, 0xDD, 0xDD, 0xB7, 0x6B, 0x6D, 0xAD, 0x6D, 0x6D, 0xAB, 0x56, 0xAB, 0x55, 0xAA, 0xAD, 0x55, 0x6A, 0xAD, 0x8D, 0xC7
+	.byte 0x72, 0x79, 0x4F, 0x19, 0xC1, 0xE5, 0x3C, 0x0F, 0x07, 0x86, 0x43, 0xC1, 0x95, 0x8E, 0x19, 0xC0, 0xF1, 0xC5, 0x0E, 0x25, 0x94, 0xA8, 0xE4, 0x72, 0x8E, 0x85, 0xC1, 0xC5, 0x2A, 0x55, 0x29, 0x55
+	.byte 0x4A, 0xA5, 0x55, 0x55, 0x54, 0xD5, 0x55, 0x55, 0x55, 0x55, 0x56, 0x6A, 0xA3, 0x8D, 0x34, 0xCA, 0xAA, 0x9A, 0xAA, 0xAB, 0x55, 0x55, 0xA7, 0x4B, 0x59, 0x75, 0x36, 0xAC, 0xB6, 0x5B, 0x55, 0x6C
+	.byte 0x0E
+DMC_METAL_GEAR1_End:
 
 .mother1_align: DMCAlign .mother1_align
 DMC_MOTHER1:

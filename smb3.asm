@@ -490,7 +490,8 @@ PAD_RIGHT	= $01
 	Controller1:		.ds 1	; Player 1's controller inputs -- R01 L02 D04 U08 S10 E20 B40 A80
 	Controller2:		.ds 1	; Player 2's controller inputs -- R01 L02 D04 U08 S10 E20 B40 A80
 
-	CurrRestOff:		.ds 1	; $F9 unused [ORANGE] No longer unused; holds the current track's rest offset when getting the rest ticks
+	;CurrRestOff:		.ds 1	; $F9 unused [ORANGE] No longer unused; holds the current track's rest offset when getting the rest ticks
+	.ds 1
 	Music_Rest_PtrL:	.ds 1	; $FA unused [ORANGE] No longer unused; holds a full pointer to the Rests for a specfic song
 	Music_Rest_PtrH:	.ds 1	; $FB unused
 
@@ -1346,9 +1347,10 @@ Level_MusicQueueRestore:	.ds 1	; What to "restore" the BGM to when it changes (e
 	Sound_IsPaused:		.ds 1	; When set, sound processing is PAUSED
 
 	;;; [ORANGE] PCMRestOff is at $0611
-	NseRestOff:			.ds 1	; $04EE unused
-	TriRestOff:			.ds 1	; $04EF unused
-	Sq1RestOff:			.ds 1	; $04F0 unused
+	;NseRestOff:			.ds 1	; $04EE unused
+	;TriRestOff:			.ds 1	; $04EF unused
+	;Sq1RestOff:			.ds 1	; $04F0 unused
+	.ds 3
 
 ; For any of these queues, the value is a bit value, which offers
 ; a simple prioritization system; lowest value plays over any other
@@ -1840,7 +1842,8 @@ ASCONFIG_HDISABLE	= $80	; Disables horizontal auto scroll coordinate adjustment 
 	; 3: "in front" of Player ("upper", at face)
 	Level_Tile_Slope:	.ds 4	; $060D-$0610
 
-	PCMRestOff:			.ds 1	; $0611 unused [ORANGE] No longer unused
+	;PCMRestOff:			.ds 1	; $0611 unused [ORANGE] No longer unused
+	.ds 1
 
 	Scroll_Cols2Upd:	.ds 1	; Number of 8x8 columns to update (typically set to 32 for a full dirty update)
 
