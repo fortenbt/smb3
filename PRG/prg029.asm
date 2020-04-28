@@ -112,83 +112,273 @@ G2_R4:
 G2_R5:
 	.byte $01, $02, $03, $04, $05, $46, $07, $06, $62, $0A, $0B, $2A, $0E, $1C, $3F
 
+
+MG_R1:
+	.byte $01, $04, $06, $0A, $92, $14, $96
+MG_R23:
+	.byte $01, $02, $03, $04, $06, $07, $0A, $92, $14, $96
+MG_R4:
+	.byte $01, $02, $03, $04, $05, $06, $07, $28, $42, $0A, $46, $1E
+MG_R5:
+	.byte $01, $02, $03, $04, $05, $06, $07, $08, $09, $0A, $14
+MG_R6:
+	.byte $01, $02, $03, $04, $05, $06, $07, $0A, $14
+MG_R7:
+	.byte $01, $04, $05, $06, $09, $0A
+MG_R8:
+	.byte $01, $02, $03, $04, $05, $06, $08, $09, $0A, $0F, $14, $3D, $3E
+MG_R9:
+	.byte $01, $04, $05, $06, $0A, $14
+MG_RA:
+	.byte $01, $02, $04, $05, $06, $07, $0A, $0D, $0E, $0F, $14
+MG_RBC:
+	.byte $01, $02, $03, $04, $05, $06, $07, $0A, $0F, $14, $1E
+MG_RD:
+	.byte $01, $02, $03, $04, $05, $06, $07, $08, $09, $0A, $0F, $14, $1E
+MG_RE:
+	.byte $01, $42, $04, $05, $06, $46, $0A, $14
+
 	;; BEGIN HUGE UNUSED SPACE
 
+; Metal Gear music
+MG_1:
+	.byte $93, $12, $12, $38, $2A, $2A, $34, $2A, $2A, $30, $2A, $2A, $2E, $2A, $2A, $95
+	.byte $30, $00
+	.byte $93, $08, $08, $38, $20, $20, $34, $20, $20, $30, $20, $20, $2E, $20, $20, $95
+	.byte $2A
+MG_Tri1:
+	.byte $91, $42, $92, $7E, $91, $42, $90, $7E, $91, $42, $90, $7E, $91, $42, $92, $7E
+	.byte $91, $42, $90, $7E, $91, $42, $90, $7E, $91, $42, $92, $7E, $91, $42, $90, $7E
+	.byte $91, $42, $90, $7E, $91, $42, $92, $7E, $91, $42, $90, $7E, $91, $42, $90, $7E
+	.byte $91, $42, $92, $7E, $91, $42, $90, $7E, $91, $42, $90, $7E, $91, $42, $92, $7E
+	.byte $91, $42, $90, $7E, $91, $42, $90, $7E, $91, $42, $92, $7E, $91, $42, $90, $7E
+	.byte $91, $42, $90, $7E, $91, $42, $92, $7E, $91, $42, $90, $7E, $91, $42, $90, $7E
+MG_Nse1:
+	.byte $91, $04, $92, $01, $91, $04, $94, $01, $00
+MG_PCM1:
+	.byte $93, $06, $96, $06, $00
 
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C760 - $C76F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C770 - $C77F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C780 - $C78F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C790 - $C79F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C7A0 - $C7AF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C7B0 - $C7BF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C7C0 - $C7CF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C7D0 - $C7DF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C7E0 - $C7EF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C7F0 - $C7FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C800 - $C80F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C810 - $C81F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C820 - $C82F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C830 - $C83F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C840 - $C84F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C850 - $C85F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C860 - $C86F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C870 - $C87F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C880 - $C88F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C890 - $C89F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C8A0 - $C8AF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C8B0 - $C8BF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C8C0 - $C8CF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C8D0 - $C8DF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C8E0 - $C8EF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C8F0 - $C8FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C900 - $C90F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C910 - $C91F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C920 - $C92F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C930 - $C93F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C940 - $C94F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C950 - $C95F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C960 - $C96F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C970 - $C97F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C980 - $C98F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C990 - $C99F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C9A0 - $C9AF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C9B0 - $C9BF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C9C0 - $C9CF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C9D0 - $C9DF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C9E0 - $C9EF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $C9F0 - $C9FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CA00 - $CA0F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CA10 - $CA1F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CA20 - $CA2F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CA30 - $CA3F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CA40 - $CA4F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CA50 - $CA5F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CA60 - $CA6F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CA70 - $CA7F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CA80 - $CA8F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CA90 - $CA9F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CAA0 - $CAAF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CAB0 - $CABF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CAC0 - $CACF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CAD0 - $CADF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CAE0 - $CAEF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CAF0 - $CAFF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CB00 - $CB0F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CB10 - $CB1F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CB20 - $CB2F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CB30 - $CB3F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CB40 - $CB4F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CB50 - $CB5F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CB60 - $CB6F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CB70 - $CB7F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CB80 - $CB8F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CB90 - $CB9F
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CBA0 - $CBAF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CBB0 - $CBBF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CBC0 - $CBCF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CBD0 - $CBDF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CBE0 - $CBEF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $CBF0 - $CBFF
+MG_2:
+	.byte $96, $0E, $0E, $38, $26, $26, $34, $26, $26, $30, $26, $26, $2E, $26, $26, $98
+	.byte $2E, $00
+	.byte $96, $08, $08, $38, $20, $20, $34, $20, $20, $30, $20, $20, $2E, $20, $20, $98
+	.byte $26
+MG_Tri2:
+	.byte $93, $3E, $94, $7E, $93, $3E, $90, $7E, $92, $3E, $91, $7E, $93, $3E, $94, $7E
+	.byte $93, $3E, $90, $7E, $92, $3E, $91, $7E, $92, $3E, $95, $7E, $92, $3E, $91, $7E
+	.byte $92, $3E, $91, $7E, $92, $3E, $95, $7E, $92, $3E, $91, $7E, $92, $3E, $91, $7E
+	.byte $92, $3E, $95, $7E, $92, $3E, $91, $7E, $92, $3E, $91, $7E, $92, $3E, $95, $7E
+	.byte $92, $3E, $91, $7E, $92, $3E, $91, $7E, $92, $3E, $95, $7E, $92, $3E, $91, $7E
+	.byte $92, $3E, $91, $7E, $93, $3E, $94, $7E, $93, $3E, $90, $7E, $93, $3E, $90, $7E
+MG_Nse23:
+	.byte $93, $04, $94, $01, $93, $04, $97, $01, $00
+MG_PCM23:
+	.byte $96, $06, $99, $06, $00
+
+MG_3:
+	.byte $96, $12, $12, $38, $2A, $2A, $34, $2A, $2A, $30, $2A, $2A, $2E, $2A, $2A, $98
+	.byte $30, $00
+	.byte $96, $0A, $0A, $38, $22, $22, $34, $22, $22, $30, $22, $22, $2E, $22, $22, $98
+	.byte $30
+MG_Tri3:
+	.byte $93, $3A, $94, $7E, $93, $3A, $90, $7E, $92, $3A, $91, $7E, $93, $3A, $94, $7E
+	.byte $92, $3A, $91, $7E, $92, $3A, $91, $7E, $92, $3A, $95, $7E, $92, $3A, $91, $7E
+	.byte $92, $3A, $91, $7E, $92, $3A, $95, $7E, $92, $3A, $91, $7E, $92, $3A, $91, $7E
+	.byte $92, $3A, $95, $7E, $92, $3A, $91, $7E, $92, $3A, $91, $7E, $92, $3A, $95, $7E
+	.byte $92, $3A, $91, $7E, $92, $3A, $91, $7E, $92, $3A, $95, $7E, $93, $3A, $90, $7E
+	.byte $93, $3A, $90, $7E, $93, $3A, $94, $7E, $92, $3A, $91, $7E, $92, $3A, $91, $7E
+
+MG_4:
+	.byte $99, $0E, $0E, $34, $26, $26, $30, $26, $2E, $9B, $26, $94, $2E, $30, $97, $34
+	.byte $00
+	.byte $99, $04, $04, $34, $20, $20, $30, $20, $2E, $9B, $1C, $94, $26, $2A, $97, $2E
+MG_Tri4:
+	.byte $93, $3E, $95, $7E, $93, $3E, $90, $7E, $92, $3E, $91, $7E, $93, $3E, $95, $7E
+	.byte $92, $3E, $91, $7E, $92, $3E, $91, $7E, $92, $3E, $96, $7E, $92, $3E, $91, $7E
+	.byte $92, $3E, $91, $7E, $92, $3E, $96, $7E, $92, $3E, $91, $7E, $92, $3E, $91, $7E
+	.byte $92, $46, $96, $7E, $92, $46, $91, $7E, $92, $46, $91, $7E, $92, $46, $96, $7E
+	.byte $92, $46, $91, $7E, $92, $46, $91, $7E, $93, $3E, $95, $7E, $93, $3E, $90, $7E
+	.byte $93, $3E, $90, $7E, $92, $3E, $96, $7E, $92, $3E, $91, $7E, $92, $3E, $91, $7E
+MG_Nse4:
+	.byte $93, $04, $95, $01, $93, $04, $98, $01, $93, $04, $90, $01, $93, $04, $90, $01
+	.byte $93, $04, $95, $01, $93, $04, $95, $01, $93, $04, $90, $01, $93, $04, $90, $01
+	.byte $93, $04, $95, $01, $93, $04, $95, $01, $93, $04, $90, $01, $93, $04, $90, $01
+	.byte $93, $04, $95, $01, $00
+MG_PCM4:
+	.byte $99, $06, $9A, $06, $94, $06, $06, $99, $06, $06, $94, $06, $06, $99, $06, $06
+	.byte $94, $06, $06, $99, $06
+
+MG_5:
+	.byte $94, $30, $2A, $99, $30, $94, $2A, $2E, $30, $34, $99, $38, $94, $48, $4C, $99
+	.byte $50, $94, $48, $4C, $2E, $26, $99, $2E, $94, $26, $2A, $2E, $30, $99, $34, $94
+	.byte $46, $48, $99, $4C, $94, $46, $48, $2A, $22, $99, $2A, $94, $22, $26, $2A, $2E
+	.byte $99, $30, $94, $42, $46, $99, $48, $00
+	.byte $94, $2A, $20, $99, $2A, $94, $20, $26, $2A, $2E, $99, $30, $94, $48, $4C, $99
+	.byte $50, $94, $48, $4C, $26, $20, $99, $26, $94, $20, $22, $26, $2A, $99, $2E, $94
+	.byte $3E, $48, $99, $4C, $94, $46, $48, $22, $18, $99, $22, $94, $18, $20, $22, $26
+	.byte $99, $2A, $94, $3A, $3E, $99, $42
+MG_Tri5:
+	.byte $93, $30, $90, $7E, $93, $42, $90, $7E, $97, $30, $91, $7E, $97, $2A, $91, $7E
+	.byte $93, $30, $90, $7E, $93, $34, $90, $7E, $97, $2A, $91, $7E, $93, $38, $90, $7E
+	.byte $93, $38, $90, $7E, $97, $2A, $91, $7E, $93, $34, $90, $7E, $93, $34, $90, $7E
+	.byte $93, $26, $90, $7E, $93, $2E, $90, $7E, $97, $26, $91, $7E, $97, $2E, $91, $7E
+	.byte $93, $30, $90, $7E, $93, $34, $90, $7E, $98, $26, $90, $7E, $93, $3E, $90, $7E
+	.byte $93, $3E, $90, $7E, $98, $26, $90, $7E, $93, $34, $90, $7E, $93, $34, $90, $7E
+	.byte $93, $3A, $90, $7E, $93, $3A, $90, $7E, $97, $2A, $91, $7E, $97, $30, $91, $7E
+	.byte $93, $30, $90, $7E, $93, $34, $90, $7E, $97, $2A, $91, $7E, $93, $38, $90, $7E
+	.byte $93, $38, $90, $7E, $98, $2A, $90, $7E
+MG_Nse5:
+	.byte $92, $02, $96, $01, $92, $02, $91, $01, $92, $02, $91, $01, $93, $02, $95, $01
+	.byte $92, $02, $91, $01, $92, $02, $91, $01, $92, $02, $96, $01, $92, $02, $91, $01
+	.byte $92, $02, $91, $01, $93, $06, $95, $01, $92, $02, $91, $01, $92, $02, $91, $01
+	.byte $92, $02, $96, $01, $92, $02, $91, $01, $92, $02, $91, $01, $93, $06, $95, $01
+	.byte $92, $02, $91, $01, $92, $02, $91, $01, $92, $02, $96, $01, $92, $02, $91, $01
+	.byte $92, $02, $91, $01, $93, $06, $95, $01, $92, $02, $91, $01, $92, $02, $91, $01
+	.byte $92, $02, $96, $01, $92, $02, $91, $01, $92, $02, $91, $01, $93, $06, $95, $01
+	.byte $92, $02, $91, $01, $92, $02, $91, $01, $92, $02, $96, $01, $92, $02, $91, $01
+	.byte $92, $02, $91, $01, $93, $06, $95, $01, $00
+MG_PCM5:
+	.byte $9A, $06, $06, $06, $06, $06, $06, $06, $06, $06, $06, $06, $99, $06
+
+MG_6:
+	.byte $94, $42, $46, $26, $2A, $97, $2E, $94, $2A, $2E, $30, $38, $97, $20, $94, $20
+	.byte $20, $97, $26, $94, $26, $26, $00
+	.byte $94, $3A, $3E, $26, $2A, $97, $2E, $94, $2A, $2E, $30, $38, $97, $18, $94, $18
+	.byte $18, $97, $20, $94, $20, $20
+MG_Tri6:
+	.byte $93, $34, $90, $7E, $93, $34, $90, $7E, $93, $26, $90, $7E, $93, $2A, $90, $7E
+	.byte $93, $2E, $95, $7E, $93, $2A, $90, $7E, $93, $2E, $90, $7E, $93, $30, $90, $7E
+	.byte $93, $38, $90, $7E, $93, $38, $95, $7E, $93, $38, $90, $7E, $93, $38, $90, $7E
+	.byte $93, $3E, $95, $7E, $93, $3E, $90, $7E, $93, $3E, $90, $7E
+MG_Nse6:
+	.byte $92, $02, $91, $01, $92, $02, $91, $01, $92, $02, $96, $01, $92, $02, $91, $01
+	.byte $92, $02, $91, $01, $93, $06, $95, $01, $92, $02, $91, $01, $92, $02, $91, $01
+	.byte $92, $02, $96, $01, $92, $02, $91, $01, $92, $02, $91, $01, $93, $06, $95, $01
+	.byte $92, $02, $91, $01, $92, $02, $91, $01, $00
+
+MG_7:
+	.byte $92, $38, $38, $93, $38, $95, $38, $91, $38, $92, $3E, $3E, $93, $3E, $95, $3E
+	.byte $91, $3E, $92, $40, $40, $93, $40, $91, $40, $00
+	.byte $92, $30, $30, $94, $30, $90, $7E, $94, $30, $90, $7E, $92, $38, $38, $94, $38
+	.byte $90, $7E, $94, $38, $90, $7E, $92, $38, $38, $94, $38, $90, $7E
+MG_Tri7:
+	.byte $91, $38, $90, $7E, $91, $38, $90, $7E, $91, $38, $93, $7E, $91, $38, $93, $7E
+	.byte $91, $3E, $90, $7E, $91, $3E, $90, $7E, $91, $3E, $93, $7E, $91, $3E, $93, $7E
+	.byte $91, $40, $90, $7E, $91, $40, $90, $7E, $91, $40, $93, $7E
+MG_Nse7:
+	.byte $91, $02, $90, $01, $91, $02, $90, $01, $91, $02, $93, $01, $91, $02, $93, $01
+	.byte $91, $02, $90, $01, $91, $02, $90, $01, $91, $02, $93, $01, $91, $02, $93, $01
+	.byte $91, $02, $90, $01, $91, $02, $90, $01, $91, $02, $93, $01, $00
+
+MG_8:
+	.byte $98, $2A, $12, $94, $7E, $42, $46, $48, $98, $4C, $4C, $50, $50, $26, $0E, $94
+	.byte $7E, $3E, $42, $46, $98, $48, $48, $4C, $4C, $22, $0A, $94, $7E, $3A, $3E, $42
+	.byte $98, $46, $46, $48, $4C, $00
+	.byte $98, $20, $99, $08, $94, $42, $46, $48, $98, $42, $42, $46, $46, $1C, $99, $04
+	.byte $94, $3E, $42, $46, $98, $3E, $3E, $42, $42, $18, $99, $01, $94, $3A, $3E, $42
+	.byte $98, $3A, $3A, $3E, $42
+MG_Tri8:
+	.byte $96, $42, $91, $7E, $96, $42, $9C, $7E, $97, $3E, $90, $7E, $97, $3E, $9B, $7E
+	.byte $96, $3A, $91, $7E, $96, $3A, $9C, $7E
+MG_Nse8:
+	.byte $93, $02, $95, $01, $93, $02, $95, $01, $92, $02, $91, $01, $92, $02, $91, $01
+	.byte $93, $02, $95, $01, $92, $02, $91, $01, $92, $02, $91, $01, $93, $02, $95, $01
+	.byte $92, $02, $91, $01, $92, $02, $91, $01, $93, $02, $90, $01, $93, $02, $90, $01
+	.byte $93, $02, $95, $01, $93, $02, $95, $01, $92, $02, $91, $01, $92, $02, $91, $01
+	.byte $93, $02, $95, $01, $92, $02, $91, $01, $92, $02, $91, $01, $93, $02, $95, $01
+	.byte $92, $02, $91, $01, $92, $02, $91, $01, $93, $02, $90, $01, $93, $02, $90, $01
+	.byte $93, $02, $95, $01, $93, $02, $95, $01, $92, $02, $91, $01, $92, $02, $91, $01
+	.byte $93, $02, $95, $01, $92, $02, $91, $01, $92, $02, $91, $01, $93, $02, $95, $01
+	.byte $92, $02, $91, $01, $92, $02, $91, $01, $93, $02, $90, $01, $93, $02, $90, $01
+	.byte $00
+
+MG_9:
+	.byte $92, $38, $3E, $40, $42, $48, $4C, $4E, $50, $95, $56, $46, $00
+	.byte $92, $38, $3E, $40, $42, $48, $4C, $4E, $50, $95, $4C, $3E
+MG_Tri9:
+	.byte $91, $38, $93, $7E, $91, $38, $90, $7E, $91, $38, $90, $7E, $91, $38, $93, $7E
+	.byte $91, $38, $90, $7E, $91, $38, $90, $7E, $91, $3E, $93, $7E, $91, $3E, $90, $7E
+	.byte $91, $3E, $90, $7E, $91, $40, $93, $7E, $91, $40, $90, $7E, $91, $40, $90, $7E
+MG_Nse9:
+	.byte $91, $02, $90, $01, $91, $02, $90, $01, $91, $02, $93, $01, $91, $02, $93, $01
+	.byte $91, $02, $90, $01, $91, $02, $90, $01, $91, $02, $93, $01, $91, $02, $93, $01
+	.byte $91, $02, $90, $01, $91, $02, $90, $01, $91, $02, $93, $01, $00
+
+
+MG_A:
+	.byte $99, $38, $38, $96, $38, $99, $3E, $93, $7E, $94, $40, $98, $40, $00
+	.byte $99, $2E, $2E, $96, $2E, $99, $34, $93, $7E, $9A, $36
+MG_TriA:
+	.byte $97, $38, $91, $7E, $97, $38, $91, $7E, $96, $38, $97, $3E, $95, $7E, $97, $40
+	.byte $95, $7E
+MG_NseA:
+	.byte $92, $02, $90, $01, $92, $02, $90, $01, $92, $02, $94, $01, $92, $02, $94, $01
+	.byte $92, $02, $90, $01, $92, $02, $90, $01, $92, $02, $94, $01, $92, $02, $94, $01
+	.byte $92, $02, $90, $01, $92, $02, $90, $01, $92, $02, $94, $01, $00
+
+MG_B:
+	.byte $97, $22, $22, $30, $22, $22, $34, $22, $38, $22, $34, $22, $30, $22, $9A, $34
+	.byte $00
+	.byte $97, $18, $98, $18, $97, $2A, $18, $18, $2E, $18, $30, $18, $2E, $18, $2A, $94
+	.byte $18, $9A, $2E
+MG_TriB:
+	.byte $93, $3A, $95, $7E, $93, $3A, $90, $7E, $93, $3A, $90, $7E, $93, $3A, $95, $7E
+	.byte $93, $3A, $90, $7E, $93, $3A, $90, $7E, $93, $3A, $95, $7E, $93, $3A, $90, $7E
+	.byte $93, $3A, $90, $7E, $93, $3A, $95, $7E, $93, $3A, $90, $7E, $93, $3A, $90, $7E
+	.byte $93, $3A, $95, $7E, $93, $3A, $90, $7E, $93, $3A, $90, $7E, $93, $3A, $95, $7E
+	.byte $93, $3A, $90, $7E, $93, $3A, $90, $7E, $93, $3A, $95, $7E, $93, $3A, $90, $7E
+	.byte $93, $3A, $90, $7E, $93, $3A, $95, $7E, $93, $3A, $90, $7E, $93, $3A, $90, $7E
+MG_NseBCD:
+	.byte $92, $02, $96, $01, $92, $02, $91, $01, $92, $02, $91, $01, $93, $06, $95, $01
+	.byte $92, $02, $91, $01, $92, $02, $91, $01, $92, $02, $96, $01, $92, $02, $91, $01
+	.byte $92, $02, $91, $01, $93, $06, $95, $01, $92, $02, $91, $01, $92, $02, $91, $01
+	.byte $92, $02, $96, $01, $92, $02, $91, $01, $92, $02, $91, $01, $93, $06, $95, $01
+	.byte $92, $02, $91, $01, $92, $02, $91, $01, $92, $02, $96, $01, $92, $02, $91, $01
+	.byte $92, $02, $91, $01, $93, $06, $95, $01, $92, $02, $91, $01, $92, $02, $91, $01
+	.byte $00
+
+MG_C:
+	.byte $97, $26, $26, $34, $26, $26, $34, $26, $38, $26, $3A, $26, $38, $26, $9A, $34
+	.byte $00
+	.byte $97, $1C, $98, $1C, $97, $2E, $1C, $1C, $2E, $1C, $30, $1C, $34, $1C, $30, $94
+	.byte $1C, $9A, $2E
+MG_TriC:
+	.byte $93, $38, $95, $7E, $93, $38, $90, $7E, $93, $38, $90, $7E, $93, $38, $95, $7E
+	.byte $93, $38, $90, $7E, $93, $38, $90, $7E, $93, $38, $95, $7E, $93, $38, $90, $7E
+	.byte $93, $38, $90, $7E, $93, $38, $95, $7E, $93, $38, $90, $7E, $93, $38, $90, $7E
+	.byte $93, $38, $95, $7E, $93, $38, $90, $7E, $93, $38, $90, $7E, $93, $38, $95, $7E
+	.byte $93, $38, $90, $7E, $93, $38, $90, $7E, $93, $38, $95, $7E, $93, $38, $90, $7E
+	.byte $93, $38, $90, $7E, $93, $38, $95, $7E, $93, $38, $90, $7E, $93, $38, $90, $7E
+
+MG_D:
+	.byte $99, $18, $18, $3E, $30, $30, $42, $30, $46, $30, $42, $30, $3E, $30, $9C, $42
+	.byte $00
+	.byte $99, $26, $9A, $26, $99, $38, $26, $26, $3A, $26, $3E, $26, $3A, $26, $38, $94
+	.byte $26, $9C, $3A
+MG_TriD:
+	.byte $97, $2A, $91, $7E, $93, $42, $90, $7E, $93, $42, $90, $7E, $98, $2A, $90, $7E
+	.byte $93, $42, $90, $7E, $93, $42, $90, $7E, $98, $2A, $90, $7E, $93, $42, $90, $7E
+	.byte $93, $42, $90, $7E, $98, $2A, $90, $7E, $93, $42, $90, $7E, $93, $42, $90, $7E
+	.byte $98, $2A, $90, $7E, $93, $42, $90, $7E, $93, $42, $90, $7E, $98, $2A, $90, $7E
+	.byte $93, $42, $90, $7E, $93, $42, $90, $7E, $98, $2A, $90, $7E, $93, $42, $90, $7E
+	.byte $93, $42, $90, $7E, $98, $2A, $90, $7E, $93, $42, $90, $7E, $93, $42, $90, $7E
+
+MG_E:
+	.byte $96, $26, $26, $3E, $3A, $3A, $97, $42, $96, $3A, $93, $3E, $3A, $38, $34, $3A
+	.byte $38, $34, $30, $38, $34, $30, $2E, $34, $30, $2E, $26, $00
+	.byte $96, $1C, $1C, $34, $34, $30, $97, $38, $96, $34, $93, $3E, $3A, $38, $34, $3A
+	.byte $38, $34, $30, $38, $34, $30, $2E, $34, $30, $2E, $26
+MG_TriE:
+	.byte $92, $3E, $94, $7E, $92, $3E, $91, $7E, $92, $3E, $94, $7E, $92, $3E, $90, $7E
+	.byte $92, $3E, $90, $7E, $92, $3E, $94, $7E, $92, $3E, $90, $7E, $92, $3E, $90, $7E
+	.byte $92, $3E, $94, $7E, $92, $3E, $90, $7E, $92, $3E, $90, $7E, $92, $3E, $94, $7E
+	.byte $92, $3E, $90, $7E, $92, $3E, $90, $7E
+MG_NseE:
+	.byte $92, $02, $94, $01, $92, $02, $91, $01, $92, $02, $90, $01, $92, $02, $90, $01
+	.byte $92, $02, $90, $01, $92, $02, $90, $01, $92, $02, $90, $01, $92, $02, $90, $01
+	.byte $92, $02, $90, $01, $92, $02, $90, $01, $92, $02, $90, $01, $92, $02, $90, $01
+	.byte $92, $02, $90, $01, $92, $02, $90, $01, $92, $02, $90, $01, $92, $02, $90, $01
+	.byte $92, $02, $90, $01, $92, $02, $90, $01, $00
 
 	;; END HUGE UNUSED SPACE
 
@@ -2275,73 +2465,6 @@ _inc_player_deaths:
 	STA Player_Deaths	; Store result
 _death_overflow:
 	RTS
-
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D80A - $D819
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D81A - $D829
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D82A - $D839
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D83A - $D849
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D84A - $D859
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D85A - $D869
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D86A - $D879
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D87A - $D889
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D88A - $D899
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D89A - $D8A9
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D8AA - $D8B9
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D8BA - $D8C9
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D8CA - $D8D9
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D8DA - $D8E9
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D8EA - $D8F9
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D8FA - $D909
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D90A - $D919
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D91A - $D929
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D92A - $D939
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D93A - $D949
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D94A - $D959
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D95A - $D969
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D96A - $D979
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D97A - $D989
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D98A - $D999
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D99A - $D9A9
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D9AA - $D9B9
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D9BA - $D9C9
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D9CA - $D9D9
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D9DA - $D9E9
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D9EA - $D9F9
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $D9FA - $DA09
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DA0A - $DA19
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DA1A - $DA29
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DA2A - $DA39
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DA3A - $DA49
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DA4A - $DA59
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DA5A - $DA69
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DA6A - $DA79
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DA7A - $DA89
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DA8A - $DA99
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DA9A - $DAA9
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DAAA - $DAB9
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DABA - $DAC9
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DACA - $DAD9
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DADA - $DAE9
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DAEA - $DAF9
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DAFA - $DB09
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DB0A - $DB19
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DB1A - $DB29
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DB2A - $DB39
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DB3A - $DB49
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DB4A - $DB59
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DB5A - $DB69
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DB6A - $DB79
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DB7A - $DB89
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DB8A - $DB99
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DB9A - $DBA9
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DBAA - $DBB9
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DBBA - $DBC9
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; $DBCA - $DBD9
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-
-
-	;; END HUGE UNUSED SPACE
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; BlockChange_Do
