@@ -1092,18 +1092,30 @@ Map_LevelLayouts:
 
 ;;; NOTE This isn't a copy from prg030. This one uses the column num and row completion bit
 ;;; that are being checked in Map_Reload_with_Completions
+; --------- TOP OF MAP
+; $80
+; $40
+; $20
+; $10
+; $08
+; $04
+; $02
+; INVALID
+; $01
+; --------- BOT OF MAP
 Levels_Entered_XY_12:
-	.byte $04, $80
-	.byte $08, $80	; ORANGE TODO: LEVEL 2
-	.byte $00, $00	; ORANGE TODO: LEVEL 3
-	.byte $00, $00	; ORANGE TODO: LEVEL 4
-	.byte $00, $00	; ORANGE TODO: LEVEL 5
-	.byte $00, $00	; ORANGE TODO: LEVEL 6
-	.byte $00, $00	; ORANGE TODO: LEVEL 7
-	.byte $00, $00	; ORANGE TODO: LEVEL 8
-	.byte $00, $00	; ORANGE TODO: LEVEL 9
-	.byte $00, $00	; ORANGE TODO: LEVEL 10
-	.byte $00, $00	; ORANGE TODO: LEVEL 11?
+	;.byte $04, $80	; stock level 1
+	.byte $04, $08	; sorb level 1
+	.byte $04, $01	; sorb level 2
+	.byte $06, $01	; sorb level 3
+	.byte $08, $02	; sorb level 4
+	.byte $0A, $02	; sorb level 5
+	.byte $0C, $02	; sorb level 6
+	.byte $0A, $80	; sorb level 7
+	.byte $08, $20	; sorb fort
+	.byte $06, $08	; sorb level 8
+	.byte $06, $80	; sorb level 9
+	.byte $04, $40	; sorb level 10
 	.byte $06, $08	; ORANGE TODO: LEVEL 12?
 LEXY_END_12
 
