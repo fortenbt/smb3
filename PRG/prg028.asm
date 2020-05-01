@@ -1509,106 +1509,6 @@ PatS8:	.byte $50, $51, $51, $51, $51, $51, $51, $51, $51, $51, $51, $51, $51, $5
 
 	.byte $15, $07, $C8, $E8, $E0, $03, $D0, $F4
 
-M2BSH .func \1-Music_Set2B_Headers	; "Music Set 2B Segment Header Offset"
-
-
-	; Each "index" of music is tied to a header of a "segment" of music.  Some segments are
-	; reused where repetitious musical notes exist.  The segment headers are apparently not
-	; stored in any particular order.  This table connects an index to a header:
-Music_Set2B_IndexOffs:
-	; TGL
-	.word TGLHedr4			; $00 small intro (forced due to zero index, where 0 loop ends the segment)
-	.word TGLHedr1
-	.word TGLHedr2
-	.word TGLHedr3
-	.word TGLHedr4
-	.word TGLHedr5
-	.word TGLHedr6			; $06
-	; Castlevania - Vampire
-	.word CVampireHedr1		; $07
-	.word CVampireHedr2
-	.word CVampireHedr3
-	.word CVampireHedr4
-	.word CVampireHedr5
-	.word CVampireHedr6
-	.word CVampireHedr7
-	.word CVampireHedr8		; $0E
-	; Gradius II - Dead End
-	.word G2Hedr1			; $0F
-	.word G2Hedr2
-	.word G2Hedr1
-	.word G2Hedr2
-	.word G2Hedr3
-	.word G2Hedr4
-	.word G2Hedr3
-	.word G2Hedr5			; $16
-	; Metal Gear
-	.word MGHedr1			; $17
-	.word MGHedr2
-	.word MGHedr3
-	.word MGHedr4
-	.word MGHedr5
-	.word MGHedr6
-	.word MGHedr5
-	.word MGHedr7
-	.word MGHedr8			; $1F
-	.word MGHedr9			; $20
-	.word MGHedr8			; $21
-	.word MGHedrA			; $22
-	.word MGHedrB			; $23
-	.word MGHedrC			; $24
-	.word MGHedrD			; $25
-	.word MGHedrE			; $26
-
-
-Music_Set2B_Headers:
-	; The following is all of the segment headers for Set 2B music.
-	; Tempo, Track Base Offset, Triangle offset, Square 1 offset, Noise offset, DCM offset (Square 2 is always assumed @ 0)
-	; Note that Triangle, Noise, and DCM tracks are allowed to be disabled by using an offset of 0, but Squares 1/2 are not.
-	; Of course, this wouldn't be hard to implement or anything, it's just the way it was coded...
-
-; TGL
-TGLHedr1:	MusSeg TGL1_Rests1, TGL1_1, TGL1_Tri1, $42, TGL1_Nse1, $0000
-TGLHedr2:	MusSeg TGL1_Rests1, TGL1_2, TGL1_Tri2, $42, TGL1_Nse2, $0000
-TGLHedr3:	MusSeg TGL1_Rests2, TGL1_3, TGL1_Tri3, $56, TGL1_Nse3, $0000
-TGLHedr4:	MusSeg TGL1_Rests3, TGL1_4, TGL1_Tri4, $44, TGL1_Nse4, $0000
-TGLHedr5:	MusSeg TGL1_Rests4, TGL1_5, TGL1_Tri5, $42, TGL1_Nse5, $0000
-TGLHedr6:	MusSeg TGL1_Rests4, TGL1_6, TGL1_Tri6, $42, TGL1_Nse6, $0000
-
-; Castlevania
-CVampireHedr1:	MusSeg CVampire_R1, CVampire1, CVampire1_Tri, $18, CVampire1_Nse, $0000
-CVampireHedr2:	MusSeg CVampire_R2, CVampire2, CVampire2_Tri, $1E, CVampire2_Nse, $0000
-CVampireHedr3:	MusSeg CVampire_R3, CVampire3, CVampire3_Tri, $25, CVampire3_Nse, $0000
-CVampireHedr4:	MusSeg CVampire_R4, CVampire4, CVampire4_Tri, $23, CVampire4_Nse, $0000
-CVampireHedr5:	MusSeg CVampire_R5, CVampire5, CVampire5_Tri, $2F, CVampire5_Nse, $0000
-CVampireHedr6:	MusSeg CVampire_R5, CVampire6, CVampire6_Tri, $31, CVampire6_Nse, $0000
-CVampireHedr7:	MusSeg CVampire_R6, CVampire7, CVampire7_Tri, $29, CVampire7_Nse, $0000
-CVampireHedr8:	MusSeg CVampire_R7, CVampire8, CVampire8_Tri, $29, CVampire8_Nse, $0000
-
-; Gradius II
-G2Hedr1:		MusSeg G2_R1, Gradius2_1, Gradius2_Tri1, $37, Gradius2_Nse1, $0000
-G2Hedr2: 		MusSeg G2_R2, Gradius2_2, Gradius2_Tri2, $35, Gradius2_Nse2, $0000
-G2Hedr3:		MusSeg G2_R3, Gradius2_3, Gradius2_Tri3, $24, Gradius2_Nse3, $0000
-G2Hedr4:		MusSeg G2_R4, Gradius2_4, Gradius2_Tri4, $1A, Gradius2_Nse4, $0000
-G2Hedr5:		MusSeg G2_R5, Gradius2_5, Gradius2_Tri5, $14, Gradius2_Nse5, $0000
-
-; Metal Gear
-MGHedr1:		MusSeg MG_R1, MG_1, MG_Tri1, $12, MG_Nse1, MG_PCM1
-MGHedr2:		MusSeg MG_R23, MG_2, MG_Tri2, $12, MG_Nse23, MG_PCM23
-MGHedr3:		MusSeg MG_R23, MG_3, MG_Tri3, $12, MG_Nse23, MG_PCM23
-MGHedr4:		MusSeg MG_R4, MG_4, MG_Tri4, $11, MG_Nse4, MG_PCM4
-MGHedr5:		MusSeg MG_R5, MG_5, MG_Tri5, $38, MG_Nse5, MG_PCM5
-MGHedr6:		MusSeg MG_R6, MG_6, MG_Tri6, $17, MG_Nse6, MG_PCM6
-MGHedr7:		MusSeg MG_R7, MG_7, MG_Tri7, $1A, MG_Nse7, MG_PCM7
-MGHedr8:		MusSeg MG_R8, MG_8, MG_Tri8, $26, MG_Nse8, MG_PCM8
-MGHedr9:		MusSeg MG_R9, MG_9, MG_Tri9, $0D, MG_Nse9, MG_PCM9
-MGHedrA:		MusSeg MG_RA, MG_A, MG_TriA, $0E, MG_NseA, MG_PCMA
-MGHedrB:		MusSeg MG_RBC, MG_B, MG_TriB, $11, MG_NseBCD, MG_PCMBC
-MGHedrC:		MusSeg MG_RBC, MG_C, MG_TriC, $11, MG_NseBCD, MG_PCMBC
-MGHedrD:		MusSeg MG_RD, MG_D, MG_TriD, $11, MG_NseBCD, MG_PCMD
-MGHedrE:		MusSeg MG_RE, MG_E, MG_TriE, $1C, MG_NseE, MG_PCME
-
-
 	; Music in Set 2B is played by "index", which is a segment of music.
 	; The index always advances, though what that index actually represents
 	; may be a reused segment of music.
@@ -1617,18 +1517,18 @@ MGHedrE:		MusSeg MG_RE, MG_E, MG_TriE, $1C, MG_NseE, MG_PCME
 	; be played ($10, $20, $30, ... $C0), so that song $10 uses a start
 	; index of $00, an end index of $06, and a loop index of $01.
 Music_Set2B_Starts:
-	.byte $17, $07, $0F, $0C, $0F, $13, $15, $1B, $1E, $1B, $27, $2C
+	.byte $0F, $07, $0F, $0C, $0F, $13, $15, $1B, $1E, $1B, $27, $2C
 
 Music_Set2B_Ends:
-	.byte $26, $0E, $16, $0E, $12, $14, $1A, $1D, $26, $1D, $2B, $2C
+	.byte $16, $0E, $16, $0E, $12, $14, $1A, $1D, $26, $1D, $2B, $2C
 
 Music_Set2B_Loops:
-	.byte $17, $07, $0F, $0C, $10, $13, $18, $1B, $1F, $1B, $28, $2C
+	.byte $0F, $07, $0F, $0C, $10, $13, $18, $1B, $1F, $1B, $28, $2C
 
 
 	; These are Set 2B music segments.  Note that more exist on page 29.
 
-; [ORANGE] TGL1 (plains levels)
+; [ORANGE] TGL
 TGL1_1:
 	.byte $D5, $08, $7E, $20, $20, $08, $7E, $20, $20, $08, $7E, $20, $20, $08, $7E, $20
 	.byte $20, $01, $7E, $18, $18, $01, $7E, $18, $18, $01, $7E, $18, $18, $01, $7E, $18
@@ -1836,6 +1736,8 @@ Gradius2_Nse1:
 	.byte $C7, $01, $CA, $03, $C0, $01, $C2, $02, $C1, $01, $C4, $03, $C3, $01, $C8, $06
 	.byte $C2, $01, $02, $C7, $01, $CA, $03, $C0, $01, $C2, $02, $C1, $01, $C4, $03, $C3
 	.byte $01, $C8, $06, $C2, $01, $02, $C7, $01, $C1, $03, $00
+Gradius2_PCM1:
+	.byte $80, $7E, $8E, $05, $05, $05, $05
 
 Gradius2_2:
 	.byte $C7, $46, $54, $5E, $46, $CD, $5A, $C9, $5A, $C2, $5A, $C1, $58, $CA, $5A, $C1
@@ -1861,6 +1763,8 @@ Gradius2_Nse2:
 	.byte $01, $02, $C9, $01, $CD, $03, $C1, $01, $C3, $02, $C2, $01, $C5, $03, $C4, $01
 	.byte $CA, $06, $C3, $01, $02, $C9, $01, $CD, $03, $C1, $01, $C3, $02, $C2, $01, $C5
 	.byte $03, $C4, $01, $CA, $06, $C3, $01, $02, $C9, $01, $C2, $03, $00
+Gradius2_PCM2:
+	.byte $8E, $05, $05, $05, $05
 
 Gradius2_3:
 	.byte $C6, $46, $34, $3E, $4A, $CE, $46, $C8, $46, $CF, $46, $C6, $34, $3E, $4C, $4A
@@ -1884,6 +1788,8 @@ Gradius2_Nse3:
 	.byte $C0, $01, $CA, $06, $C2, $01, $C3, $03, $C9, $01, $C2, $03, $C3, $01, $CA, $06
 	.byte $C2, $01, $C5, $06, $C0, $01, $CA, $06, $C2, $01, $C3, $03, $C9, $01, $C2, $03
 	.byte $C3, $01, $CA, $06, $C2, $01, $C5, $06, $C0, $01, $C6, $06, $00
+Gradius2_PCM3:
+	.byte $8D, $05, $8B, $05, $8D, $05, $8B, $05, $8D, $05, $8B, $05, $8D, $05, $8B, $05
 
 Gradius2_4:
 	.byte $CC, $46, $C2, $4A, $C3, $4C, $C2, $50, $C3, $54, $C2, $56, $C3, $5A, $CB, $5E
@@ -1905,6 +1811,8 @@ Gradius2_Nse4:
 	.byte $C2, $01, $C5, $06, $C0, $01, $C8, $06, $C2, $01, $C3, $02, $C7, $01, $C2, $02
 	.byte $C3, $01, $C8, $06, $C2, $01, $C5, $06, $C0, $01, $C8, $06, $C2, $01, $C3, $02
 	.byte $C7, $01, $C2, $02, $C3, $01, $C8, $06, $C2, $01, $C6, $06, $06, $00
+Gradius2_PCM4:
+	.byte $8A, $05, $89, $05, $8A, $05, $89, $05, $8A, $05, $89, $05, $8A, $05, $89, $05
 
 Gradius2_5:
 	.byte $C5, $3C, $C6, $3E, $42, $46, $4A, $4C, $50, $CE, $54, $C6, $3C, $3E, $3E, $42
@@ -1925,6 +1833,8 @@ Gradius2_Nse5:
 	.byte $C2, $01, $C3, $06, $C9, $01, $C6, $02, $CA, $06, $C2, $01, $C6, $06, $CA, $06
 	.byte $C2, $01, $C3, $06, $C9, $01, $C6, $02, $CA, $06, $C2, $01, $C6, $06, $06, $C2
 	.byte $06, $C3, $06, $C6, $06, $06, $06, $06, $06, $06, $C7, $06, $C0, $06, $00
+Gradius2_PCM5:
+	.byte $8C, $05, $8B, $05, $8C, $05, $8B, $05, $8C, $05, $88, $05
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;; BEGIN UNUSED COPY/PASTED CODE ;;;;;;;;;;;;;;;;;;;;;

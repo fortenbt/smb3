@@ -12,6 +12,103 @@
 ; Distribution package date: Fri Apr  6 23:46:16 UTC 2012
 ;---------------------------------------------------------------------------
 
+	; Each "index" of music is tied to a header of a "segment" of music.  Some segments are
+	; reused where repetitious musical notes exist.  The segment headers are apparently not
+	; stored in any particular order.  This table connects an index to a header:
+Music_Set2B_IndexOffs:
+	; TGL
+	.word TGLHedr4			; $00 small intro (forced due to zero index, where 0 loop ends the segment)
+	.word TGLHedr1
+	.word TGLHedr2
+	.word TGLHedr3
+	.word TGLHedr4
+	.word TGLHedr5
+	.word TGLHedr6			; $06
+	; Castlevania - Vampire
+	.word CVampireHedr1		; $07
+	.word CVampireHedr2
+	.word CVampireHedr3
+	.word CVampireHedr4
+	.word CVampireHedr5
+	.word CVampireHedr6
+	.word CVampireHedr7
+	.word CVampireHedr8		; $0E
+	; Gradius II - Dead End
+	.word G2Hedr1			; $0F
+	.word G2Hedr2			; 10
+	.word G2Hedr1			; 11
+	.word G2Hedr2			; 12
+	.word G2Hedr3			; 13
+	.word G2Hedr4			; 14
+	.word G2Hedr3			; 15
+	.word G2Hedr5			; $16
+	; Metal Gear
+	.word MGHedr1			; $17
+	.word MGHedr2
+	.word MGHedr3
+	.word MGHedr4
+	.word MGHedr5
+	.word MGHedr6
+	.word MGHedr5
+	.word MGHedr7
+	.word MGHedr8			; $1F
+	.word MGHedr9			; $20
+	.word MGHedr8			; $21
+	.word MGHedrA			; $22
+	.word MGHedrB			; $23
+	.word MGHedrC			; $24
+	.word MGHedrD			; $25
+	.word MGHedrE			; $26
+
+
+Music_Set2B_Headers:
+	; The following is all of the segment headers for Set 2B music.
+	; Tempo, Track Base Offset, Triangle offset, Square 1 offset, Noise offset, DCM offset (Square 2 is always assumed @ 0)
+	; Note that Triangle, Noise, and DCM tracks are allowed to be disabled by using an offset of 0, but Squares 1/2 are not.
+	; Of course, this wouldn't be hard to implement or anything, it's just the way it was coded...
+
+; TGL
+TGLHedr1:	MusSeg TGL1_Rests1, TGL1_1, TGL1_Tri1, $42, TGL1_Nse1, $0000
+TGLHedr2:	MusSeg TGL1_Rests1, TGL1_2, TGL1_Tri2, $42, TGL1_Nse2, $0000
+TGLHedr3:	MusSeg TGL1_Rests2, TGL1_3, TGL1_Tri3, $56, TGL1_Nse3, $0000
+TGLHedr4:	MusSeg TGL1_Rests3, TGL1_4, TGL1_Tri4, $44, TGL1_Nse4, $0000
+TGLHedr5:	MusSeg TGL1_Rests4, TGL1_5, TGL1_Tri5, $42, TGL1_Nse5, $0000
+TGLHedr6:	MusSeg TGL1_Rests4, TGL1_6, TGL1_Tri6, $42, TGL1_Nse6, $0000
+
+; Castlevania
+CVampireHedr1:	MusSeg CVampire_R1, CVampire1, CVampire1_Tri, $18, CVampire1_Nse, $0000
+CVampireHedr2:	MusSeg CVampire_R2, CVampire2, CVampire2_Tri, $1E, CVampire2_Nse, $0000
+CVampireHedr3:	MusSeg CVampire_R3, CVampire3, CVampire3_Tri, $25, CVampire3_Nse, $0000
+CVampireHedr4:	MusSeg CVampire_R4, CVampire4, CVampire4_Tri, $23, CVampire4_Nse, $0000
+CVampireHedr5:	MusSeg CVampire_R5, CVampire5, CVampire5_Tri, $2F, CVampire5_Nse, $0000
+CVampireHedr6:	MusSeg CVampire_R5, CVampire6, CVampire6_Tri, $31, CVampire6_Nse, $0000
+CVampireHedr7:	MusSeg CVampire_R6, CVampire7, CVampire7_Tri, $29, CVampire7_Nse, $0000
+CVampireHedr8:	MusSeg CVampire_R7, CVampire8, CVampire8_Tri, $29, CVampire8_Nse, $0000
+
+; Gradius II
+G2Hedr1:		MusSeg G2_R1, Gradius2_1, Gradius2_Tri1, $37, Gradius2_Nse1, Gradius2_PCM1
+G2Hedr2: 		MusSeg G2_R2, Gradius2_2, Gradius2_Tri2, $35, Gradius2_Nse2, Gradius2_PCM2
+G2Hedr3:		MusSeg G2_R3, Gradius2_3, Gradius2_Tri3, $24, Gradius2_Nse3, Gradius2_PCM3
+G2Hedr4:		MusSeg G2_R4, Gradius2_4, Gradius2_Tri4, $1A, Gradius2_Nse4, Gradius2_PCM4
+G2Hedr5:		MusSeg G2_R5, Gradius2_5, Gradius2_Tri5, $14, Gradius2_Nse5, Gradius2_PCM5
+
+; Metal Gear
+MGHedr1:		MusSeg MG_R1, MG_1, MG_Tri1, $12, MG_Nse1, MG_PCM1
+MGHedr2:		MusSeg MG_R23, MG_2, MG_Tri2, $12, MG_Nse23, MG_PCM23
+MGHedr3:		MusSeg MG_R23, MG_3, MG_Tri3, $12, MG_Nse23, MG_PCM23
+MGHedr4:		MusSeg MG_R4, MG_4, MG_Tri4, $11, MG_Nse4, MG_PCM4
+MGHedr5:		MusSeg MG_R5, MG_5, MG_Tri5, $38, MG_Nse5, MG_PCM5
+MGHedr6:		MusSeg MG_R6, MG_6, MG_Tri6, $17, MG_Nse6, MG_PCM6
+MGHedr7:		MusSeg MG_R7, MG_7, MG_Tri7, $1A, MG_Nse7, MG_PCM7
+MGHedr8:		MusSeg MG_R8, MG_8, MG_Tri8, $26, MG_Nse8, MG_PCM8
+MGHedr9:		MusSeg MG_R9, MG_9, MG_Tri9, $0D, MG_Nse9, MG_PCM9
+MGHedrA:		MusSeg MG_RA, MG_A, MG_TriA, $0E, MG_NseA, MG_PCMA
+MGHedrB:		MusSeg MG_RBC, MG_B, MG_TriB, $11, MG_NseBCD, MG_PCMBC
+MGHedrC:		MusSeg MG_RBC, MG_C, MG_TriC, $11, MG_NseBCD, MG_PCMBC
+MGHedrD:		MusSeg MG_RD, MG_D, MG_TriD, $11, MG_NseBCD, MG_PCMD
+MGHedrE:		MusSeg MG_RE, MG_E, MG_TriE, $1C, MG_NseE, MG_PCME
+
+
 ;;; Castlevania - Vampire
 CVampire1:
 	.byte $B0, $4C, $4C, $7E, $48, $7E, $B2, $46, $B1, $34, $B0, $38, $3A, $3E, $B5, $42
