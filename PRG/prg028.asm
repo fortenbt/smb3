@@ -1212,13 +1212,17 @@ Music_Set1_Set2A_IndexOffs:
 	.byte M12ASH(MS1_10SegHedr), M12ASH(PooOrb_Hdr), M12ASH(MS1_40SegHedr), M12ASH(MS1_80SegHedr)	; Index $04-$07
 
 	; 8+ are Set 2A
-	; 8 - D are Mother - Polyanna (Overworld)
-	.byte M12ASH(MotherPolyanna1_Hdr)
-	.byte M12ASH(MotherPolyanna1_Hdr)
-	.byte M12ASH(MotherPolyanna2_Hdr)
-	.byte M12ASH(MotherPolyanna3_Hdr)
-	.byte M12ASH(MotherPolyanna4_Hdr)
-	.byte M12ASH(MotherPolyanna5_Hdr)
+	; $08 - $11 are Mother - Polyanna (Overworld)
+	.byte M12ASH(MotherHedr1)	; $08
+	.byte M12ASH(MotherHedr2)
+	.byte M12ASH(MotherHedr1)
+	.byte M12ASH(MotherHedr2)
+	.byte M12ASH(MotherHedr3)
+	.byte M12ASH(MotherHedr4)
+	.byte M12ASH(MotherHedr5)
+	.byte M12ASH(MotherHedr6)
+	.byte M12ASH(MotherHedr7)
+	.byte M12ASH(MotherHedr8)	; $11
 
 
 Music_Set1_Set2A_Headers:
@@ -1240,11 +1244,14 @@ MS1_80SegHedr:	.byte $60
 		.word M12ASegData17		; Just lands at a $00 stop
 		.byte $00			; Incomplete header??
 
-MotherPolyanna1_Hdr:	MusSeg MotherPolyanna1_R, MotherPolyanna1, MotherPolyanna1Tri, $15, MotherPolyanna1NSE, $0000 ;MotherPolyanna1PCM
-MotherPolyanna2_Hdr:	MusSeg MotherPolyanna2_R, MotherPolyanna2, MotherPolyanna2Tri, $18, MotherPolyanna2NSE, $0000
-MotherPolyanna3_Hdr:	MusSeg MotherPolyanna3_R, MotherPolyanna3, MotherPolyanna3Tri, $1B, MotherPolyanna3NSE, $0000
-MotherPolyanna4_Hdr:	MusSeg MotherPolyanna4_R, MotherPolyanna4, MotherPolyanna4Tri, $12, MotherPolyanna4NSE, $0000
-MotherPolyanna5_Hdr:	MusSeg MotherPolyanna5_R, MotherPolyanna5, MotherPolyanna5Tri, $17, MotherPolyanna5NSE, $0000
+MotherHedr1:	MusSeg Mother_R1, Mother_1, Mother_Tri1, $0B, Mother_Nse1, Mother_PCM1
+MotherHedr2:	MusSeg Mother_R2, Mother_2, Mother_Tri2, $0B, Mother_Nse2, Mother_PCM2
+MotherHedr3:	MusSeg Mother_R3, Mother_3, Mother_Tri3, $0D, Mother_Nse3, Mother_PCM3
+MotherHedr4:	MusSeg Mother_R4, Mother_4, Mother_Tri4, $0C, Mother_Nse4, Mother_PCM4
+MotherHedr5:	MusSeg Mother_R5, Mother_5, Mother_Tri5, $10, Mother_Nse5, Mother_PCM5
+MotherHedr6:	MusSeg Mother_R6, Mother_6, Mother_Tri6, $0D, Mother_Nse6, Mother_PCM6
+MotherHedr7:	MusSeg Mother_R7, Mother_7, Mother_Tri7, $12, Mother_Nse7, Mother_PCM7
+MotherHedr8:	MusSeg Mother_R8, Mother_8, Mother_Tri8, $17, Mother_Nse8, Mother_PCM8
 
 
 	; Music in Set 2A is played by "index", which is a segment of music.
@@ -1256,10 +1263,10 @@ MotherPolyanna5_Hdr:	MusSeg MotherPolyanna5_R, MotherPolyanna5, MotherPolyanna5T
 	; index of $08, an end index of $09, and a loop index of $08.
 
 Music_Set2A_Starts:
-	.byte $08, $0A, $0B, $0D, $0E, $10, $11, $13, $14, $15, $16, $18, $1C, $1D, $1E
+	.byte $08, $00, $0A, $0B, $0D, $0E, $10, $11, $13, $14, $15, $16, $18, $1C, $1D, $1E
 
 Music_Set2A_Ends:
-	.byte $0D, $0A, $0C, $0D, $0F, $10, $12, $13, $14, $15, $17, $1B, $1C, $1D, $2B
+	.byte $11, $0A, $0C, $0D, $0F, $10, $12, $13, $14, $15, $17, $1B, $1C, $1D, $2B
 
 Music_Set2A_Loops:
 	.byte $08, $0A, $0B, $0D, $0F, $10, $11, $13, $14, $15, $17, $18, $1C, $1D, $23
@@ -1277,103 +1284,137 @@ PooOrb:	; [ORANGE] This is Poo's OOORRRBB sound, replacing the end-level fanfare
 PooOrbPCM:
 	.byte $8F, $01, $8F, $02, $00
 
-MotherPolyanna1:
-        .byte $B1, $3C, $42, $50, $B0, $4A, $B3, $4C, $B0, $7E, $B1, $46, $4C, $54, $B0, $4C
-        .byte $B4, $42, $B5, $3E, $00, $D0, $3C, $3C, $42, $D1, $4C, $D0, $7E, $42, $4A, $7E
-        .byte $34, $3C, $46, $7E, $34, $3C, $42, $3E, $46, $4C, $3E, $3C, $42, $4C, $3C, $3A
-        .byte $42, $48, $42, $38, $42, $32, $D2, $42
-MotherPolyanna1Tri:
-		.byte $B2, $34, $B6, $7E, $B2, $34, $B7, $7E
-        .byte $B2, $32, $B6, $7E, $B2, $32, $B7, $7E, $B2, $2E, $B6, $7E, $B2, $2E, $B7, $7E
-        .byte $B2, $2A, $B6, $7E, $B2, $2A, $B7, $7E, $B2, $26, $B6, $7E, $B2, $26, $B7, $7E
-        .byte $B2, $24, $B6, $7E, $B2, $24, $B7, $7E, $B2, $22, $B6, $7E, $B2, $22, $B7, $7E
-        .byte $B2, $2A, $B6, $7E, $B2, $2A
-MotherPolyanna1NSE:
-		.byte $B8, $03, $B9, $01, $B8, $03, $B9, $01, $B8, $03
-        .byte $B9, $01, $B8, $03, $BA, $01, $B8, $03, $BB, $01, $B8, $03, $B9, $01, $B8, $03
-        .byte $B9, $01, $B8, $03, $B9, $01, $B8, $03, $BA, $01, $BC, $03, $BD, $01, $BC, $03
-        .byte $BE, $01, $B8, $03, $B9, $01, $B8, $03, $B9, $01, $B8, $03, $BA, $01, $B8, $03
-        .byte $BB, $01, $B8, $03, $B9, $01, $B8, $03, $B9, $01, $B8, $03, $B9, $01, $B8, $03
-        .byte $BA, $01, $B8, $03, $BF, $01, $00
-MotherPolyanna1PCM:
-		.byte $B1, $03, $B0, $04, $BC, $7E, $BF, $7E, $03, $BC, $7E, $B0, $03, $03, $B1, $04
-		.byte $03, $B0, $04, $BC, $7E, $BF, $7E, $03
+Mother_1:
+	.byte $B0, $3C, $42, $50, $BA, $4A, $B2, $4C, $BA, $7E, $00
+	.byte $DA, $7E, $3C, $42, $4C, $7E, $38, $42, $4A, $7E, $34, $3C, $46, $7E, $34, $3C
+	.byte $42
+Mother_Tri1:
+	.byte $B9, $34, $B1, $7E, $B9, $34, $B3, $7E, $B9, $32, $B1, $7E, $B9, $32, $B3, $7E
+	.byte $B9, $2E, $B1, $7E, $B9, $2E, $B3, $7E, $B9, $2A, $B1, $7E, $B9, $2A, $B3, $7E
+Mother_Nse1:
+	.byte $B4, $03, $BD, $01, $B4, $03, $BD, $01, $B4, $03, $BD, $01, $B4, $03, $B6, $01
+	.byte $C4, $03, $CB, $01, $C4, $03, $CD, $01, $C4, $03, $CD, $01, $C4, $03, $CD, $01
+	.byte $C4, $03, $C6, $01, $C5, $03, $C7, $01, $00
+Mother_PCM1:
+	.byte $B0, $03, $BC, $04, $B8, $03, $BA, $03, $03, $B0, $04, $03, $BC, $04, $B8, $03
+	.byte $BA, $03, $03, $B0, $04
 
-MotherPolyanna2:
-        .byte $B0, $3C, $38, $34, $38, $B3, $3C, $46, $4C, $54, $B4, $5E, $B0, $4C, $4A, $46
-        .byte $4A, $4C, $4A, $46, $4A, $B2, $4C, $00, $D0, $7E, $2E, $34, $3C, $7E, $2C, $34
-        .byte $3C, $7E, $2A, $34, $3C, $7E, $28, $2E, $34, $B0, $46, $42, $3E, $D1, $42, $D0, $3E
-        .byte $42, $D2, $3C
-MotherPolyanna2Tri:
-		.byte $B5, $7E, $B6, $2E, $7E, $B7, $2E, $B8, $7E, $B7, $2E, $B8, $7E
-        .byte $B7, $2E, $B8, $7E, $B7, $2C, $B8, $7E, $B7, $2C, $B8, $7E, $B7, $2C, $B8, $7E
-        .byte $B7, $2C, $B8, $7E, $B7, $2A, $B8, $7E, $B6, $2A, $7E, $2A, $7E, $B7, $2A, $B8
-        .byte $7E, $B7, $28, $B8, $7E, $B7, $28, $B8, $7E, $B7, $28, $B8, $7E, $B7, $28, $B8
-        .byte $7E, $B7, $26, $B8, $7E, $B7, $26, $B8, $7E, $B6, $26, $7E, $26, $7E, $2A, $7E
-        .byte $B7, $2A, $B8, $7E, $B7, $2A, $B8, $7E, $B7, $2A, $B8, $7E, $B2, $1C
-MotherPolyanna2NSE:
-		.byte $B9, $03
-        .byte $BA, $01, $B9, $03, $BA, $01, $B9, $03, $BA, $01, $B9, $03, $BA, $01, $B9, $03
-        .byte $BA, $01, $B9, $03, $BA, $01, $B9, $03, $BA, $01, $B9, $03, $BA, $01, $B9, $03
-        .byte $BA, $01, $BB, $03, $BC, $01, $BB, $03, $BC, $01, $B9, $03, $BA, $01, $B9, $03
-        .byte $BA, $01, $B9, $03, $BA, $01, $B9, $03, $BA, $01, $B9, $03, $BA, $01, $B9, $03
-        .byte $BA, $01, $B9, $03, $BA, $01, $B9, $03, $BA, $01, $B9, $03, $BA, $01, $B9, $03
-        .byte $BA, $01, $B9, $03, $BA, $01, $B9, $03, $BA, $01, $B9, $03, $BA, $01, $B9, $03
-        .byte $BA, $01, $B9, $03, $BA, $01, $B9, $03, $BA, $01, $B9, $03, $BD, $01, $00
+Mother_2:
+	.byte $B0, $46, $4C, $54, $B9, $4C, $B1, $42, $BA, $3E, $00
+	.byte $D9, $3E, $46, $4C, $3E, $3C, $42, $4C, $3C, $3A, $42, $48, $42, $38, $42, $32
+	.byte $42
+Mother_Tri2:
+	.byte $B8, $26, $B2, $7E, $B8, $26, $B3, $7E, $B8, $24, $B2, $7E, $B8, $24, $B3, $7E
+	.byte $B8, $22, $B2, $7E, $B8, $22, $B3, $7E, $B8, $2A, $B2, $7E, $B8, $2A, $B3, $7E
+Mother_Nse2:
+	.byte $B4, $03, $BD, $01, $B5, $03, $BE, $01, $B5, $03, $BE, $01, $B5, $03, $B6, $01
+	.byte $B5, $03, $BB, $01, $B5, $03, $BE, $01, $B5, $03, $BE, $01, $B5, $03, $BE, $01
+	.byte $B5, $03, $B6, $01, $B5, $03, $B6, $01, $00
+Mother_PCM2:
+	.byte $B0, $03, $BC, $04, $B7, $03, $B9, $03, $03, $B0, $04, $03, $BC, $04, $B7, $03
+	.byte $B9, $03, $03, $B0, $04
 
-MotherPolyanna3:
-        .byte $B0, $42, $42, $42, $7E, $B3, $42, $7E, $B0, $3C, $38, $B4, $34, $B0, $7E, $42
-        .byte $42, $42, $42, $50, $4C, $4A, $B5, $4C, $B0, $7E, $00, $D0, $32, $1A, $24, $D1
-        .byte $32, $D2, $1A, $D0, $34, $1C, $26, $D1, $34, $D2, $1C, $D0, $32, $1A, $24, $2A
-        .byte $32, $12, $20, $2A, $24, $12, $1C, $24, $2A, $1C
-MotherPolyanna3Tri:
-		.byte $B6, $24, $B7, $7E, $B6, $24
-        .byte $B8, $7E, $B6, $26, $B7, $7E, $B6, $26, $B8, $7E, $B6, $24, $B7, $7E, $B6, $24
-        .byte $B9, $7E, $B6, $2A, $B7, $7E, $B6, $2A, $B9, $7E, $B6, $34, $B7, $7E, $B6, $34
-        .byte $B9, $7E, $B6, $34, $BA, $7E
-MotherPolyanna3NSE:
-		.byte $BB, $03, $BC, $01, $BB, $03, $BC, $01, $BB, $03
-        .byte $BC, $01, $BB, $03, $BD, $01, $BB, $03, $BC, $01, $BB, $03, $BD, $01, $BB, $03
-        .byte $BC, $01, $BB, $03, $BC, $01, $BB, $03, $BC, $01, $BB, $03, $BD, $01, $BB, $03
-        .byte $BC, $01, $BB, $03, $BD, $01, $BE, $03, $BF, $01, $BB, $03, $BC, $01, $BB, $03
-        .byte $BC, $01, $BB, $03, $BC, $01, $BB, $03, $BC, $01, $BB, $03, $BC, $01, $BB, $03
-        .byte $BC, $01, $BB, $03, $BC, $01, $BB, $03, $BC, $01, $BB, $03, $BC, $01, $BB, $03
-        .byte $BC, $01, $BB, $03, $BC, $01, $BB, $03, $BD, $01, $00
+Mother_3:
+	.byte $B9, $3C, $38, $34, $38, $B0, $3C, $46, $4C, $54, $B1, $5E, $00
+	.byte $D9, $7E, $2E, $34, $3C, $7E, $2C, $34, $3C, $7E, $2A, $34, $3C, $7E, $28, $2E
+	.byte $34
+Mother_Tri3:
+	.byte $B5, $2E, $7E, $B4, $2E, $B6, $7E, $B4, $2E, $B6, $7E, $B4, $2E, $B6, $7E, $B4
+	.byte $2C, $B6, $7E, $B4, $2C, $B6, $7E, $B4, $2C, $B6, $7E, $B4, $2C, $B6, $7E, $B4
+	.byte $2A, $B6, $7E, $B5, $2A, $7E, $2A, $7E, $B4, $2A, $B6, $7E, $B4, $28, $B6, $7E
+	.byte $B4, $28, $B6, $7E, $B4, $28, $B6, $7E, $B4, $28, $B6, $7E
+Mother_Nse3:
+	.byte $B2, $03, $B8, $01, $B2, $03, $B8, $01, $B2, $03, $B8, $01, $B2, $03, $B8, $01
+	.byte $B2, $03, $B8, $01, $B2, $03, $B8, $01, $B2, $03, $B8, $01, $B2, $03, $B8, $01
+	.byte $B2, $03, $B8, $01, $B3, $03, $B7, $01, $B3, $03, $B7, $01, $B2, $03, $B8, $01
+	.byte $B2, $03, $B8, $01, $B2, $03, $B8, $01, $B2, $03, $B8, $01, $B2, $03, $B8, $01
+	.byte $00
+Mother_PCM3:
+	.byte $B0, $03, $B9, $04, $03, $B0, $03, $04, $03, $B9, $04, $03, $B0, $03, $04
 
-MotherPolyanna4:
-        .byte $B0, $46, $4A, $4C, $4A, $46, $4A, $4C, $4A, $46, $4A, $4C, $4A, $46, $4A, $B1
-        .byte $4C, $00, $D0, $24, $2A, $46, $3E, $34, $3E, $42, $3C, $D1, $34, $D0, $3E, $34
-        .byte $2E, $34, $42, $3C
-MotherPolyanna4Tri:
-		.byte $B2, $34, $B3, $7E, $B4, $26, $B5, $7E, $B4, $26, $B5, $7E
-        .byte $B6, $26, $7E, $26, $7E, $B4, $24, $B5, $7E, $B4, $24, $B5, $7E, $B4, $24, $B5
-        .byte $7E, $B4, $24, $B5, $7E, $B4, $20, $B5, $7E, $B4, $20, $B5, $7E, $B4, $20, $B5
-        .byte $7E, $B4, $20, $B5, $7E, $B6, $24, $7E, $24, $7E
-MotherPolyanna4NSE:
-		.byte $B7, $02, $B8, $01, $B9, $03
-        .byte $BA, $01, $B9, $03, $BA, $01, $B7, $03, $B8, $01, $B7, $03, $B8, $01, $B7, $03
-        .byte $B8, $01, $B9, $03, $BA, $01, $B9, $03, $BA, $01, $B9, $03, $BA, $01, $B9, $03
-        .byte $BA, $01, $B9, $03, $BA, $01, $B9, $03, $BA, $01, $B9, $03, $BA, $01, $B9, $03
-        .byte $BA, $01, $B9, $03, $BA, $01, $00
+Mother_4:
+	.byte $B8, $4C, $4A, $46, $4A, $4C, $4A, $46, $4A, $B0, $4C, $00
+	.byte $D8, $46, $42, $3E, $42, $42, $42, $3E, $42, $D0, $3C
+Mother_Tri4:
+	.byte $B3, $26, $B5, $7E, $B3, $26, $B5, $7E, $B4, $26, $7E, $26, $7E, $2A, $7E, $B3
+	.byte $2A, $B5, $7E, $B3, $2A, $B5, $7E, $B3, $2A, $B5, $7E, $B0, $1C
+Mother_Nse4:
+	.byte $B2, $03, $B6, $01, $B2, $03, $B6, $01, $B2, $03, $B6, $01, $B2, $03, $B6, $01
+	.byte $B2, $03, $B6, $01, $B2, $03, $B6, $01, $B2, $03, $B6, $01, $B2, $03, $B6, $01
+	.byte $B2, $03, $B6, $01, $B2, $03, $B6, $01, $B2, $03, $B6, $01, $B2, $03, $B7, $01
+	.byte $00
+Mother_PCM4:
+	.byte $B1, $03, $B8, $04, $03, $B1, $03, $04, $03, $B8, $04, $03, $B4, $04, $04, $B8
+	.byte $04, $04, $04
 
-MotherPolyanna5:
-        .byte $B0, $42, $42, $4C, $4A, $46, $4A, $4C, $4A, $46, $4A, $4C, $7E, $4C, $4C, $54
-        .byte $B1, $4C, $B2, $4C, $B0, $7E, $00, $D0, $3C, $D1, $34, $D0, $46, $3E, $34, $3E
-        .byte $42, $3C, $D1, $34, $D0, $46, $46, $46, $46, $4C, $D1, $3E, $D2, $3C, $D0, $7E
-MotherPolyanna5Tri:
-        .byte $B3, $24, $7E, $B4, $24, $B5, $7E, $B4, $24, $B5, $7E, $B4, $26, $B5, $7E, $B4
-        .byte $26, $B5, $7E, $B4, $26, $B5, $7E, $B4, $26, $B5, $7E, $B4, $24, $B5, $7E, $B3
-        .byte $24, $7E, $24, $7E, $24, $7E, $B4, $20, $B5, $7E, $B4, $20, $B5, $7E, $B4, $20
-        .byte $B5, $7E, $B4, $20, $B5, $7E, $B4, $2A, $B5, $7E, $B4, $2A, $B5, $7E, $B4, $2A
-        .byte $B5, $7E, $B3, $2A, $7E, $B2, $1C
-MotherPolyanna5NSE:
-		.byte $B6, $03, $B7, $01, $B6, $03, $B7, $01, $B6
-        .byte $03, $B7, $01, $B6, $03, $B7, $01, $B6, $03, $B7, $01, $B6, $03, $B7, $01, $B6
-        .byte $03, $B7, $01, $B6, $03, $B7, $01, $B8, $03, $B9, $01, $B8, $03, $B9, $01, $B8
-        .byte $03, $B9, $01, $B6, $03, $B7, $01, $B6, $03, $B7, $01, $B6, $03, $B7, $01, $B6
-        .byte $03, $B7, $01, $B6, $03, $B7, $01, $B6, $03, $B7, $01, $B6, $03, $B7, $01, $B6
-        .byte $03, $B7, $01, $B6, $03, $B7, $01, $B6, $03, $B7, $01, $B6, $03, $B7, $01, $B6
-        .byte $03, $B7, $01, $B6, $03, $B7, $01, $B6, $03, $BA, $01, $00
+Mother_5:
+	.byte $B8, $42, $42, $42, $7E, $B5, $42, $7E, $B8, $3C, $38, $B1, $34, $B8, $7E, $00
+	.byte $D8, $32, $1A, $24, $D9, $32, $D0, $1A, $D8, $34, $1C, $26, $D9, $34, $D0, $1C
+Mother_Tri5:
+	.byte $B7, $24, $B2, $7E, $B7, $24, $B3, $7E, $B7, $26, $B2, $7E, $B7, $26, $B3, $7E
+Mother_Nse5:
+	.byte $B4, $03, $B6, $01, $B4, $03, $B6, $01, $B4, $03, $B6, $01, $B4, $03, $BA, $01
+	.byte $B4, $03, $B6, $01, $B4, $03, $BA, $01, $B4, $03, $B6, $01, $B4, $03, $B6, $01
+	.byte $B4, $03, $B6, $01, $B4, $03, $BA, $01, $B4, $03, $B6, $01, $B4, $03, $BA, $01
+	.byte $00
+Mother_PCM5:
+	.byte $B0, $03, $B8, $04, $B0, $03, $B8, $04, $B0, $04, $03, $B8, $04, $B0, $03, $B8
+	.byte $04, $B0, $04
+
+Mother_6:
+	.byte $B9, $42, $42, $42, $7E, $50, $4C, $4A, $B0, $4C, $B9, $7E, $00
+	.byte $D9, $32, $1A, $24, $2A, $32, $12, $20, $2A, $24, $12, $1C, $24, $2A, $1C
+Mother_Tri6:
+	.byte $B8, $24, $B1, $7E, $B8, $24, $B2, $7E, $B8, $2A, $B1, $7E, $B8, $2A, $B2, $7E
+	.byte $B8, $34, $B1, $7E, $B8, $34, $B2, $7E, $B8, $34, $BA, $7E
+Mother_Nse6:
+	.byte $B3, $03, $B6, $01, $B4, $03, $B7, $01, $B4, $03, $B7, $01, $B4, $03, $B7, $01
+	.byte $B4, $03, $B7, $01, $B4, $03, $B7, $01, $B4, $03, $B7, $01, $B4, $03, $B7, $01
+	.byte $B4, $03, $B7, $01, $B4, $03, $B7, $01, $B4, $03, $B7, $01, $B4, $03, $B7, $01
+	.byte $B4, $03, $BB, $01, $00
+Mother_PCM6:
+	.byte $B0, $03, $B9, $04, $03, $B0, $03, $04, $03, $B9, $04, $03, $03, $04
+
+Mother_7:
+	.byte $BA, $46, $4A, $4C, $4A, $46, $4A, $4C, $4A, $46, $4A, $4C, $4A, $46, $4A, $4C
+	.byte $7E, $00
+	.byte $DA, $24, $2A, $46, $3E, $34, $3E, $42, $3C, $D0, $34, $DA, $3E, $34, $2E, $34
+	.byte $42, $3C
+Mother_Tri7:
+	.byte $B9, $34, $B1, $7E, $B4, $26, $B6, $7E, $B4, $26, $B6, $7E, $B5, $26, $7E, $26
+	.byte $7E, $B4, $24, $B6, $7E, $B4, $24, $B6, $7E, $B4, $24, $B6, $7E, $B4, $24, $B6
+	.byte $7E, $B4, $20, $B6, $7E, $B4, $20, $B6, $7E, $B4, $20, $B6, $7E, $B4, $20, $B6
+	.byte $7E, $B5, $24, $7E, $24, $7E, $7E, $7E
+Mother_Nse7:
+	.byte $B3, $02, $B7, $01, $B2, $03, $B8, $01, $B2, $03, $B8, $01, $B3, $03, $B7, $01
+	.byte $B3, $03, $B7, $01, $B3, $03, $B7, $01, $B2, $03, $B8, $01, $B2, $03, $B8, $01
+	.byte $B2, $03, $B8, $01, $B2, $03, $B8, $01, $B2, $03, $B8, $01, $B2, $03, $B8, $01
+	.byte $B2, $03, $B8, $01, $B2, $03, $B8, $01, $B2, $03, $B8, $01, $00
+Mother_PCM7:
+	.byte $B0, $04, $03, $BA, $04, $03, $B0, $03, $04, $03, $BA, $04, $03, $B0, $03
+
+Mother_8:
+	.byte $BA, $42, $42, $4C, $4A, $46, $4A, $4C, $4A, $46, $4A, $4C, $4C, $4C, $4C, $54
+	.byte $B0, $4C, $B1, $4C, $BA, $7E, $00
+	.byte $D0, $34, $DA, $46, $3E, $34, $3E, $42, $3C, $D0, $34, $DA, $46, $46, $46, $46
+	.byte $4C, $D0, $3E, $D1, $3C, $DA, $7E
+Mother_Tri8:
+	.byte $B4, $24, $B6, $7E, $B4, $24, $B6, $7E, $B4, $26, $B6, $7E, $B4, $26, $B6, $7E
+	.byte $B4, $26, $B6, $7E, $B4, $26, $B6, $7E, $B4, $24, $B6, $7E, $B5, $24, $7E, $24
+	.byte $7E, $24, $7E, $B4, $20, $B6, $7E, $B4, $20, $B6, $7E, $B4, $20, $B6, $7E, $B4
+	.byte $20, $B6, $7E, $B4, $2A, $B6, $7E, $B4, $2A, $B6, $7E, $B4, $2A, $B6, $7E, $B5
+	.byte $2A, $7E, $B1, $1C
+Mother_Nse8:
+	.byte $B2, $03, $B8, $01, $B2, $03, $B8, $01, $B2, $03, $B8, $01, $B2, $03, $B8, $01
+	.byte $B2, $03, $B8, $01, $B2, $03, $B8, $01, $B2, $03, $B8, $01, $B3, $03, $B7, $01
+	.byte $B3, $03, $B7, $01, $B3, $03, $B7, $01, $B2, $03, $B8, $01, $B2, $03, $B8, $01
+	.byte $B2, $03, $B8, $01, $B2, $03, $B8, $01, $B2, $03, $B8, $01, $B2, $03, $B8, $01
+	.byte $B2, $03, $B8, $01, $B2, $03, $B8, $01, $B2, $03, $B8, $01, $B2, $03, $B8, $01
+	.byte $B2, $03, $B8, $01, $B2, $03, $B8, $01, $B2, $03, $B8, $01, $B2, $03, $B9, $01
+	.byte $00
+Mother_PCM8:
+	.byte $B0, $04, $03, $BA, $04, $03, $B0, $03, $04, $03, $BA, $04, $03, $B0, $03, $04
+	.byte $03, $BA, $04, $03, $B0, $03, $B5, $04, $04, $BA, $04
 
 M12ASegData0F:
 	.byte $D8, $6E, $5E, $66, $5E, $6E, $5E, $66, $6A, $70, $60, $68, $60, $70, $60, $68 ; $B0C9 - $B0D8
