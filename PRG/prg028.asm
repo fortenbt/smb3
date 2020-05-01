@@ -1224,6 +1224,8 @@ Music_Set1_Set2A_IndexOffs:
 	.byte M12ASH(MotherHedr7)
 	.byte M12ASH(MotherHedr8)	; $11
 
+	.byte M12ASH(Mystery_Hedr)		; $12
+
 
 Music_Set1_Set2A_Headers:
 
@@ -1253,6 +1255,8 @@ MotherHedr6:	MusSeg Mother_R6, Mother_6, Mother_Tri6, $0D, Mother_Nse6, Mother_P
 MotherHedr7:	MusSeg Mother_R7, Mother_7, Mother_Tri7, $12, Mother_Nse7, Mother_PCM7
 MotherHedr8:	MusSeg Mother_R8, Mother_8, Mother_Tri8, $17, Mother_Nse8, Mother_PCM8
 
+Mystery_Hedr:	MusSeg Mystery_R, Mystery_1, $0000, $10, $0000, $0000
+
 
 	; Music in Set 2A is played by "index", which is a segment of music.
 	; The index always advances, though what that index actually represents
@@ -1263,13 +1267,13 @@ MotherHedr8:	MusSeg Mother_R8, Mother_8, Mother_Tri8, $17, Mother_Nse8, Mother_P
 	; index of $08, an end index of $09, and a loop index of $08.
 
 Music_Set2A_Starts:
-	.byte $08, $00, $0A, $0B, $0D, $0E, $10, $11, $13, $14, $15, $16, $18, $1C, $1D, $1E
+	.byte $08, $12, $0A, $0B, $0D, $0E, $10, $11, $13, $14, $15, $16, $18, $1C, $1D, $1E
 
 Music_Set2A_Ends:
-	.byte $11, $0A, $0C, $0D, $0F, $10, $12, $13, $14, $15, $17, $1B, $1C, $1D, $2B
+	.byte $11, $12, $0C, $0D, $0F, $10, $12, $13, $14, $15, $17, $1B, $1C, $1D, $2B
 
 Music_Set2A_Loops:
-	.byte $08, $0A, $0B, $0D, $0F, $10, $11, $13, $14, $15, $17, $18, $1C, $1D, $23
+	.byte $08, $00, $0B, $0D, $0F, $10, $11, $13, $14, $15, $17, $18, $1C, $1D, $23
 
 M12ASegData1A:
 	.byte $D8, $68, $60, $60, $5A, $50, $4C, $68, $60, $60, $5A, $50, $4C, $68, $60 ; $A899 - $A8A8
