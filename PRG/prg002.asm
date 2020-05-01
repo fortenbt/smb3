@@ -5723,15 +5723,12 @@ PRG002_BCC6:
 	JSR Player_GetInventoryOffset
 	; [ORANGE] unused section of code
 	; Removed because we're no longer storing cards
-	JMP PRG002_BCFF
+	;;;JMP PRG002_BCFF
 	;;;LDA Inventory_Cards+2,Y
-	BEQ PRG002_BCFF	 ; If Player didn't get their third card, jump to PRG002_BCFF
-
-	; Player got their third card (not a triple match, that was checked previously)
-
-	; Var5 = 4
-	LDA #$04
-	STA <Objects_Var5,X
+	JSR DoCustomEndLevelCard11
+	NOP
+	;;;STA <Objects_Var5,X
+	JMP PRG002_BCFF
 
 	; Sets up the End Level Card object as the "xUP" display that occurs with three cards
 EndLevelCard_SetupXUP:
@@ -6255,9 +6252,13 @@ PRG002_BF4B:
 	LDA #$81
 	STA Level_TimerEn
 	;;; [ORANGE]
+	;;; This was moved so that it doesn't give the player the orb until done walking off in case of death
 	;;; We hook here so we can clear the EndLevelCard orb bit to know we've found that orb
 	;;;STA EndCard_Flag	 ; Flag end level card as grabbed
-	JSR DoCustomEndLevelCard11
+	;;;JSR DoCustomEndLevelCard11
+	NOP
+	NOP
+	NOP
 
 	; Card actually has a slight leftward velocity?
 	;;LDA #-$01
