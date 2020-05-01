@@ -3500,17 +3500,19 @@ DoCustomEndLevelCard11:
 
 ;;; A way to get what level we're on, the index corresponds to the Level_Orbs array
 Levels_Entered_XY:
-	.byte $40, $20
-	.byte $80, $20	; ORANGE TODO: LEVEL 2
-	.byte $00, $00	; ORANGE TODO: LEVEL 3
-	.byte $00, $00	; ORANGE TODO: LEVEL 4
-	.byte $00, $00	; ORANGE TODO: LEVEL 5
-	.byte $00, $00	; ORANGE TODO: LEVEL 6
-	.byte $00, $00	; ORANGE TODO: LEVEL 7
-	.byte $00, $00	; ORANGE TODO: LEVEL 8
-	.byte $00, $00	; ORANGE TODO: LEVEL 9
-	.byte $00, $00	; ORANGE TODO: LEVEL 10
-	.byte $00, $00	; ORANGE TODO: LEVEL 11?
+	; Map_Entered_X $797A, Map_Entered_Y $7976 values for each level
+	;.byte $40, $20	; stock level 1
+	.byte $40, $60	; sorb level 1
+	.byte $40, $A0	; sorb level 2
+	.byte $60, $A0	; sorb level 3
+	.byte $80, $80	; sorb level 4
+	.byte $A0, $80	; sorb level 5
+	.byte $C0, $80	; sorb level 6
+	.byte $A0, $20	; sorb level 7
+	.byte $80, $40	; sorb fort
+	.byte $60, $60	; sorb level 8
+	.byte $60, $20	; sorb level 9
+	.byte $40, $40	; sorb level 10
 	.byte $60, $60	; 1-fort
 LEXY_END
 
