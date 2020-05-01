@@ -1598,15 +1598,15 @@ MGHedr2:		MusSeg MG_R23, MG_2, MG_Tri2, $12, MG_Nse23, MG_PCM23
 MGHedr3:		MusSeg MG_R23, MG_3, MG_Tri3, $12, MG_Nse23, MG_PCM23
 MGHedr4:		MusSeg MG_R4, MG_4, MG_Tri4, $11, MG_Nse4, MG_PCM4
 MGHedr5:		MusSeg MG_R5, MG_5, MG_Tri5, $38, MG_Nse5, MG_PCM5
-MGHedr6:		MusSeg MG_R6, MG_6, MG_Tri6, $17, MG_Nse6, $0000
-MGHedr7:		MusSeg MG_R7, MG_7, MG_Tri7, $1A, MG_Nse7, $0000
-MGHedr8:		MusSeg MG_R8, MG_8, MG_Tri8, $26, MG_Nse8, $0000
-MGHedr9:		MusSeg MG_R9, MG_9, MG_Tri9, $0D, MG_Nse9, $0000
-MGHedrA:		MusSeg MG_RA, MG_A, MG_TriA, $0E, MG_NseA, $0000
-MGHedrB:		MusSeg MG_RBC, MG_B, MG_TriB, $11, MG_NseBCD, $0000
-MGHedrC:		MusSeg MG_RBC, MG_C, MG_TriC, $11, MG_NseBCD, $0000
-MGHedrD:		MusSeg MG_RD, MG_D, MG_TriD, $11, MG_NseBCD, $0000
-MGHedrE:		MusSeg MG_RE, MG_E, MG_TriE, $1C, MG_NseE, $0000
+MGHedr6:		MusSeg MG_R6, MG_6, MG_Tri6, $17, MG_Nse6, MG_PCM6
+MGHedr7:		MusSeg MG_R7, MG_7, MG_Tri7, $1A, MG_Nse7, MG_PCM7
+MGHedr8:		MusSeg MG_R8, MG_8, MG_Tri8, $26, MG_Nse8, MG_PCM8
+MGHedr9:		MusSeg MG_R9, MG_9, MG_Tri9, $0D, MG_Nse9, MG_PCM9
+MGHedrA:		MusSeg MG_RA, MG_A, MG_TriA, $0E, MG_NseA, MG_PCMA
+MGHedrB:		MusSeg MG_RBC, MG_B, MG_TriB, $11, MG_NseBCD, MG_PCMBC
+MGHedrC:		MusSeg MG_RBC, MG_C, MG_TriC, $11, MG_NseBCD, MG_PCMBC
+MGHedrD:		MusSeg MG_RD, MG_D, MG_TriD, $11, MG_NseBCD, MG_PCMD
+MGHedrE:		MusSeg MG_RE, MG_E, MG_TriE, $1C, MG_NseE, MG_PCME
 
 
 	; Music in Set 2B is played by "index", which is a segment of music.
