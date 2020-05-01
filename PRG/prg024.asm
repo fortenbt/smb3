@@ -2366,8 +2366,10 @@ PRG024_AC6B:
 	AND #PAD_START
 	BEQ PRG024_ACBA	 	; If Player is not pressing START, jump to PRG024_ACBA (RTS)
 
-	LDA #SND_LEVELCOIN	 
-	STA Sound_QLevel1	; Play coin sound (in this case, selected and begin!)
+	;LDA #SND_LEVELCOIN
+	;STA Sound_QLevel1	; Play coin sound (in this case, selected and begin!)
+	LDA #MUS2A_WORLD2
+	STA Sound_QMusic2
 
 	LDA Sprite_RAM+$F0	; Get Y value of title screen cursor sprite
 	STA <Title_EventGrafX	; Reuse as a temp...
@@ -2390,7 +2392,8 @@ PRG024_ACA5:
 
 	JSR Title_3Glow	 		; Make the big '3' glow!
 
-	LDA SndCur_Level1
+	;LDA SndCur_Level1
+	LDA SndCur_Music2
 	BNE PRG024_AC96	 ; If the "gling" sound has not ended, loop!
 
 	INC <Title_State ; Title_State++
