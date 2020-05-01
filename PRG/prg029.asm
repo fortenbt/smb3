@@ -240,7 +240,17 @@ MG_RD:
 MG_RE:
 	.byte $01, $42, $04, $05, $06, $46, $0A, $14
 
+BossFanfare_R:
+	.byte $20, $26, $06, $0C, $18
+
 	;; BEGIN HUGE UNUSED SPACE
+
+BossFanfare_1:
+	.byte $B3, $42, $40, $B4, $42, $B2, $3C, $40, $42, $46, $4A, $4C, $4A, $4C, $B1, $42
+	.byte $00
+	.byte $B3, $4A, $46, $B4, $4A, $42, $46, $B1, $4A
+BossFanfare_Tri1:
+	.byte $B3, $38, $50, $38, $50, $34, $4C, $38, $50, $B0, $68, $B2, $7E
 
 ; Metal Gear music
 MG_1:

@@ -1228,11 +1228,11 @@ Music_Set1_Set2A_IndexOffs:
 Music_Set1_Set2A_Headers:
 
 MS1_01SegHedr:			;MusSeg Music_RestH_LUT, M12ASegData14, $0026, $11, $0000, M12ASegData14PCM
-						;	  sq1, tri, nse, dpcm
 MS1_02SegHedr:			;MusSeg Music_RestH_LUT, M12ASegData18, $0020, $12, $0000, $0000
+
 ; Boss victory
-MS1_04SegHedr:			;MusSeg Music_RestH_LUT, M12ASegData15, $0021, $11, $0000, M12ASegData15PCM
-						MusSeg PooOrb_R, PooOrb, $0000, $00, $0000, PooOrbPCM
+MS1_04SegHedr:			MusSeg BossFanfare_R, BossFanfare_1, BossFanfare_Tri1, $11, $0000, $0000
+
 MS1_08SegHedr:			;MusSeg Music_RestH_LUT, M12ASegData19, $004D, $27, $0000, $0000
 MS1_10SegHedr:			;MusSeg Music_RestH_LUT, M12ASegData24, $006F, $4C, $0000, M12ASegData24PCM
 PooOrb_Hdr:				MusSeg PooOrb_R, PooOrb, $0000, $00, $0000, PooOrbPCM
@@ -1517,13 +1517,13 @@ PatS8:	.byte $50, $51, $51, $51, $51, $51, $51, $51, $51, $51, $51, $51, $51, $5
 	; be played ($10, $20, $30, ... $C0), so that song $10 uses a start
 	; index of $00, an end index of $06, and a loop index of $01.
 Music_Set2B_Starts:
-	.byte $0F, $07, $0F, $0C, $0F, $13, $15, $1B, $1E, $1B, $27, $2C
+	.byte $00, $07, $0F, $17, $0F, $13, $15, $1B, $1E, $1B, $27, $2C
 
 Music_Set2B_Ends:
-	.byte $16, $0E, $16, $0E, $12, $14, $1A, $1D, $26, $1D, $2B, $2C
+	.byte $06, $0E, $16, $26, $12, $14, $1A, $1D, $26, $1D, $2B, $2C
 
 Music_Set2B_Loops:
-	.byte $0F, $07, $0F, $0C, $10, $13, $18, $1B, $1F, $1B, $28, $2C
+	.byte $01, $07, $0F, $17, $10, $13, $18, $1B, $1F, $1B, $28, $2C
 
 
 	; These are Set 2B music segments.  Note that more exist on page 29.
