@@ -3482,7 +3482,7 @@ _not_restarting2:
 
 
 DoCustomEndLevelCard11:
-	;;; This is called from PRG002::ObjHit_EndLevelCard
+	;;; This is called from PRG002::ObjHit_EndLevelCard (not anymore, now EndLevelCard_MsgAndCard)
 	STA EndCard_Flag	 ; Flag end level card as grabbed
 	; Switch bank A000 to page 11
 	LDA PAGE_A000
