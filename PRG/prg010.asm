@@ -1895,13 +1895,13 @@ PRG010_C9F7:
 	LDY #(MAPOBJ_TOTAL-1)	; Y = (MAPOBJ_TOTAL-1) (For all map objects)
 PRG010_CA09:
 	LDA Map_Object_ActY,Y
-	ADD #$08	; +8
-	AND #$f0	; Align to grid
+	;ADD #$08	; +8
+	;AND #$f0	; Align to grid
 	STA Map_Objects_Y,Y	 ; -> Map object Y
 
 	LDA Map_Object_ActX,Y
-	ADD #$08	; +8
-	AND #$f0	; Align to grid
+	;ADD #$08	; +8
+	;AND #$f0	; Align to grid
 	STA Map_Objects_XLo,Y	 ; -> Map object X
 
 	LDA Map_Object_ActXH,Y
