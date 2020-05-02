@@ -6393,6 +6393,9 @@ _chk_cont2:
 _elc_found_orb:
 	CPX #(LEXY_END-Levels_Entered_XY-1)
 	BCS _elc_init_rts
+	TXA
+	LSR A						; X is an index into a word array, we need a byte array
+	TAX
 	LDA Level_Orbs,X
 	AND #$01
 	BNE _elc_init_rts
