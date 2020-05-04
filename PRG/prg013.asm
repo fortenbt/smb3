@@ -503,6 +503,14 @@ _menu_input_rts:
 	RTS
 
 PauseMenuRestartLevel:
+	LDA #MMC3_8K_TO_PRG_C000	; Change C000 ROM to prg029 for Increment_Player_Deaths
+	STA MMC3_COMMAND
+	LDA #29
+	STA MMC3_PAGE
+
+	JSR Increment_Player_Deaths
+	JSR PRGROM_Change_C000		; Restore C000 ROM page
+
 	LDA #0
 	STA Level_PauseFlag
 	STA PauseMenuSel
@@ -589,7 +597,7 @@ _non_iceblock_rts13:
 
 PRG013_MASSIVE_FREE_SPACE:
 	.byte $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA
-	.ds 0x231
+	.ds 0x221
 	.byte $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA
 
 ; Rest of ROM bank was empty
