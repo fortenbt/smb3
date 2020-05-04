@@ -4248,17 +4248,34 @@ NPCMessage4:
 	.byte $EA, $FA, $E0, $AA, $FE, $EF, $AB, $EF, $DC, $B5, $A9, $FE, $90, $93, $A9, $AA, $FE, $FA, $84, $A9, $00
 	.byte $91, $E0, $A8, $E1, $90, $DC, $A9, $58, $FF
 
+;Aside from the obvious
+;orbs in the boxes,I've
+;always noticed a
+;seemingly out of place
+;coin near any well
+;hidden orb.
+NPCMessage5:
+	.byte 00
+	.byte $BC, $A9, $84, $EF, $DC, $FE, $DD, $A8, $93, $91, $FE, $AA, $FA, $DC, $FE, $93, $E1, $B0, $84, $93, $AB, $A9, $00
+	.byte $93, $A8, $E1, $A9, $FE, $84, $92, $FE, $AA, $FA, $DC, $FE, $E1, $93, $B2, $DC, $A9, $B4, $FC, $B5, $B0, $DC, $00
+	.byte $E0, $90, $B1, $E0, $B3, $A9, $FE, $92, $93, $AA, $84, $E2, $DC, $EF, $FE, $E0, $00
+	.byte $A9, $DC, $DC, $91, $84, $92, $DE, $90, $B3, $FE, $93, $AB, $AA, $FE, $93, $DD, $FE, $D9, $90, $E0, $E2, $DC, $00
+	.byte $E2, $93, $84, $92, $FE, $92, $DC, $E0, $A8, $FE, $E0, $92, $B3, $FE, $B1, $DC, $90, $90, $00
+	.byte $FA, $84, $EF, $EF, $DC, $92, $FE, $93, $A8, $E1, $58, $FF
+
 NPCMsgPtr_L:
 	.byte LOW(NPCMessage1)
 	.byte LOW(NPCMessage2)
 	.byte LOW(NPCMessage3)
 	.byte LOW(NPCMessage4)
+	.byte LOW(NPCMessage5)
 
 NPCMsgPtr_H:
 	.byte HIGH(NPCMessage1)
 	.byte HIGH(NPCMessage2)
 	.byte HIGH(NPCMessage3)
 	.byte HIGH(NPCMessage4)
+	.byte HIGH(NPCMessage5)
 
 NPC_DialogInit:
 	LDA #$29
