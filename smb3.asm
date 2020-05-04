@@ -2931,8 +2931,8 @@ MAPOBJ_TOTAL		= $0E	; Total POSSIBLE map objects
 	BrickBust_YLwr:		.ds 3	; $7FA9-$7FAB Brick bust lower chunks Y
 	BrickBust_HEn:		.ds 3	; $7FAC-$7FAE Bits to hide chunks (Bit 0 = Right, 1 = Left, 2 = Lower, 3 = Upper) OR poof counter
 
-				.ds 3	; $7FAF-$7FB1 unused
-
+	Player_GotSecret:	.ds 1	; $7FAF [ORANGE] no longer unused - set to 1 when player finds a secret
+						.ds 2	; $7FB0-$7FB1 unused
 	CoinPUp_State:		.ds 4	; $7FB2-$7FB5 State of up to 4 "Power Up" coins (i.e. coins that come out of ? blocks and bricks)
 	CoinPUp_Y:		.ds 4	; $7FB6-$7FB9 Y of "Power Up" coins
 	CoinPUp_X:		.ds 4	; $7FBA-$7FBD X of "Power Up" coins

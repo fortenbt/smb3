@@ -5046,7 +5046,7 @@ _clear_bit:
 	LDA Level_Orbs,X		; otherwise, just xor off the EndLevelCard orb bit (bit 1)
 	EOR #$01
 	STA Level_Orbs,X
-	INC Player_Orbs			; Increment the number of orbs the player as retrieved
+	INC Player_Orbs			; Increment the number of orbs the player has retrieved
 _restore_x_rts:
 	LDX <SlotIndexBackup		; X = object slot index
 	RTS
