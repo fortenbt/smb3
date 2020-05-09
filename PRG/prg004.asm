@@ -3849,7 +3849,8 @@ PRG004_B36E:
 PRG004_B384:
 
 	; Set proper ground troop X velocity
-	LDA GroundTroop_XVel,Y
+	;LDA GroundTroop_XVel,Y
+	JSR GetGndTroopXVel
 	STA <Objects_XVel,X
 
 	; Toggle frame 0/1
@@ -6051,4 +6052,20 @@ ObjInit_OrangeCheep_Hook:
 	STY UserMsg_State			; UserMsg_State = 0
 	STY UserMsg_TextTimer			; UserMsg_TextTimer = 0
 _occ_rts:
+	RTS
+
+;;; [ORANGE] This is a special routine for ObjNorm_GroundTroops.
+;;; We want to increase XVel for those bounced by note blocks
+GetGndTroopXVel:
+	LDA Objects_Bumped,X
+	BEQ _gndtroop_move_norm
+	LDY #-$10
+	LDA <Objects_XVel,X
+	BMI _gndtroop_set_xvel
+	LDY #$10
+_gndtroop_set_xvel:
+	TYA
+	RTS
+_gndtroop_move_norm:
+	LDA GroundTroop_XVel,Y
 	RTS
