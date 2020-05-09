@@ -3515,11 +3515,11 @@ Levels_Entered_XY:
 	.byte $A0, $80	; sorb level 5
 	.byte $C0, $80	; sorb level 6
 	.byte $A0, $20	; sorb level 7
-	.byte $80, $40	; sorb fort
 	.byte $60, $60	; sorb level 8
 	.byte $60, $20	; sorb level 9
 	.byte $40, $40	; sorb level 10
-	.byte $60, $60	; 1-fort
+	.byte $60, $60	; sorb grimm (TODO)
+	.byte $80, $40	; sorb fort
 LEXY_END
 
 

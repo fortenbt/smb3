@@ -1112,11 +1112,11 @@ Levels_Entered_XY_12:
 	.byte $0A, $02	; sorb level 5
 	.byte $0C, $02	; sorb level 6
 	.byte $0A, $80	; sorb level 7
-	.byte $08, $20	; sorb fort
 	.byte $06, $08	; sorb level 8
 	.byte $06, $80	; sorb level 9
 	.byte $04, $40	; sorb level 10
-	.byte $06, $08	; ORANGE TODO: LEVEL 12?
+	.byte $06, $08	; sorb grimm (TODO)
+	.byte $08, $20	; sorb fort
 LEXY_END_12
 
 SetLevelCompleteTile_Reload:
