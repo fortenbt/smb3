@@ -493,11 +493,17 @@ PRG030_8437:
 
 	; Middle byte of the N-Spade score
 	LDA #HIGH(8000)
-	STA Map_NSpade_NextScore+1
+	;STA Map_NSpade_NextScore+1
+	NOP
+	NOP
+	NOP
 
 	; Lowest byte of the N-Spade score
 	LDA #LOW(8000)
-	STA Map_NSpade_NextScore+2
+	;STA Map_NSpade_NextScore+2
+	NOP
+	NOP
+	NOP
 
 PRG030_845A:
 	JSR Sprite_RAM_Clear	 
