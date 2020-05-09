@@ -5000,9 +5000,9 @@ Map_NoAnimUpdate:
 ;;;     Bit 1 is TreasureChest secret Orb
 ;;;     Others?
 Level_Orbs_Initial:
-	;     5-1  1-3  1-1  7-5  2-1  7-2  2-4  fort 4-3  2-3
-	;      1    2    3    4    5    6    7   fort  8    9    10   grimm
-	.byte $03, $03, $03, $03, $01, $03, $03, $03, $01, $01, $01, $02
+	;     5-1  1-3  1-1  7-5  2-1  7-2  2-4  4-3  2-3            fort
+	;      1    2    3    4    5    6    7    8    9   10  grimm fort
+	.byte $03, $03, $03, $03, $01, $03, $03, $01, $01, $01, $02, $03
 LOI_END
 
 InitializeLevelOrbs:
