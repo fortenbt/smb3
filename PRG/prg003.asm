@@ -3379,7 +3379,7 @@ ObjInit_LavaLotus:
 ObjInit_WaterCurrent:
 	RTS		 ; Return
 
-CurrentUpward_YAccel:	.byte -$03, -$03, -$02, -$01, $00, $00, $00, $00, $00
+CurrentUpward_YAccel:	.byte -$08, -$06, -$04, -$04, $04, $02, $00, $00, $00
 CurrentDownward_YAccel:	.byte  $03,  $02,  $01,  $00, $00, $00, $00, $00, $00
 
 ObjNorm_WaterCurrent:
