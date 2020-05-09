@@ -2138,7 +2138,7 @@ RandomN = Random_Pool+1			; Pull a random number from the sequence (NOTE: Random
 
 	Player_RescuePrincess:	.ds 1	; Player will jump to the princess rescue when Level_ExitToMap is nonzero (instead of map)
 
-				.ds 8	; $078E-$0795 unused
+	Objects_Bumped:			.ds 8	; $078E-$0795 unused [ORANGE] No longer unused; tracks when objects are being bumped
 
 	; Objects_PlayerHitStat:
 	;	Bit 0 - Set if Player's bbox bottom is HIGHER than object's bbox bottom

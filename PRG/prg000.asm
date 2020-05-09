@@ -899,6 +899,7 @@ PRG000_C533:
 PRG000_C53D:
 	LDA #$00
 	STA <Objects_YVel,X	 ; Halt vertical movement
+	STA Objects_Bumped,X
 
 	RTS		 ; Return
 
@@ -6701,6 +6702,7 @@ _obj_sss_checkrestore:
 	BNE _j_Object_SetShellState
 	LDX <SlotIndexBackup		; Restore the slot index
 	LDA #-$28
+	STA Objects_Bumped,X		; Flag it as bumped
 	STA <Objects_YVel,X			; Lessen the bump amount (typical is $30)
 	LDA #-$30
 	LDY <Objects_XVel,X
@@ -6715,10 +6717,10 @@ _obj_sss_set_xvel:
 								; velocities to positive on every bump in
 								; prg031::DoBounceYVel
 	BMI _obj_sss_hflip
-	AND #~SPR_HFLIP				; for positive velocities, remove hflip
+	ORA #SPR_HFLIP				; for positive velocities, set hflip
 	JMP _obj_sss_no_vert
 _obj_sss_hflip:
-	ORA #SPR_HFLIP				; for negative velocities, set hflip
+	AND #~SPR_HFLIP				; for negative velocities, remove hflip
 _obj_sss_no_vert:
 	AND #~SPR_VFLIP				; Don't vertically flip the shell
 	STA Objects_FlipBits,X
@@ -6727,7 +6729,7 @@ _obj_sss_no_vert:
 
 ;[ORANGE] Free space from removing ToadHouse_GiveItem
 PRG000_FREE_SPACE:
-	.ds 0x20
+	.ds 0x1a
 
 AScrlURDiag_HandleWrap:
 	LDA AScrlURDiag_WrapState
