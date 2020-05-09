@@ -6713,7 +6713,11 @@ PRG008_BEE5:
 	BVC PRG008_BF03	 ; If Player is not pressing 'B', jump to PRG008_BF03 (RTS)
 
 	JSR PChg_C000_To_29	 	; Change page @ C000 to 29
-	JSR ToadHouse_ChestPressB	; Attempt to open a chest!
+	;;;JSR ToadHouse_ChestPressB	; Attempt to open a chest!
+	NOP
+	NOP
+	NOP
+
 	JSR PChg_C000_To_0 		; Change page @ C000 to 0
 
 	TXA		 ; X -> A 
