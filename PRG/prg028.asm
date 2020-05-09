@@ -1521,16 +1521,24 @@ PatS8:	.byte $50, $51, $51, $51, $51, $51, $51, $51, $51, $51, $51, $51, $51, $5
 	; be played ($10, $20, $30, ... $C0), so that song $10 uses a start
 	; index of $00, an end index of $06, and a loop index of $01.
 Music_Set2B_Starts:
-	.byte $00, $07, $0F, $17, $0F, $13, $15, $1B, $1E, $1B, $27, $2C
+	.byte $00, $07, $0F, $17, $27, $13, $15, $1B, $1E, $1B, $27, $2C
 
 Music_Set2B_Ends:
-	.byte $06, $0E, $16, $26, $12, $14, $1A, $1D, $26, $1D, $2B, $2C
+	.byte $06, $0E, $16, $26, $2C, $14, $1A, $1D, $26, $1D, $2B, $2C
 
 Music_Set2B_Loops:
-	.byte $01, $07, $0F, $17, $10, $13, $18, $1B, $1F, $1B, $28, $2C
+	.byte $01, $07, $0F, $17, $27, $13, $18, $1B, $1F, $1B, $28, $2C
 
 
 	; These are Set 2B music segments.  Note that more exist on page 29.
+
+;;; Mother - Cave
+Cave_4:
+	.byte $B4, $7E, $B3, $6A, $B2, $72, $6E, $74, $6E, $76, $72, $78, $6A, $72, $6E, $74, $6E, $76
+	.byte $B1, $72, $B0, $7E, $00
+	.byte $92, $6A, $70, $6C, $72, $6E, $74, $70, $76, $6A, $70, $6C, $72, $6E, $74, $70
+	.byte $76, $6A, $70, $6C, $72, $6E, $74, $70, $76, $6A, $70, $6C, $72, $6E, $74, $70
+	.byte $76
 
 ; [ORANGE] TGL
 TGL1_1:

@@ -60,6 +60,13 @@ Music_Set2B_IndexOffs:
 	.word MGHedrD			; $25
 	.word MGHedrE			; $26
 
+	.word CaveHedr1			; $27
+	.word CaveHedr2			; $28
+	.word CaveHedr2			; $29
+	.word CaveHedr3			; $2A
+	.word CaveHedr2			; $2B
+	.word CaveHedr4			; $2C
+
 
 Music_Set2B_Headers:
 	; The following is all of the segment headers for Set 2B music.
@@ -107,6 +114,53 @@ MGHedrB:		MusSeg MG_RBC, MG_B, MG_TriB, $11, MG_NseBCD, MG_PCMBC
 MGHedrC:		MusSeg MG_RBC, MG_C, MG_TriC, $11, MG_NseBCD, MG_PCMBC
 MGHedrD:		MusSeg MG_RD, MG_D, MG_TriD, $11, MG_NseBCD, MG_PCMD
 MGHedrE:		MusSeg MG_RE, MG_E, MG_TriE, $1C, MG_NseE, MG_PCME
+
+; Mother - Cave
+CaveHedr1:		MusSeg Cave_R1, Cave_1, Cave_Tri1, $03, Cave_Nse1, Cave_DPCM1
+CaveHedr2:		MusSeg Cave_R23, Cave_23, Cave_Tri2, $1A, Cave_Nse2, Cave_DPCM23
+CaveHedr3:		MusSeg Cave_R23, Cave_23, Cave_Tri3, $1A, Cave_Nse2, Cave_DPCM23
+CaveHedr4:		MusSeg Cave_R4, Cave_4, $0000, $17, $0000, $0000
+
+;;; Mother - Cave
+Cave_R1:
+	.byte $E0, $02, $2A, $0E, $36, $38
+Cave_R23:
+	.byte $02, $03, $46, $12, $2A, $0E, $70, $35, $36, $38, $06
+Cave_R4:
+	.byte $03, $06, $0E, $0F, $F2
+
+
+Cave_1:
+	.byte $90, $7E, $00
+	.byte $93, $6A, $70, $6C, $72, $6E, $74, $70, $76, $6A, $70, $6C, $72, $6E, $74, $70
+	.byte $76
+Cave_Tri1:
+	.byte $B2, $18, $B3, $7E, $B2, $18, $B3, $7E, $B2, $18, $B3, $7E, $B2, $18, $B3, $7E
+Cave_Nse1:
+	.byte $B1, $03, $B4, $01, $B1, $03, $B4, $01, $B1, $03, $B4, $01, $B1, $03, $B4, $01
+	.byte $00
+Cave_DPCM1:
+	.byte $B5, $03, $03, $03, $03
+
+Cave_23:
+	.byte $B5, $30, $36, $44, $B6, $42, $B2, $7E, $B5, $30, $36, $38, $2C, $B3, $7E, $7E
+	.byte $7E, $7E, $7E, $7E, $7E, $7E, $7E, $BA, $7E, $00
+	.byte $95, $6A, $70, $6C, $72, $6E, $74, $70, $76, $6A, $70, $6C, $72, $6E, $74, $70
+	.byte $76, $6A, $70, $6C, $72, $6E, $74, $70, $76, $6A, $70, $6C, $72, $6E, $74, $70
+	.byte $76
+Cave_Tri2:
+	.byte $B4, $18, $B5, $7E, $B4, $18, $B5, $7E, $B4, $18, $B5, $7E, $B4, $18, $B5, $7E
+	.byte $B4, $18, $B5, $7E, $B4, $18, $B5, $7E, $B4, $18, $B5, $7E, $B4, $18, $B5, $7E
+Cave_Nse2:
+	.byte $B0, $03, $B8, $01, $B0, $03, $B8, $01, $B0, $03, $B8, $01, $B0, $03, $B8, $01
+	.byte $B0, $03, $B8, $01, $B0, $03, $B8, $01, $B1, $03, $B7, $01, $B0, $03, $B8, $01
+	.byte $00
+Cave_DPCM23:
+	.byte $B9, $03, $03, $03, $03, $03, $03, $03, $03
+
+Cave_Tri3:
+	.byte $B4, $22, $B5, $7E, $B4, $22, $B5, $7E, $B4, $22, $B5, $7E, $B4, $22, $B5, $7E
+	.byte $B4, $22, $B5, $7E, $B4, $22, $B5, $7E, $B4, $22, $B5, $7E, $B4, $22, $B5, $7E
 
 
 ;;; Castlevania - Vampire
@@ -1114,112 +1168,7 @@ PRG029_D10E:
 PRG029_D13A:
 	RTS		 ; Return
 
-ToadHouse_Item2Inventory:
-	.byte $0C, $08, $04, $05, $06, $04, $05, $06, $01, $02, $03, $04, $02, $03, $05
-
-	; Toad House items:
-	; 0 = Warp Whistle
-	; 1 = P-Wing
-	; 2 = Frog Suit
-	; 3 = Tanooki
-	; 4 = Hammer
-	; 5 = Frog
-	; 6 = Tanooki
-	; 7 = Hammer
-	; 8 = Mushroom
-	; 9 = Fire Flower
-	; 10 = Leaf
-
-	; Item offsets per Toad House type
-ToadHouse_ItemOff:
-	;	0   1    2    3    4    5    6
-	.byte $02, 03, $0A, $0A, $0A, $05, $08
-
-	.byte $0B, $0E, $11
-
-	; SB: This is a large set and could have the same effect
-	; with just four items, so I wonder if there was a thought
-	; of having additional items at some point?
-ToadHouse_RandomItem:
-	; Where 0 = Super Mushroom, 1 = Fire Flower, 2 = Super Leaf
-	; OR 0 = Frog, 1 = Tanooki, 2 = Hammer
-	; Super Mushroom / Frog has the best chance in this lottery by 1...
-	.byte $00, $01, $02, $00, $01, $02, $00, $01, $02, $00, $01, $02, $00, $01, $02, $00
-
-
-	; X values of three treasure boxes, specifically the tile that must change when opened
-ToadHouse_Box_X:	.byte $40, $70, $A0
-
-	; Routine to open a chest if Player is standing in front of it
-	; (Already checked for him pressing 'B'!)
-ToadHouse_ChestPressB:
-	LDA #TILE7_CHEST_LR
-	SUB Level_Tile_Head
-	CMP #$04
-	BGE PRG029_D1B7	 ; If Player is NOT touching one of the treasure boxes, jump to PRG029_D1B7
-
-	; Touching a treasure box... determine which one
-
-	LDY #$00	 ; Y = 0 (first box)
-
-	LDA <Player_X
-	CMP #$60
-	BLT PRG029_D17F	 ; If Player_X < $60, jump to PRG029_D17F
-
-	INY		 ; Y = 1 (second box)
-
-	CMP #$90
-	BLT PRG029_D17F	 ; If Player_X < $90, jump to PRG029_D17F
-
-	INY		 ; Y = 2 (third box)
-
-PRG029_D17F:
-
-	; Block change is always same height regardless of which box...
-	LDA #$80
-	STA Level_BlockChgYLo
-	LDA #$01
-	STA Level_BlockChgYHi
-
-	LSR A		 ; A = 0, effectively
-	STA Level_BlockChgXHi	 ; Always zero
-
-	LDA ToadHouse_Box_X,Y	 ; Get proper X for the selected box
-	STA Level_BlockChgXLo	 ; Store as low X of tile change
-
-	LDA #CHNGTILE_TOADBOXOPEN
-	STA Level_SkipStatusBarUpd	; Set Level_SkipStatusBarUpd (skip status bar for a frame, priority update!)
-	STA Level_ChgTileEvent	 	; Toad House tile change event!
-
-	; THouse_Treasure = 7 is standard random basic item (mushroom, flower, leaf)
-
-	LDX THouse_Treasure
-	DEX		 ; X = THouse_Treasure - 1
-	CPX #$05	 
-	BLS PRG029_D1B1	 ; If X < 5, jump to PRG029_D1B1
-
-	; X = 5 if random super suit (frog, tanooki, hammer)
-	; X = 6 if standard random basic item
-
-	LDA RandomN
-	AND #$0f
-	TAY		 ; Y = Random number 0 - 15
-
-	LDA ToadHouse_RandomItem,Y	; Pick a random item
-	ADD ToadHouse_ItemOff,X	 	; Add appropriate offset
-	TAX		 ; -> 'X'
-
-PRG029_D1B1:
-	LDA ToadHouse_Item2Inventory,X	 ; Load Toad House item code -> Player Inventory index
-	TAX		 ; -> 'X'
-	INX		 ; X++ (because 0 is "no box opened")
-
-	RTS		 ; Return
-
-PRG029_D1B7:
-	LDX #$00	 ; X = 0
-	RTS		 ; Return
-
+	;;; [ORANGE] Removed ToadHouse stuff
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Player_DrawAndDoActions
@@ -1393,154 +1342,7 @@ PRG029_D279:
 
 PRG029_D281:
 
-	; Level_AirshipCtl <> 0...
-
-	PHA		 ; Save Level_AirshipCtl
-
-	LDA #$00
-	STA <Scroll_LastDir	; Force screen to have "last moved right"
-
-	INC <Horz_Scroll	; Screen scrolls to the right
-	BNE PRG029_D28C	 	; If it hasn't rolled over, jump to PRG029_D28C
-	INC <Horz_Scroll_Hi	; Otherwise, apply carry
-
-PRG029_D28C:
-	LDA <Horz_Scroll_Hi
-	BNE PRG029_D296	 	; If Horz_Scroll_Hi <> 0, jump to PRG029_D296
-
-	LDA <Horz_Scroll
-	CMP #$60	
-	BLT PRG029_D2AF	 ; If Horz_Scroll < $60, jump to PRG029_D2AF
-
-PRG029_D296:
-	INC Level_AirshipH	 ; Level_AirshipH++
-
-	LDA Level_AirshipH
-	ADD Counter_Wiggly	 ; Increase height of the airship in a bit of a wobbly way
-	BCC PRG029_D2AF	 	; If it hasn't overflowed, jump to PRG029_D2AF
-
-	INC <Vert_Scroll
-
-	LDA <Objects_Y+4
-	SUB #$01
-	STA <Objects_Y+4	; Anchor's Y minus 1
-	BCS PRG029_D2AF
-	DEC <Objects_YHi+4	; If overflow occurred, propogate the carry
-PRG029_D2AF: 
-
-	PLA		 ; Restore Level_AirshipCtl
-	JSR DynJump	 ; Dynamic jump based on Level_AirshipCtl... 
-	
-	; THESE MUST FOLLOW DynJump FOR THE DYNAMIC JUMP TO WORK!!
-	.word AirshipCtl_DoNothing	; 0 - Do nothing (not used)
-	.word AirshipCtl_RunAndJump	; 1 - Run and jump (when horizontal scroll hits $80)
-	.word AirshipCtl_Catch		; 2 - Catch anchor
-	.word AirshipCtl_HoldAnchor	; 3 - Hold onto anchor
-	.word AirshipCtl_LandOnDeck	; 4 - Land Player on deck
-
-AirshipCtl_DoNothing:
-	RTS		 ; Return
-
-
-AirshipCtl_RunAndJump:
-	LDA #$ef
-	STA Level_VertScroll	 ; Level_VertScroll = $EF
-
-	LDA <Horz_Scroll
-	CMP #$80
-	BLT PRG029_D2D0	 ; If Horz_Scroll < $80, jump to PRG029_D2D0
-
-	; Player makes the jump!
-	LDA #-$60
-	STA <Player_YVel	 ; Player_YVel = -$60
-	INC Level_AirshipCtl	 ; Next Level_AirshipCtl!
-
-PRG029_D2D0:
-	LDA #$01
-	STA <Player_FlipBits	 ; Player_FlipBits = 1
-
-	LDA #$20
-	STA <Player_XVel	 ; Player_XVel = $20
-
-	JMP PRG029_D457	 ; $D2D8 
-
-
-AirshipCtl_Catch:
-	LDA <Player_X
-	CMP #$36	
-	BLT PRG029_D2FF	 ; If Player_X < $36, jump to PRG029_D2FF
-
-	; Apply Player's velocities
-	JSR Player_ApplyYVelocity
-	JSR Player_ApplyXVelocity
-
-	LDA <Player_YVel
-	ADD #$04
-	STA <Player_YVel ; Player_YVel += 4
-
-	CMP #$0f
-	BLS PRG029_D2F5	 ; If Player_YVel < $0F, jump to PRG029_D2F5
-
-	INC Level_AirshipCtl	 ; Otherwise, next Level_AirshipCtl!
-
-PRG029_D2F5:
-
-	; Set mid-air jump frame as appropriate by suit and draw Player...
-	LDY <Player_Suit
-	LDA Airship_JumpFrameByPup,Y
-	STA <Player_Frame
-	JMP Player_Draw	
-
-PRG029_D2FF:
-	JMP PRG029_D457	 ; Jump to PRG029_D457
-
-
-AirshipCtl_HoldAnchor:
-	LDA #$02
-	STA <Player_FlipBits	 ; Player_FlipBits = 2 (use "caught anchor" frame)
-
-	LDA #-$14
-	STA <Player_YVel ; Player_YVel = -$14
-	JSR PRG029_D457	 ; Continue using the "run" code
-
-	LDA <Vert_Scroll
-	CMP #$70
-	BLT PRG029_D31B	 ; If Vert_Scroll < $70, jump to PRG029_D31B (RTS)
-
-	LDA #$03	 
-	STA Level_JctCtl	 ; Level_JctCtl = 3 (general purpose junction)
-
-	INC Level_AirshipCtl	 ; Next Level_AirshipCtl!
-
-PRG029_D31B:
-	RTS		 ; Return
-
-
-AirshipCtl_LandOnDeck:
-	LDA Level_AScrlConfig
-	BEQ PRG029_D33D	 ; If autoscroll not enabled, jump to PRG029_D33D
-
-	JSR Player_ApplyYVelocity	 ; Apply Player's Y velocity
-
-	LDA <Player_YVel
-	BMI PRG029_D330	 	; If Player's Y velocity is negative (still rising), jump to PRG029_D330
-
-	LDA #$00
-	STA Level_AirshipCtl	; Level_AirshipCtl = 0 (airship sequence complete)
-	STA Level_TimerEn	; Level_TimerEn = 0 (level timer enabled!)
-
-PRG029_D330:
-	LDA <Player_YVel
-	ADD #$04
-	STA <Player_YVel ; Player_YVel += 4 (Player falling to airship)
-
-	JSR Player_DoScrolling	; Update scrolling at Player's position
-
-	JSR PRG029_D2F5	 ; Mid-air frame as appropriate
-
-PRG029_D33D:
-	RTS		 ; Return
-
+	;;; [ORANGE] Removed AirshipCtl things
 
 PRG029_D33E:
 	LDA Level_GetWandState
