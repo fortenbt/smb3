@@ -3013,9 +3013,10 @@ _clear_tbox_orb:
 	LDA Level_Orbs,X		; otherwise, just xor off the EndLevelCard orb bit (bit 1)
 	EOR #$02
 	STA Level_Orbs,X
-	LDA Player_GotSecret
-	BNE _tbox_orb_rts
 	INC Player_GotSecret	; flag that we got a secret
+	LDA Player_GotSecret
+	CMP #$02				; If this is the 2nd secret, unlock the bridge
+	BNE _tbox_orb_rts
 	LDA #$01
 	STA Map_DoFortressFX
 _tbox_orb_rts:
