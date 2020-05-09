@@ -2159,10 +2159,11 @@ Map_WhiteObjects:
 Map_WhiteObjects_End
 
 MO_CheckForBonus:
-
+	INC Map_Operation		; [ORANGE] We don't want any map bonuses...do we?
+	RTS
 	; Temp_Var16 is our loop counter
-	LDA #(Map_WhiteObjects_End - Map_WhiteObjects - 1)
-	STA <Temp_Var16
+	;;LDA #(Map_WhiteObjects_End - Map_WhiteObjects - 1)
+	;;STA <Temp_Var16
 
 PRG011_AC57:
 	LDY <Temp_Var16	 	; Y = Temp_Var16
