@@ -1774,7 +1774,10 @@ ObjNorm_BoomBoomQBall:
 
 	; Set the lock busting / bridge building effect for this ball
 	LDA <Objects_Var4,X
-	STA Map_DoFortressFX
+	;STA Map_DoFortressFX
+	NOP
+	NOP
+	NOP
 
 	INC Level_ExitToMap	 ; Flag to exit to map
 
