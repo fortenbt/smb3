@@ -354,7 +354,7 @@ King_W3YOff0:	.byte $0E, $10, $10, $20, $20, $20
 
 	; X per King sprite (must be parallel with King_SprDataYOff)
 King_SprDataX:
-King_W1X:	.byte $D7, $98, $A0, $98, $A0
+King_W1X:	.byte $D7, $B0, $B8, $B0, $B8
 King_W7X1:	.byte $CC, $C8, $D0, $C8, $D0
 King_W7X2:	.byte $CC, $C8, $D0, $C8, $D0
 King_W6X:	.byte $C8, $C8, $D0
@@ -401,18 +401,18 @@ PRG024_A36C:
 
 	; Sprites that make up the yelling Toad
 KingToad_Sprites:
-	.byte $80, $00, $01, $B8
-	.byte $80, $00, $01, $B0
-	.byte $80, $00, $01, $A8
-	.byte $70, $00, $01, $B8
-	.byte $70, $00, $01, $B0
-	.byte $70, $00, $01, $A8
+	.byte $7A, $00, $02, $D0
+	.byte $7A, $00, $02, $C8
+	.byte $7A, $00, $02, $C0
+	.byte $6A, $00, $03, $D0
+	.byte $6A, $00, $03, $C8
+	.byte $6A, $00, $03, $C0
 KingToad_Sprites_End
 
 KingToad_Patterns:
-ToadFrame0:	.byte $A1, $A3, $A5, $A7, $A9, $AB
-ToadFrame1:	.byte $B9, $BB, $71, $BD, $BF, $71
-ToadFrame2:	.byte $AD, $AF, $B1, $B3, $B5, $B7
+ToadFrame0:	.byte $C1, $C3, $C5, $C7, $C9, $CB
+ToadFrame1:	.byte $C1, $C3, $C5, $C7, $C9, $CB
+ToadFrame2:	.byte $C1, $C3, $C5, $C7, $C9, $CB
 
 KingToad_PatOffset:
 	.byte (ToadFrame0 - KingToad_Patterns), (ToadFrame1 - KingToad_Patterns), (ToadFrame2 - KingToad_Patterns)
@@ -1596,7 +1596,7 @@ PRG024_A8C8:
 	STA PPU_CTL1		; use 8x16 sprites, sprites use PT2
 	STA <PPU_CTL1_Copy	; Sync with PPU_CTL1_Copy
 
-	JSR Title_Display_Curtain	; Put up the curtain!
+	JSR Title_Custom_Setup	; [ORANGE] Custom setup stuff (replaced title curtain)
 
 	; Load the palette and checkerboard floor pattern
 	LDA #$01	 ; A = 1
@@ -1635,7 +1635,7 @@ PRG024_A930:
 	LDA #%00011110
 	STA <PPU_CTL2_Copy	; Setup for: No BG or sprite clipping, show BG and sprites
 
-	LDA #53
+	LDA #00
 	STA <Title_Ticker	; Set Title_Ticker = 53 (initial delay prior to curtain raise)
 
 PRG024_A946:
@@ -1644,10 +1644,12 @@ PRG024_A946:
 
 	LDA <Pad_Input
 	AND #PAD_START
-	BEQ PRG024_A955	 ; If Player is NOT pressing Start, jump to PRG024_A955
+	;BEQ PRG024_A955	 ; If Player is NOT pressing Start, jump to PRG024_A955
+	NOP
+	NOP
 
 	; Player pressed START -- skips rest of intro, if any
-	LDA #$06	 	
+	LDA #$06
 	STA <Title_State	; Title_State = 6 
 	BEQ PRG024_A959	 	; Jump technically never?? to skip title ticker
 
@@ -1714,34 +1716,11 @@ PRG024_A98A:
 
 	RTS		 ; Return
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Title_Display_Curtain
-;
-; You know that nifty "bowser" curtain 
-; on the title screen?  Here it is...
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Title_Display_Curtain:
-	LDA PPU_STAT 	; read PPU status to reset the high/low latch
 
-	; Set VRAM_ADDR to $2000 (Nametable 0)
-	LDA #$20
-	STA PPU_VRAM_ADDR
-	LDA #$00
-	STA PPU_VRAM_ADDR
-
-	LDX #$02	 ; X = 2 (performs loop twice)
-	LDA #$08	 ; A = 8 (the Bowser curtain tile)
-PRG024_A9A1:
-	LDY #$ff	 ; Y = $FF (fill count)
-PRG024_A9A3:
-	STA PPU_VRAM_DATA	; Write $08/$09 to this byte in the VRAM
-	EOR #$01	 	; Toggle between $08/$09
-	DEY		 	; Y--
-	BNE PRG024_A9A3	 	; Loop while Y not zero
-	STA PPU_VRAM_DATA	; One more write since we come up one short
-	EOR #$01	 	; And its cooresponding flip
-	DEX		 	; X--
- 	BPL PRG024_A9A1		; Loop while X >= 0...
+Title_Custom_Setup:
+	;;; [ORANGE] Removed title display curtain routine
+	LDA #MUS2B_BOSS
+	STA Sound_QMusic2
 
 	RTS		 	; Return!
 
@@ -1872,7 +1851,7 @@ Title_3Glow:
 	DEC <Title_Ticker	; Title_Ticker--
 	BPL PRG024_AAA9	 	; If Title_Ticker >= 0, jump to PRG024_AAA9 (RTS)
 
-	LDA #$04	 	
+	LDA #10
 	STA <Title_Ticker	; Title_Ticker = 4
 
 	LDY <Title_3GlowIndex	; Y = current 3glow index
@@ -1895,15 +1874,16 @@ Title_3Glow:
 	; Title_3GlowIndex goes from 0 - 7, round and round
 	INC <Title_3GlowIndex
 	LDA <Title_3GlowIndex
-	AND #$07	
+	CMP #$18
+	BNE PRG024_AAA9
+	LDA #$00
 	STA <Title_3GlowIndex
-
 PRG024_AAA9:
 	RTS		 ; Return
 
 	; These are the color values used by Title_3Glow for the big '3'
 Title_3GlowColors:
-	.byte $27, $17, $07, $17, $27, $37, $37, $27
+	.byte $0b, $1b, $2b, $2b, $1b, $0b, $07, $17, $27, $27, $17, $07, $0b, $1b, $2b, $2b, $1b, $0b, $05, $15, $25, $25, $15, $05
 
 
 TitleState_OpeningSequence:
@@ -1976,7 +1956,8 @@ Title_IntroSkip:
 	STA PPU_CTL2
 
 	; This will load the title graphics in reverse, $22 to $6
-	LDA #$22	
+	;LDA #$60
+	LDA #$22
 	STA <Title_EventGrafX	; Title_EventGrafX = $22 (TitleScreen_Part27)
 
 PRG024_AB04:
@@ -1995,6 +1976,11 @@ PRG024_AB04:
 	DEC <Title_EventGrafX	; Title_EventGrafX--
 
 	LDA <Title_EventGrafX
+	;CMP #$5F
+	;BCC _norm_title_lines
+	;LDA #$22
+	;STA <Title_EventGrafX
+;_norm_title_lines:
 	CMP #$06	
 	BGE PRG024_AB04	 	; If Title_EventGrafX >= 6, loop!
 
@@ -2110,7 +2096,7 @@ Title_DoEvent:
 	.word Title_LogoShakeDown	; 05 - Logo shake down, and check if we're done doing that
 	.word Title_InitObjects		; 06 - Prepare all title screen objects
 	.word Title_PalFadeIn		; 07 - Palette fade in
-	.word Title_DrawMenu		; 08 - Adds the 1P/2P select menu to the title screen
+	.word Title_DoNothing		; 08 - Adds the 1P/2P select menu to the title screen
 	.word Title_DoNothing		; 09 - Do nothing, we're done!
 	
 Title_DoNothing:
@@ -2334,32 +2320,32 @@ PRG024_AC42:
 PRG024_AC52:
 	JSR Title_Menu_UpdateKoopas	 ; Update and draw koopas
 
-	LDA <Pad_Input		 
-	AND #PAD_SELECT
-	BEQ PRG024_AC6B	 	; If Player is not pressing SELECT, jump to PRG024_AC6B
+	;LDA <Pad_Input		 
+	;AND #PAD_SELECT
+	;BEQ PRG024_AC6B	 	; If Player is not pressing SELECT, jump to PRG024_AC6B
 
-	LDA #SND_MAPPATHMOVE	 
-	STA Sound_QMap	 	; "Path move" sound (in this case, the "bleep" for the menu)
+	;LDA #SND_MAPPATHMOVE	 
+	;STA Sound_QMap	 	; "Path move" sound (in this case, the "bleep" for the menu)
 
 	; Basically makes sure that the value of Total_Players is 0 or 1 
-	INC Total_Players
-	LDA Total_Players
-	AND #$01	 
-	STA Total_Players
+	;INC Total_Players
+	;LDA Total_Players
+	;AND #$01	 
+	;STA Total_Players
 
 PRG024_AC6B:
-	LDY Total_Players	 ; Y = Total_Players (0 or 1)
-	LDA Title_Menu_1P2PCursorY,Y	 ; Get proper Y value for where cursor is at
-	STA Sprite_RAM+$F0	 ; Store into sprite
+	;LDY Total_Players	 ; Y = Total_Players (0 or 1)
+	;LDA Title_Menu_1P2PCursorY,Y	 ; Get proper Y value for where cursor is at
+	;STA Sprite_RAM+$F0	 ; Store into sprite
 
-	LDA #$df	 
-	STA Sprite_RAM+$F1	 ; Store pattern value into sprite
+	;LDA #$df	 
+	;STA Sprite_RAM+$F1	 ; Store pattern value into sprite
 
-	LDA #$00	 
-	STA Sprite_RAM+$F2	 ; Store attribute value into sprite
+	;LDA #$00	 
+	;STA Sprite_RAM+$F2	 ; Store attribute value into sprite
 
-	LDA #72
-	STA Sprite_RAM+$F3	 ; Store X value into sprite
+	;LDA #72
+	;STA Sprite_RAM+$F3	 ; Store X value into sprite
 
 	JSR Title_3Glow	 	; Keep the big '3' glowing!
 
@@ -5496,17 +5482,17 @@ PRG024_BBB0:
 	DEX		 ; X--
 	BPL PRG024_BBB0	 ; While X >= 0, loop
 
-	JSR Title_Display_Curtain	; Put up the curtain!
+	;;;JSR Title_Display_Curtain	; Put up the curtain!
 
 	; Push in the Checkerboard floor
-	LDA #$23
-	ASL A
-	TAY
-	LDA Video_Upd_Table2,Y
-	STA <Video_Upd_AddrL
-	LDA Video_Upd_Table2+1,Y
-	STA <Video_Upd_AddrH
-	JSR Video_Misc_Updates2
+	;LDA #$23
+	;ASL A
+	;TAY
+	;LDA Video_Upd_Table2,Y
+	;STA <Video_Upd_AddrL
+	;LDA Video_Upd_Table2+1,Y
+	;STA <Video_Upd_AddrH
+	;JSR Video_Misc_Updates2
 
 	; Set scroll at lowest point (technically, curtain fully raised)
 	LDA #$ef
