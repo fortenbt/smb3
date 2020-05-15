@@ -511,9 +511,9 @@ PRG030_845A:
 	JSR Reset_PPU_Clear_Nametables
 
 	; Load title screen graphics
-	LDA #$78
+	LDA #$2C
 	STA PatTable_BankSel
-	LDA #$7a	
+	LDA #$2E
 	STA PatTable_BankSel+1
 	LDA #$20	
 	STA PatTable_BankSel+2

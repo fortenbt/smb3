@@ -262,7 +262,7 @@ Video_Upd_Table2:
 	.word TitleScreen_LogoAttr2	; $21 - Title Screen part 26
 	.word TitleScreen_DarkPal	; $22 - Title Screen part 27 Sequence end
 
-	.word Title_Checkerboard_Floor	; $23 - The black & white squares at the beginning 
+	.word TitleScreen_DarkPal	; $23 - [ORANGE] used to be checkerboard floor, removed
 	.word Ending_CurtainExtension	; $24 - Slightly longer curtain in ending
 	.word PRG025_CCCE		; $25 - ???
 	.word EndSeq_WorldFadeIn1	; $26 - End pic world fade in effect part 1
@@ -323,6 +323,7 @@ Video_Upd_Table2:
 	.word EndSeq_CurtainFadeIn2	; $5D - Curtain fade in effect part 2
 	.word EndSeq_CurtainFadeIn3	; $5E - Curtain fade in effect part 3
 	.word PRG025_D505		; $5F - 
+	;.word TitleScreen_LogoLine25	; $60 - Title Screen part 26
 
 Title_Load_Palette:
 	; This is the initial palette applied to the title screen
@@ -337,296 +338,210 @@ Title_Load_Palette:
 	; Falls into...
 
 Title_Checkerboard_Floor:
-	vaddr $22E0	; Bottom of nametable
-	.byte 32	; 32 bytes to follow
-	.byte $18, $19, $18, $19, $18, $19, $18, $19, $18, $19, $18, $19, $18, $19, $18, $19
-	.byte $18, $19, $18, $19, $18, $19, $18, $19, $18, $19, $18, $19, $18, $19, $18, $19
-
-	vaddr $2B00
-	.byte 32	; 32 bytes to follow
-	.byte $15, $15, $16, $16, $15, $15, $16, $16, $15, $15, $16, $16, $15, $15, $16, $16
-	.byte $15, $15, $16, $16, $15, $15, $16, $16, $15, $15, $16, $16, $15, $15, $16, $16
-	
-	vaddr $2B20
-	.byte 32	; 32 bytes to follow
-	.byte $E6, $E6, $E7, $E7, $E6, $E6, $E7, $E7, $E6, $E6, $E7, $E7, $E6, $E6, $E7, $E7
-	.byte $E6, $E6, $E7, $E7, $E6, $E6, $E7, $E7, $E6, $E6, $E7, $E7, $E6, $E6, $E7, $E7
-
-	vaddr $2B40
-	.byte 32	; 32 bytes to follow
-	.byte $F6, $F6, $F7, $F7, $F6, $F6, $F7, $F7, $F6, $F6, $F7, $F7, $F6, $F6, $F7, $F7
-	.byte $F6, $F6, $F7, $F7, $F6, $F6, $F7, $F7, $F6, $F6, $F7, $F7, $F6, $F6, $F7, $F7
-
-	vaddr $2B60
-	.byte 32	; 32 bytes to follow
-	.byte $5D, $5D, $5F, $5F, $5D, $5D, $5F, $5F, $5D, $5D, $5F, $5F, $5D, $5D, $5F, $5F
-	.byte $5D, $5D, $5F, $5F, $5D, $5D, $5F, $5F, $5D, $5D, $5F, $5F, $5D, $5D, $5F, $5F
+TitleScreen_LogoLine25_30:
+	vaddr $2300
+	.byte VU_REPEAT | 13, $FE
+	vaddr $230D
+	.byte 19, $DD, $DE, $DF, $E0, $E1, $E2, $E3, $E4, $E5, $FE, $FE, $91, $92, $93, $94, $95, $96, $97, $98
 
 	; Terminator!
 	.byte $00
 
 TitleScreen_LogoLine01:
 	vaddr $2000
-	.byte $20, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08
-	.byte $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08, $09, $08
-	.byte $09
-
+	.byte VU_REPEAT | $20, $FE
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine02:
 	vaddr $2020
-	.byte $20, $18, $19, $18, $19, $18, $19, $18, $19, $18, $19, $18, $19, $18, $19, $18
-	.byte $19, $18, $19, $18, $19, $18, $19, $18, $19, $18, $19, $18, $19, $18, $19, $18
-	.byte $19
-
+	.byte VU_REPEAT | $20, $FE
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine03:
 	vaddr $2040
-	.byte $20, $28, $29, $28, $29, $28, $29, $28, $29, $28, $29, $28, $29, $28, $29, $28
-	.byte $29, $28, $29, $28, $29, $28, $29, $28, $29, $28, $29, $28, $29, $28, $29, $28
-	.byte $29
-
+	.byte VU_REPEAT | $20, $FE
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine04:
 	vaddr $2060
-	.byte VU_REPEAT | $20, $5C
-
+	.byte VU_REPEAT | $20, $FE
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine05:
 	vaddr $2080
-	.byte VU_REPEAT | $0B, $5C
-
-	vaddr $208B
-	.byte $15, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $3A, $5C, $5C, $5C, $5C
-	.byte $3B, $3C, $3D, $3E, $5C, $5C
-
+	.byte VU_REPEAT | $20, $FE
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine06:
 	vaddr $20A0
-	.byte VU_REPEAT | $0B, $5C
-
-	vaddr $20AB
-	.byte $15, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49, $4A, $5C, $5C, $5C, $5C
-	.byte $4B, $4C, $4D, $4E, $5C, $5C
-
+	.byte VU_REPEAT | $20, $FE
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine07:
 	vaddr $20C0
-	.byte $16, $5C, $5C, $3B, $3C, $3D, $3E, $5C, $5C, $5C, $5C, $5C, $50, $51, $52, $53
-	.byte $54, $55, $56, $57, $58, $59, $5A
-
-	vaddr $20D6
-	.byte VU_REPEAT | $0A, $5C
-
+	.byte VU_REPEAT | 26, $FE
+	vaddr $20DA
+	.byte $06, $00, $01, $02, $03, $04, $05
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine08:
 	vaddr $20E0
-	.byte $16, $5C, $5C, $4B, $4C, $4D, $4E, $5C, $5C, $5C, $5C, $5C, $60, $61, $62, $63
-	.byte $64, $65, $66, $67, $68, $69, $6A
-
-	vaddr $20F6
-	.byte VU_REPEAT | $0A, $5C
-
+	.byte VU_REPEAT | 25, $FE
+	vaddr $20F9
+	.byte $07, $06, $07, $08, $09, $0A, $0B, $0C
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine09:
 	vaddr $2100
-	.byte $20, $5C, $5C, $5C, $5C, $5C, $70, $71, $72, $73, $74, $75, $76, $77, $78, $79
-	.byte $7A, $7B, $5C, $7D, $7E, $7F, $C0, $C1, $C2, $C3, $C4, $C5, $5C, $5C, $5C, $5C
-	.byte $5C
-
+	.byte VU_REPEAT | 24, $FE
+	vaddr $2118
+	.byte $08, $0D, $0E, $FF, $FF, $FF, $12, $13, $14
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine10:
 	vaddr $2120
-	.byte $20, $5C, $5C, $5C, $5C, $5C, $80, $81, $82, $83, $84, $85, $86, $87, $88, $89
-	.byte $8A, $8B, $8C, $8D, $8E, $8F, $D0, $D1, $D2, $D3, $D4, $D5, $5C, $5C, $5C, $5C
-	.byte $5C
+	.byte VU_REPEAT | 23, $FE
+	vaddr $2137
+	.byte $09, $15, $16, $FF, $FF, $FF, $1A, $1B, $1C, $1D
 
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine11:
 	vaddr $2140
-	.byte $20, $5C, $5C, $5C, $5C, $5C, $90, $91, $92, $93, $94, $95, $96, $97, $98, $99
-	.byte $9A, $9B, $9C, $9D, $9E, $9F, $E0, $E1, $E2, $E3, $E4, $E5, $5C, $5C, $5C, $5C
-	.byte $5C
-
+	.byte VU_REPEAT | 23, $FE
+	vaddr $2157
+	.byte $09, $1E, $FF, $FF, $FF, $FF, $23, $FD, $25, $26
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine12:
 	vaddr $2160
-	.byte $20, $5C, $5C, $5C, $5C, $5C, $A0, $A1, $A2, $A3, $A4, $A5, $A6, $A7, $A8, $A9
-	.byte $AA, $AB, $AC, $AD, $AE, $AF, $F0, $F1, $F2, $F3, $F4, $F5, $5C, $5C, $5C, $5C
-	.byte $5C
-
+	.byte VU_REPEAT | 23, $FE
+	vaddr $2177
+	.byte $09, $27, $28, $FF, $2A, $2B, $2C, $FD, $2E, $2F
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine13:
 	vaddr $2180
-	.byte $20, $5B, $6B, $5C, $5C, $5C, $B0, $B1, $B2, $B3, $B4, $B5, $B6, $B7, $B8, $B9
-	.byte $BA, $BB, $BC, $BD, $BE, $BF, $C6, $C7, $C8, $D6, $D7, $D8, $E8, $04, $05, $06
-	.byte $07
-
+	.byte VU_REPEAT | 23, $FE
+	vaddr $2197
+	.byte $09, $30, $31, $32, $FF, $34, $35, $FD, $FD, $38
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine14:
 	vaddr $21A0
-	.byte VU_REPEAT | $0E, $5C
-
-	vaddr $21AE
-	.byte $12, $C9, $CA, $CB, $CC, $CD, $CE, $CF, $5C, $5C, $5C, $5C, $5C, $5C, $5C, $14
-	.byte $21, $21, $17
-
+	.byte VU_REPEAT | 23, $FE
+	vaddr $21B7
+	.byte $09, $39, $3A, $3B, $3C, $3D, $3E, $3F, $40, $41
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine15:
 	vaddr $21C0
-	.byte VU_REPEAT | $0E, $5C
-
-	vaddr $21CE
-	.byte $12, $D9, $DA, $DB, $DC, $DD, $5C, $5C, $5C, $5C, $5C, $5C, $5C, $5C, $5C, $20
-	.byte $21, $21, $23
-
+	.byte VU_REPEAT | 23, $FE
+	vaddr $21D7
+	.byte $09, $42, $43, $44, $45, $46, $47, $48, $49, $4A
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine16:
 	vaddr $21E0
-	.byte VU_REPEAT | $0E, $5C
-
-	vaddr $21EE
-	.byte $12, $E9, $EA, $EB, $EC, $ED, $5C, $5C, $5C, $5C, $5C, $5C, $5C, $5C, $5C, $20
-	.byte $21, $21, $23
-
+	.byte VU_REPEAT | 24, $FE
+	vaddr $21F8
+	.byte $08, $4B, $4C, $4D, $4E, $4F, $50, $51, $52
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine17:
 	vaddr $2200
-	.byte $20, $04, $05, $06, $07, $5C, $5C, $5C, $5C, $5C, $5C, $5C, $5C, $5C, $5C, $F9
-	.byte $FA, $FB, $FF, $FD, $FE, $5C, $5C, $5C, $5C, $5C, $5C, $04, $05, $02, $03, $21
-	.byte $23
-
+	.byte VU_REPEAT | 24, $FE
+	vaddr $2218
+	.byte $08, $54, $55, $56, $57, $58, $59, $5A, $5B
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine18:
 	vaddr $2220
-	.byte $20, $14, $21, $21, $22, $24, $25, $5C, $5C, $5C, $5C, $5C, $5C, $5C, $5C, $6C
-	.byte $6D, $6E, $6F, $DE, $DF, $5C, $5C, $5C, $5C, $5C, $5C, $14, $21, $21, $13, $21
-	.byte $23
-
+	.byte VU_REPEAT | 23, $FE
+	vaddr $2237
+	.byte $09, $5C, $5D, $5E, $5F, $60, $61, $62, $63, $64
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine19:
 	vaddr $2240
-	.byte $20, $20, $21, $21, $23, $5F, $11, $5C, $5C, $5C, $5C, $5C, $5C, $5C, $5C, $5C
-	.byte $5C, $EE, $EF, $5C, $5C, $5C, $5C, $5C, $5C, $5C, $5C, $20, $21, $21, $21, $21
-	.byte $23
-
+	.byte VU_REPEAT | 15, $FE
+	vaddr $224F
+	.byte 17, $B4, $B5, $B6, $B7, $B8, $B9, $FE, $FE, $FE, $FE, $65, $66, $67, $68, $69, $6A, $6B
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine20:
 	vaddr $2260
-	.byte $06, $20, $21, $21, $23, $5F, $5F
-
-	vaddr $2266
-	.byte VU_REPEAT | $14, $5C
-
-	vaddr $227A
-	.byte $06, $20, $21, $21, $21, $21, $23
-
+	.byte VU_REPEAT | 14, $FE
+	vaddr $226E
+	.byte 18, $BA, $BB, $BC, $FE, $FE, $BD, $BE, $BF, $FE, $FE, $6C, $6D, $6E, $6F, $70, $71, $72, $73
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine21:
 	vaddr $2280
-	.byte $06, $20, $21, $00, $01, $26, $27
-
-	vaddr $2286
-	.byte VU_REPEAT | $14, $5C
-
-	vaddr $229A
-	.byte $06, $20, $21, $21, $21, $21, $23
-
+	.byte VU_REPEAT | 14, $FE
+	vaddr $228E
+	.byte 18, $C0, $C1, $FE, $FE, $0F, $FE, $C2, $C3, $C4, $FE, $74, $75, $76, $77, $78, $79, $7A, $7B
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine22:
 	vaddr $22A0
-	.byte $08, $20, $21, $10, $21, $21, $22, $24, $25
-
-	vaddr $22A8
-	.byte VU_REPEAT | $12, $5C
-
-	vaddr $22BA
-	.byte $06, $20, $21, $21, $21, $21, $23
-
+	.byte VU_REPEAT | 14, $FE
+	vaddr $22AE
+	.byte 18, $C5, $C6, $C7, $C8, $C9, $CA, $CB, $CC, $CD, $FE, $FE, $7C, $7D, $7E, $7F, $80, $81, $82
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine23:
 	vaddr $22C0
-	.byte $08, $20, $21, $21, $21, $21, $23, $5F, $11
-
-	vaddr $22C8
-	.byte VU_REPEAT | $10, $5C
-
-	vaddr $22D8
-	.byte $08, $04, $05, $02, $03, $21, $21, $21, $23
-
+	.byte VU_REPEAT | 14, $FE
+	vaddr $22CE
+	.byte 18, $CE, $FE, $CF, $D0, $FF, $D1, $D2, $D3, $D4, $FE, $FE, $83, $84, $85, $86, $87, $88, $89
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine24:
 	vaddr $22E0
-	.byte $08, $20, $21, $21, $21, $21, $23, $5F, $5F
-
-	vaddr $22E8
-	.byte VU_REPEAT | $10, $5C
-
-	vaddr $22F8
-	.byte $08, $14, $21, $21, $13, $21, $21, $21, $23
-
+	.byte VU_REPEAT | 14, $FE
+	vaddr $22EE
+	.byte 18, $D5, $D6, $D7, $D8, $D9, $DA, $DB, $DC, $FE, $FE, $FE, $8A, $8B, $8C, $8D, $8E, $8F, $90
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoAttr1:
 	vaddr $23C0
-	.byte $20, $F0, $F0, $F0, $F0, $F0, $F0, $F0, $F0, $2A, $8A, $66, $55, $55, $99, $A2
-	.byte $A8, $AA, $55, $55, $55, $55, $55, $55, $A9, $A8, $A6, $A5, $ED, $77, $B5, $A5
-	.byte $AA
+	.byte $20, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF
 
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoAttr2:
 	vaddr $23E0
-	.byte $20, $AA, $AA, $0A, $0E, $0F, $0B, $AA, $AA, $AA, $AA, $22, $00, $00, $00, $AA
-	.byte $AA, $00, $00, $00, $00, $00, $00, $00, $00, $0A, $0A, $0A, $0A, $0A, $0A, $0A
-	.byte $0A
+	.byte $20, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF
 
 	; Terminator
 	.byte $00
@@ -668,25 +583,25 @@ Title_FadeIn_3:
 Title_FadeIn_4:
 	vaddr $3F00
 	.byte 16	; 16 bytes (colors) to follow...
-	.byte $37, $0F, $30, $16, $37, $0F, $21, $02, $37, $0F, $2A, $1A, $37, $0F, $27, $02
+	.byte $0F, $02, $2B, $30, $0F, $02, $2B, $30, $0F, $02, $2B, $30, $0F, $01, $2B, $30
 	.byte $00	; Terminator
 
 Title_LoadMenu:
 
 	; 1 PLAYER GAME
-	vaddr $226A
-	.byte 13	; 13 bytes to follow
-	.byte $0E, $5C, $0A, $0B, $0C, $1A, $1B, $0D, $5C, $1C, $0C, $1D, $1B
+	;vaddr $226A
+	;.byte 13	; 13 bytes to follow
+	;.byte $0E, $5C, $0A, $0B, $0C, $1A, $1B, $0D, $5C, $1C, $0C, $1D, $1B
 
 	; 2 PLAYER GAME
-	vaddr $22AA
-	.byte 13	; 13 bytes to follow
-	.byte $1E, $5C, $0A, $0B, $0C, $1A, $1B, $0D, $5C, $1C, $0C, $1D, $1B
+	;vaddr $22AA
+	;.byte 13	; 13 bytes to follow
+	;.byte $1E, $5C, $0A, $0B, $0C, $1A, $1B, $0D, $5C, $1C, $0C, $1D, $1B
 
 	; C 1988 Nintendo
-	vaddr $22EA
-	.byte 13	; 13 bytes to follow
-	.byte $3F, $5C, $0E, $0F, $1F, $1F, $5C, $2A, $2B, $2C, $2D, $2E, $2F
+	;vaddr $22EA
+	;.byte 13	; 13 bytes to follow
+	;.byte $3F, $5C, $0E, $0F, $1F, $1F, $5C, $2A, $2B, $2C, $2D, $2E, $2F
 
 	.byte $00	; Terminator
 

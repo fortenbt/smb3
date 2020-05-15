@@ -1503,7 +1503,7 @@ PalSet_Fort:
 
 	.byte $FF, $16, $27, $0C, $FF, $06, $30, $16, $FF, $0F, $30, $2C, $FF, $07, $36, $27	; SPR Pal 0 (8)
 	.byte $FF, $16, $36, $0F, $FF, $07, $30, $16, $FF, $00, $30, $2C, $FF, $1A, $30, $27	; SPR Pal 1 (9)
-	.byte $FF, $16, $36, $0F, $FF, $0F, $36, $16, $FF, $0F, $30, $27, $FF, $0F, $30, $2A	; SPR Pal 2 (10)
+	.byte $FF, $16, $36, $0F, $FF, $0F, $36, $16, $FF, $0F, $30, $27, $FF, $0F, $30, $36	; SPR Pal 2 (10) (King's room)
 	.byte $FF, $16, $36, $0F, $FF, $0F, $36, $16, $FF, $0F, $36, $10, $FF, $0F, $27, $17	; SPR Pal 3 (11)
 
 PalSet_HillsUnder:
