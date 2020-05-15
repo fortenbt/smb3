@@ -342,7 +342,7 @@ King_SprDataOffByWorldAndFrame:
 
 	; Y offset (from King_Y) per King sprite (must be parallel with King_SprDataX)
 King_SprDataYOff:
-King_W1YOff:	.byte $09, $10, $10, $10, $20, $20, $20
+King_W1YOff:	.byte $09, $10, $10, $20, $20
 King_W7YOff1:	.byte $02, $10, $10, $20, $20
 King_W7YOff0:	.byte $03, $10, $10, $20, $20
 King_W6YOff:	.byte $00, $16, $16
@@ -354,7 +354,7 @@ King_W3YOff0:	.byte $0E, $10, $10, $20, $20, $20
 
 	; X per King sprite (must be parallel with King_SprDataYOff)
 King_SprDataX:
-King_W1X:	.byte $D7, $CC, $D4, $DC, $CC, $D4, $DC
+King_W1X:	.byte $D7, $98, $A0, $98, $A0
 King_W7X1:	.byte $CC, $C8, $D0, $C8, $D0
 King_W7X2:	.byte $CC, $C8, $D0, $C8, $D0
 King_W6X:	.byte $C8, $C8, $D0
@@ -374,8 +374,8 @@ King_SprPatOffByWorldAndFrame:
 	.byte (King_W7Pat0 - King_SprPats), (King_W7Pat1 - King_SprPats)	; World 7
 
 King_SprPats:
-King_W1Pat1:	.byte $E1, $E3, $E5, $E7, $E9, $EB
-King_W1Pat0:	.byte $E1, $ED, $E5, $E7, $EF, $EB
+King_W1Pat1:	.byte $E1, $E3, $E5, $E7
+King_W1Pat0:	.byte $E1, $E3, $E5, $E7
 King_W7Pat1:	.byte $F1, $F3, $F5, $F7
 King_W7Pat0:	.byte $F9, $D5, $FD, $FF
 King_W6Pat0:	.byte $C1, $C3
@@ -530,7 +530,8 @@ PRG024_A40C:
 	; Not World 6...
 
 	; Just put a stationary crown there
-	LDA #$fb
+	; [ORANGE] modified to place an empty sprite there
+	LDA #$ab
 	STA Sprite_RAM+$61
 	LDA #$02
 	STA Sprite_RAM+$62
