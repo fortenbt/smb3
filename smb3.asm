@@ -3626,7 +3626,6 @@ TILE_LARGEFORT		= $6A	; UNUSED "Large Fortress" tile (usually gets visually corr
 TILE_NPCBOY1		= $6A	; [ORANGE] NPC Boy 1 (dragon warrior fat man)
 TILE_FORTPARTIAL	= $6C	; [ORANGE] Mini-Fortress, partially complete
 TILE_NPCDOG			= $6D	; [ORANGE] NPC Dog
-TILE_NPCBOY2		= $7D	; [ORANGE] NPC Boy 2 (custom man sprite)
 TILE_NPCGIRL3		= $7E	; [ORANGE] NPC Girl 3 (TILE_NPCGIRL2, slightly different hair, diff palette)
 TILE_MARIOCOMP_G	= $80	; Mario Completed, green color
 TILE_LUIGICOMP_G	= $81	; Luigi Completed, green color
@@ -3666,6 +3665,7 @@ TILE_SPADEBONUS		= $E8	; Spade bonus panel
 TILE_WORLD5STAR		= $E9	; Star used on World 5 Sky map
 TILE_ALTFORT		= $EB	; Alternate color Mini-Fortress
 TILE_NPCGIRL1		= $EC	; [ORANGE] NPC Girl 1 (dragon warrior)
+TILE_NPCBOY2		= $ED	; [ORANGE] NPC Boy 2 (custom man sprite)
 
 
 ; Commons (not really comprehensive)
