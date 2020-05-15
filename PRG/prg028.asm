@@ -1521,13 +1521,13 @@ PatS8:	.byte $50, $51, $51, $51, $51, $51, $51, $51, $51, $51, $51, $51, $51, $5
 	; be played ($10, $20, $30, ... $C0), so that song $10 uses a start
 	; index of $00, an end index of $06, and a loop index of $01.
 Music_Set2B_Starts:
-	.byte $00, $07, $0F, $17, $27, $13, $15, $1B, $1E, $1B, $27, $2C
+	.byte $00, $07, $0F, $17, $27, $13, $15, $1B, $1E, $27, $27, $2C
 
 Music_Set2B_Ends:
-	.byte $06, $0E, $16, $26, $2C, $14, $1A, $1D, $26, $1D, $2B, $2C
+	.byte $06, $0E, $16, $26, $2C, $14, $1A, $1D, $26, $2C, $2B, $2C
 
 Music_Set2B_Loops:
-	.byte $01, $07, $0F, $17, $27, $13, $18, $1B, $1F, $1B, $28, $2C
+	.byte $01, $07, $0F, $17, $27, $13, $18, $1B, $1F, $27, $28, $2C
 
 
 	; These are Set 2B music segments.  Note that more exist on page 29.
