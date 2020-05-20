@@ -2071,7 +2071,7 @@ PRG000_CA7F:
 	LDX <SlotIndexBackup		 ; Restore X as the object slot index
 
 PRG000_CA81:
-	JSR AScrlURDiag_CheckWrapping	; Handle diagonal autoscroll's scroll wrappping
+	;JSR AScrlURDiag_CheckWrapping	; Handle diagonal autoscroll's scroll wrappping
 	JSR Object_DetermineVertVis	; Set flags based on which sprites of this object are vertically visible
 	JSR Object_DetermineHorzVis	; Set flags based on which sprites of this object are horizontally visible
 
@@ -6728,290 +6728,49 @@ _obj_sss_no_vert:
 	RTS							; If this was caused by a noteblock, just return
 
 ;[ORANGE] Free space from removing ToadHouse_GiveItem
-PRG000_FREE_SPACE:
-	.ds 0x1a
 
-AScrlURDiag_HandleWrap:
-	LDA AScrlURDiag_WrapState
-	STA AScrlURDiag_WrapState_Copy	 ; AScrlURDiag_WrapState_Copy = AScrlURDiag_WrapState
-	JSR AScrlURDiag_NoWrapAbort	; Will not return here if AScrlURDiag_WrapState_Copy not set or gameplay halted!
-
-	LDY #$00	 ; Y = 0
- 
-	LDA Level_AScrlVVelCarry
-	LSR A		
-	BCC PRG000_DE53	 ; If Level_AScrlVVelCarry = 0, jump to PRG000_DE53
-
-	INY		 ; Y = 1
-	DEC Level_ScrollDiffH	 ; Level_ScrollDiffH--
-
-PRG000_DE53:
-	LDA Level_ScrollDiffH
-	STA AScrlURDiag_OffsetX	 ; AScrlURDiag_OffsetX = Level_ScrollDiffH
-
-	STY Level_ScrollDiffH	; Level_ScrollDiffH = 0 or 1
-
-	ADD <Player_X
-	STA <Player_X	 ; Player_X += Level_ScrollDiffH
-	BCC PRG000_DE65	 ; If no carry, jump to PRG000_DE65
-
-	INC <Player_XHi	 ; Otherwise, apply carry
-
-PRG000_DE65:
-	LDY #$00	 ; Y = 0
-
-	LDA Level_AScrlVVelCarry
-	LSR A		
-	BCC PRG000_DE71	 ; If no autoscroll vertical velocity carry, jump to PRG000_DE71
-
-	DEY		 ; Y = -1
-	INC Level_ScrollDiffV
-
-PRG000_DE71:
-	LDA Level_ScrollDiffV
-	STA AScrlURDiag_OffsetY	 ; AScrlURDiag_OffsetY = Level_ScrollDiffV
-
-	STY Level_ScrollDiffV	 ; Level_ScrollDiffV = 0 or -1
-
-	LDY <Player_InAir
-	BEQ PRG000_DE89	 ; If Player is not mid air, jump to PRG000_DE89
-
-	LDY #$00	 ; Y = 0
-
-	ADD Level_ScrollDiffV	 ; Level_ScrollDiffV is 0 or -1 right now
-	CMP #$ff
-	BNE PRG000_DE89
-	DEY		 ; Y = -1 
-
-PRG000_DE89:
-	ADD <Player_Y
-	STA <Player_Y
-	TYA		
-	ADC <Player_YHi	
-	STA <Player_YHi	
-
-	RTS		 ; Return
-
-AScrlURDiag_CheckWrapping:
-	JSR AScrlURDiag_NoWrapAbort	 ; Will not return here if AScrlURDiag_WrapState_Copy is not set or gameplay halted!
-
-	LDA <Objects_X,X
-	ADD AScrlURDiag_OffsetX	
-	STA <Objects_X,X
-	BCC PRG000_DEA3	 ; If no carry, jump to PRG000_DEA3
-	INC <Objects_XHi,X	 ; Otherwise, apply carry
-PRG000_DEA3:
-
-	LDA <Objects_Y,X
-	ADD AScrlURDiag_OffsetY	
-	STA <Objects_Y,X
-	BCC PRG000_DEAF	 ; If no carry, jump to PRG000_DEAF
-	INC <Objects_YHi,X	 ; Otherwise, apply carry 
-
-PRG000_DEAF:
-	RTS		 ; Return
+Player_TryHoldShell:
+	LDA Player_Regrabbing
+	BMI _normal_hold
+	BNE _j_Player_KickObject	; If we're regrabbing, kick the object away
+_normal_hold:
+	BIT <Pad_Holding
+	BVS _j_PRG000_D34F		; If Player is holding B, jump to PRG000_D34F
+_j_Player_KickObject:
+	JMP Player_KickObject		; Kick away the object and don't come back!
+_j_PRG000_D34F:
+	JMP PRG000_D34F
 
 
-AScrlURDiag_NoWrapAbort:
-	LDA AScrlURDiag_WrapState_Copy
-	BEQ PRG000_DEB9	 ; If diagonal autoscroller is not wrapping, jump to PRG000_DEB9
 
-	LDA <Player_HaltGame
-	BEQ PRG000_DEBB	 ; If gameplay is not halted, jump to PRG000_DEBB (RTS)
-
-PRG000_DEB9:
-	; If NOT AScrlURDiag_WrapState_Copy or if gameplay is halted, do not return to caller!!
-	PLA
-	PLA		 ; Pull return address
-
-PRG000_DEBB:
-	RTS		 ; Return
-
-
-ASHIM .func \1-AScroll_Movement-1
-	; This is the initial movement table for horizontal auto scroll levels, minus 1
-	; Level_AScrlLimitSel selects which entry to use, which sets Level_AScrlVar (the actual index value)
-AScroll_HorizontalInitMove:
-	.byte ASHIM(ASM_World_36_14)	;  0 World 3-6 / 1-4
-	.byte ASHIM(ASM_W3_Airship)	;  1 World 3 Airship
-	.byte ASHIM(ASM_World_62)	;  2 World 6-2
-	.byte ASHIM(ASM_W5_Airship)	;  3 World 5 Airship
-	.byte ASHIM(ASM_UNK4)		;  4
-	.byte ASHIM(ASM_W4Airship)	;  5 World 4 Airship
-	.byte ASHIM(ASM_W6Airship)	;  6 World 6 Airship
-	.byte ASHIM(ASM_World_56)	;  7 World 5-6
-	.byte ASHIM(ASM_UNK8)		;  8
-	.byte ASHIM(ASM_UNK9)		;  9 
-	.byte ASHIM(ASM_World_67)	;  A World 6-7
-	.byte ASHIM(ASM_W1Airship)	;  B World 1 Airship
-	.byte ASHIM(ASM_W7Airship)	;  C World 7 Airship
-	.byte ASHIM(ASM_W8Airship)	;  D World 8 Airship
-	.byte ASHIM(ASM_W8Battleship)	;  E World 8 Battleship
-	.byte ASHIM(ASM_World_74)	;  F World 7-4
-	.byte ASHIM(ASM_W1CoinHeaven)		; 10
-	.byte ASHIM(ASM_CoinShip)	; 11 Coin Ship
-	.byte ASHIM(ASM_UNK12)		; 12 
-	.byte ASHIM(ASM_World8Tank1)	; 13 World 8 Tank 1
-	.byte ASHIM(ASM_World8Tank2)	; 14 World 8 Tank 2
-	.byte ASHIM(ASM_Terminator)	; 15 ** Terminator Only (because it seeks ahead to see the terminating movement index)
-
-Video_3CMMushTop:
-	vaddr $208D
-	.byte VU_REPEAT | $06, $A9
-	vaddr $20AB
-	.byte VU_REPEAT | $04, $A9
-	vaddr $20B1
-	.byte VU_REPEAT | $04, $A9
-	vaddr $20CA
-	.byte VU_REPEAT | $05, $A9
-	vaddr $20D1
-	.byte VU_REPEAT | $05, $A9
-	vaddr $214A
-	.byte VU_VERT | VU_REPEAT | $03, $A9
-	.byte $00	; Terminator
-
-Video_3CMMushLeft:
-	vaddr $20E9
-	.byte $05, $A9, $A9, $FC, $A9, $A9
-	vaddr $20F2
-	.byte $05, $A9, $A9, $FC, $A9, $A9
-	vaddr $2128
-	.byte VU_VERT | VU_REPEAT | $07, $A9
-	vaddr $2109
-	.byte VU_VERT | VU_REPEAT | $06, $A9
-	vaddr $214D
-	.byte VU_VERT | VU_REPEAT | $03, $A9
-	.byte $00	; Terminator
-
-Video_3CMMushMid:
-	vaddr $212E
-	.byte VU_VERT | VU_REPEAT | $08, $A9
-	vaddr $212F
-	.byte VU_VERT | VU_REPEAT | $05, $A9
-	vaddr $2130
-	.byte VU_VERT | VU_REPEAT | $05, $A9
-	vaddr $2131
-	.byte VU_VERT | VU_REPEAT | $08, $A9
-	vaddr $2152
-	.byte VU_VERT | VU_REPEAT | $03, $A9
-	.byte $00	; Terminator
-
-Video_3CMMushRight:
-	vaddr $2155
-	.byte VU_VERT | VU_REPEAT | $03, $A9
-	vaddr $2116
-	.byte VU_VERT | VU_REPEAT | $06, $A9
-	vaddr $2137
-	.byte VU_VERT | VU_REPEAT | $07, $A9
-	vaddr $21CB
-	.byte VU_REPEAT | $0A, $A9
-	vaddr $21E9
-	.byte VU_VERT | VU_REPEAT | $02, $A9
-	.byte $00	; Terminator
-
-Video_3CMMushBot:
-	vaddr $21EA
-	.byte VU_VERT | VU_REPEAT | $04, $A9
-	vaddr $21EB
-	.byte VU_VERT | $04, $A9, $FC, $FC, $A9
-	vaddr $21F4
-	.byte VU_VERT | $04, $A9, $FC, $FC, $A9
-	vaddr $21F5
-	.byte VU_VERT | VU_REPEAT | $04, $A9
-	vaddr $21F6
-	.byte VU_VERT | VU_REPEAT | $02, $A9
-	vaddr $226B
-	.byte VU_REPEAT | $0A, $A9
-	.byte $00	; Terminator
-
-Video_3CMFlowTop:
-	vaddr $208B
-	.byte VU_REPEAT | $0A, $A9
-	vaddr $20A9
-	.byte VU_REPEAT | $03, $A9
-	vaddr $20B4
-	.byte VU_REPEAT | $03, $A9
-	vaddr $20C8
-	.byte VU_REPEAT | $02, $A9
-	vaddr $20D6
-	.byte VU_REPEAT | $02, $A9
-	vaddr $20E8
-	.byte VU_VERT | VU_REPEAT | $03, $A9
-	vaddr $20EB
-	.byte VU_REPEAT | $03, $A9
-	vaddr $210B
-	.byte $01, $A9
-	.byte $00	; Terminator
-
-Video_3CMFlowDiag:
-	vaddr $2148
-	.byte VU_REPEAT | $02, $A9
-	vaddr $20CD
-	.byte VU_REPEAT | $06, $A9
-	vaddr $20F2
-	.byte VU_REPEAT | $03, $A9
-	vaddr $20F7
-	.byte VU_VERT | VU_REPEAT | $03, $A9
-	vaddr $214D
-	.byte VU_REPEAT | $06, $A9
-	vaddr $212B
-	.byte VU_REPEAT | $03, $A9
-	vaddr $2156
-	.byte VU_REPEAT | $02, $A9
-	vaddr $21A9
-	.byte VU_REPEAT | $02, $A9
-	.byte $00	; Terminator
-
-Video_3CMFlowMid:
-	vaddr $2114
-	.byte $01, $A9
-	vaddr $210E
-	.byte VU_REPEAT | $04, $A9
-	vaddr $2132
-	.byte VU_REPEAT | $03, $A9
-	vaddr $2169
-	.byte VU_REPEAT | $03, $A9
-	vaddr $2174
-	.byte VU_REPEAT | $03, $A9
-	vaddr $218B
-	.byte VU_REPEAT | $0A, $A9
-	vaddr $21B5
-	.byte VU_REPEAT | $02, $A9
-	vaddr $21D7
-	.byte VU_VERT | VU_REPEAT | $03, $A9
-	.byte $00	; Terminator
-
-Video_3CMFlowStem:
-	vaddr $21AE
-	.byte VU_VERT | VU_REPEAT | $06, $A9
-	vaddr $21B1
-	.byte VU_VERT | VU_REPEAT | $06, $A9
-	vaddr $21C8
-	.byte VU_VERT | VU_REPEAT | $03, $A9
-	vaddr $21CB
-	.byte VU_REPEAT | $02, $A9
-	vaddr $21D3
-	.byte VU_REPEAT | $02, $A9
-	vaddr $21EA
-	.byte $04, $A9, $FC, $FC, $A9
-	vaddr $21F2
-	.byte $04, $A9, $FC, $FC, $A9
-	.byte $00	; Terminator
-
-Video_3CMFlowBot
-	vaddr $220B
-	.byte $01, $A9
-	vaddr $2214
-	.byte $01, $A9
-	vaddr $2229
-	.byte $04, $A9, $FC, $FC, $A9
-	vaddr $2233
-	.byte $04, $A9, $FC, $FC, $A9
-	vaddr $224A
-	.byte $04, $A9, $A9, $FC, $A9
-	vaddr $2252
-	.byte $04, $A9, $FC, $A9, $A9
-	vaddr $226C
-	.byte VU_REPEAT | $08, $A9
-	.byte $00	; Terminator
-
+DoBounceYVel:
+	LDA Level_ObjectID,X
+	CMP #OBJ_PARATROOPAGREENHOP
+	BEQ _do_green_vel
+	CMP #OBJ_REDTROOPA
+	BEQ _do_red_vel
+	CMP #OBJ_SPINY
+	BNE _norm_bounce_vel
+_do_spiny_vel:
+	LDA #$10
+	STA <Objects_XVel,X
+	BNE __neg30rts
+_do_red_vel:
+	LDA #$0e
+	STA <Objects_XVel,X
+__neg30rts:
+	LDA #-$30
+	STA <Objects_YVel,X
+	RTS
+_do_green_vel:
+	LDA #-$53
+	STA <Objects_YVel,X
+	RTS
+_norm_bounce_vel:
+	LDA #-$30
+	STA <Objects_YVel,X
+	JSR Level_ObjCalcXDiffs		; Detect which side object is on versus Player
+	; Store proper X velocity
+	LDA PRG000_D16B,Y
+	STA <Objects_XVel,X
+	RTS

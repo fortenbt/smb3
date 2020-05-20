@@ -143,126 +143,7 @@ Player_VibeDisableFrame:
 	.byte PF_WALKSPECIAL_BASE+2	; Tanooki
 	.byte PF_WALKBIG_BASE+2		; Hammer
 
-	; Unused data?
-	.byte $FE, $02, $05, $FB, $01
-	.byte $02, $03, $00
-
-	; When Player hits water, splash!
-Player_WaterSplash:
-	LDA <Player_SpriteY
-	CMP #$b8
-	BGE PRG008_A111	 ; If sprite Y >= $B8, jump to PRG008_A111 (RTS)
-
-	LDA Splash_DisTimer
-	BNE PRG008_A0F9	 ; If Splash_DisTimer > 0 (Player splashes disabled), jump to PRG008_A0F9
-
-	STA <Temp_Var1	 ; Temp_Var1 = 0
-
-	LDA <Player_Suit
-	BEQ PRG008_A0C8	 ; If Player is small, jump to PRG008_A0C8
-
-	LDA Player_IsDucking
-	BEQ PRG008_A0CC	 ; If Player is not ducking, jump to PRG008_A0CC
-
-PRG008_A0C8:
-
-	; Player is small or ducking
-
-	LDA #10
-	STA <Temp_Var1	 ; Temp_Var1 = 10
-
-PRG008_A0CC:
-	LDA #$01
-	STA Splash_Counter	 ; Splash_Counter = 1 (begin splash)
-
-	LSR A
-	STA Splash_NoScrollY	 ; Splash_NoScrollY = 0 (splash Y is relative to screen scroll)
-
-	LDA Level_AScrlConfig
-	BEQ PRG008_A0E7	 ; If no auto scroll effects are occurring, jump to PRG008_A0E7
-
-	; Auto scroll effect active...
-
-	LDA <Player_SpriteY
-	CMP #136
-	BLT PRG008_A0E7	 ; If Player_SpriteY < 136, jump to PRG008_A0E7
-
-	LDA #147
-	STA Splash_NoScrollY	 ; Splash_NoScrollY = 147 (splash Y is not relative to screen scroll, appropriate for fixed water at bottom)
-
-	BNE PRG008_A0F1	 ; Jump (technically always) to PRG008_A0F1
-
-PRG008_A0E7:
-	LDA <Player_Y
-	ADD <Temp_Var1	; Y offset
-	AND #$F0	; align to grid
-	ADD #$02	; +2
-
-PRG008_A0F1:
-	STA Splash_Y	 ; 147 or above formula -> Splash_Y 
-
-	LDA <Player_X
-	STA Splash_X	 ; Splash_X = Player_X
-
-PRG008_A0F9:
-	LDA <Player_YVel
-	BMI PRG008_A111	 ; If Player Y velocity < 0 (Player traveling up), jump to PRG008_A111 (RTS)
-
-	LDA #$00
-	STA <Player_YVel ; Otherwise, halt movement
-
-	LDY <Player_InAir
-	BEQ PRG008_A107	 ; If Player is not mid air, jump to PRG008_A107
-
-	STA <Player_XVel ; Otherwise, stop horizontal movement, too
-
-PRG008_A107:
-
-	; When Player hits water, a bubble is made
-
-	LDY #$02	 ; Y = 2 (all bubble slots)
-
-PRG008_A109:
-	LDA Bubble_Cnt,Y
-	BEQ PRG008_A118	 ; If this bubble slot is free, jump to PRG008_A118
-
-PRG008_A10E:
-	DEY		 ; Y--
-	BPL PRG008_A109	 ; While Y >= 0, loop!
-
-PRG008_A111:
-	RTS		 ; Return
-
-
-	; Y offsets
-SplashBubble_YOff:	.byte 16, 22, 19
-
-	; X offsets
-SplashBubble_XOff:	.byte  0,  4, 11
-
-PRG008_A118:
-	LDA RandomN,Y	 	; Get random number
-	ORA #$10
-	STA Bubble_Cnt,Y	; Store into bubble counter
-
-	; Set Bubble Y
-	LDA <Player_Y
-	ADC SplashBubble_YOff,Y
-	STA Bubble_Y,Y
-	LDA <Player_YHi
-	ADC #$00
-	STA Bubble_YHi,Y
-
-	; Set Bubble X
-	LDA <Player_X
-	ADC SplashBubble_XOff,Y
-	STA Bubble_X,Y
-	LDA <Player_XHi
-	ADC #$00
-	STA Bubble_XHi,Y
-
-	JMP PRG008_A10E	 ; Jump to PRG008_A10E
-
+	;;; [ORANGE] Removed Player_WaterSplash, SplashBubble_YOff, SplashBubble_XOff
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Player_DoGameplay
@@ -561,8 +442,9 @@ Level_InitAction_JumpTable:
 	.word LevelInit_PipeExitBottom	; 3 - Start by exiting bottom of pipe
 	.word LevelInit_PipeExitRight	; 4 - Start by exiting right of pipe
 	.word LevelInit_PipeExitLeft	; 5 - Start by exiting left of pipe
-	.word LevelInit_Airship		; 6 - Airship intro run & jump init
-	.word LevelInit_Airship_Board	; 7 - Boarding the Airship
+	;;; [ORANGE] Removed these
+	;.word LevelInit_Airship		; 6 - Airship intro run & jump init
+	;.word LevelInit_Airship_Board	; 7 - Boarding the Airship
 
 Level_InitAction_Do:
 	LDA Level_InitAction
@@ -612,37 +494,7 @@ LevelInit_PipeExitLeft:
 	LDY #$04	 ; Y = 4 (come out pipe to the left, sets Level_PipeExitDir)
 	JMP PRG008_A324	 ; Jump to PRG008_A324
 
-LevelInit_Airship:
-	LDA #$01	 
-	STA Level_AirshipCtl	 ; Level_AirshipCtl = 1
-	STA Update_Request	 ; Update_Request = 1
-
-	LSR A		 	; Essentially, A = 0
-	STA <Vert_Scroll	; Vert_Scroll = 0
-	RTS			; Return
-
-LevelInit_Airship_Board:
-	LDA #$04
-	STA Level_AirshipCtl	; Level_AirshipCtl = 4
-
-	LDA #SPR_HFLIP
-	STA <Player_FlipBits	; Player face to the right
-	STA <Player_InAir	; Flag Player as "in air"
-
-	LDA #$90
-	STA <Player_YVel	; Player_YVel = $90	; Throw Player upward
-	STA <Player_X		; Player_X = $90
-
-	LDA <Vert_Scroll
-	ADD #$80
-	STA <Player_Y		; Player_Y = Vert_Scroll + $80
-
-	; Carry into Player_YHi if needed
-	LDA #$00	
-	ADC #$00	
-	STA <Player_YHi
-
-	RTS		 ; Return
+;;; [ORANGE] Removed LevelInit_Airship and LevelInit_Airship_Board
 
 PRG008_A324:
 	; Set as appropriate from entry
@@ -713,14 +565,14 @@ LevelJunction_PartialInit:
 	LDA #$00	
 	STA <Player_XVel		; Player_XVel = 0
 	STA Level_InitAction		; Level_InitAction = 0
-	JSR LevelInit_Airship_Board	; Board the airship
+	;JSR LevelInit_Airship_Board	; Board the airship
 
 PRG008_A379:
 	LDA Level_InitAction
 	CMP #$06
 	BNE PRG008_A383	 	; If Level_InitAction <> 6 (Run & Jump for the airship), jump to PRG008_A383
 
-	JSR LevelInit_Airship	 ; Run & Jump for the airship
+	;JSR LevelInit_Airship	 ; Run & Jump for the airship
 PRG008_A383:
 
 	JSR PRG008_A38E	 
@@ -930,7 +782,7 @@ PRG008_A472:
 	JSR Player_ControlJmp	 	; Controllable actions
 	JSR Player_PowerUpdate	 	; Update "Power Meter"
 	JSR Player_DoScrolling	 	; Scroll relative to Player against active rules
-	JSR AScrlURDiag_HandleWrap 	; Handle the diagonal autoscroller wrapping
+	;JSR AScrlURDiag_HandleWrap 	; Handle the diagonal autoscroller wrapping
 	JSR Player_DetectSolids		; Handle solid tiles, including slopes if applicable
 	JSR Player_TailAttack_HitBlocks	; Do Tail attack against blocks
 	JSR Player_DoSpecialTiles	; Handle unique-to-style tiles!
@@ -1643,7 +1495,7 @@ PRG008_A819:
 	CMP #$02	 
 	BEQ PRG008_A827	 	; If it equals 2, jump to PRG008_A827
 
-	JSR Player_WaterSplash	 ; Hit water; splash!
+	;JSR Player_WaterSplash	 ; Hit water; splash!
 
 PRG008_A827:
 
@@ -6993,3 +6845,31 @@ PRG008_BFF9:
 ; Rest of ROM bank was empty
 
 
+DoNotMidair:
+	; Once we hit the ground, we can regrab again
+	LDA #$00
+	STA <Player_InAir
+	STA <Player_Regrabbing
+	RTS
+
+
+FALLRATE_SPIN = $20
+FallrateHook:
+	LDA <Player_Regrabbing
+	BMI _compare_normal
+	BEQ _compare_normal
+	LDA <Player_YVel
+	CMP #FALLRATE_SPIN
+	BMI _j_apply_vel		; we're < FALLRATE_SPIN, just apply the velocity
+	; we're regrabbing and > FALLRATE_SPIN, cap it
+	LDA #FALLRATE_SPIN
+	STA <Player_YVel
+	BNE _j_apply_vel		; jmp always to _j_apply_vel
+_compare_normal:
+	LDA <Player_YVel
+	CMP #FALLRATE_MAX
+	BPL _j__cap_fallrate_max
+_j_apply_vel:
+	JMP PRG008_BFF9			; apply velocities
+_j__cap_fallrate_max:
+	JMP _cap_fallrate_max

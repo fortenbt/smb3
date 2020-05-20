@@ -81,29 +81,29 @@ Video_Upd_Table: ; $803E
 	.word Video_DoWXLuigi80	; $11 - "World X" Intro, Luigi (horizontal scroll at $80)
 	.word Video_DoGameOver00; $12 - "GAME OVER" Box (horizontal scroll at $00)
 	.word Video_DoGameOver80; $13 - "GAME OVER" Box (horizontal scroll at $80)
-	.word Video_Blackout	; $14 - Blacks out 3 colors, used during end-level triple card match; not sure what for?
-	.word Video_3CMMushTop	; $15 - End Level Triple Card Match: Mushroom top
-	.word Video_3CMFlowTop	; $16 - End Level Triple Card Match: Flower top
-	.word Video_3CMStarTop	; $17 - End Level Triple Card Match: Star top
-	.word Video_3CMMushLeft	; $18 - End Level Triple Card Match: Mushroom left spot
-	.word Video_3CMFlowDiag	; $19 - End Level Triple Card Match: Flower inner diagonal
-	.word Video_3CMStarTip	; $1A - End Level Triple Card Match: Star eyes and tips
-	.word Video_3CMMushMid	; $1B - End Level Triple Card Match: Mushroom eyes and middle
-	.word Video_3CMFlowMid	; $1C - End Level Triple Card Match: Flower middle
-	.word Video_3CMStarSide	; $1D - End Level Triple Card Match: Star left/right sides
-	.word Video_3CMMushRight; $1E - End Level Triple Card Match: Mushroom right spot
-	.word Video_3CMFlowStem	; $1F - End Level Triple Card Match: Flower stem
-	.word Video_3CMStarBot1	; $20 - End Level Triple Card Match: Star near bottom
-	.word Video_3CMMushBot	; $21 - End Level Triple Card Match: Mushroom bottom
-	.word Video_3CMFlowBot	; $22 - End Level Triple Card Match: Flower bottom
-	.word Video_3CMStarBot2	; $23 - End Level Triple Card Match: Star bottom
-	.word Video_3CMAppear1	; $24 - End Level Triple Card Match: Make big shape appear attribute change 1
-	.word Video_3CMAppear2	; $25 - End Level Triple Card Match: Alters palette
-	.word Video_3CMAppear3	; $26 - End Level Triple Card Match: Make big shape appear attribute change 2
-	.word Video_3CMAppear4	; $27 - End Level Triple Card Match: Make big shape appear attribute change 3
-	.word Video_3CMAppear5	; $28 - End Level Triple Card Match: Make big shape appear attribute change 4
-	.word Video_3CMAppear6	; $29 - End Level Triple Card Match: Make big shape appear attribute change 5
-	.word Video_3CMAppear7	; $2A - End Level Triple Card Match: Make big shape appear attribute change 6
+	.word Video_DoStatusBar	; $14 - Blacks out 3 colors, used during end-level triple card match; not sure what for?
+	.word Video_DoStatusBar	; $15 - End Level Triple Card Match: Mushroom top
+	.word Video_DoStatusBar	; $16 - End Level Triple Card Match: Flower top
+	.word Video_DoStatusBar	; $17 - End Level Triple Card Match: Star top
+	.word Video_DoStatusBar	; $18 - End Level Triple Card Match: Mushroom left spot
+	.word Video_DoStatusBar	; $19 - End Level Triple Card Match: Flower inner diagonal
+	.word Video_DoStatusBar	; $1A - End Level Triple Card Match: Star eyes and tips
+	.word Video_DoStatusBar	; $1B - End Level Triple Card Match: Mushroom eyes and middle
+	.word Video_DoStatusBar	; $1C - End Level Triple Card Match: Flower middle
+	.word Video_DoStatusBar	; $1D - End Level Triple Card Match: Star left/right sides
+	.word Video_DoStatusBar; $1E - End Level Triple Card Match: Mushroom right spot
+	.word Video_DoStatusBar	; $1F - End Level Triple Card Match: Flower stem
+	.word Video_DoStatusBar	; $20 - End Level Triple Card Match: Star near bottom
+	.word Video_DoStatusBar	; $21 - End Level Triple Card Match: Mushroom bottom
+	.word Video_DoStatusBar	; $22 - End Level Triple Card Match: Flower bottom
+	.word Video_DoStatusBar	; $23 - End Level Triple Card Match: Star bottom
+	.word Video_DoStatusBar	; $24 - End Level Triple Card Match: Make big shape appear attribute change 1
+	.word Video_DoStatusBar	; $25 - End Level Triple Card Match: Alters palette
+	.word Video_DoStatusBar	; $26 - End Level Triple Card Match: Make big shape appear attribute change 2
+	.word Video_DoStatusBar	; $27 - End Level Triple Card Match: Make big shape appear attribute change 3
+	.word Video_DoStatusBar	; $28 - End Level Triple Card Match: Make big shape appear attribute change 4
+	.word Video_DoStatusBar	; $29 - End Level Triple Card Match: Make big shape appear attribute change 5
+	.word Video_DoStatusBar	; $2A - End Level Triple Card Match: Make big shape appear attribute change 6
 	.word Video_DoW2WZ	; $2B - "WELCOME TO WARP ZONE" banner
 	.word Video_YouGotCardH	; $2C - "YOU GOT A CARD" (and the card space) [for the End Level Triple Card Match]
 	.word Video_CourseClear	; $2D - "COURSE CLEAR"
@@ -172,7 +172,6 @@ StatusBar	.macro
 	; Typical status bar (vertical level)
 Video_DoStatusBarV:
 ;	StatusBar $2700
-	.ds 0x70
 
 	; Typical status bar (non-vertical level)
 Video_DoStatusBar:
@@ -181,141 +180,6 @@ Video_DoStatusBar:
 	; Status bar used when Horizontal Mirroring in effect (Roulette game)
 Video_DoStatusBarHM:
 ;	StatusBar $2300
-	.ds 0x80
-
-Video_3CMStarTop:
-	vaddr $208F
-	.byte VU_REPEAT | $02, $A9
-	vaddr $20AE
-	.byte VU_VERT | VU_REPEAT | $02, $A9
-	vaddr $20B1
-	.byte VU_VERT | VU_REPEAT | $02, $A9
-	vaddr $20ED
-	.byte $01, $A9
-	vaddr $20F2
-	.byte $01, $A9
-	vaddr $2108
-	.byte VU_REPEAT | $06, $A9
-	vaddr $2112
-	.byte VU_REPEAT | $06, $A9
-	.byte $00	; Terminator
-
-Video_3CMStarTip:
-	vaddr $2128
-	.byte $01, $A9
-	vaddr $2137
-	.byte $01, $A9
-	vaddr $2149
-	.byte $01, $A9
-	vaddr $214E
-	.byte VU_VERT | VU_REPEAT | $03, $A9
-	vaddr $2151
-	.byte VU_VERT | VU_REPEAT | $03, $A9
-	vaddr $2156
-	.byte $01, $A9
-	.byte $00	; Terminator
-
-Video_3CMStarSide:
-	vaddr $216A
-	.byte $01, $A9
-	vaddr $2175
-	.byte $01, $A9
-	vaddr $218B
-	.byte VU_VERT | VU_REPEAT | $02, $A9
-	vaddr $2194
-	.byte VU_VERT | VU_REPEAT | $02, $A9
-	vaddr $21CA
-	.byte VU_VERT | VU_REPEAT | $02, $A9
-	vaddr $21D5
-	.byte VU_VERT | VU_REPEAT | $02, $A9
-	.byte $00	; Terminator
-
-Video_3CMStarBot1:
-	vaddr $2209
-	.byte VU_VERT | VU_REPEAT | $02, $A9
-	vaddr $220F
-	.byte VU_REPEAT | $42, $A9
-	vaddr $2216
-	.byte VU_VERT | VU_REPEAT | $02, $A9
-	vaddr $222D
-	.byte VU_REPEAT | $02, $A9
-	vaddr $2231
-	.byte VU_REPEAT | $02, $A9
-	.byte $00	; Terminator
-
-Video_3CMStarBot2:
-	vaddr $2248
-	.byte $05, $A9, $FC, $FC, $A9, $A9
-	vaddr $2253
-	.byte $05, $A9, $A9, $FC, $FC, $A9
-	vaddr $2268
-	.byte VU_REPEAT | $03, $A9
-	vaddr $2275
-	.byte VU_REPEAT | $03, $A9
-	.byte $00	; Terminator
-
-Video_3CMAppear1:
-	vaddr $23CA
-	.byte VU_REPEAT | $04, $FF
-	vaddr $23D2
-	.byte VU_REPEAT | $04, $FF
-	vaddr $23DA
-	.byte VU_REPEAT | $04, $FF
-	vaddr $23E2
-	.byte VU_REPEAT | $04, $FF
-	.byte $00	; Terminator
-
-Video_3CMAppear3:
-	vaddr $23D3
-	.byte $02, $BF, $EF
-	vaddr $23DB
-	.byte $02, $FB, $FE
-	.byte $00	; Terminator
-	
-Video_3CMAppear4:
-	vaddr $23D3
-	.byte $02, $6A, $9A
-	vaddr $23DB
-	.byte $02, $A6, $A9
-	.byte $00	; Terminator
-
-Video_3CMAppear5:
-	vaddr $23CA
-	.byte $04, $BF, $AF, $AF, $EF
-	vaddr $23D2
-	.byte $04, $BB, $55, $55, $EE
-	vaddr $23DA
-	.byte $04, $BB, $55, $55, $EE
-	vaddr $23E2
-	.byte $04, $FB, $FA, $FA, $FE
-	.byte $00	; Terminator
-
-Video_3CMAppear6:
-	vaddr $23CA
-	.byte $04, $7F, $5F, $5F, $DF
-	vaddr $23D2
-	.byte $04, $77, $55, $55, $DD
-	vaddr $23DA
-	.byte $04, $77, $55, $55, $DD
-	vaddr $23E2
-	.byte $04, $F7, $F5, $F5, $FD
-	.byte $00	; Terminator
-
-Video_3CMAppear7:
-	vaddr $23CA
-	.byte VU_REPEAT | $04, $55
-	vaddr $23D2
-	.byte VU_REPEAT | $04, $55
-	vaddr $23DA
-	.byte VU_REPEAT | $04, $55
-	vaddr $23E2
-	.byte VU_REPEAT | $04, $55
-	.byte $00	; Terminator
-
-	; Blacks out a little bit of the palette during end level triple-card match sequecnce
-Video_Blackout:
-	vaddr $3F0D
-	.byte VU_REPEAT | $03, $0F, $00
 
 
 Video_3CMAppear2:
@@ -409,17 +273,7 @@ ClearPattern_ByTileset:
 	.byte $FC	; 18 - 2P Vs
 
 
-	.byte $AB, $83, $C6, $83, $CD, $83
 
-	; This single byte is used in plant infestation levels to load the animation counter
-PlantInfest_ACnt_MaxConst:	.byte (PlantInfest_PTPAC_End - PlantInfest_PatTablePerACnt - 1)
-PlantInfest_PatTablePerACnt:
-	.byte $60, $60, $60, $60, $60, $60, $60, $60, $60, $60, $62, $64, $66, $3E, $3E, $3E
-	.byte $3E, $3E, $3E, $3E, $3E, $3E, $3E, $66, $64, $62, $06
-PlantInfest_PTPAC_End
-
-	.byte $34, $36, $38, $3A, $3C
-	.byte $3E, $08, $34, $36, $38, $36, $34, $3A, $3E, $3A
 
 	; List of C000 pages to switch to by Level_Tileset
 PAGE_C000_ByTileset: ; $83D6
@@ -432,13 +286,6 @@ PAGE_A000_ByTileset: ; $83E9
 	; The normal level VROM page cycle set
 PT2_Anim:	.byte $60, $62, $64, $66
 
-PAUSE_Sprites:
-	.byte $58, $F1, $03, $60	; P
-	.byte $58, $F5, $03, $70	; A
-	.byte $58, $F9, $03, $80	; U
-	.byte $58, $FD, $03, $90	; S
-	.byte $58, $FF, $03, $A0	; E
-PAUSE_Sprites_End
 
 	; The BGM per world (see also World_BGM_Restore in PRG010)
 World_BGM:	
@@ -2207,7 +2054,7 @@ PRG030_8DCB:
 	CPY #$05
 	BNE Level_MainLoop	 ; If Level_Tileset <> 5 (pipe world plant infestation), jump to Level_MainLoop
 
-	LDA PlantInfest_ACnt_MaxConst	; A = [PlantInfest_ACnt_MaxConst] ($1A) (weird specific read??)
+	;LDA PlantInfest_ACnt_MaxConst	; A = [PlantInfest_ACnt_MaxConst] ($1A) (weird specific read??)
 	STA PlantInfest_ACnt_Max	; PlantInfest_ACnt_Max = [PlantInfest_ACnt_MaxConst] ($1A)
 
 
@@ -2262,7 +2109,7 @@ PRG030_8E13:
 
 	; Set proper VROM for this animation count of the plant infestation animation
 	TAY		; Y = PlantInfest_ACnt
-	LDA PlantInfest_PatTablePerACnt,Y
+	;LDA PlantInfest_PatTablePerACnt,Y
 	STA PatTable_BankSel+1
 
 	JMP PRG030_8E5D	 ; Jump to PlantInfest_ACnt
@@ -2372,42 +2219,6 @@ PRG030_8E79:
 	;NOP
 	JSR RunPauseMenu13
 	JMP Level_MainLoop
-	NOP
-	NOP
-	NOP
-	NOP
-	NOP
-	NOP
-	NOP
-	NOP
-	NOP
-	NOP
-	NOP
-	NOP
-	NOP
-	NOP
-	NOP
-
-	LDA #$32
-	STA PatTable_BankSel+5	; Set patterns needed for P A U S E sprites
-
-	JSR Sprite_RAM_Clear	 ; Clear other sprites
-
-	; Copy in the P A U S E sprites
-	LDY #(PAUSE_Sprites_End - PAUSE_Sprites - 1)
-PRG030_8E9D:
-	LDA PAUSE_Sprites,Y
-	STA Sprite_RAM+$00,Y
-	DEY		 ; Y--
-	BPL PRG030_8E9D	 ; While Y >= 0, loop!
-
-	; Updates palette
-	LDA #$06	 
-	STA <Graphics_Queue
-
-	; Nothing else to do while paused; loop!
-	JMP Level_MainLoop
-
 
 PRG030_8EAD:
 	; Not paused!
@@ -2906,74 +2717,7 @@ PRG030_9128:
 PRG030_9133:
 Do_2PVsChallenge:
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-DoStompComparison:
-	LDA Objects_State,X
-	CMP #OBJSTATE_SHELLED
-	BNE _not_shelled
-	; We're shelled and we collided, remove this return address and jmp to Object_HoldKickOrHurtPlayer
-	; This allows us to grab shelled objects if we're holding B no matter what
-	PLA
-	PLA
-	JMP Object_HoldKickOrHurtPlayer
-_not_shelled:			; For non-shells, do normal stomp comparison
-	LDA <Objects_Y,X	; Get object's Y
-	SUB <Temp_Var2		; Subtract Temp_Var2 (height above object considered "stompable" range)
-	ROL <Temp_Var1		; Stores the carry bit into Temp_Var1 bit 0
-	CMP <Player_Y
-	RTS
-
-DoSquish:
-	LDA Level_ObjectID,X
-	SUB #OBJ_PARAGOOMBA
-	CMP #2			; 0 - 1 would be OBJ_PARAGOOMBA, OBJ_PARAGOOMBAWITHMICROS
-	BCS _ldsnd_rts
-	JSR Paragoomba_SpawnMicroGoomba
-	LDA #$03				; Set object frame to 3
-	STA Objects_Frame,X
-_ldsnd_rts:
-	LDA Sound_QPlayer
-	RTS
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-CheckSquashedGoomba:
-	LDA Level_ObjectID,X
-	SUB #OBJ_GOOMBA
-	CMP #3			; allows OBJ_GOOMBA, OBJ_PARAGOOMBA, OBJ_PARAGOOMBAWITHMICROS
-	BCS _squash_rts
-	LDA #0			; return 0 if this was a goomba
-_squash_rts:
-	RTS
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-NewGfx:
-	.byte 119, 121, 123, 125
-EndAnimHook:
-	LDA Level_TimerEn
-	BMI _anim_hook_rts	; If bit 7 is set (animations disabled), jump to _anim_hook_rts
-	LDA <Level_OnOff
-	BEQ _anim_hook_rts	; If Level_OnOff is 0, normal animations already happened
-	LDA NewGfx,X
-	STA PatTable_BankSel+1
-_anim_hook_rts:
-	LDA SndCur_Pause
-	RTS
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-CoinblockHook:
-	LDA Level_PSwitchCnt
-	BNE _j_LATP_CoinCommon
-	LDA <Level_OnOff
-	EOR #$01
-	STA <Level_OnOff
-_j_LATP_CoinCommon
-	JMP LATP_CoinCommon
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; Redone slope tables to allow for added slope-level tiles
 Level_SlopeQuad40:
@@ -3155,380 +2899,8 @@ _non_iceblock_rts:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-DoHeldKick:
-	BIT <Pad_Holding
-	BVC _kick_or_throw_up		; If Player is NOT holding B button, check the up button
-	JMP PRG000_CEEF			; Player was holding B, so go ahead and jump back to where we hooked
-_kick_or_throw_up:
-	LDA <Pad_Holding
-	AND #PAD_UP
-	BEQ _set_down			; Not holding up when let go of B, so check down
-	LDA #1
-	BNE _set_throwval_and_kick
-_set_down:
-	LDA <Pad_Holding
-	AND #PAD_DOWN
-	BEQ _norm_kick			; Not holding down either, so do a normal kick
-	LDA #2
-	BNE _set_throwval_and_kick
-_norm_kick:
-	LDA #0
-_set_throwval_and_kick:
-	STA <ThrowUpOrDown
-	JMP Player_KickObject
-
-DoShelledBumps:
-	LDA <Object_PrevYVel
-	BPL _doshelledbumps_rts		; If object wasn't moving upward, don't bump blocks
-
-	LDA <Objects_DetStat,X
-	BEQ _doshelledbumps_rts		; If we haven't collided with anything, just return
-
-	; Handle object bouncing off blocks
-	LDA Object_TileFeet2
-	STA <Temp_Var8
-
-	;; Custom Object_BumpBlocks due to needing special offsets for a thrown shell
-	; Backup current PAGE_A000 bank
-	LDA PAGE_A000
-	PHA
-
-	; Change page @ A000 to 8
-	LDA #$08
-	STA PAGE_A000
-	JSR PRGROM_Change_A000
-
-	LDA ObjTile_DetYLo
-	SUB #$08
-	AND #$F0
-	STA <Temp_Var14		; YLo
-	PHP
-	LDA ObjTile_DetYHi
-	STA <Temp_Var13		; YHi
-	PLP
-	BCS _post_yhi_dec
-	DEC <Temp_Var13
-_post_yhi_dec:
-
-	LDA ObjTile_DetXLo
-	SUB #$07
-	AND #$F0
-	STA <Temp_Var16
-	PHP
-	LDA ObjTile_DetXHi
-	STA <Temp_Var15
-	PLP
-	BCS _post_xhi_dec
-	DEC <Temp_Var15
-_post_xhi_dec:
-
-	; Send detected tile over to check if object has hit any blocks
-	; that respond to being hit with head
-	LDA <Temp_Var8
-	JSR Object_BumpOffBlocks
-
-	LDX <SlotIndexBackup	; X = object slot index
-
-	; Restore page @ A000 to previous page
-	PLA
-	STA PAGE_A000
-	JSR PRGROM_Change_A000
-	;; End custom Object_BumpBlocks
-
-	JSR ObjectToObject_HitTest
-	BCC _doshelledbumps_rts		; If object has not hit another object, rts
-
-	; Play object-to-object collision sound
-	LDA Sound_QPlayer
-	ORA #SND_PLAYERKICK
-	STA Sound_QPlayer
-
-	JSR ObjectKill_SetShellKillVars	 ; Kill our kicked object and set ShellKill variables
-
-_doshelledbumps_rts:
-	LDA #$00
-	STA <Object_PrevYVel
-	JSR Object_HandleBumpUnderneath
-	RTS
-
-Object_Move_Hook:
-	LDA <Objects_YVel,X
-	STA <Object_PrevYVel
-	JMP Object_Move
-
-LoadLevel_Custom21:
-	;;; There's not enough room in PRG021 to put this there
-	LDA LL_ShapeDef
-	AND #$0f
-	STA <Temp_Var4		 ; Temp_Var4 = lower 4 bits of LL_ShapeDef (width of run)
-	LDY TileAddr_Off	 ; Y = TileAddr_Off
-
-	TXA
-	SUB #59
-	TAX
-_bs_run_loop21:
-	LDA Custom_Tiles21,X	 ; Boot spike tile
-	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
-	JSR LoadLevel_NextColumn ; Next column
-	DEC <Temp_Var4		 ; Temp_Var4--
-	BPL _bs_run_loop21	 ; While Temp_Var4 >= 0, loop!
-	RTS			 ; Return...
-
-
-DoPSwitchVibHook:
-	LDA <Level_OnOff
-	STA <Level_OnOffBackup
-	LDA #$00
-	STA <Level_OnOff	; Temporarily turn off the level_onoff switch
-_orig_vib:
-	LDA #$10
-	STA Level_Vibration	; Level_Vibration = $10 (little shake effect)
-	RTS
-
-
-DoPSwitchCntDec:
-	DEC Level_PSwitchCnt	; Level_PSwitchCnt--
-	LDA Level_PSwitchCnt
-	BNE _pswitch_dec_rts
-	; it was zero after decrementing, so we need to restore level_onoff
-	LDA <Level_OnOffBackup
-	STA <Level_OnOff
-	LDA #$00
-	STA <Level_OnOffBackup
-_pswitch_dec_rts:
-	RTS
-
-
-;; These functions do much more generous comparisons to allow for pipe entry
-ShouldAllowPipeCheck:
-	PHA			; Save off the tile the caller is about to look at
-	LDA Player_HitCeiling
-	BNE _first_check
-	LDA <Player_HitCeiling2	; Did we hit our head up to 3 frames ago?
-	BNE _dec_hitceiling2
-_disallow_pipe_checks:
-	PLA			; Restore the tile
-	LDY #0
-	RTS			; Return zero
-_first_check:
-	;; The first check occurs when a player hit their head
-	LDA #4
-	STA <Player_HitCeiling2
-	LDA Level_Tile_GndR
-	STA <Player_CeilingTile2	; This is the tile we'll check against
-_dec_hitceiling2:
-	DEC <Player_HitCeiling2
-	LDA Level_Tile_GndR		; Check if the current checked tile is a pipe (we're still under the pipe)
-	SUB #TILE1_PIPETB1_L
-	CMP #$12
-	BGE _disallow_pipe_checks	; Not under the pipe, disallow pipe checks
-	LDA <Player_CeilingTile2	; Still under the pipe, go ahead and force the check
-	STA Level_Tile_GndR		; Force our check tile to be the one from when we hit our head
-	PLA				; Restore the tile
-	LDY #1
-	RTS				; Return non-zero
-
-DoPipePosComparisons:
-	; On return, BGE is done for NOT going in the pipe
-	; A coming in is 18-1F, 0-7, 8-F, 0xF0-0xF7 (relative positions under the pipe)
-	BMI _do_r_pipe_cmp
-	PHA
-	AND #$10
-	BNE _do_l_pipe_cmp
-	PLA
-	; Otherwise, we want to allow the player in
-	CMP #$10
-	RTS
-_do_l_pipe_cmp:
-	; When A is 0x18-0x1F, we want to allow 0x1D, 0x1E, and 0x1F
-	PLA
-	SUB #$1E
-	CMP 1
-	RTS
-_do_r_pipe_cmp:
-	; When A is 0xF0-0xF7, we want to allow 0xF0, 0xF1, and 0xF2
-	SUB #$F0
-	CMP #2
-	RTS
-
-CheckYVelForDetectSolids:
-	LDA <Player_HitCeiling2
-	AND #$01
-	BNE __j__detect_head_not_feet	; every other frame until Player_HitCeiling2 hits 0
-	LDA <Player_YVel
-	BPL __j_PRG008_B4BD	 ; If Player_YVel >= 0 (moving downward), jump to PRG008_B4BD
-__j__detect_head_not_feet:
-	JMP _detect_head_not_feet
-__j_PRG008_B4BD:
-	JMP PRG008_B4BD
-
-
-InitializePauseMenu:
-	PHA
-	LDA EndCard_Flag
-	BNE _disallow_pause
-_check_UserMsg:
-	LDA <DoingUserMessage
-	BNE _disallow_pause
-_check_wandstate:
-	LDA Level_GetWandState
-	CMP #3
-	BPL _disallow_pause
-_check_pause_disabled:
-	LDA DisablePause
-	BNE _disallow_pause
-_initpause_allowed:
-	PLA
-	STA Level_PauseFlag	; Toggle pause flag
-	STA PauseMenuSel	; Set our menu selection (0 for unpaused, 1 for pausing)
-	JMP _allowed_pause
-_disallow_pause:
-	PLA
-	JMP _disallowed_pause
-
-RunPauseMenu13:
-	LDA PAGE_A000
-	PHA
-
-	LDA #13
-	STA PAGE_A000
-	JSR PRGROM_Change_A000
-
-	JSR RunPauseMenu
-
-	PLA
-	STA PAGE_A000
-	JSR PRGROM_Change_A000
-
-	RTS
-
-DeathRestartLevel:
-	PLA
-	PLA			; Remove Player_DrawAndDoActions29
-	PLA
-	PLA			; Remove Player_Update
-	PLA
-	PLA			; Remove Player_DoGameplay
-	LDA #0			; This is the page that the PRG008 death routine would restore
-	PHA			; Fall into RestartLevelPRG030
-
-RestartLevelPRG030:		; This is jumped to from Level_MainLoop->RunPauseMenu->DoMenuInput->PauseMenuRestartLevel
-	PLA			; Restore the A000 page saved by RunPauseMenu13 before getting here
-	TAY
-	PLA
-	PLA			; Remove the Level_MainLoop return address
-	TYA
-	STA PAGE_A000
-	JSR PRGROM_Change_A000
-
-	INC LevelRestarting			; Flag that we're restarting the level
-
-	; Switch bank A000 to page 26
-	LDA #26
-	STA PAGE_A000
-	JSR PRGROM_Change_A000
-	JSR Palette_FadeOut			; Fade out
-	JSR GraphicsBuf_Prep_And_WaitVSync
-
-	JSR Clear_500_300_RAM
-
-	JSR Sprite_RAM_Clear
-	JSR Scroll_PPU_Reset
-
-	LDA #$10
-	STA Map_Operation
-	LDA #PLAYERSUIT_SMALL
-	STA World_Map_Power
-
-	LDA Map_Prev_XOff
-	STA <Horz_Scroll
-	LDA Map_Prev_XHi
-	STA <Horz_Scroll_Hi
-	LDA Map_Entered_Y
-	STA <World_Map_Y
-	LDA Map_Entered_XHi
-	STA <World_Map_XHi
-	LDA Map_Entered_X
-	STA <World_Map_X
-	LDA Map_Previous_UnusedPVal2
-	STA <Map_UnusedPlayerVal2
-
-	JMP PRG030_8732
-
-
-CheckPlayLevelEntrySound:
-	TAX
-	LDA LevelRestarting
-	BEQ _not_restarting
-	RTS				; We still have more to do before we're done restarting the level
-_not_restarting:
-	TXA
-	STA Sound_QMap	 ; Play "enter level" sound effect!
-	RTS
-
-CheckQueueLevelsMusic:
-	TAX
-	LDA LevelRestarting
-	BEQ _not_restarting2
-	LDA Level_MusicQueueRestore
-	CMP SndCur_Music2
-	BEQ _post_restore_music2
-	STA Sound_QMusic2
-_post_restore_music2:
-	LDA #0
-	STA Sound_IsPaused
-	STA SndCur_Pause	; Stop the pause sound hold
-	DEC LevelRestarting		; Restarting the level done
-	RTS
-_not_restarting2:
-	TXA
-	STA Level_MusicQueue
-	STA Level_MusicQueueRestore
-	RTS
-
-
-DoCustomEndLevelCard11:
-	;;; This is called from PRG002::ObjHit_EndLevelCard (not anymore, now EndLevelCard_MsgAndCard)
-	STA EndCard_Flag	 ; Flag end level card as grabbed
-	; Switch bank A000 to page 11
-	LDA PAGE_A000
-	PHA
-	LDA #11
-	STA PAGE_A000
-	JSR PRGROM_Change_A000
-
-	JSR DoCustomEndLevelCard
-
-	PLA
-	STA PAGE_A000
-	JSR PRGROM_Change_A000
-	RTS
-
-;;; A way to get what level we're on, the index corresponds to the Level_Orbs array
-Levels_Entered_XY:
-	; Map_Entered_X $797A, Map_Entered_Y $7976 values for each level
-	;.byte $40, $20	; stock level 1
-	.byte $40, $60	; sorb level 1
-	.byte $40, $A0	; sorb level 2
-	.byte $60, $A0	; sorb level 3
-	.byte $80, $80	; sorb level 4
-	.byte $A0, $80	; sorb level 5
-	.byte $C0, $80	; sorb level 6
-	.byte $A0, $20	; sorb level 7
-	.byte $60, $60	; sorb level 8
-	.byte $60, $20	; sorb level 9
-	.byte $40, $40	; sorb level 10
-	.byte $60, $60	; sorb grimm (TODO)
-	.byte $80, $40	; sorb fort
-LEXY_END
-
-
-PRG030_FREE_SPACE:
-	.ds 0xC
-	.byte $AA, $AA, $AA, $AA, $AA, $AA
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; Removed 2-player vs and game over
+	;; [ORANGE] Removed 2-player vs and game over
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -6027,8 +5399,6 @@ Level_CheckInFU_TileGTAttr:
 	RTS		 ; Return
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	.byte $ff, $ff, $ff, $ff
-
 
 IntIRQ_32PixelPartition_Part2:	; $9FA0
 	LDA Update_Request	 
@@ -6055,6 +5425,220 @@ PRG030_9FAF:
 	JMP IntIRQ_32PixelPartition_Part3
 
 ; NOTE: The remaining ROM space was all blank ($FF)
+
+
+DoHeldKick:
+	BIT <Pad_Holding
+	BVC _kick_or_throw_up		; If Player is NOT holding B button, check the up button
+	JMP PRG000_CEEF			; Player was holding B, so go ahead and jump back to where we hooked
+_kick_or_throw_up:
+	LDA <Pad_Holding
+	AND #PAD_UP
+	BEQ _set_down			; Not holding up when let go of B, so check down
+	LDA #1
+	BNE _set_throwval_and_kick
+_set_down:
+	LDA <Pad_Holding
+	AND #PAD_DOWN
+	BEQ _norm_kick			; Not holding down either, so do a normal kick
+	LDA #2
+	BNE _set_throwval_and_kick
+_norm_kick:
+	LDA #0
+_set_throwval_and_kick:
+	STA <ThrowUpOrDown
+	JMP Player_KickObject
+
+DoShelledBumps:
+	LDA <Object_PrevYVel
+	BPL _doshelledbumps_rts		; If object wasn't moving upward, don't bump blocks
+
+	LDA <Objects_DetStat,X
+	BEQ _doshelledbumps_rts		; If we haven't collided with anything, just return
+
+	; Handle object bouncing off blocks
+	LDA Object_TileFeet2
+	STA <Temp_Var8
+
+	;; Custom Object_BumpBlocks due to needing special offsets for a thrown shell
+	; Backup current PAGE_A000 bank
+	LDA PAGE_A000
+	PHA
+
+	; Change page @ A000 to 8
+	LDA #$08
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+
+	LDA ObjTile_DetYLo
+	SUB #$08
+	AND #$F0
+	STA <Temp_Var14		; YLo
+	PHP
+	LDA ObjTile_DetYHi
+	STA <Temp_Var13		; YHi
+	PLP
+	BCS _post_yhi_dec
+	DEC <Temp_Var13
+_post_yhi_dec:
+
+	LDA ObjTile_DetXLo
+	SUB #$07
+	AND #$F0
+	STA <Temp_Var16
+	PHP
+	LDA ObjTile_DetXHi
+	STA <Temp_Var15
+	PLP
+	BCS _post_xhi_dec
+	DEC <Temp_Var15
+_post_xhi_dec:
+
+	; Send detected tile over to check if object has hit any blocks
+	; that respond to being hit with head
+	LDA <Temp_Var8
+	JSR Object_BumpOffBlocks
+
+	LDX <SlotIndexBackup	; X = object slot index
+
+	; Restore page @ A000 to previous page
+	PLA
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+	;; End custom Object_BumpBlocks
+
+	JSR ObjectToObject_HitTest
+	BCC _doshelledbumps_rts		; If object has not hit another object, rts
+
+	; Play object-to-object collision sound
+	LDA Sound_QPlayer
+	ORA #SND_PLAYERKICK
+	STA Sound_QPlayer
+
+	JSR ObjectKill_SetShellKillVars	 ; Kill our kicked object and set ShellKill variables
+
+_doshelledbumps_rts:
+	LDA #$00
+	STA <Object_PrevYVel
+	JSR Object_HandleBumpUnderneath
+	RTS
+
+Object_Move_Hook:
+	LDA <Objects_YVel,X
+	STA <Object_PrevYVel
+	JMP Object_Move
+
+LoadLevel_Custom21:
+	;;; There's not enough room in PRG021 to put this there
+	LDA LL_ShapeDef
+	AND #$0f
+	STA <Temp_Var4		 ; Temp_Var4 = lower 4 bits of LL_ShapeDef (width of run)
+	LDY TileAddr_Off	 ; Y = TileAddr_Off
+
+	TXA
+	SUB #59
+	TAX
+_bs_run_loop21:
+	LDA Custom_Tiles21,X	 ; Boot spike tile
+	STA [Map_Tile_AddrL],Y	 ; Store into tile mem
+	JSR LoadLevel_NextColumn ; Next column
+	DEC <Temp_Var4		 ; Temp_Var4--
+	BPL _bs_run_loop21	 ; While Temp_Var4 >= 0, loop!
+	RTS			 ; Return...
+
+
+DoPSwitchVibHook:
+	LDA <Level_OnOff
+	STA <Level_OnOffBackup
+	LDA #$00
+	STA <Level_OnOff	; Temporarily turn off the level_onoff switch
+_orig_vib:
+	LDA #$10
+	STA Level_Vibration	; Level_Vibration = $10 (little shake effect)
+	RTS
+
+
+DoPSwitchCntDec:
+	DEC Level_PSwitchCnt	; Level_PSwitchCnt--
+	LDA Level_PSwitchCnt
+	BNE _pswitch_dec_rts
+	; it was zero after decrementing, so we need to restore level_onoff
+	LDA <Level_OnOffBackup
+	STA <Level_OnOff
+	LDA #$00
+	STA <Level_OnOffBackup
+_pswitch_dec_rts:
+	RTS
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+DoStompComparison:
+	LDA Objects_State,X
+	CMP #OBJSTATE_SHELLED
+	BNE _not_shelled
+	; We're shelled and we collided, remove this return address and jmp to Object_HoldKickOrHurtPlayer
+	; This allows us to grab shelled objects if we're holding B no matter what
+	PLA
+	PLA
+	JMP Object_HoldKickOrHurtPlayer
+_not_shelled:			; For non-shells, do normal stomp comparison
+	LDA <Objects_Y,X	; Get object's Y
+	SUB <Temp_Var2		; Subtract Temp_Var2 (height above object considered "stompable" range)
+	ROL <Temp_Var1		; Stores the carry bit into Temp_Var1 bit 0
+	CMP <Player_Y
+	RTS
+
+DoSquish:
+	LDA Level_ObjectID,X
+	SUB #OBJ_PARAGOOMBA
+	CMP #2			; 0 - 1 would be OBJ_PARAGOOMBA, OBJ_PARAGOOMBAWITHMICROS
+	BCS _ldsnd_rts
+	JSR Paragoomba_SpawnMicroGoomba
+	LDA #$03				; Set object frame to 3
+	STA Objects_Frame,X
+_ldsnd_rts:
+	LDA Sound_QPlayer
+	RTS
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+CheckSquashedGoomba:
+	LDA Level_ObjectID,X
+	SUB #OBJ_GOOMBA
+	CMP #3			; allows OBJ_GOOMBA, OBJ_PARAGOOMBA, OBJ_PARAGOOMBAWITHMICROS
+	BCS _squash_rts
+	LDA #0			; return 0 if this was a goomba
+_squash_rts:
+	RTS
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+NewGfx:
+	.byte 119, 121, 123, 125
+EndAnimHook:
+	LDA Level_TimerEn
+	BMI _anim_hook_rts	; If bit 7 is set (animations disabled), jump to _anim_hook_rts
+	LDA <Level_OnOff
+	BEQ _anim_hook_rts	; If Level_OnOff is 0, normal animations already happened
+	LDA NewGfx,X
+	STA PatTable_BankSel+1
+_anim_hook_rts:
+	LDA SndCur_Pause
+	RTS
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+CoinblockHook:
+	LDA Level_PSwitchCnt
+	BNE _j_LATP_CoinCommon
+	LDA <Level_OnOff
+	EOR #$01
+	STA <Level_OnOff
+_j_LATP_CoinCommon
+	JMP LATP_CoinCommon
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
 WJ_RIGHT_VEL	= $1f
@@ -6114,3 +5698,392 @@ DecPlayer_AllowAirJump:
 	DEC <Player_Wallsliding
 _dec_rts:
 	RTS
+
+
+;; These functions do much more generous comparisons to allow for pipe entry
+ShouldAllowPipeCheck:
+	PHA			; Save off the tile the caller is about to look at
+	LDA Player_HitCeiling
+	BNE _first_check
+	LDA <Player_HitCeiling2	; Did we hit our head up to 3 frames ago?
+	BNE _dec_hitceiling2
+_disallow_pipe_checks:
+	PLA			; Restore the tile
+	LDY #0
+	RTS			; Return zero
+_first_check:
+	;; The first check occurs when a player hit their head
+	LDA #4
+	STA <Player_HitCeiling2
+	LDA Level_Tile_GndR
+	STA <Player_CeilingTile2	; This is the tile we'll check against
+_dec_hitceiling2:
+	DEC <Player_HitCeiling2
+	LDA Level_Tile_GndR		; Check if the current checked tile is a pipe (we're still under the pipe)
+	SUB #TILE1_PIPETB1_L
+	CMP #$12
+	BGE _disallow_pipe_checks	; Not under the pipe, disallow pipe checks
+	LDA <Player_CeilingTile2	; Still under the pipe, go ahead and force the check
+	STA Level_Tile_GndR		; Force our check tile to be the one from when we hit our head
+	PLA				; Restore the tile
+	LDY #1
+	RTS				; Return non-zero
+
+DoPipePosComparisons:
+	; On return, BGE is done for NOT going in the pipe
+	; A coming in is 18-1F, 0-7, 8-F, 0xF0-0xF7 (relative positions under the pipe)
+	BMI _do_r_pipe_cmp
+	PHA
+	AND #$10
+	BNE _do_l_pipe_cmp
+	PLA
+	; Otherwise, we want to allow the player in
+	CMP #$10
+	RTS
+_do_l_pipe_cmp:
+	; When A is 0x18-0x1F, we want to allow 0x1D, 0x1E, and 0x1F
+	PLA
+	SUB #$1E
+	CMP 1
+	RTS
+_do_r_pipe_cmp:
+	; When A is 0xF0-0xF7, we want to allow 0xF0, 0xF1, and 0xF2
+	SUB #$F0
+	CMP #2
+	RTS
+
+CheckYVelForDetectSolids:
+	LDA <Player_HitCeiling2
+	AND #$01
+	BNE __j__detect_head_not_feet	; every other frame until Player_HitCeiling2 hits 0
+	LDA <Player_YVel
+	BPL __j_PRG008_B4BD	 ; If Player_YVel >= 0 (moving downward), jump to PRG008_B4BD
+__j__detect_head_not_feet:
+	JMP _detect_head_not_feet
+__j_PRG008_B4BD:
+	JMP PRG008_B4BD
+
+
+InitializePauseMenu:
+	PHA
+	LDA EndCard_Flag
+	BNE _disallow_pause
+_check_UserMsg:
+	LDA <DoingUserMessage
+	BNE _disallow_pause
+_check_wandstate:
+	LDA Level_GetWandState
+	CMP #3
+	BPL _disallow_pause
+_check_pause_disabled:
+	LDA DisablePause
+	BNE _disallow_pause
+_initpause_allowed:
+	PLA
+	STA Level_PauseFlag	; Toggle pause flag
+	STA PauseMenuSel	; Set our menu selection (0 for unpaused, 1 for pausing)
+	JMP _allowed_pause
+_disallow_pause:
+	PLA
+	JMP _disallowed_pause
+
+RunPauseMenu13:
+	LDA PAGE_A000
+	PHA
+
+	LDA #13
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+
+	JSR RunPauseMenu
+
+	PLA
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+
+	RTS
+
+DeathRestartLevel:
+	PLA
+	PLA			; Remove Player_DrawAndDoActions29
+	PLA
+	PLA			; Remove Player_Update
+	PLA
+	PLA			; Remove Player_DoGameplay
+	LDA #0			; This is the page that the PRG008 death routine would restore
+	PHA			; Fall into RestartLevelPRG030
+
+RestartLevelPRG030:		; This is jumped to from Level_MainLoop->RunPauseMenu->DoMenuInput->PauseMenuRestartLevel
+	PLA			; Restore the A000 page saved by RunPauseMenu13 before getting here
+	TAY
+	PLA
+	PLA			; Remove the Level_MainLoop return address
+	TYA
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+
+	INC LevelRestarting			; Flag that we're restarting the level
+
+	; Switch bank A000 to page 26
+	LDA #26
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+	JSR Palette_FadeOut			; Fade out
+	JSR GraphicsBuf_Prep_And_WaitVSync
+
+	JSR Clear_500_300_RAM
+
+	JSR Sprite_RAM_Clear
+	JSR Scroll_PPU_Reset
+
+	LDA #$10
+	STA Map_Operation
+	LDA #PLAYERSUIT_SMALL
+	STA World_Map_Power
+
+	LDA Map_Prev_XOff
+	STA <Horz_Scroll
+	LDA Map_Prev_XHi
+	STA <Horz_Scroll_Hi
+	LDA Map_Entered_Y
+	STA <World_Map_Y
+	LDA Map_Entered_XHi
+	STA <World_Map_XHi
+	LDA Map_Entered_X
+	STA <World_Map_X
+	LDA Map_Previous_UnusedPVal2
+	STA <Map_UnusedPlayerVal2
+
+	JMP PRG030_8732
+
+
+CheckPlayLevelEntrySound:
+	TAX
+	LDA LevelRestarting
+	BEQ _not_restarting
+	RTS				; We still have more to do before we're done restarting the level
+_not_restarting:
+	TXA
+	STA Sound_QMap	 ; Play "enter level" sound effect!
+	RTS
+
+CheckQueueLevelsMusic:
+	TAX
+	LDA LevelRestarting
+	BEQ _not_restarting2
+	LDA Level_MusicQueueRestore
+	CMP SndCur_Music2
+	BEQ _post_restore_music2
+	STA Sound_QMusic2
+_post_restore_music2:
+	LDA #0
+	STA Sound_IsPaused
+	STA SndCur_Pause	; Stop the pause sound hold
+	DEC LevelRestarting		; Restarting the level done
+	RTS
+_not_restarting2:
+	TXA
+	STA Level_MusicQueue
+	STA Level_MusicQueueRestore
+	RTS
+
+
+DoCustomEndLevelCard11:
+	;;; This is called from PRG002::ObjHit_EndLevelCard (not anymore, now EndLevelCard_MsgAndCard)
+	STA EndCard_Flag	 ; Flag end level card as grabbed
+	; Switch bank A000 to page 11
+	LDA PAGE_A000
+	PHA
+	LDA #11
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+
+	JSR DoCustomEndLevelCard
+
+	PLA
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+	RTS
+
+;;; A way to get what level we're on, the index corresponds to the Level_Orbs array
+Levels_Entered_XY:
+	; Map_Entered_X $797A, Map_Entered_Y $7976 values for each level
+	;.byte $40, $20	; stock level 1
+	.byte $40, $60	; sorb level 1
+	.byte $40, $A0	; sorb level 2
+	.byte $60, $A0	; sorb level 3
+	.byte $80, $80	; sorb level 4
+	.byte $A0, $80	; sorb level 5
+	.byte $C0, $80	; sorb level 6
+	.byte $A0, $20	; sorb level 7
+	.byte $60, $60	; sorb level 8
+	.byte $60, $20	; sorb level 9
+	.byte $40, $40	; sorb level 10
+	.byte $60, $60	; sorb grimm (TODO)
+	.byte $80, $40	; sorb fort
+LEXY_END
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; PRGROM_Change_Both2
+;
+; This subroutine sets both PRG ROM pages A000 and C000 together.
+; It also writes to $0721, apparently to allow where it returns to
+; reissue the MMC3 command (FIXME reason yet unknown ???)
+;	A000 is set to the page value found at RAM location PAGE_A000
+;	C000 is set to the page value found at RAM location PAGE_C000
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+PRGROM_Change_Both2:	; $FFBF
+	JSR PRGROM_Change_C000		; Change C000 first
+	; Continues into PRGROM_Change_A000
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; PRGROM_Change_A000
+;
+; This subroutine sets the PRG ROM page at C000
+;	C000 is set to the page value found at RAM location PAGE_A000
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+PRGROM_Change_A000:			; $FFC2
+	LDA #MMC3_8K_TO_PRG_A000	; Changing PRG ROM at A000
+	STA PAGE_CMD			; FIXME: Store @ PAGE_CMD
+	STA MMC3_COMMAND 		; Set MMC3 command
+	LDA PAGE_A000			; Page @ PAGE_A000
+	STA MMC3_PAGE	 		; Set MMC3 page
+	RTS		 		; Return
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; PRGROM_Change_C000
+;
+; This subroutine sets the PRG ROM page at A000
+;	A000 is set to the page value found at RAM location PAGE_C000
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+PRGROM_Change_C000:	; $FFD1
+	LDA #MMC3_8K_TO_PRG_C000	; Changing PRG ROM at C000
+	STA PAGE_CMD			; FIXME: Store @ PAGE_CMD
+	STA MMC3_COMMAND 		; Set MMC3 command
+	LDA PAGE_C000	 		; Page @ PAGE_C000
+	STA MMC3_PAGE			; Set MMC3 page
+	RTS				; Return
+
+
+PT2_Full_CHRROM_Switch:	 ; $FFAD
+	; This subroutine does a full pattern table switchout
+	LDY #$05	 ; Loop Y from 5 to 0, effecting all pattern selections
+
+PT2_Full_CHRROM_Loop:
+	TYA		 ; A = Y 
+	ORA #$40	 ; A = 5 | $40 = $45 (When 5, MMC3_1K_TO_PPU_1C00; decrements thru other pages)
+	STA MMC3_COMMAND ; Set MMC3 command
+	LDA PatTable_BankSel,Y ; Offset into the Pattern Table 2 LUT for this page
+	STA MMC3_PAGE	 ; Set MMC3 page
+	DEY		 ; Y--
+	BPL PT2_Full_CHRROM_Loop	 ; While Y >= 0, loop!
+
+	RTS		 ; Return
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Read_Joypads
+;
+; This subroutine reads the status of both joypads 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+Read_Joypads_UnkTable:
+	.byte	$00, $01, $02, $00, $04, $05, $06, $04, $08, $09, $0A, $08, $00, $01, $02, $00
+
+Read_Joypads:
+
+	; Read joypads
+	LDY #$01	 ; Joypad 2 then 1
+
+PRG031_FEC0:
+	JSR Read_Joypad	 ; Read Joypad Y
+
+	; FIXME: I THINK this is for switch debouncing??
+PRG031_FEC3:
+	LDA <Temp_Var1	 ; Pull result out of $00 -> A
+	PHA		 ; Push A
+	JSR Read_Joypad	 ; Read Joypad
+	PLA		 ; Pull A
+	CMP <Temp_Var1	 ; Check if same
+	BNE PRG031_FEC3	 ; If not, do it again
+
+	ORA <Temp_Var2	 ; 
+	PHA		 ; Push A
+	AND #$0f	 ; A &= $0F
+	TAX		 ; A -> X
+	PLA		 ; Pull A
+	AND #$f0	 ; A &= $F0
+
+	ORA Read_Joypads_UnkTable,X	 ; FIXME: A |= Read_Joypads_UnkTable[X]
+	PHA		 	; Save A
+	STA <Temp_Var3	 	; Temp_Var3 = A
+	EOR Controller1,Y	; 
+	AND <Temp_Var3	 	; 
+	STA Controller1Press,Y	; Figures which buttons have only been PRESSED this frame as opposed to those which are being held down
+	STA <Pad_Input	 	; 
+	PLA		 	; Restore A
+	STA Controller1,Y	; 
+	STA <Pad_Holding	 ; 
+	DEY		 ; Y-- 
+	BPL PRG031_FEC0	 ; If Y hasn't gone negative (it should just now be 0), Read other joypad
+
+	; Done reading joypads
+	LDY Player_Current	 
+	BEQ PRG031_FF11	 ; If Player_Curren = 0 (Mario), jump to PRG031_FF11
+
+	LDA <Controller1
+	AND #$30
+	STA <Temp_Var1
+	LDA <Controller2
+	AND #$cf
+	ORA <Temp_Var1
+	STA <Pad_Holding
+	LDA <Controller1Press
+	AND #$30
+	STA <Temp_Var1
+	LDA <Controller2Press
+	AND #$cf
+	ORA <Temp_Var1
+	STA <Pad_Input
+
+PRG031_FF11:
+	RTS		 ; Return
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Read_Joypad
+;
+; This subroutine does some tricky business to read out the joypad
+; into Temp_Var1 / Temp_Var2
+; Register Y should be 0 for Joypad 1 and 1 for Joypad 2
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+Read_Joypad:	; $FF12
+
+	; Joypad reading is weird, and actually requires 8 accesses to the joypad I/O to get all the buttons:
+	; Read #1: A 
+	;      #2: B 
+	;      #3: Select
+	;      #4: Start 
+	;      #5: Up    
+	;      #6: Down  
+	;      #7: Left  
+	;      #8: Right 
+
+	; This Resets BOTH controllers
+	LDA #$01	 ; A = 1 (strobe)
+	STA JOYPAD	 ; Strobe joypad 1 (hi)
+	LSR A		 ; A = 0 (clear), 1 -> Carry
+	STA JOYPAD	 ; Clear strobe joypad 1
+
+	; Needs cleanup and commentary, but basically this does 8 loops to
+	; read all buttons and store the result for return
+	LDX #$08	 ; X = 8
+Read_Joypad_Loop:
+	LDA JOYPAD,Y	 ; Get joypad data
+	LSR A
+	ROL <Temp_Var1
+	LSR A
+	ROL <Temp_Var2
+	DEX
+	BNE Read_Joypad_Loop	 ; Loop until 8 reads complete
+
+	RTS		 ; Return

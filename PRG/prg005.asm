@@ -5220,7 +5220,7 @@ PRG005_B969:
 	TAY		 ; New base for Y index at $10
 
 PRG005_B988:
-	LDA AScroll_HorizontalInitMove,Y
+	;LDA AScroll_HorizontalInitMove,Y
 	STA Level_AScrlVar	 ; -> Level_AScrlVar
 
 PRG005_B98E:
