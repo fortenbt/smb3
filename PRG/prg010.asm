@@ -4191,7 +4191,7 @@ _npc_draw_box_cont:
 	RTS
 
 NPCTileIDList:
-	.byte TILE_NPCGIRL1, TILE_NPCGIRL2, TILE_NPCGIRL3, TILE_NPCBOY1, TILE_NPCBOY2;, TILE_NPCDOG
+	.byte TILE_NPCGIRL1, TILE_NPCGIRL2, TILE_NPCGIRL3, TILE_NPCBOY1, TILE_NPCBOY2, TILE_NPCDOG
 NPC_END
 
 ;Welcome,stranger,to
@@ -4263,12 +4263,23 @@ NPCMessage5:
 	.byte $E2, $93, $84, $92, $FE, $92, $DC, $E0, $A8, $FE, $E0, $92, $B3, $FE, $B1, $DC, $90, $90, $00
 	.byte $FA, $84, $EF, $EF, $DC, $92, $FE, $93, $A8, $E1, $58, $FF
 
+NPCMessage6:
+	.byte 00
+	.byte $E1, $E0, $A8, $85, $B4, $E1, $E0, $A8, $85, $00
+	.byte $00
+	.byte $D9, $A9, $A9, $AA, $58, $58, $58, $EA, $FA, $DC, $FE, $EF, $93, $DE, $FE, $84, $A9, $FE, $E0, $00
+	.byte $D9, $90, $93, $B3, $B4, $FE, $EF, $93, $92, $B5, $AA, $FE, $DE, $84, $B0, $DC, $FE, $AA, $FA, $DC, $00
+	.byte $91, $E0, $92, $FE, $B1, $FA, $E0, $AA, $FE, $FA, $DC, $FE, $B1, $E0, $92, $AA, $A9, $58, $00
+	.byte $00
+	.byte $E1, $E0, $A8, $85, $B4, $E1, $E0, $A8, $85, $FF
+
 NPCMsgPtr_L:
 	.byte LOW(NPCMessage1)
 	.byte LOW(NPCMessage2)
 	.byte LOW(NPCMessage3)
 	.byte LOW(NPCMessage4)
 	.byte LOW(NPCMessage5)
+	.byte LOW(NPCMessage6)
 
 NPCMsgPtr_H:
 	.byte HIGH(NPCMessage1)
@@ -4276,6 +4287,7 @@ NPCMsgPtr_H:
 	.byte HIGH(NPCMessage3)
 	.byte HIGH(NPCMessage4)
 	.byte HIGH(NPCMessage5)
+	.byte HIGH(NPCMessage6)
 
 NPC_DialogInit:
 	LDA #$29
