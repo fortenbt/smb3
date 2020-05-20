@@ -173,6 +173,7 @@ DMC_MODADDR_LUT:
 	.byte MADR(DMC_MOTHER2)			; 4
 	.byte MADR(DMC_GRADIUS1)		; 5
 	.byte MADR(DMC_METAL_GEAR1)		; 6
+	.byte MADR(DMC_BARB)			; 7
 
 
 DMC_MODLEN_LUT:
@@ -183,6 +184,7 @@ DMC_MODLEN_LUT:
 	.byte MLEN(DMC_MOTHER2, DMC_MOTHER2_End)	; Sample 4 (DMC_MOTHER2)
 	.byte MLEN(DMC_GRADIUS1, DMC_GRADIUS1_End)			; 5
 	.byte MLEN(DMC_METAL_GEAR1, DMC_METAL_GEAR1_End)	; 6
+	.byte MLEN(DMC_BARB, DMC_BARB_End)					; 7
 
 
 DMC_MODCTL_LUT:
@@ -192,6 +194,7 @@ DMC_MODCTL_LUT:
 	.byte $0F	; Sample  4 (DMC_MOTHER2)
 	.byte $0F		; 5
 	.byte $0F		; 6
+	.byte $0C		; 7
 
 
 Music_GetRestTicks:
@@ -1318,6 +1321,7 @@ PRG031_E851:
 	STA Sound_Sq1_CurFL,X
 	RTS
 
+
 Music_UpdateBend:
 	; A = rest time remaining
 	; X = 0 or 4, Square 1 or 2
@@ -1347,87 +1351,6 @@ PRG031_E870:
 
 ;;; [ORANGE] Moved the rest lookup table to prg029.asm
 
-FALLRATE_SPIN = $20
-FallrateHook:
-	LDA <Player_Regrabbing
-	BMI _compare_normal
-	BEQ _compare_normal
-	LDA <Player_YVel
-	CMP #FALLRATE_SPIN
-	BMI _j_apply_vel		; we're < FALLRATE_SPIN, just apply the velocity
-	; we're regrabbing and > FALLRATE_SPIN, cap it
-	LDA #FALLRATE_SPIN
-	STA <Player_YVel
-	BNE _j_apply_vel		; jmp always to _j_apply_vel
-_compare_normal:
-	LDA <Player_YVel
-	CMP #FALLRATE_MAX
-	BPL _j__cap_fallrate_max
-_j_apply_vel:
-	JMP PRG008_BFF9			; apply velocities
-_j__cap_fallrate_max:
-	JMP _cap_fallrate_max
-
-
-Player_TryHoldShell:
-	LDA Player_Regrabbing
-	BMI _normal_hold
-	BNE _j_Player_KickObject	; If we're regrabbing, kick the object away
-_normal_hold:
-	BIT <Pad_Holding
-	BVS _j_PRG000_D34F		; If Player is holding B, jump to PRG000_D34F
-_j_Player_KickObject:
-	JMP Player_KickObject		; Kick away the object and don't come back!
-_j_PRG000_D34F:
-	JMP PRG000_D34F
-
-DoNotMidair:
-	; Once we hit the ground, we can regrab again
-	LDA #$00
-	STA <Player_InAir
-	STA <Player_Regrabbing
-	RTS
-
-DoBounceYVel:
-	LDA Level_ObjectID,X
-	CMP #OBJ_PARATROOPAGREENHOP
-	BEQ _do_green_vel
-	CMP #OBJ_REDTROOPA
-	BEQ _do_red_vel
-	CMP #OBJ_SPINY
-	BNE _norm_bounce_vel
-_do_spiny_vel:
-	LDA #$10
-	STA <Objects_XVel,X
-	BNE __neg30rts
-_do_red_vel:
-	LDA #$0e
-	STA <Objects_XVel,X
-__neg30rts:
-	LDA #-$30
-	STA <Objects_YVel,X
-	RTS
-_do_green_vel:
-	LDA #-$53
-	STA <Objects_YVel,X
-	RTS
-_norm_bounce_vel:
-	LDA #-$30
-	STA <Objects_YVel,X
-	JSR Level_ObjCalcXDiffs		; Detect which side object is on versus Player
-	; Store proper X velocity
-	LDA PRG000_D16B,Y
-	STA <Objects_XVel,X
-	RTS
-
-.dmc_metal_gear_align: DMCAlign .dmc_metal_gear_align
-DMC_METAL_GEAR1:
-	.byte 0x00, 0xE0, 0xDD, 0x2C, 0x79, 0x9B, 0xA3, 0x0C, 0xF0, 0xF1, 0x87, 0xCF, 0x7F, 0xBE, 0x3F, 0xC3, 0xC7, 0x8E, 0x3B, 0xE1, 0xC3, 0x20, 0x51, 0x12, 0x91, 0x22, 0x4A, 0xAA, 0x55, 0x52, 0x51, 0x93
-	.byte 0x06, 0x10, 0x38, 0x30, 0x61, 0x18, 0xE3, 0xF0, 0x73, 0x87, 0xC3, 0xE7, 0xF7, 0xDD, 0xDD, 0xB7, 0x6B, 0x6D, 0xAD, 0x6D, 0x6D, 0xAB, 0x56, 0xAB, 0x55, 0xAA, 0xAD, 0x55, 0x6A, 0xAD, 0x8D, 0xC7
-	.byte 0x72, 0x79, 0x4F, 0x19, 0xC1, 0xE5, 0x3C, 0x0F, 0x07, 0x86, 0x43, 0xC1, 0x95, 0x8E, 0x19, 0xC0, 0xF1, 0xC5, 0x0E, 0x25, 0x94, 0xA8, 0xE4, 0x72, 0x8E, 0x85, 0xC1, 0xC5, 0x2A, 0x55, 0x29, 0x55
-	.byte 0x4A, 0xA5, 0x55, 0x55, 0x54, 0xD5, 0x55, 0x55, 0x55, 0x55, 0x56, 0x6A, 0xA3, 0x8D, 0x34, 0xCA, 0xAA, 0x9A, 0xAA, 0xAB, 0x55, 0x55, 0xA7, 0x4B, 0x59, 0x75, 0x36, 0xAC, 0xB6, 0x5B, 0x55, 0x6C
-	.byte 0x0E
-DMC_METAL_GEAR1_End:
 
 .mother1_align: DMCAlign .mother1_align
 DMC_MOTHER1:
@@ -1437,18 +1360,6 @@ DMC_MOTHER1:
 	.byte $2A, $09, $95, $A2, $54, $49, $53, $B5, $44, $6A, $D5, $6A, $AD, $D6, $44, $00, $AB
 DMC_MOTHER1_End
 
-.mother2_align: DMCAlign .mother2_align
-DMC_MOTHER2:
-	.byte $FF, $B7, $20, $0B, $00, $00, $00, $00, $C0, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $00, $00, $00, $00, $00, $00, $C0, $0B, $00, $00, $80, $FD, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $17, $00, $00, $00, $00, $00, $00, $00, $F0, $FF, $FF, $FF, $FF, $FF, $7E, $51, $ED, $44, $81, $10, $01, $82, $18, $2B, $42, $53, $81
-	.byte $6F, $D8, $DB, $EB, $E7, $BF, $EB, $1F, $FB, $95, $24, $48, $00, $02, $00, $E0, $C5, $C0, $BF, $F8, $FF, $FF, $BA, $0E, $7E, $C4, $50, $68, $2A, $56, $02, $6F
-	.byte $77, $4E, $F8, $45, $95, $20, $56, $50, $63, $3F, $F4, $FF, $F0, $9D, $F8, $21, $B2, $20, $8E, $0D, $18, $CF, $82, $AF, $8A, $E3, $3F, $78, $FD, $18, $CE, $02
-	.byte $87, $58, $E0, $C4, $47, $E9, $DF, $F1, $53, $3B, $8A, $97, $38, $08, $A9, $03, $DE, $E2, $F8, $0F, $9E, $EC, $89, $B2, $07, $38, $E2, $63, $F1, $E3, $C3, $7B
-    .byte $42, $AF, $28, $8E, $2A, $8E, $42, $83, $5A, $1D, $FA, $B1, $EB, $AB, $D6, $62, $DA, $A1, $E2, $D0, $34, $9C, $85, $8E, $AE, $C4, $7A, $72, $1D, $A6, $55, $1C
-	.byte $B9, $52, $3D, $8B, $9E, $9D, $4E, $96, $2A, $0B, $E2, $A8, $A4, $95, $2D, $BB, $72, $AD, $F4, $91, $5A, $8B, $52, $25, $4E, $9C, $5A, $79, $6A, $D7, $A4, $8E
-	.byte $9C, $74, $B0, $A2, $B4, $89, $67, $35, $6D, $2B, $37, $B6, $45, $A5, $A9, $C5, $A4
-DMC_MOTHER2_End
-
 .gradius1_align: DMCAlign .gradius1_align
 DMC_GRADIUS1:
 	.byte $AA, $AA, $AA, $AA, $AA, $AF, $F0, $9E, $9F, $F0, $06, $AE, $7C, $1B, $98, $F0, $00, $03, $00, $0C, $01, $CE, $01, $80, $00, $00, $00, $00, $00, $0F, $1F, $FF
@@ -1456,9 +1367,16 @@ DMC_GRADIUS1:
 	.byte $45, $90, $CA, $56, $22, $52, $70, $D6, $53, $16, $D3, $54, $D7, $4B, $37, $4B, $5B, $6B, $56, $CE, $B5, $5B, $5D, $59, $B6, $D5, $AB, $D6, $B5, $D7, $6B, $6D
 	.byte $AD, $AE, $B6, $D6, $B5, $B5, $AA, $D6, $AA, $AC, $AA, $A9, $54, $A9, $94, $A4, $A9, $4A, $4A, $8A, $92, $54, $A5, $49, $29, $4A, $54, $A5, $29, $52, $A5, $4A
 	.byte $A5, $54, $A9, $54, $AA, $95, $2A, $AA, $94, $95, $2A, $AA, $55, $55, $2A, $56, $66, $AA, $9A, $AA, $B5, $5A, $AD, $AB, $5A, $B5, $6B, $6B, $6B, $5A, $B5, $AA
-	.byte $B5, $56, $AA, $D5, $55, $56, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $95, $55, $55, $B5, $56, $AA, $D5, $55, $56, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $95, $55, $55
-	.byte $AD
+	.byte $B5, $56, $AA, $D5, $55, $56, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $95, $55, $55, $B5, $56, $AA, $D5, $55, $56, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $95, $55, $AD
 DMC_GRADIUS1_End
+
+.dmc_metal_gear_align: DMCAlign .dmc_metal_gear_align
+DMC_METAL_GEAR1:
+	.byte $00, $E0, $DD, $2C, $79, $9B, $A3, $0C, $F0, $F1, $87, $CF, $7F, $BE, $3F, $C3, $C7, $8E, $3B, $E1, $C3, $20, $51, $12, $91, $22, $4A, $AA, $55, $52, $51, $93
+	.byte $06, $10, $38, $30, $61, $18, $E3, $F0, $73, $87, $C3, $E7, $F7, $DD, $DD, $B7, $6B, $6D, $AD, $6D, $6D, $AB, $56, $AB, $55, $AA, $AD, $55, $6A, $AD, $8D, $C7
+	.byte $72, $79, $4F, $19, $C1, $E5, $3C, $0F, $07, $86, $43, $C1, $95, $8E, $19, $C0, $F1, $C5, $0E, $25, $94, $A8, $E4, $72, $8E, $85, $C1, $C5, $2A, $55, $29, $55
+	.byte $4A, $A5, $55, $55, $54, $D5, $55, $55, $55, $55, $56, $6A, $A3, $8D, $34, $CA, $AA, $9A, $AA, $AB, $55, $55, $A7, $4B, $59, $75, $36, $AC, $B6, $5B, $6C, $0E
+DMC_METAL_GEAR1_End:
 
 .dmc_orb_align: DMCAlign .dmc_orb_align
 DMC_ORB:
@@ -1574,10 +1492,115 @@ DMC_ORB:
 	.byte $AA, $AA, $AA, $2A, $55, $55, $55, $55, $55, $55, $55, $55, $55, $95, $AA, $AA, $AA, $5A, $55, $55
 	.byte $55, $55, $55, $55, $CB, $AA, $AA, $AA, $AA, $AA, $AA, $2A
 DMC_SILENCE:
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
 	.byte $55, $55, $55, $55, $55, $55, $55, $55
-	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
-	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
 DMC_ORB_End
+
+.dmc_barb_align: DMCAlign .dmc_barb_align
+DMC_BARB:
+	.byte $55, $55, $55, $55, $4D, $F1, $34, $DC, $88, $E7, $38, $8E, $55, $73, $32, $CE, $58, $55, $73, $54
+	.byte $2C, $C7, $C5, $D9, $38, $4E, $C7, $F3, $1C, $03, $05, $40, $AC, $F7, $FF, $DE, $ED, $8C, $C3, $08
+	.byte $00, $00, $EA, $CF, $FF, $FF, $7F, $BE, $03, $00, $00, $00, $E0, $FF, $FF, $BF, $43, $00, $00, $00
+	.byte $F2, $FF, $FF, $FF, $3E, $1F, $00, $00, $00, $A0, $FF, $FF, $FF, $E6, $00, $01, $00, $00, $FE, $FF
+	.byte $FF, $7F, $3C, $39, $00, $00, $00, $FF, $FF, $7F, $1C, $DE, $D3, $80, $F0, $AF, $00, $00, $00, $C0
+	.byte $FF, $FF, $00, $00, $F0, $FF, $FF, $FF, $FF, $FF, $FF, $83, $01, $00, $30, $CC, $31, $06, $00, $C0
+	.byte $F9, $E7, $18, $EF, $FF, $FF, $FF, $73, $0F, $04, $00, $80, $21, $CE, $70, $80, $30, $8E, $1B, $C7
+	.byte $F9, $FF, $3F, $73, $9C, $F3, $0F, $07, $00, $00, $00, $F0, $F9, $FF, $38, $E6, $10, $82, $1F, $F7
+	.byte $EC, $E3, $FE, $FD, $FF, $E3, $00, $00, $10, $C0, $1F, $CF, $00, $C3, $18, $70, $98, $C7, $DF, $FF
+	.byte $FF, $FF, $FF, $0F, $02, $00, $C0, $31, $1C, $00, $84, $FF, $0F, $00, $C0, $FF, $FF, $FF, $F8, $FF
+	.byte $FF, $30, $00, $02, $1E, $C3, $00, $00, $FC, $C1, $00, $0C, $FF, $F3, $E1, $FF, $FF, $FD, $07, $06
+	.byte $E1, $01, $00, $38, $F0, $0F, $0E, $80, $E0, $1F, $1E, $FC, $FF, $FF, $FF, $0F, $86, $E1, $01, $00
+	.byte $F8, $9F, $07, $00, $80, $07, $FB, $F0, $FF, $FF, $FE, $FB, $03, $C3, $F0, $00, $00, $FC, $03, $00
+	.byte $FE, $01, $70, $FE, $00, $FF, $FF, $FE, $3F, $18, $C7, $13, $C0, $E1, $1F, $C0, $38, $0F, $80, $FF
+	.byte $00, $F0, $7F, $F8, $FF, $03, $F0, $78, $00, $78, $8F, $03, $F8, $43, $00, $F0, $0F, $82, $FF, $E3
+	.byte $FF, $3F, $08, $8F, $13, $C0, $7F, $38, $80, $3F, $00, $83, $FF, $C0, $FC, $3F, $F0, $FF, $03, $F0
+	.byte $38, $00, $FC, $0F, $00, $FC, $03, $38, $FC, $07, $FC, $F7, $03, $FF, $3F, $00, $CF, $01, $C0, $7F
+	.byte $00, $CC, $7F, $00, $F0, $3F, $80, $FF, $0B, $FC, $FF, $00, $FC, $07, $00, $FE, $07, $20, $FC, $07
+	.byte $C0, $FF, $01, $FC, $3F, $E0, $FF, $07, $E0, $3F, $00, $E0, $3F, $80, $E0, $7F, $00, $FC, $0F, $C0
+	.byte $FF, $01, $FE, $1F, $C0, $E7, $7C, $00, $7F, $00, $03, $FE, $03, $80, $FF, $01, $FE, $FF, $E3, $FF
+	.byte $00, $3E, $E6, $01, $F8, $87, $10, $E0, $0F, $00, $E0, $1F, $F0, $FF, $FF, $FF, $03, $F0, $30, $1F
+	.byte $80, $1F, $FC, $01, $FC, $C0, $03, $F8, $81, $FF, $FF, $FF, $7F, $00, $1C, $C0, $07, $E0, $00, $FE
+	.byte $C0, $0F, $C0, $07, $3F, $E0, $3F, $FC, $FF, $3F, $00, $00, $80, $03, $FF, $01, $FC, $83, $77, $60
+	.byte $1C, $FC, $8F, $E3, $F9, $BF, $F9, $07, $00, $00, $7C, $F0, $0F, $C0, $03, $FC, $03, $02, $F0, $3F
+	.byte $FE, $FF, $FF, $FF, $03, $00, $80, $FF, $80, $03, $E0, $87, $7F, $00, $00, $FE, $87, $FF, $FF, $FF
+	.byte $7F, $00, $00, $F8, $0F, $00, $00, $FF, $FF, $01, $40, $FC, $1F, $E0, $C3, $FF, $FF, $07, $00, $80
+	.byte $FF, $00, $00, $F8, $FF, $00, $00, $FF, $FF, $00, $FC, $F7, $FF, $FF, $00, $00, $F0, $3F, $00, $00
+	.byte $FE, $0F, $00, $C0, $FF, $7F, $00, $FF, $FF, $FF, $FF, $00, $00, $F0, $1F, $00, $00, $FC, $0F, $00
+	.byte $C0, $FF, $FF, $01, $FE, $FF, $FF, $7F, $00, $00, $E0, $7F, $00, $00, $F0, $0F, $18, $C0, $DF, $FF
+	.byte $1F, $C0, $F1, $FF, $FF, $1F, $00, $00, $00, $0E, $FC, $03, $F0, $01, $FF, $C0, $FF, $E1, $31, $9E
+	.byte $3E, $1F, $FF, $1F, $00, $00, $00, $1C, $F6, $8F, $E3, $01, $FC, $05, $9E, $E7, $1D, $9F, $17, $C7
+	.byte $F5, $DF, $0F, $00, $07, $00, $00, $F1, $79, $3E, $83, $BE, $C3, $E1, $3B, $7E, $34, $BF, $87, $7B
+	.byte $F8, $03, $1C, $00, $00, $0F, $84, $E7, $39, $3E, $7F, $06, $3E, $EF, $89, $E7, $73, $8E, $F1, $0D
+	.byte $0F, $86, $0F, $01, $10, $10, $DE, $0F, $F3, $F3, $7C, $D1, $1E, $A9, $C8, $FF, $F0, $5A, $F9, $F8
+	.byte $25, $30, $00, $88, $00, $CE, $D3, $C7, $F7, $3D, $0E, $E6, $8E, $63, $B8, $8F, $F8, $1F, $87, $73
+	.byte $78, $00, $10, $C0, $F0, $7E, $78, $9C, $E3, $3D, $C6, $33, $1C, $EF, $F7, $39, $FE, $78, $3E, $09
+	.byte $00, $00, $00, $00, $F8, $FF, $7F, $87, $E3, $70, $3E, $E8, $FF, $FC, $1F, $FF, $03, $0F, $00, $00
+	.byte $00, $00, $E0, $FF, $FF, $E1, $61, $38, $D3, $FC, $1F, $FF, $FF, $7F, $3C, $00, $00, $00, $00, $00
+	.byte $FC, $3F, $BF, $A7, $00, $FE, $80, $FF, $EF, $FF, $FF, $C7, $05, $02, $00, $00, $00, $C0, $F0, $FF
+	.byte $BF, $CE, $00, $00, $FC, $FF, $FF, $FF, $FF, $00, $18, $00, $60, $1F, $80, $0F, $C0, $FF, $82, $01
+	.byte $F0, $FF, $3F, $FF, $FF, $FF, $7F, $00, $C0, $01, $3F, $00, $FC, $03, $F8, $00, $FC, $00, $FC, $01
+	.byte $7C, $F8, $FF, $FF, $7F, $00, $FE, $01, $1E, $00, $FF, $00, $FE, $80, $3F, $00, $3F, $00, $07, $FE
+	.byte $07, $FF, $7F, $00, $FE, $03, $00, $C0, $1F, $80, $FF, $E3, $01, $F0, $03, $60, $FF, $3F, $FC, $FF
+	.byte $FF, $01, $F8, $00, $30, $F0, $1F, $C0, $1F, $3E, $00, $3F, $80, $07, $FE, $80, $FF, $FB, $FF, $0F
+	.byte $C0, $03, $0C, $C0, $7F, $00, $C3, $FF, $00, $7F, $E0, $00, $FE, $E0, $FF, $FF, $FF, $FF, $00, $38
+	.byte $E0, $00, $7C, $00, $01, $FC, $01, $0E, $F8, $00, $3E, $FC, $8F, $FF, $FF, $FF, $1F, $08, $07, $3E
+	.byte $00, $0E, $3E, $80, $0F, $7C, $00, $00, $7E, $C0, $FF, $FF, $FF, $FF, $FF, $81, $01, $F8, $03, $00
+	.byte $F0, $03, $06, $F0, $07, $1C, $F0, $E3, $1F, $F8, $FF, $FF, $FF, $7F, $00, $00, $F7, $00, $00, $1C
+	.byte $CF, $00, $7C, $FC, $01, $10, $FE, $01, $DF, $FF, $FF, $FF, $3F, $20, $80, $6F, $00, $00, $0E, $FC
+	.byte $01, $1C, $F8, $03, $1E, $F8, $87, $BF, $FF, $FF, $FF, $1F, $00, $80, $87, $01, $00, $18, $F8, $07
+	.byte $04, $C0, $07, $7E, $F8, $A7, $FE, $FF, $FF, $FF, $1F, $00, $00, $1F, $3C, $00, $E0, $C0, $3F, $C4
+	.byte $01, $E0, $E3, $3F, $C0, $FF, $FF, $FF, $FF, $3F, $00, $00, $F0, $33, $08, $00, $0E, $FC, $3F, $80
+	.byte $01, $F8, $FF, $F8, $00, $FF, $FF, $FF, $FF, $01, $00, $00, $FC, $07, $08, $00, $F8, $DF, $FF, $00
+	.byte $00, $80, $FF, $3F, $F7, $91, $FF, $FF, $7F, $00, $00, $00, $F8, $1F, $00, $00, $F0, $FF, $FF, $07
+	.byte $00, $0C, $F7, $FF, $0F, $F8, $CF, $FF, $7F, $00, $00, $00, $E0, $1F, $0C, $8F, $01, $F8, $3F, $B1
+	.byte $00, $8F, $F7, $C3, $8F, $FF, $83, $FF, $FF, $03, $00, $00, $00, $F0, $1F, $3C, $0F, $F1, $38, $3E
+	.byte $00, $FE, $1E, $FC, $F3, $30, $DE, $DC, $CF, $7F, $02, $00, $00, $00, $FF, $B7, $0C, $BF, $AB, $E0
+	.byte $0F, $C0, $D9, $65, $1C, $BD, $2C, $FE, $C3, $FF, $FF, $00, $00, $00, $00, $4F, $BF, $C7, $75, $8B
+	.byte $07, $C5, $81, $6F, $00, $FF, $5C, $7C, $5F, $FC, $FD, $1F, $00, $00, $00, $E0, $3F, $FE, $64, $1F
+	.byte $26, $25, $17, $1C, $7D, $00, $FF, $CF, $B9, $F6, $EF, $BF, $00, $00, $00, $00, $FE, $5F, $C5, $53
+	.byte $8D, $83, $E2, $38, $F8, $0E, $7E, $FC, $CF, $F3, $F7, $7F, $00, $00, $00, $00, $FF, $EF, $00, $BF
+	.byte $80, $E5, $00, $E0, $FF, $F0, $2F, $FF, $FE, $FF, $FF, $01, $00, $00, $00, $FC, $3F, $00, $0E, $00
+	.byte $FE, $07, $C0, $FF, $80, $FF, $9F, $FF, $FF, $7F, $00, $00, $00, $E0, $FF, $00, $01, $00, $FC, $7F
+	.byte $00, $3F, $80, $FF, $FF, $FF, $FF, $FF, $01, $00, $00, $F8, $FF, $00, $00, $00, $FF, $3F, $00, $00
+	.byte $F8, $FF, $FF, $FF, $FF, $FF, $01, $00, $00, $FC, $0F, $E0, $00, $C0, $3F, $FC, $07, $00, $1F, $F0
+	.byte $3F, $F0, $FF, $FF, $0F, $00, $00, $F8, $7F, $00, $03, $C0, $7F, $FC, $07, $00, $3F, $FC, $1F, $F0
+	.byte $FF, $FF, $0F, $00, $00, $F8, $7F, $18, $01, $E0, $1F, $FC, $03, $80, $1F, $FC, $0F, $F8, $FF, $FF
+	.byte $0F, $00, $00, $FC, $07, $FC, $00, $F0, $0F, $FE, $01, $80, $01, $FF, $03, $FE, $FF, $FF, $07, $70
+	.byte $00, $FE, $47, $3E, $00, $F8, $83, $FF, $00, $00, $80, $FF, $C1, $FF, $FF, $FF, $03, $08, $00, $FF
+	.byte $39, $3F, $00, $7E, $E0, $3F, $00, $00, $E0, $FF, $C0, $FF, $FF, $FF, $00, $00, $80, $FF, $81, $0F
+	.byte $80, $3F, $FC, $1F, $00, $08, $FC, $1F, $E0, $FF, $FF, $7F, $00, $00, $E0, $7F, $C0, $07, $E0, $7F
+	.byte $F8, $07, $00, $C6, $FF, $07, $F0, $FF, $FF, $1F, $00, $00, $F8, $1F, $E0, $00, $F0, $3F, $FC, $03
+	.byte $80, $1F, $FE, $01, $F8, $FF, $FF, $1F, $00, $00, $F8, $1F, $E0, $00, $F0, $3F, $FC, $03, $80, $1F
+	.byte $FC, $07, $F8, $FF, $FF, $3F, $00, $00, $E0, $3F, $00, $03, $E0, $FF, $C1, $1F, $00, $FE, $C0, $7F
+	.byte $C0, $FF, $FF, $FF, $00, $00, $80, $FF, $01, $38, $00, $FF, $0F, $FC, $00, $F0, $3F, $FC, $07, $F8
+	.byte $FF, $FF, $0F, $00, $00, $F8, $7F, $00, $20, $80, $FF, $07, $78, $00, $FC, $3F, $F8, $0F, $FE, $FF
+	.byte $FF, $01, $00, $00, $FE, $1F, $00, $00, $FD, $FF, $00, $00, $80, $FF, $3F, $E0, $FF, $FF, $FF, $7F
+	.byte $00, $00, $C0, $FF, $0F, $00, $E0, $E0, $FF, $00, $80, $00, $FC, $3F, $E0, $FF, $FF, $FF, $FF, $00
+	.byte $00, $00, $FE, $3F, $00, $C0, $F1, $FF, $1F, $00, $00, $E0, $FF, $03, $FE, $FF, $FF, $FF, $0F, $00
+	.byte $00, $00, $FF, $07, $00, $F8, $1D, $FF, $03, $00, $98, $87, $FF, $01, $FE, $FF, $FF, $FF, $03, $00
+	.byte $00, $80, $FF, $01, $00, $FE, $87, $F9, $01, $00, $F8, $FF, $E8, $0F, $D7, $FF, $FF, $FF, $03, $00
+	.byte $00, $10, $FC, $31, $00, $F8, $9F, $F2, $1F, $00, $80, $FF, $89, $FE, $C1, $FF, $FF, $FF, $0F, $00
+	.byte $00, $30, $80, $87, $01, $C0, $FF, $1F, $F8, $07, $00, $FC, $BF, $F0, $7F, $03, $FF, $FF, $FF, $01
+	.byte $00, $00, $C0, $72, $15, $00, $F0, $FF, $D3, $45, $04, $00, $FE, $FF, $E1, $DF, $E1, $FF, $FF, $7F
+	.byte $00, $00, $00, $00, $FC, $1F, $00, $F0, $FF, $07, $9E, $03, $00, $FC, $FF, $C7, $AB, $87, $F5, $FF
+	.byte $FF, $03, $00, $00, $00, $C0, $FF, $11, $38, $E6, $37, $9C, $3F, $00, $80, $FF, $5B, $F2, $7F, $E0
+	.byte $FF, $0E, $FE, $03, $00, $00, $00, $E1, $FF, $F1, $3E, $30, $7C, $E1, $3C, $C2, $C3, $E0, $78, $CB
+	.byte $B7, $E7, $F3, $3C, $1F, $6F, $00, $E0, $00, $00, $C4, $7D, $3E, $EF, $67, $64, $57, $C3, $30, $42
+	.byte $34, $F6, $7F, $9C, $FF, $50, $7F, $0D, $AF, $00, $08, $40, $8F, $02, $7D, $C1, $FE, $77, $1E, $86
+	.byte $4D, $58, $D7, $44, $E1, $E0, $7F, $FD, $97, $24, $0E, $3E, $7F, $00, $41, $00, $C7, $70, $7C, $B8
+	.byte $AF, $AF, $93, $D0, $47, $45, $C7, $22, $8E, $F3, $D9, $F5, $5D, $45, $6B, $39, $56, $01, $43, $21
+	.byte $1A, $70, $3C, $5E, $DF, $55, $75, $B4, $34, $1C, $4F, $02, $F7, $C8, $DB, $5F, $E3, $39, $0E, $CE
+DMC_BARB_End
+
+;;; [ORANGE] Removed the unused copy of PRG022 code
+
+BarbRoom_R:
+	.byte $38, $37
+BarbRoom:
+	.byte $81, $7E, $00
+BarbRoomPCM:
+	.byte $80, $07, $00
+
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	; The following two LUTs are used together via Update_Request
@@ -1670,7 +1693,8 @@ PRG031_F4D5:
 PRG031_F4DC:
 	CMP #$20	 ;  
 	BNE PRG031_F4E3	 ; If Update_Select <> $20 (Title Screen), jump to PRG031_F4E3
-	JMP UpdSel_Title	 ; Otherwise, jump to UpdSel_Title
+	;;; [ORANGE] We don't use this, as our title screen is the full screen
+	;JMP UpdSel_Title	 ; Otherwise, jump to UpdSel_Title
 
 PRG031_F4E3:
 
@@ -1802,73 +1826,6 @@ PRG031_F567:
 
 UpdSel_Vertical:
 
-	; COMPARE TO PRG031_F4E3
-
-	LDA #$00	 ; A = 0
-	STA PPU_CTL2	 ; Hide sprites and bg (most importantly)
-	STA PPU_SPR_ADDR ; Resets to sprite 0 in memory
-	LDA #$02	 ; A = 2
-	STA SPR_DMA	 ; DMA sprites from RAM @ $200 (probably trying to blank them out)
-	JSR PT2_Full_CHRROM_Switch	 ; Set up PT2 (Sprites) CHRROM
-
-	LDA <VBlank_Tick	 
-	BNE PRG031_F5D3	 		; If VBlank_Tick <> 0, jump to PRG031_F5D3
-
-	LDA #MMC3_8K_TO_PRG_A000	; Changing PRG ROM at A000
-	STA MMC3_COMMAND 		; Set MMC3 command
-	LDA #26	 			; Page 26
-	STA MMC3_PAGE	 		; Set MMC3 page
-
-	JSR Scroll_ToVRAM_Apply	 ; Applies Scroll_ToVRAMHi and Scroll_ToVRAMHA updates
-	JSR Video_Misc_Updates	 ; Various updates other than scrolling (palettes, status bar, etc.)
-	JSR TileChng_VRAMCommit	 ; Commit 16x16 tile change to VRAM
-
-	; Set pages at A000 and C000
-	JSR PRGROM_Change_Both
-
-	LDA <Graphics_Queue	
-	BNE PRG031_F5CF	 	; If we don't need to reset the buffer, jump to PRG031_F5CF
-
-	; Reset graphics buffer
-	LDA #$00
-	STA Graphics_BufCnt
-	STA Graphics_Buffer
-
-PRG031_F5CF:
-	LDA #$00	 
-	STA <Graphics_Queue	 ; Graphics Buffer reset
-
-PRG031_F5D3:
-	LDA PPU_STAT	 	; read PPU status to reset the high/low latch
-
-	; Unknown hardware thing?  Is this for synchronization?
-	LDA #$3f	 	; 
-	STA PPU_VRAM_ADDR	; Access PPU address #3Fxx
-	LDA #$00	 	; 
-	STA PPU_VRAM_ADDR	; Access PPU address #3F00 (palettes?)
-	STA PPU_VRAM_ADDR	; 
-	STA PPU_VRAM_ADDR	; Now accessing $0000 (Pattern tables?)
-
-	LDA <PPU_CTL2_Copy	; Get current PPU_CTL2 settings in RAM
-	ORA #$18	; A | 18 (BG + SPR)
-	STA PPU_CTL2	; Sprites/BG are forced to be visible regardless of PPU_CTL2_Copy
-
-	LDA <Horz_Scroll_Hi	; ?? Can specify bits? (I think this is a mistake, and this will be zero on vertical level anyway)
-	ORA #%10101000	; Generate VBlank Resets, use 8x16 sprites, sprites use PT2
-	STA PPU_CTL1	; Set above settings
-	LDA PPU_STAT	; read PPU status to reset the high/low latch
-
-	LDA <Horz_Scroll
-	STA PPU_SCROLL	 ; Horizontal Scroll set
-	LDA <Vert_Scroll
-	STA PPU_SCROLL	 ; Vertical Scroll set
-
-	LDA #192	 ; A = 192
-	STA MMC3_IRQCNT	 ; Store 192 into the IRQ count
-	STA MMC3_IRQLATCH ; Store it into the latch (will be used later)
-	STA MMC3_IRQENABLE ; Start the IRQ counter
-	CLI		 ; Enable maskable interrupts
-	JMP PRG031_F55B	 ; Jump to PRG031_F55B
 
 PRG031_F610:
 
@@ -2007,91 +1964,7 @@ PRG031_F6BC:
 	CLI		; Enable maskable interrupts
 	JMP PRG031_F55B	 ; Jump to PRG031_F55B
 
-UpdSel_Title:
-	LDA #$00	 ; A = 0
-	STA PPU_CTL2	 ; Hide sprites and bg (most importantly)
-	STA PPU_SPR_ADDR ; Resets to sprite 0 in memory
-	LDA #$02	 ; A = 2
-	STA SPR_DMA	 ; DMA sprites from RAM @ $200 (probably trying to blank them out)
-	JSR PT2_Full_CHRROM_Switch	 ; Set up PT2 (Sprites) CHRROM
 
-	LDA <VBlank_Tick
-	BNE PRG031_F748	 ; If VBlank_Tick <> 0, go to PRG031_F748
-
-	LDA <Ending2_IntCmd
-	BEQ PRG031_F72B	 ; If Ending2_IntCmd = 0, go to PRG031_F72B
-
-	LDA #MMC3_8K_TO_PRG_C000	; Changing PRG ROM at C000
-	STA MMC3_COMMAND 		; Set MMC3 command
-	LDA #25	 			; Page 25
-	STA MMC3_PAGE	 		; Set MMC3 page
-
-	LDA #MMC3_8K_TO_PRG_A000	; Changing PRG ROM at A000
-	STA MMC3_COMMAND 		; Set MMC3 command
-	LDA #24	 			; Page 24
-	STA MMC3_PAGE	 		; Set MMC3 page
-
-	JSR Do_Ending2_IntCmd	; Perform action of Ending2_IntCmd
-
-	JMP PRG031_F748	 ; Jump to PRG031_F748
-
-PRG031_F72B:
-	LDA #MMC3_8K_TO_PRG_A000	; Changing PRG ROM at A000
-	STA MMC3_COMMAND 		; Set MMC3 command
-	LDA #26	 			; Page 26
-	STA MMC3_PAGE	 		; Set MMC3 page
-
-	JSR Video_Misc_Updates	 ; Various updates other than scrolling (palettes, status bar, etc.)
-
-	LDA <Graphics_Queue
-	BNE PRG031_F744	 ; If we don't need to reset the graphics buffer, jump to PRG031_F744
-
-	; Reset graphics buffer
-	LDA #$00	 
-	STA Graphics_BufCnt
-	STA Graphics_Buffer
-
-PRG031_F744:
-	LDA #$00	 
-	STA <Graphics_Queue	 ; Graphics Buffer reset
-
-PRG031_F748:
-	LDA PPU_STAT
-
-	LDA #$00
-	STA PPU_VRAM_ADDR	; 
-	STA PPU_VRAM_ADDR	; Now accessing $0000 (Pattern tables?)
-
-	LDA <PPU_CTL2_Copy	; Get current PPU_CTL2 settings in RAM
-	ORA #$18	; A | 18 (BG + SPR)
-	STA PPU_CTL2	; Sprites/BG are forced to be visible regardless of PPU_CTL2_Copy
-
-	LDA <PPU_CTL1_Mod	; A = PPU_CTL1_Mod
-	ORA #%10101000	; In addition to anything else specified by PPU_CTL1_Mod, Generate VBlank Resets, use 8x16 sprites, sprites use PT2
-	STA PPU_CTL1	; Set above settings
-	LDA PPU_STAT	; read PPU status to reset the high/low latch
-
-	LDA <Horz_Scroll
-	STA PPU_SCROLL	; Horizontal Scroll set
-	LDA <Vert_Scroll
-	STA PPU_SCROLL	; Vertical scroll set
-
-	; NOTE: Different from the typical 192 scanline count!
-	LDA #193		; A = 193
-	STA MMC3_IRQCNT		; Store 193 into the IRQ count
-	STA MMC3_IRQLATCH	; Store it into the latch (will be used later)
-	STA MMC3_IRQENABLE	; Start the IRQ counter
-	CLI		; Enable maskable interrupts
-
-	LDA <VBlank_TickEn	 ; Check VBlank flag
-	BEQ PRG031_F786	 	; If A = 0, jump to PRG031_F786
-	JSR Randomize	 	; Shake up the randomizer!
-	JSR Read_Joypads	 ; Updates both joypads in RAM
-
-	DEC <VBlank_Tick	 ; Decrement VBlank_Tick
-
-PRG031_F786:
-	JMP PRG031_F567	 ; Jump to PRG031_F567
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -2164,7 +2037,8 @@ PRG031_F7CA:
 PRG031_F7D1: 
 	CMP #$60	 ; Are we in "Spade Game" mode?
 	BNE PRG031_F7D8	 ; If not, go to PRG031_F7D8
-	JMP IntIRQ_SpadeGame	 ; Otherwise, jump to IntIRQ_SpadeGame
+	;;; [ORANGE] Removed this because we don't use it
+	;JMP IntIRQ_SpadeGame	 ; Otherwise, jump to IntIRQ_SpadeGame
 
 PRG031_F7D8:
 	CMP #$A0	 ; Are we in "A0??? FIXME" mode? ()
@@ -2176,7 +2050,8 @@ PRG031_F7DF:
 	; Flags for vertical World 7 speciality levels
 	LDA Level_7Vertical
 	BEQ IntIRQ_Standard	 ; The standard bar (status bar used in level and map)
-	JMP IntIRQ_Vertical	 ; Otherwise, do the vertical thing
+	;;; [ORANGE] Removed this because we don't use it
+	;JMP IntIRQ_Vertical	 ; Otherwise, do the vertical thing
 
 IntIRQ_Standard:
 	STA MMC3_IRQENABLE ; Active IRQ
@@ -2317,121 +2192,7 @@ IntIRQ_Finish_NoDis:
 
 	RTI		 ; End of IRQ interrupt!
 
-IntIRQ_Vertical:	; $F8DB
-	STA MMC3_IRQENABLE ; Enable IRQ generation
-
-	; Some kind of delay loop?
-	LDX #$02	 ; X = 2
-PRG031_F8E0:
-	NOP		 ; ?
-	DEX		 ; X--
-	BNE PRG031_F8E0	 ; While X > 0, loop
-
-	; Unknown hardware thing?  Is this for synchronization?
-	LDA #$00
-	STA PPU_VRAM_ADDR
-	LDX #$00
-	STX PPU_VRAM_ADDR
-	STX PPU_VRAM_ADDR
-	STX PPU_VRAM_ADDR
-
-	STX PPU_CTL2	 ; Hide BG + Sprites
-	LDA PPU_STAT	 ; 
-
-	; Because vertical scroll will not change after frame begins (second write to
-	; PPU_SCROLL will always be unused until next frame), the hack for MMC3 split
-	; vertical scrolling is to change the nametable address that the PPU is reading
-	; at to where we would like it to be...
-	LDY #$07
-	STY PPU_VRAM_ADDR
-	STX PPU_VRAM_ADDR	; ... so we're now reading at $0700
-	LDA PPU_VRAM_DATA
-
-	; Couple of tilesets have slightly different effects 
-	LDA Level_Tileset
-	CMP #$00	 ; 
-	BEQ PRG031_F955	 ; If A = 0 (On world map), go to PRG031_F955
-	CMP #$07	 ; 
-	BEQ PRG031_F955	 ; If A = 7 (Toad house), go to PRG031_F955 
-	; But not N-Spade?
-
-	; Load status bar graphics and hide any sprites from appearing over the status bar
-
-	; Load two parts of Status Bar
-	LDA #MMC3_2K_TO_PPU_0000
-	STA MMC3_COMMAND
-	LDA StatusBarCHR_0000
-	STA MMC3_PAGE	
- 	LDA #MMC3_2K_TO_PPU_0800
-	STA MMC3_COMMAND
-	LDA StatusBarCHR_0800
-	STA MMC3_PAGE
-	LDA #MMC3_1K_TO_PPU_1000
-	STA MMC3_COMMAND
-
-	; Use blank tiles for all sprite graphics
-	LDA SpriteHideCHR_1000	
-	STA MMC3_PAGE
-	LDA #MMC3_1K_TO_PPU_1400
-	STA MMC3_COMMAND
-	LDA SpriteHideCHR_1400
-	STA MMC3_PAGE
-	LDA #MMC3_1K_TO_PPU_1800
-	STA MMC3_COMMAND
-	LDA SpriteHideCHR_1800	
-	STA MMC3_PAGE
-	LDA #MMC3_1K_TO_PPU_1C00
-	STA MMC3_COMMAND
-	LDA SpriteHideCHR_1C00	
-	STA MMC3_PAGE
-
-	JMP PRG031_F997	 ; Jump to PRG031_F997
-
-PRG031_F955:
-	; World Map and Toad House alternate (but not N-Spade?)
-
-	; Load status bar graphics and hide any sprites from appearing over the status bar
-
-	; Load two parts of Status Bar
-	LDA #MMC3_2K_TO_PPU_0000
-	STA MMC3_COMMAND
-	LDA StatusBarMTCHR_0000
-	STA MMC3_PAGE
-	LDA #MMC3_2K_TO_PPU_0800
-	STA MMC3_COMMAND
-	LDA StatusBarMTCHR_0800
-	STA MMC3_PAGE
-
-	; Load sprite graphics appropriate for World Map / Toad House / N-Spade
-	LDA #MMC3_1K_TO_PPU_1000
-	STA MMC3_COMMAND
-	LDA SpriteMTCHR_1000
-	STA MMC3_PAGE
-	LDA #MMC3_1K_TO_PPU_1400
-	STA MMC3_COMMAND
-	LDA SpriteMTCHR_1400
-	STA MMC3_PAGE
-	LDA #MMC3_1K_TO_PPU_1800
-	STA MMC3_COMMAND
-	LDA SpriteMTCHR_1800
-	STA MMC3_PAGE
-	LDA #MMC3_1K_TO_PPU_1C00
-	STA MMC3_COMMAND
-	LDA SpriteMTCHR_1C00
-	STA MMC3_PAGE
-
-PRG031_F997:
-	LDA #$18	 ; A | 18 (BG + SPR)
-	STA PPU_CTL2	 ; Sprites/BG are visible
-	LDA <PPU_CTL1_Copy	 ; PPU_CTL1 copy
-	ORA #$01	 ; Force $2400 nametable address
-	STA PPU_CTL1	 ; Set it in the register
-	LDA PPU_STAT	 ; 
-	LDA #$00	 ; 
-	STA PPU_SCROLL	 ; Horizontal scroll = 0
-	LDA <Vert_Scroll ; 
-	STA PPU_SCROLL	 ; Vertical scroll update as-is
-	JMP IntIRQ_Finish	 ; Clean up IRQ
+;;; [ORANGE] Removed IntIRQ_Vertical
 
 IntIRQ_32PixelPartition:	; $F9B3 
 
@@ -2608,114 +2369,7 @@ PRG031_FA41:
 	STA Raster_State ; Clear Raster_State (no more effects)
 	JMP IntIRQ_Finish	 ; Clean up IRQ
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Tables used by IntIRQ_SpadeGame
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Roulette_RasterDelay:
-	.byte $02, $02, $02, $06
-
-	; This table tells how many lines to skip to the next row.
-	; Apparently they didn't really take advantage of the potential
-	; for this functionality, however, as all values are equal!
-Roulette_RasterDiv:	; Raster_State = 0,1,2
-	.byte $34, $34, $34
-
-	.byte $00	; Not used, would be Raster_State = 3
-
-IntIRQ_SpadeGame:
-
-	; Disable then enable the IRQ??  Probably to make sure
-	; last latch value gets pushed into counter...
-	STA MMC3_IRQDISABLE
-	STA MMC3_IRQENABLE
-
-	LDY Raster_State ; Get current Raster_State
-	CPY #$03	 ;
-	BEQ PRG031_FAE7	 ; If Raster_State = 3, jump to PRG031_FAE7
-
-	; Based on the current Raster_State, set next scanline delay
-	LDA Roulette_RasterDiv,Y
-	STA MMC3_IRQCNT
-	STA MMC3_IRQENABLE
-
-PRG031_FAE7:
-
-	; Another of these common delay loops, this time dynamic...
-	LDX Roulette_RasterDelay,Y	 ; Get value based on Raster_State
-PRG031_FAEA:
-	NOP		 ; ? 
-	DEX		 ; X--
-	BNE PRG031_FAEA	 ; While > 0, loop...
-
-	CPY #$03	 ;
-	BNE PRG031_FB34	 ; If Raster_State <> 3, jump to PRG031_FB34
-
-	; Raster_State = 3 (load status bar graphics)
-
-	; This loads graphics into the "BG" side (PT1)
-	; I think the only reason they're using labeled constants
-	; is so they could put this code in multiple spots, but it'd
-	; stay in sync if they needed to change the CHRROM banks.
-	; But that'd be the job of an assembler label, wouldn't it??
-	LDA #MMC3_2K_TO_PPU_0000
-	STA MMC3_COMMAND
-	LDA StatusBarCHR_0000
-	STA MMC3_PAGE
-	LDA #MMC3_2K_TO_PPU_0800
-	STA MMC3_COMMAND
-	LDA StatusBarCHR_0800
-	STA MMC3_PAGE
-	LDA #MMC3_1K_TO_PPU_1000
-	STA MMC3_COMMAND
-	LDA SpriteHideCHR_1000
-	STA MMC3_PAGE
-	LDA #MMC3_1K_TO_PPU_1400
-	STA MMC3_COMMAND
-	LDA SpriteHideCHR_1400
-	STA MMC3_PAGE
-	LDA #MMC3_1K_TO_PPU_1800
-	STA MMC3_COMMAND
-	LDA SpriteHideCHR_1800
-	STA MMC3_PAGE	
-	LDA #MMC3_1K_TO_PPU_1C00
-	STA MMC3_COMMAND	
-	LDA SpriteHideCHR_1C00
-	STA MMC3_PAGE
-
-PRG031_FB34:
-	LDA PPU_STAT	 ; 
-
-	CPY #$03	 ; 
-	BEQ PRG031_FB57	 ; If Raster_State = 3, jump to PRG031_FB57
-
-	; Raster_State < 3...
-
-	LDA Roulette_PosHi,Y	 ; Get position for this row
-	AND #$01	 ; Nametable swaps $2000 / $2400 every odd/even unit (??)
-	ORA <PPU_CTL1_Copy	; Update PPU_CTL1_Copy
-	STA PPU_CTL1	 	; .. and the actual PPU_CTL1 register
-	LDA Roulette_Pos,Y	 ; Get horizontal scroll position for this row
-	STA PPU_SCROLL	 ; Store the horizontal
-	LDA #$00	 ; 
-	STA PPU_SCROLL	 ; Vertical = 0
-	INY		 ; 
-	STY Raster_State ; Raster_State++
-	JMP IntIRQ_Finish_NoDis	 ; Cleanup and finish (for THIS Raster_State)
-
-PRG031_FB57:
-	; Raster_State = 3 ...
-	LDA <PPU_CTL1_Copy	
-	ORA <PPU_CTL1_Mod	; Combine bits from PPU_CTL1_Copy into PPU_CTL1_Mod
-	STA PPU_CTL1	 ; Update actual register
-	LDA #$00	 ; 
-	STA PPU_SCROLL	 ; Horizontal Scroll = 0
-	LDA <Vert_Scroll ; 
-	STA PPU_SCROLL	 ; Vertical Scroll updated (should generally not be moving here :)
-	LDA #$00	 ; 
-	STA Raster_State	 ; Raster_State = 0
-	JMP IntIRQ_Finish	 ; Clean up IRQ, we're done!
-
+	;;; [ORANGE] Removed IRQ for spade game
 
 	; FIXME: What is this for??
 IntIRQ_A0FIXME:
@@ -2973,8 +2627,6 @@ StatusBar_DrawCardPiece_Orbs:
 	STA Graphics_BufCnt
 	RTS
 
-	.ds 0x3c
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Player_GetCard
@@ -2988,7 +2640,6 @@ Player_GetCard:
 	LDA #$01		; Show the correct graphics in the "You got an orb" location
 	STA Inventory_Cards
 	RTS
-	.ds 0x22
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -3121,7 +2772,7 @@ Clear_Nametable:	; $FDC7:
 	; This writes over the entire selected name table and attribute table with $FC
 	LDX #$04	 ; X = $04
 	LDY #$00	 ; Y = $00
-	LDA #$fc	 ; A = $FC
+	LDA #$fE	 ; A = $FC
 PRG031_FDE1:
 	STA PPU_VRAM_DATA	 ; Write $FC to NT
 	DEY		 ; Y--
@@ -3306,113 +2957,6 @@ DynJump:	; $FE99
 	JMP [Temp_Var3]	 	; Jump to [Temp_Var4][Temp_Var3]
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Read_Joypads
-;
-; This subroutine reads the status of both joypads 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-Read_Joypads_UnkTable:
-	.byte	$00, $01, $02, $00, $04, $05, $06, $04, $08, $09, $0A, $08, $00, $01, $02, $00
-
-Read_Joypads:
-
-	; Read joypads
-	LDY #$01	 ; Joypad 2 then 1
-
-PRG031_FEC0:
-	JSR Read_Joypad	 ; Read Joypad Y
-
-	; FIXME: I THINK this is for switch debouncing??
-PRG031_FEC3:
-	LDA <Temp_Var1	 ; Pull result out of $00 -> A
-	PHA		 ; Push A
-	JSR Read_Joypad	 ; Read Joypad
-	PLA		 ; Pull A
-	CMP <Temp_Var1	 ; Check if same
-	BNE PRG031_FEC3	 ; If not, do it again
-
-	ORA <Temp_Var2	 ; 
-	PHA		 ; Push A
-	AND #$0f	 ; A &= $0F
-	TAX		 ; A -> X
-	PLA		 ; Pull A
-	AND #$f0	 ; A &= $F0
-
-	ORA Read_Joypads_UnkTable,X	 ; FIXME: A |= Read_Joypads_UnkTable[X]
-	PHA		 	; Save A
-	STA <Temp_Var3	 	; Temp_Var3 = A
-	EOR Controller1,Y	; 
-	AND <Temp_Var3	 	; 
-	STA Controller1Press,Y	; Figures which buttons have only been PRESSED this frame as opposed to those which are being held down
-	STA <Pad_Input	 	; 
-	PLA		 	; Restore A
-	STA Controller1,Y	; 
-	STA <Pad_Holding	 ; 
-	DEY		 ; Y-- 
-	BPL PRG031_FEC0	 ; If Y hasn't gone negative (it should just now be 0), Read other joypad
-
-	; Done reading joypads
-	LDY Player_Current	 
-	BEQ PRG031_FF11	 ; If Player_Curren = 0 (Mario), jump to PRG031_FF11
-
-	LDA <Controller1
-	AND #$30
-	STA <Temp_Var1
-	LDA <Controller2
-	AND #$cf
-	ORA <Temp_Var1
-	STA <Pad_Holding
-	LDA <Controller1Press
-	AND #$30
-	STA <Temp_Var1
-	LDA <Controller2Press
-	AND #$cf
-	ORA <Temp_Var1
-	STA <Pad_Input
-
-PRG031_FF11:
-	RTS		 ; Return
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Read_Joypad
-;
-; This subroutine does some tricky business to read out the joypad
-; into Temp_Var1 / Temp_Var2
-; Register Y should be 0 for Joypad 1 and 1 for Joypad 2
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-Read_Joypad:	; $FF12
-
-	; Joypad reading is weird, and actually requires 8 accesses to the joypad I/O to get all the buttons:
-	; Read #1: A 
-	;      #2: B 
-	;      #3: Select
-	;      #4: Start 
-	;      #5: Up    
-	;      #6: Down  
-	;      #7: Left  
-	;      #8: Right 
-
-	; This Resets BOTH controllers
-	LDA #$01	 ; A = 1 (strobe)
-	STA JOYPAD	 ; Strobe joypad 1 (hi)
-	LSR A		 ; A = 0 (clear), 1 -> Carry
-	STA JOYPAD	 ; Clear strobe joypad 1
-
-	; Needs cleanup and commentary, but basically this does 8 loops to
-	; read all buttons and store the result for return
-	LDX #$08	 ; X = 8
-Read_Joypad_Loop:
-	LDA JOYPAD,Y	 ; Get joypad data
-	LSR A
-	ROL <Temp_Var1
-	LSR A
-	ROL <Temp_Var2
-	DEX
-	BNE Read_Joypad_Loop	 ; Loop until 8 reads complete
-
-	RTS		 ; Return
 
 
 
@@ -3492,69 +3036,22 @@ PRG031_FF80:
 	STA PAGE_A000	 
 	JSR PRGROM_Change_Both2		; Change A000 to page 25 and C000 to page 24
 
-	; NOPs?
-	NOP
-	NOP
-	NOP
-
 	JMP IntReset_Part2	; Rest of Reset continues in the $8000 bank...
 
-PT2_Full_CHRROM_Switch:	 ; $FFAD
-	; This subroutine does a full pattern table switchout
-	LDY #$05	 ; Loop Y from 5 to 0, effecting all pattern selections
 
-PT2_Full_CHRROM_Loop:
-	TYA		 ; A = Y 
-	ORA #$40	 ; A = 5 | $40 = $45 (When 5, MMC3_1K_TO_PPU_1C00; decrements thru other pages)
-	STA MMC3_COMMAND ; Set MMC3 command
-	LDA PatTable_BankSel,Y ; Offset into the Pattern Table 2 LUT for this page
-	STA MMC3_PAGE	 ; Set MMC3 page
-	DEY		 ; Y--
-	BPL PT2_Full_CHRROM_Loop	 ; While Y >= 0, loop!
+T_SP_Off .func \1-Title_SpritePattern	; "Title SpritePattern Offset"
 
-	RTS		 ; Return
+	; Index into Title_SpritePattern for all of Mario/Luigi's complex frames
+Title_SpritePatternIndex:
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; PRGROM_Change_Both2
-;
-; This subroutine sets both PRG ROM pages A000 and C000 together.
-; It also writes to $0721, apparently to allow where it returns to
-; reissue the MMC3 command (FIXME reason yet unknown ???)
-;	A000 is set to the page value found at RAM location PAGE_A000
-;	C000 is set to the page value found at RAM location PAGE_C000
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-PRGROM_Change_Both2:	; $FFBF
-	JSR PRGROM_Change_C000		; Change C000 first
-	; Continues into PRGROM_Change_A000
+	; Block of patterns, based on offsets from Title_SpritePatternIndex
+	; For use with Mario/Luigi's sprites
+Title_SpritePattern:
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; PRGROM_Change_A000
-;
-; This subroutine sets the PRG ROM page at C000
-;	C000 is set to the page value found at RAM location PAGE_A000
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-PRGROM_Change_A000:			; $FFC2
-	LDA #MMC3_8K_TO_PRG_A000	; Changing PRG ROM at A000
-	STA PAGE_CMD			; FIXME: Store @ PAGE_CMD
-	STA MMC3_COMMAND 		; Set MMC3 command
-	LDA PAGE_A000			; Page @ PAGE_A000
-	STA MMC3_PAGE	 		; Set MMC3 page
-	RTS		 		; Return
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; PRGROM_Change_C000
-;
-; This subroutine sets the PRG ROM page at A000
-;	A000 is set to the page value found at RAM location PAGE_C000
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-PRGROM_Change_C000:	; $FFD1
-	LDA #MMC3_8K_TO_PRG_C000	; Changing PRG ROM at C000
-	STA PAGE_CMD			; FIXME: Store @ PAGE_CMD
-	STA MMC3_COMMAND 		; Set MMC3 command
-	LDA PAGE_C000	 		; Page @ PAGE_C000
-	STA MMC3_PAGE			; Set MMC3 page
-	RTS				; Return
+	; Specify proper VROM page for Title_ObjMLSprite sprite index
+Title_SpriteVROMPage:
 
 
 	;.byte $FF, $FF, $FF

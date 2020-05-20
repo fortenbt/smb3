@@ -44,6 +44,10 @@ Cinematic_ToadAndKing:
 	LDA #$86
 	STA ToadTalk_VL
 
+	; Initialize the sound
+	LDA #MUS1_TIMEWARNING
+	STA Sound_QMusic1
+
 	; Initialize character counter
 	LDA #$00
 	STA ToadTalk_CPos

@@ -5367,7 +5367,7 @@ PRG009_BBE9:
 	LDY Level_AScrlLimitSel	 ; Y = Level_AScrlLimitSel
 
 	LDA Level_AScrlVar
-	CMP AScroll_HorizontalInitMove+1,Y
+	;CMP AScroll_HorizontalInitMove+1,Y
 	BNE PRG009_BC16	 ; If we're not yet at the last command index, jump to PRG009_BC16
 
 	CPY #$13

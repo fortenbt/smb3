@@ -1209,7 +1209,7 @@ M12ASH .func \1-Music_Set1_Set2A_Headers	; "Music Set 1/2A Segment Header Offset
 Music_Set1_Set2A_IndexOffs:
 	; Index 0 - 7 are Set 1 songs, accessed by bit weight
 	.byte M12ASH(MS1_01SegHedr), M12ASH(MS1_02SegHedr), M12ASH(MS1_04SegHedr), M12ASH(MS1_08SegHedr)	; Index $00-$03
-	.byte M12ASH(MS1_10SegHedr), M12ASH(PooOrb_Hdr), M12ASH(MS1_40SegHedr), M12ASH(MS1_80SegHedr)	; Index $04-$07
+	.byte M12ASH(MS1_10SegHedr), M12ASH(PooOrb_Hdr), M12ASH(BarbRoom_Hdr), M12ASH(MS1_80SegHedr)	; Index $04-$07
 
 	; 8+ are Set 2A
 	; $08 - $11 are Mother - Polyanna (Overworld)
@@ -1238,7 +1238,8 @@ MS1_04SegHedr:			MusSeg BossFanfare_R, BossFanfare_1, BossFanfare_Tri1, $11, $00
 MS1_08SegHedr:			;MusSeg Music_RestH_LUT, M12ASegData19, $004D, $27, $0000, $0000
 MS1_10SegHedr:			;MusSeg Music_RestH_LUT, M12ASegData24, $006F, $4C, $0000, M12ASegData24PCM
 PooOrb_Hdr:				MusSeg PooOrb_R, PooOrb, $0000, $00, $0000, PooOrbPCM
-MS1_40SegHedr:			;MusSeg Music_RestH_LUT, M12ASegData13, $0035, $18, $0000, $0000
+;MS1_40SegHedr:			;MusSeg Music_RestH_LUT, M12ASegData13, $0035, $18, $0000, $0000
+BarbRoom_Hdr:			MusSeg BarbRoom_R, BarbRoom, $0000, $00, $0000, BarbRoomPCM
 
 ; MS1_80SegHedr is the "stop music" request; have to look into this
 ; a little bit more to figure out how it works
