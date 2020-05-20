@@ -224,11 +224,11 @@ KingHelpMsg1:
 KingHelpMsg2:
 	;       H    u    r    r    y    !         H    u    r    r    y    !
 	;.byte $B7, $CE, $CB, $CB, $8C, $EA, $FE, $B7, $CE, $CB, $CB, $8C, $EA, $FE, $FE, $FE, $FE, $FE, $FE, $FE
-	.byte $C8, $DE, $CE, $FE, $DD, $D4, $D4, $D3, $FE, $D0, $DB, $DB, $FE, $9E, $9E, $FE, $DE, $CB, $D1, $CC
+	.byte $B1, $CB, $D8, $DD, $D6, $FE, $DC, $D4, $FE, $D0, $DB, $DB, $FE, $9E, $9E, $FE, $D0, $DD, $D3, $FE
 
 	;       G    e    t         t    h    e         M    a    g    i    c         W    a    n    d
 	;.byte $B6, $D4, $CD, $FE, $CD, $D7, $D4, $FE, $BC, $D0, $D6, $D8, $D2, $FE, $C6, $D0, $DD, $D3, $FE, $FE
-	.byte $CD, $DE, $FE, $DF, $D4, $CD, $FE, $DC, $8C, $FE, $D3, $DE, $D6, $FE, $D7, $D4, $CB, $D4, $E9, $FE
+	.byte $8C, $DE, $CE, $FE, $D2, $D0, $DD, $FE, $DF, $D4, $CD, $FE, $B1, $DE, $FE, $D7, $D4, $CB, $D4, $E9
 
 TAndK_DoToadText:
 	LDA SndCur_Music1
