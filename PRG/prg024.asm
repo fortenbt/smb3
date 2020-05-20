@@ -41,7 +41,7 @@ Cinematic_ToadAndKing:
 	; Initialize VRAM address for Toad and King Cinematic Dialog Box
 	LDA #$28
 	STA ToadTalk_VH
-	LDA #$86
+	LDA #$46
 	STA ToadTalk_VL
 
 	; Initialize the sound
@@ -105,7 +105,7 @@ DiagBox_R2:	.byte $92, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $F
 DiagBox_R3:	.byte $95, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $97
 
 DiagBox_RowOffs:
-	.byte (DiagBox_R1 - DiagBox_R1), (DiagBox_R2 - DiagBox_R1), (DiagBox_R2 - DiagBox_R1), (DiagBox_R2 - DiagBox_R1)
+	.byte (DiagBox_R1 - DiagBox_R1), (DiagBox_R2 - DiagBox_R1), (DiagBox_R2 - DiagBox_R1), (DiagBox_R2 - DiagBox_R1), (DiagBox_R2 - DiagBox_R1), (DiagBox_R2 - DiagBox_R1)
 	.byte (DiagBox_R2 - DiagBox_R1), (DiagBox_R2 - DiagBox_R1), (DiagBox_R2 - DiagBox_R1), (DiagBox_R3 - DiagBox_R1)
 DiagBox_RowOffs_End
 
@@ -182,7 +182,7 @@ PRG024_A105:
 	; Initialize VRAM address for Toad and King Cinematic Dialog Box Text
 	LDA #$28
 	STA ToadTalk_VH
-	LDA #$a7
+	LDA #$67
 	STA ToadTalk_VL
 
 	; CineKing_Timer = $10
@@ -197,44 +197,47 @@ PRG024_A119:
 	; English: "Oh,it's terrible!" / "The King has been" / "transformed!" / "Please find the" / "Magic Wand so we can" / "change him back"
 KingHelpMsg1:
 	;       O    h    ,    i    t    '    s         t    e    r    r    i    b    l    e    !
-	.byte $BE, $D7, $9A, $D8, $CD, $AB, $CC, $FE, $CD, $D4, $CB, $CB, $D8, $D1, $DB, $D4, $EA, $FE, $FE, $FE
+	;.byte $BE, $D7, $9A, $D8, $CD, $AB, $CC, $FE, $CD, $D4, $CB, $CB, $D8, $D1, $DB, $D4, $EA, $FE, $FE, $FE
+	.byte $B2, $CE, $CB, $CC, $D4, $FE, $8C, $DE, $CE, $9A, $8C, $DE, $CE, $FE, $DB, $D8, $CD, $CD, $DB, $D4
 
 	;       T    h    e         K    i    n    g         h    a    s         b    e    e    n
-	.byte $C3, $D7, $D4, $FE, $BA, $D8, $DD, $D6, $FE, $D7, $D0, $CC, $FE, $D1, $D4, $D4, $DD, $FE, $FE, $FE
+	;.byte $C3, $D7, $D4, $FE, $BA, $D8, $DD, $D6, $FE, $D7, $D0, $CC, $FE, $D1, $D4, $D4, $DD, $FE, $FE, $FE
+	.byte $E9, $E9, $E9, $D4, $D7, $9A, $B8, $FE, $DC, $D4, $D0, $DD, $9A, $D3, $D8, $D3, $FE, $8C, $DE, $CE
 
 	;       t    r    a    n    s    f    o    r    m    e    d    !
-	.byte $CD, $CB, $D0, $DD, $CC, $D5, $DE, $CB, $DC, $D4, $D3, $EA, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	;.byte $CD, $CB, $D0, $DD, $CC, $D5, $DE, $CB, $DC, $D4, $D3, $EA, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	.byte $D5, $D8, $DD, $D3, $FE, $D0, $DB, $DB, $FE, $DC, $8C, $FE, $DC, $D0, $CB, $D1, $DB, $D4, $CC, $EB
 
 	;       P    l    e    a    s    e         f    i    n    d         t    h    e
-	.byte $BF, $DB, $D4, $D0, $CC, $D4, $FE, $D5, $D8, $DD, $D3, $FE, $CD, $D7, $D4, $FE, $FE, $FE, $FE, $FE
+	;.byte $BF, $DB, $D4, $D0, $CC, $D4, $FE, $D5, $D8, $DD, $D3, $FE, $CD, $D7, $D4, $FE, $FE, $FE, $FE, $FE
+	.byte $B8, $AB, $DC, $FE, $D9, $CE, $CC, $CD, $FE, $D0, $DD, $FE, $DE, $DB, $D3, $FE, $DC, $D0, $DD, $FE
 
 	;       M    a    g    i    c         W    a    n    d         s    o         w    e         c    a    n
-	.byte $BC, $D0, $D6, $D8, $D2, $FE, $C6, $D0, $DD, $D3, $FE, $CC, $DE, $FE, $81, $D4, $FE, $D2, $D0, $DD
+	;.byte $BC, $D0, $D6, $D8, $D2, $FE, $C6, $D0, $DD, $D3, $FE, $CC, $DE, $FE, $81, $D4, $FE, $D2, $D0, $DD
+	.byte $81, $D7, $DE, $FE, $DB, $DE, $CC, $CD, $FE, $DC, $8C, $FE, $DF, $DE, $81, $D4, $CB, $D5, $CE, $DB
 
 	;       c    h    a    n    g    e         h    i    m         b    a    c    k    .
-	.byte $D2, $D7, $D0, $DD, $D6, $D4, $FE, $D7, $D8, $DC, $FE, $D1, $D0, $D2, $DA, $E9, $FE, $FE, $FE, $FE
+	;.byte $D2, $D7, $D0, $DD, $D6, $D4, $FE, $D7, $D8, $DC, $FE, $D1, $D0, $D2, $DA, $E9, $FE, $FE, $FE, $FE
+	.byte $DE, $CB, $E9, $E9, $E9, $CE, $D7, $E9, $E9, $E9, $DC, $D0, $CB, $D1, $DB, $D4, $CC, $E9, $FE, $FE
 
 	; English: "Hurry! Hurry!" / "Get the Magic Wand" / "back from Little" / "Koopa."
 KingHelpMsg2:
 	;       H    u    r    r    y    !         H    u    r    r    y    !
-	.byte $B7, $CE, $CB, $CB, $8C, $EA, $FE, $B7, $CE, $CB, $CB, $8C, $EA, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	;.byte $B7, $CE, $CB, $CB, $8C, $EA, $FE, $B7, $CE, $CB, $CB, $8C, $EA, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	.byte $C8, $DE, $CE, $FE, $DD, $D4, $D4, $D3, $FE, $D0, $DB, $DB, $FE, $9E, $9E, $FE, $DE, $CB, $D1, $CC
 
 	;       G    e    t         t    h    e         M    a    g    i    c         W    a    n    d
-	.byte $B6, $D4, $CD, $FE, $CD, $D7, $D4, $FE, $BC, $D0, $D6, $D8, $D2, $FE, $C6, $D0, $DD, $D3, $FE, $FE
-
-	;       b    a    c    k         f    r    o    m         L    i    t    t    l    e
-	.byte $D1, $D0, $D2, $DA, $FE, $D5, $CB, $DE, $DC, $FE, $BB, $D8, $CD, $CD, $DB, $D4, $FE, $FE, $FE, $FE
-
-	;       K    o    o    p    a    .
-	.byte $BA, $DE, $DE, $DF, $D0, $E9, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
-
-	;
-	.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
-
-	;
-	.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	;.byte $B6, $D4, $CD, $FE, $CD, $D7, $D4, $FE, $BC, $D0, $D6, $D8, $D2, $FE, $C6, $D0, $DD, $D3, $FE, $FE
+	.byte $CD, $DE, $FE, $DF, $D4, $CD, $FE, $DC, $8C, $FE, $D3, $DE, $D6, $FE, $D7, $D4, $CB, $D4, $E9, $FE
 
 TAndK_DoToadText:
+	LDA SndCur_Music1
+	BNE _TAndK_PostMusic
+	LDA SndCur_Music2
+	BNE _TAndK_PostMusic
+	LDA #MUS2A_THRONEROOM
+	STA Sound_QMusic2
+_TAndK_PostMusic:
 	LDA CineKing_Timer
 	BNE PRG024_A260	 ; If the timer is not expired, jump to PRG024_A260
 
