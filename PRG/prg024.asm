@@ -1854,10 +1854,11 @@ Title_3Glow:
 	LDA #10
 	STA <Title_Ticker	; Title_Ticker = 4
 
-	LDY <Title_3GlowIndex	; Y = current 3glow index
-	LDA Title_3GlowColors,Y	; Get the cooresponding color
-
-	STA Graphics_Buffer+3	; Put that into the graphics buffer
+	LDY <Title_3GlowIndex		; Y = current 3glow index
+	LDA Title_3GlowColors,Y		; Get the cooresponding color
+	STA Graphics_Buffer+3		; Put that into the graphics buffer
+	;LDA Title_ShadowFade,Y		; Get the cooresponding color
+	;STA Graphics_Buffer+4		; Put that into the graphics buffer
 
 	; Address the palette
 	LDA #$3f	 
@@ -1866,12 +1867,11 @@ Title_3Glow:
 	STA Graphics_Buffer+1
 
 	; 1 byte and terminator
-	LDA #$01	 	
+	LDA #$01
 	STA Graphics_Buffer+2	
 	LDA #$00	 	
-	STA Graphics_Buffer+4	
+	STA Graphics_Buffer+4
 
-	; Title_3GlowIndex goes from 0 - 7, round and round
 	INC <Title_3GlowIndex
 	LDA <Title_3GlowIndex
 	CMP #$18
@@ -1883,7 +1883,9 @@ PRG024_AAA9:
 
 	; These are the color values used by Title_3Glow for the big '3'
 Title_3GlowColors:
-	.byte $0b, $1b, $2b, $2b, $1b, $0b, $07, $17, $27, $27, $17, $07, $0b, $1b, $2b, $2b, $1b, $0b, $05, $15, $25, $25, $15, $05
+	.byte $0a, $1a, $2a, $2a, $1a, $0a, $07, $17, $27, $27, $17, $07, $0b, $1b, $2b, $2b, $1b, $0b, $05, $15, $25, $25, $15, $05
+;Title_ShadowFade:
+;	.byte $01, $18, $30, $30, $18, $01, $01, $18, $30, $30, $18, $01, $01, $18, $30, $30, $18, $01, $01, $18, $30, $30, $18, $01
 
 
 TitleState_OpeningSequence:
@@ -2314,8 +2316,8 @@ PRG024_AC42:
 
 	; Title_ResetCnt and Title_ResetCnt2 have reached zero!
 	; Trigger the reset!
-	LDA #$ff
-	STA <Title_ResetTrig	; Title_ResetTrig = $ff
+	;LDA #$ff
+	;STA <Title_ResetTrig	; Title_ResetTrig = $ff
 
 PRG024_AC52:
 	JSR Title_Menu_UpdateKoopas	 ; Update and draw koopas

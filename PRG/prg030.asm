@@ -531,7 +531,7 @@ PRG030_845A:
 	STA PAGE_C000
 	JSR PRGROM_Change_Both2	
 
-	LDA #$20
+	LDA #$80
 	STA Update_Select	 ; Update_Select = $20 (Title Screen)
 	STA Raster_Effect	 ; Raster_Effect = $20 (Title Screen style)
 
