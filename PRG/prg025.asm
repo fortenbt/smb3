@@ -344,6 +344,25 @@ TitleScreen_LogoLine25_30:
 	vaddr $230D
 	.byte 19, $DD, $DE, $DF, $E0, $E1, $E2, $E3, $E4, $E5, $FE, $FE, $91, $92, $93, $94, $95, $96, $97, $98
 
+	vaddr $2320
+	.byte VU_REPEAT | 13, $FE
+	vaddr $232D
+	.byte 19, $E6, $E7, $E8, $E9, $EA, $EB, $EC, $ED, $EE, $FE, $FE, $99, $9A, $9B, $9C, $9D, $9E, $9F, $29
+
+	vaddr $2340
+	.byte VU_REPEAT | 13, $FE
+	vaddr $234D
+	.byte 19, $EF, $F0, $F1, $F2, $F3, $F4, $F5, $F6, $F7, $F8, $FE, $A0, $A1, $A2, $FE, $A3, $A4, $A5, $A6
+
+	vaddr $2360
+	.byte VU_REPEAT | 15, $FE
+	vaddr $236F
+	.byte 17, $F9, $FA, $FB, $FC, $17, $18, $19, $10, $11, $A7, $A8, $A9, $FE, $AA, $AB, $AC, $AD
+
+	vaddr $2380
+	.byte VU_REPEAT | $19, $FE
+	vaddr $2399
+	.byte 7, $AE, $AF, $FE, $B0, $B1, $B2, $B3
 	; Terminator!
 	.byte $00
 
