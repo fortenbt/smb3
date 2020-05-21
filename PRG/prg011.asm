@@ -1651,7 +1651,7 @@ Map_ForcePoofTiles_End
 Map_PanelCompletePats:
 	.byte $88, $89, $8A, $8B	; Mario Complete panel patterns
 	.byte $DC, $DD, $DE, $DF	; Luigi Complete panel patterns
-	.byte $68, $BB, $69, $BD	; Fortress rubble panel patterns
+	.byte $20, $BB, $21, $BD	; Fortress rubble panel patterns
 
 	; These are the select few tiles that "completing" their associated area
 	; will not cause the Player to end their turn (in a 2P game)
@@ -5104,6 +5104,8 @@ SetMapLevelCompletedPanelPats:
 	BEQ _do_fully_complete
 	CMP #$18			; $18 is our partially complete fort
 	BEQ _do_partial_fort
+	CMP #TILE_FORTRUBBLE	; This is if they were clever and completed the fortress in one go
+	BEQ _do_fortrubble
 	; Otherwise, this is partially complete, build up the tile from our partial pats
 	SEC
 	SBC #$0D			; Where the partial completed tile numbers begin
@@ -5130,3 +5132,6 @@ _do_partial_fort:
 	LDA #$C5			; bottom left
 	STA Graphics_Buffer+$08,X	;     stored at +8
 	JMP _panel_partial_complete
+_do_fortrubble:
+	LDY #$08
+	BNE _do_fully_complete
