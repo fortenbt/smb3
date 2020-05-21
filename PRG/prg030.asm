@@ -6087,3 +6087,129 @@ Read_Joypad_Loop:
 	BNE Read_Joypad_Loop	 ; Loop until 8 reads complete
 
 	RTS		 ; Return
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Player_GetCard
+;
+; Gives the Player a card, specified in 'A'
+; A = 0 (Mushroom), 1 = (Flower), 2 = (Star)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+Player_GetCard:
+	;;; [ORANGE] Now we do nothing when the card is retrieved. We have unused space for other stuff here if we need it.
+	;;; We do have to place a temporary value in the Inventory_Cards to show the correct graphics
+	LDA #$01		; Show the correct graphics in the "You got an orb" location
+	STA Inventory_Cards
+	RTS
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Player_GetItem
+;
+; Gives Player an item specified in 'A'
+; If Inventory is full, goes at the end.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; [ORANGE] We're replacing this with our GivePlayerTBoxOrb
+;;;Player_GetItem:
+GivePlayerTBoxOrb:
+	; Treasure box orb was retrieved, check what level we're in and update the Level_Orbs
+	JSR _FindLevelOrbOffset03
+	CPX #12				; max offset is 11
+	; If we didn't find it, there's an error somewhere, just bail out
+	BCS _tbox_orb_rts
+_clear_tbox_orb:
+	; X is == level offset
+	LDA Level_Orbs,X
+	AND #$02
+	BEQ _tbox_orb_rts		; if the bit is already cleared? go ahead and just return
+	LDA Level_Orbs,X		; otherwise, just xor off the EndLevelCard orb bit (bit 1)
+	EOR #$02
+	STA Level_Orbs,X
+	INC Player_GotSecret	; flag that we got a secret
+	LDA Player_GotSecret
+	CMP #$02				; If this is the 2nd secret, unlock the bridge
+	BNE _tbox_orb_rts
+	LDA #$01
+	STA Map_DoFortressFX
+_tbox_orb_rts:
+	RTS
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+	; Split arrays defining the vertical screen starting positions
+	; (i.e. $000, $0F0, $1E0, $2D0, ...)
+VertLevel_ScreenH:	.byte $00, $00, $01, $02, $03, $04, $05, $06, $07, $08, $09, $0A, $0B, $0C, $0D, $0E
+VertLevel_ScreenL:	.byte $00, $F0, $E0, $D0, $C0, $B0, $A0, $90, $80, $70, $60, $50, $40, $30, $20, $10
+
+; This stores the four tiles which make up a card (or absense of one)
+;              -    M    F    S
+CardUL:	.byte $FE, $E0, $E0, $E0
+CardUR:	.byte $FE, $E1, $E1, $E1
+CardLL:	.byte $FE, $E2, $E2, $E2
+CardLR:	.byte $FE, $E3, $E3, $E3
+
+; Each card's video start offset (lower byte)
+CardVStartU:	.byte $36, $39, $3C	; Upper half of card
+CardVStartL:	.byte $56, $59, $5C	; Lower half of card
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Player_GetCardAndUpdate
+;
+; This subroutine gives Player a card (see Player_GetCard)
+; and updates their status bar (see StatusBar_Update_Cards)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+Player_GetCardAndUpdate:
+	JSR Player_GetCard
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; StatusBar_Update_Cards
+;
+; This subroutine prepares the three cards in the Player's
+; inventory, storing them into the graphics buffer to be
+; drawn when ready...
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+StatusBar_Update_Cards:
+	LDA Player_Current
+	BEQ PRG031_FCC6	 ; If player = 0 (Mario), jump to PRG031_FCC6
+	LDA #(Inventory_Cards2 - Inventory_Cards)
+
+PRG031_FCC6:
+	; A is 0 (Mario) or $23 (Luigi)
+
+	STA <Temp_Var1	 ; Temp_Var1 = A
+
+	LDA #$02	 
+	STA <Temp_Var2	 ; Temp_Var2 = 2
+
+PRG031_FCCC:
+	LDY <Temp_Var1	 ; Y = Temp_Var1
+
+	JSR StatusBar_FillDrawCardPiece_Orbs	 ; Draw part of the card into the status bar
+
+	INC <Temp_Var1
+	DEC <Temp_Var2
+	BPL PRG031_FCCC	 ; While Temp_Var2 >= 0, loop!
+
+	RTS		 ; Return
+
+StatusBar_FillDrawCardPiece_Orbs:
+	;;; [ORANGE] Just update the orb count
+	JSR StatusBar_Fill_Orbs
+StatusBar_DrawCardPiece_Orbs:
+	LDX Graphics_BufCnt
+	LDA #$2B
+	STA Graphics_Buffer,X
+	LDA #$79			; orbs are at $2B79
+	STA Graphics_Buffer+1,X
+	LDA #$02
+	STA Graphics_Buffer+2,X
+	LDA StatusBar_Orbs
+	STA Graphics_Buffer+3,X
+	LDA StatusBar_Orbs+1
+	STA Graphics_Buffer+4,X
+	LDA #$00
+	STA Graphics_Buffer+5,X
+	LDA Graphics_BufCnt
+	ADD #5
+	STA Graphics_BufCnt
+	RTS

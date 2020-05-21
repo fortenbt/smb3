@@ -1826,6 +1826,73 @@ PRG031_F567:
 
 UpdSel_Vertical:
 
+	; COMPARE TO PRG031_F4E3
+
+	LDA #$00	 ; A = 0
+	STA PPU_CTL2	 ; Hide sprites and bg (most importantly)
+	STA PPU_SPR_ADDR ; Resets to sprite 0 in memory
+	LDA #$02	 ; A = 2
+	STA SPR_DMA	 ; DMA sprites from RAM @ $200 (probably trying to blank them out)
+	JSR PT2_Full_CHRROM_Switch	 ; Set up PT2 (Sprites) CHRROM
+
+	LDA <VBlank_Tick	 
+	BNE PRG031_F5D3	 		; If VBlank_Tick <> 0, jump to PRG031_F5D3
+
+	LDA #MMC3_8K_TO_PRG_A000	; Changing PRG ROM at A000
+	STA MMC3_COMMAND 		; Set MMC3 command
+	LDA #26	 			; Page 26
+	STA MMC3_PAGE	 		; Set MMC3 page
+
+	JSR Scroll_ToVRAM_Apply	 ; Applies Scroll_ToVRAMHi and Scroll_ToVRAMHA updates
+	JSR Video_Misc_Updates	 ; Various updates other than scrolling (palettes, status bar, etc.)
+	JSR TileChng_VRAMCommit	 ; Commit 16x16 tile change to VRAM
+
+	; Set pages at A000 and C000
+	JSR PRGROM_Change_Both
+
+	LDA <Graphics_Queue	
+	BNE PRG031_F5CF	 	; If we don't need to reset the buffer, jump to PRG031_F5CF
+
+	; Reset graphics buffer
+	LDA #$00
+	STA Graphics_BufCnt
+	STA Graphics_Buffer
+
+PRG031_F5CF:
+	LDA #$00	 
+	STA <Graphics_Queue	 ; Graphics Buffer reset
+
+PRG031_F5D3:
+	LDA PPU_STAT	 	; read PPU status to reset the high/low latch
+
+	; Unknown hardware thing?  Is this for synchronization?
+	LDA #$3f	 	; 
+	STA PPU_VRAM_ADDR	; Access PPU address #3Fxx
+	LDA #$00	 	; 
+	STA PPU_VRAM_ADDR	; Access PPU address #3F00 (palettes?)
+	STA PPU_VRAM_ADDR	; 
+	STA PPU_VRAM_ADDR	; Now accessing $0000 (Pattern tables?)
+
+	LDA <PPU_CTL2_Copy	; Get current PPU_CTL2 settings in RAM
+	ORA #$18	; A | 18 (BG + SPR)
+	STA PPU_CTL2	; Sprites/BG are forced to be visible regardless of PPU_CTL2_Copy
+
+	LDA <Horz_Scroll_Hi	; ?? Can specify bits? (I think this is a mistake, and this will be zero on vertical level anyway)
+	ORA #%10101000	; Generate VBlank Resets, use 8x16 sprites, sprites use PT2
+	STA PPU_CTL1	; Set above settings
+	LDA PPU_STAT	; read PPU status to reset the high/low latch
+
+	LDA <Horz_Scroll
+	STA PPU_SCROLL	 ; Horizontal Scroll set
+	LDA <Vert_Scroll
+	STA PPU_SCROLL	 ; Vertical Scroll set
+
+	LDA #192	 ; A = 192
+	STA MMC3_IRQCNT	 ; Store 192 into the IRQ count
+	STA MMC3_IRQLATCH ; Store it into the latch (will be used later)
+	STA MMC3_IRQENABLE ; Start the IRQ counter
+	CLI		 ; Enable maskable interrupts
+	JMP PRG031_F55B	 ; Jump to PRG031_F55B
 
 PRG031_F610:
 
@@ -2043,7 +2110,7 @@ PRG031_F7D1:
 PRG031_F7D8:
 	CMP #$A0	 ; Are we in "A0??? FIXME" mode? ()
 	BNE PRG031_F7DF	 ; If not, go to PRG031_F7DF
-	JMP IntIRQ_A0FIXME	 ; Otherwise, jump to IntIRQ_A0FIXME
+	;JMP IntIRQ_A0FIXME	 ; Otherwise, jump to IntIRQ_A0FIXME
 
 PRG031_F7DF:
 
@@ -2192,7 +2259,7 @@ IntIRQ_Finish_NoDis:
 
 	RTI		 ; End of IRQ interrupt!
 
-;;; [ORANGE] Removed IntIRQ_Vertical
+	;;; [ORANGE] Removed IntIRQ_Vertical
 
 IntIRQ_32PixelPartition:	; $F9B3 
 
@@ -2372,78 +2439,7 @@ PRG031_FA41:
 	;;; [ORANGE] Removed IRQ for spade game
 
 	; FIXME: What is this for??
-IntIRQ_A0FIXME:
-	; Disable then enable the IRQ??  Probably to make sure
-	; last latch value gets pushed into counter...
-	STA MMC3_IRQDISABLE
-	STA MMC3_IRQENABLE
-
-	LDA Raster_State
-	BEQ PRG031_FB7E	; If Raster_State = 0, go to PRG031_FB7E
-	JMP PRG031_FBE5	; Otherwise, jump to PRG031_FBE5
-
-PRG031_FB7E:
-	; Some kind of delay loop?
-	LDX #$14	 ; X = $14
-PRG031_FB80:
-	NOP		 ; ?
-	DEX		 ; X--
-	BNE PRG031_FB80 ; While X > 0, loop
-
-	LDA #$10	 ; 
-	STA PPU_CTL2	 ; Only show sprites
-
-	; Only loads Pattern Table 2 in this case...
-	LDA #MMC3_1K_TO_PPU_1000
-	STA MMC3_COMMAND
-	LDA SpriteHideCHR_1000
-	STA MMC3_PAGE
-	LDA #MMC3_1K_TO_PPU_1400
-	STA MMC3_COMMAND
-	LDA SpriteHideCHR_1400
-	STA MMC3_PAGE
-	LDA #MMC3_1K_TO_PPU_1800
-	STA MMC3_COMMAND
-	LDA SpriteHideCHR_1800
-	STA MMC3_PAGE	
-	LDA #MMC3_1K_TO_PPU_1C00
-	STA MMC3_COMMAND	
-	LDA SpriteHideCHR_1C00
-	STA MMC3_PAGE
-
-	LDA PPU_STAT
-	LDA <PPU_CTL1_Copy
-	ORA <PPU_CTL1_Mod	; Combine bits from PPU_CTL1_Copy into PPU_CTL1_Mod
-	STA PPU_CTL1	 ; Update the actual register
-
-	LDA <Horz_Scroll
-	STA PPU_SCROLL	 ; Update Horizontal Scroll
-	LDA <Vert_Scroll
-	STA PPU_SCROLL	 ; Update Vertical Scroll
-	INC Raster_State ; Raster_State++
-
-	LDA #27	 
-	STA MMC3_IRQCNT	 ; Next IRQ in 27 lines
-
-	; Some kind of delay loop?
-	LDX #$02	 ; X = $14
-PRG031_FBD3:
-	NOP		 ; ?
-	DEX		 ; X--
-	BPL PRG031_FBD3 ; While X >= 0, loop
-
-	LDA #$18	 ; 
-	STA PPU_CTL2	 ; Sprites + BG now visible
-
-	; Dead code?  Or timing/cycle filler
-	NOP
-	NOP
-	NOP
-
-	; The following JSR does a delay then updates the IRQ
-	; counter latch and Resets it
-	JSR PRG030_SUB_9F50
-	JMP IntIRQ_Finish_NoDis	 ; Clean up for THIS Raster_State...
+	;;; [ORANGE] Removed IntIRQ_A0FIXME
 
 PRG031_FBE5:
 	; Raster_State <> 0...
@@ -2547,133 +2543,7 @@ PRGROM_Change_Both:	; $FC6F
 	RTS		 ; Return
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-	; Split arrays defining the vertical screen starting positions
-	; (i.e. $000, $0F0, $1E0, $2D0, ...)
-VertLevel_ScreenH:	.byte $00, $00, $01, $02, $03, $04, $05, $06, $07, $08, $09, $0A, $0B, $0C, $0D, $0E
-VertLevel_ScreenL:	.byte $00, $F0, $E0, $D0, $C0, $B0, $A0, $90, $80, $70, $60, $50, $40, $30, $20, $10
-
-; This stores the four tiles which make up a card (or absense of one)
-;              -    M    F    S
-CardUL:	.byte $FE, $E0, $E0, $E0
-CardUR:	.byte $FE, $E1, $E1, $E1
-CardLL:	.byte $FE, $E2, $E2, $E2
-CardLR:	.byte $FE, $E3, $E3, $E3
-
-; Each card's video start offset (lower byte)
-CardVStartU:	.byte $36, $39, $3C	; Upper half of card
-CardVStartL:	.byte $56, $59, $5C	; Lower half of card
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Player_GetCardAndUpdate
-;
-; This subroutine gives Player a card (see Player_GetCard)
-; and updates their status bar (see StatusBar_Update_Cards)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Player_GetCardAndUpdate:
-	JSR Player_GetCard
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; StatusBar_Update_Cards
-;
-; This subroutine prepares the three cards in the Player's
-; inventory, storing them into the graphics buffer to be
-; drawn when ready...
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-StatusBar_Update_Cards:
-	LDA Player_Current
-	BEQ PRG031_FCC6	 ; If player = 0 (Mario), jump to PRG031_FCC6
-	LDA #(Inventory_Cards2 - Inventory_Cards)
-
-PRG031_FCC6:
-	; A is 0 (Mario) or $23 (Luigi)
-
-	STA <Temp_Var1	 ; Temp_Var1 = A
-
-	LDA #$02	 
-	STA <Temp_Var2	 ; Temp_Var2 = 2
-
-PRG031_FCCC:
-	LDY <Temp_Var1	 ; Y = Temp_Var1
-
-	JSR StatusBar_FillDrawCardPiece_Orbs	 ; Draw part of the card into the status bar
-
-	INC <Temp_Var1
-	DEC <Temp_Var2
-	BPL PRG031_FCCC	 ; While Temp_Var2 >= 0, loop!
-
-	RTS		 ; Return
-
-StatusBar_FillDrawCardPiece_Orbs:
-	;;; [ORANGE] Just update the orb count
-	JSR StatusBar_Fill_Orbs
-StatusBar_DrawCardPiece_Orbs:
-	LDX Graphics_BufCnt
-	LDA #$2B
-	STA Graphics_Buffer,X
-	LDA #$79			; orbs are at $2B79
-	STA Graphics_Buffer+1,X
-	LDA #$02
-	STA Graphics_Buffer+2,X
-	LDA StatusBar_Orbs
-	STA Graphics_Buffer+3,X
-	LDA StatusBar_Orbs+1
-	STA Graphics_Buffer+4,X
-	LDA #$00
-	STA Graphics_Buffer+5,X
-	LDA Graphics_BufCnt
-	ADD #5
-	STA Graphics_BufCnt
-	RTS
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Player_GetCard
-;
-; Gives the Player a card, specified in 'A'
-; A = 0 (Mushroom), 1 = (Flower), 2 = (Star)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Player_GetCard:
-	;;; [ORANGE] Now we do nothing when the card is retrieved. We have unused space for other stuff here if we need it.
-	;;; We do have to place a temporary value in the Inventory_Cards to show the correct graphics
-	LDA #$01		; Show the correct graphics in the "You got an orb" location
-	STA Inventory_Cards
-	RTS
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Player_GetItem
-;
-; Gives Player an item specified in 'A'
-; If Inventory is full, goes at the end.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; [ORANGE] We're replacing this with our GivePlayerTBoxOrb
-;;;Player_GetItem:
-GivePlayerTBoxOrb:
-	; Treasure box orb was retrieved, check what level we're in and update the Level_Orbs
-	JSR _FindLevelOrbOffset03
-	CPX #12				; max offset is 11
-	; If we didn't find it, there's an error somewhere, just bail out
-	BCS _tbox_orb_rts
-_clear_tbox_orb:
-	; X is == level offset
-	LDA Level_Orbs,X
-	AND #$02
-	BEQ _tbox_orb_rts		; if the bit is already cleared? go ahead and just return
-	LDA Level_Orbs,X		; otherwise, just xor off the EndLevelCard orb bit (bit 1)
-	EOR #$02
-	STA Level_Orbs,X
-	INC Player_GotSecret	; flag that we got a secret
-	LDA Player_GotSecret
-	CMP #$02				; If this is the 2nd secret, unlock the bridge
-	BNE _tbox_orb_rts
-	LDA #$01
-	STA Map_DoFortressFX
-_tbox_orb_rts:
-	RTS
-
-	.byte $FF
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Sprite_RAM_Clear
