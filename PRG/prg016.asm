@@ -337,6 +337,8 @@ LeveLoad_FixedSizeGen_TS3:
 
 ; Rest of ROM bank was empty
 
+	; Placeholder for more room for 4-3 level
+	.ds 0x40
 
 Custom_Tiles16:
 	.byte TILE3_BOOTSPIKE, TILE3_ON, TILE3_OFF_INACTIVE
