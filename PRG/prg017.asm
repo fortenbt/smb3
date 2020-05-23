@@ -27,7 +27,7 @@ Tile_Layout_TS4_TS12:
 	.byte $DC, $05, $FE, $FE, $05, $05, $05, $03, $59, $05, $3C, $3E, $3E, $00, $01, $01 ; Tiles $40 - $4F
 	.byte $20, $21, $21, $22, $22, $58, $54, $FF, $FF, $FF, $FF, $5C, $FF, $FF, $FF, $D8 ; Tiles $50 - $5F
 	.byte $98, $98, $98, $98, $98, $98, $92, $B4, $B4, $B4, $B4, $B4, $B4, $B4, $B4, $B4 ; Tiles $60 - $6F
-	.byte $B4, $B8, $C0, $C0, $C0, $C0, $A4, $EC, $E4, $C0, $D5, $B2, $FF, $FF, $FF, $FF ; Tiles $70 - $7F
+	.byte $B4, $B8, $C0, $C0, $C0, $C0, $A4, $EC, $E4, $C0, $D5, $B2, $FF, $FF, $A0, $FF ; Tiles $70 - $7F
 	.byte $05, $50, $50, $54, $54, $C4, $05, $26, $28, $2A, $16, $18, $1A, $0E, $16, $1A ; Tiles $80 - $8F
 	.byte $1A, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $90 - $9F
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $8C, $8E, $8C ; Tiles $A0 - $AF
@@ -45,7 +45,7 @@ Tile_Layout_TS4_TS12:
 	.byte $DD, $06, $FE, $FE, $06, $06, $06, $03, $59, $06, $3D, $3F, $3F, $10, $11, $11 ; Tiles $40 - $4F
 	.byte $30, $31, $31, $32, $32, $59, $55, $FF, $FF, $FF, $FF, $5D, $FF, $FF, $FF, $D9 ; Tiles $50 - $5F
 	.byte $99, $99, $99, $99, $99, $99, $93, $B5, $B5, $B5, $B5, $B5, $B5, $B5, $B5, $B5 ; Tiles $60 - $6F
-	.byte $B5, $B9, $C1, $C1, $C1, $C1, $A5, $ED, $E4, $C1, $B2, $B2, $FF, $FF, $FF, $FF ; Tiles $70 - $7F
+	.byte $B5, $B9, $C1, $C1, $C1, $C1, $A5, $ED, $E4, $C1, $B2, $B2, $FF, $FF, $A1, $FF ; Tiles $70 - $7F
 	.byte $06, $51, $51, $55, $55, $C4, $06, $26, $28, $2A, $26, $28, $2A, $1E, $26, $2A ; Tiles $80 - $8F
 	.byte $2A, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $90 - $9F
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $9C, $9E, $9C ; Tiles $A0 - $AF
@@ -63,7 +63,7 @@ Tile_Layout_TS4_TS12:
 	.byte $DE, $07, $FE, $FE, $07, $07, $07, $04, $07, $59, $3E, $3E, $2E, $01, $01, $02 ; Tiles $40 - $4F
 	.byte $21, $21, $22, $21, $02, $5A, $56, $FF, $FF, $FF, $FF, $5E, $FF, $FF, $FF, $DA ; Tiles $50 - $5F
 	.byte $9A, $9A, $9A, $9A, $9A, $9A, $CA, $B6, $B6, $B6, $B6, $B6, $B6, $B6, $B6, $B6 ; Tiles $60 - $6F
-	.byte $B6, $BA, $C2, $C2, $C2, $C2, $A6, $EE, $E5, $C2, $D5, $B2, $FF, $FF, $FF, $FF ; Tiles $70 - $7F
+	.byte $B6, $BA, $C2, $C2, $C2, $C2, $A6, $EE, $E5, $C2, $D5, $B2, $FF, $FF, $A2, $FF ; Tiles $70 - $7F
 	.byte $07, $52, $56, $56, $52, $C6, $07, $27, $28, $2B, $17, $18, $1B, $0F, $17, $17 ; Tiles $80 - $8F
 	.byte $1B, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $90 - $9F
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $8D, $8F, $8D ; Tiles $A0 - $AF
@@ -81,7 +81,7 @@ Tile_Layout_TS4_TS12:
 	.byte $DF, $08, $FE, $FE, $08, $08, $08, $04, $08, $59, $3F, $3F, $2F, $11, $11, $12 ; Tiles $40 - $4F
 	.byte $31, $31, $32, $31, $12, $5B, $57, $FF, $FF, $FF, $FF, $5F, $FF, $FF, $FF, $DB ; Tiles $50 - $5F
 	.byte $9B, $9B, $9B, $9B, $9B, $9B, $CB, $B7, $B7, $B7, $B7, $B7, $B7, $B7, $B7, $B7 ; Tiles $60 - $6F
-	.byte $B7, $BB, $C3, $C3, $C3, $C3, $A7, $EF, $E5, $C3, $B2, $B2, $FF, $FF, $FF, $FF ; Tiles $70 - $7F
+	.byte $B7, $BB, $C3, $C3, $C3, $C3, $A7, $EF, $E5, $C3, $B2, $B2, $FF, $FF, $A3, $FF ; Tiles $70 - $7F
 	.byte $08, $53, $57, $57, $53, $C6, $08, $27, $28, $2B, $27, $28, $2B, $1F, $27, $27 ; Tiles $80 - $8F
 	.byte $2B, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $90 - $9F
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $9D, $9F, $9D ; Tiles $A0 - $AF
@@ -162,7 +162,7 @@ LoadLevel_Generator_TS4_TS12:
 	; PRG017_A427 provides values well in excess of 64, but only 64
 	; addresses are defined here; reserved for expansion...
 
-	JSR DynJump
+	JSR PRG17_DynJump_LLGen
 
 	; THESE MUST FOLLOW DynJump FOR THE DYNAMIC JUMP TO WORK!!
 	.word LoadLevel_LongWoodBlock		;  0 - Long wooden block
@@ -921,3 +921,38 @@ LL17_ReturnTileAndNextRow:
 
 ; Rest of ROM bank was empty
 
+
+Custom_Tiles17:
+	.byte TILE12_BOOTSPIKE				; Bank 3, 0xB0 - 0xBF
+	;, TILE12_ON, TILE12_OFF_INACTIVE
+
+PRG17_DynJump_LLGen:
+	CMP #55
+	BCC _j_DynJump17
+
+	; If we're generating our custom object, we need to JSR to DynJump with our new index
+	SUB #55
+	STA <Temp_Var1	; save A
+	PLA	; eat our current return address
+	PLA	; eat our current return address
+	LDA <Temp_Var1	; restore A
+
+LoadLevel_Custom17:
+	LDA LL_ShapeDef
+	AND #$0f
+	STA <Temp_Var4			; Temp_Var4 = lower 4 bits of LL_ShapeDef (width of run)
+	LDY TileAddr_Off		; Y = TileAddr_Off
+
+	TXA
+	SUB #55
+	TAX
+_bs_run_loop17:
+	LDA Custom_Tiles17,X		; One of our custom tiles
+	STA [Map_Tile_AddrL],Y		; Store into tile mem
+	JSR LoadLevel_NextColumn	; Next column
+	DEC <Temp_Var4			; Temp_Var4--
+	BPL _bs_run_loop17		; While Temp_Var4 >= 0, loop!
+	RTS				; Return...
+
+_j_DynJump17:
+	JMP DynJump 
