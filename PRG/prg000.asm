@@ -901,6 +901,8 @@ PRG000_C53D:
 	STA <Objects_YVel,X	 ; Halt vertical movement
 	STA Objects_Bumped,X
 
+	JSR EnsureSmallWakeupCounter
+
 	RTS		 ; Return
 
 
@@ -4071,7 +4073,7 @@ Object_SetShellState:
 	STA Objects_State,X
 
 	; Set timer 3 = $FF (wake up timer)
-	LDA #$ff
+	LDA #$FF
 	STA Objects_Timer3,X
 
 	RTS		 ; Return

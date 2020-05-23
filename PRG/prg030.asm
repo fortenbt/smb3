@@ -2826,26 +2826,39 @@ _pswitch_subst:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+DisallowWaking:
+	.byte OBJ_PARATROOPAGREENHOP, OBJ_FLYINGREDPARATROOPA, OBJ_REDTROOPA, OBJ_SPINY
+DisallowWaking_End
+
 CheckForWakeup:
 	PHA			; Save off the obj type
 	LDA Objects_State,X
 	CMP #OBJSTATE_HELD
-	BNE _check_wakeup_green
+	BNE _check_wakeup_disallowed
 	PLA
 	LDA #$FF
 	STA Objects_Timer3,X	; Don't let held shells ever wake up
 	BNE _check_timer3
-_check_wakeup_green:
+_check_wakeup_disallowed:
 	PLA			; Restore object type
-	CMP #OBJ_PARATROOPAGREENHOP
-	BNE _check_wakeup_red
-	STA Objects_Timer3,X	; Don't let the greenhop troopa ever wake up
-_check_wakeup_red:
-	CMP #OBJ_FLYINGREDPARATROOPA
-	BNE _check_timer3
-	STA Objects_Timer3,X	; Don't let the flying red troopa ever wake up
+	LDY #(DisallowWaking_End-DisallowWaking)
+_check_disallow_loop:
+	DEY
+	BMI _check_timer3
+	CMP DisallowWaking,Y
+	BNE _check_disallow_loop
+	STA Objects_Timer3,X	; Don't let anyone in the disallowed list to wake up
 _check_timer3:
 	LDA Objects_Timer3,X
+	RTS
+
+EnsureSmallWakeupCounter:
+	LDA Objects_Timer3,X
+	CMP #$70
+	BCC _small_wakeup_rts
+	LDA #$70
+	STA Objects_Timer3,X
+_small_wakeup_rts:
 	RTS
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
