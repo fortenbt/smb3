@@ -3869,6 +3869,9 @@ TILE9_ON		= $FE	; See prg020.asm - solid on block
 TILE9_ON_INACTIVE	= $D4	; non-solid on block outline
 TILE9_OFF		= $3C	; solid off block
 TILE9_OFF_INACTIVE	= $21	; non-solid off block outline
+;; -- TS12 (Ice) On/Off, boot spikes
+;TILE12_ON			= $7D
+TILE12_BOOTSPIKE	= $7E
 ;; -- TS14 (Underground) On/Off, boot spikes
 TILE14_ON		= $7D	; See prg013.asm - solid on block		QUAD 2
 TILE14_ON_INACTIVE	= $5D	; non-solid on block outline
