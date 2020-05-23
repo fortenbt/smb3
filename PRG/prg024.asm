@@ -1506,6 +1506,17 @@ PRG024_AC6B:
 	AND #PAD_START
 	BEQ PRG024_ACBA	 	; If Player is not pressing START, jump to PRG024_ACBA (RTS)
 
+	LDA <Pad_Holding
+	AND #PAD_SELECT		; If player is holding select during start press, don't display user messages
+	BEQ	_post_skip_usermsg
+	LDX #(UserMsgPtr_LEnd-UserMsgPtr_L-1)
+_clear_usermsg_loop:
+	INC UserMsg_Completions,X
+	DEX
+	BGS _clear_usermsg_loop
+
+_post_skip_usermsg:
+
 	;LDA #SND_LEVELCOIN
 	;STA Sound_QLevel1	; Play coin sound (in this case, selected and begin!)
 	LDA #MUS2A_WORLD2

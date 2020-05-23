@@ -3813,6 +3813,7 @@ UserMsgPtr_L:
 	.byte LOW(UserMessage2)
 	.byte LOW(UserMessage3)
 	.byte LOW(UserMessage4)
+UserMsgPtr_LEnd
 
 UserMsgPtr_H:
 	.byte HIGH(UserMessage1)
