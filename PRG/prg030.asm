@@ -6226,3 +6226,74 @@ StatusBar_DrawCardPiece_Orbs:
 	ADD #5
 	STA Graphics_BufCnt
 	RTS
+
+	; Each "index" of music is tied to a header of a "segment" of music.  Some segments are
+	; reused where repetitious musical notes exist.  The segment headers are apparently not
+	; stored in any particular order.  This table connects an index to a header:
+Music_Set2B_IndexOffs:
+	; TGL
+	.word TGLHedr4			; $00 small intro (forced due to zero index, where 0 loop ends the segment)
+	.word TGLHedr1
+	.word TGLHedr2
+	.word TGLHedr3
+	.word TGLHedr4
+	.word TGLHedr5
+	.word TGLHedr6			; $06
+	; Castlevania - Vampire
+	.word CVampireHedr1		; $07
+	.word CVampireHedr2
+	.word CVampireHedr3
+	.word CVampireHedr4
+	.word CVampireHedr5
+	.word CVampireHedr6
+	.word CVampireHedr7
+	.word CVampireHedr8		; $0E
+	; Gradius II - Dead End
+	.word G2Hedr1			; $0F
+	.word G2Hedr2			; 10
+	.word G2Hedr1			; 11
+	.word G2Hedr2			; 12
+	.word G2Hedr3			; 13
+	.word G2Hedr4			; 14
+	.word G2Hedr3			; 15
+	.word G2Hedr5			; $16
+	; Metal Gear
+	.word MGHedr1			; $17
+	.word MGHedr2
+	.word MGHedr3
+	.word MGHedr4
+	.word MGHedr5
+	.word MGHedr6
+	.word MGHedr5
+	.word MGHedr7
+	.word MGHedr8			; $1F
+	.word MGHedr9			; $20
+	.word MGHedr8			; $21
+	.word MGHedrA			; $22
+	.word MGHedrB			; $23
+	.word MGHedrC			; $24
+	.word MGHedrD			; $25
+	.word MGHedrE			; $26
+
+	.word CaveHedr1			; $27
+	.word CaveHedr2			; $28
+	.word CaveHedr2			; $29
+	.word CaveHedr3			; $2A
+	.word CaveHedr2			; $2B
+	.word CaveHedr4			; $2C
+
+	.word ItoiHedr1			; $2D
+	.word ItoiHedr1			; $2E
+	.word ItoiHedr1			; $2F
+	.word ItoiHedr1			; $30
+	.word ItoiHedr2			; $31
+	.word ItoiHedr1			; $32
+	.word ItoiHedr3			; $33
+	.word ItoiHedr1			; $34
+	.word ItoiHedr4			; $35
+	.word ItoiHedr1			; $36
+	.word ItoiHedr3			; $37
+	.word ItoiHedr3			; $38
+	.word ItoiHedr5			; $39
+	.word ItoiHedr5			; $3A
+	.word ItoiHedr6			; $3B

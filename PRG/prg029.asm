@@ -12,60 +12,6 @@
 ; Distribution package date: Fri Apr  6 23:46:16 UTC 2012
 ;---------------------------------------------------------------------------
 
-	; Each "index" of music is tied to a header of a "segment" of music.  Some segments are
-	; reused where repetitious musical notes exist.  The segment headers are apparently not
-	; stored in any particular order.  This table connects an index to a header:
-Music_Set2B_IndexOffs:
-	; TGL
-	.word TGLHedr4			; $00 small intro (forced due to zero index, where 0 loop ends the segment)
-	.word TGLHedr1
-	.word TGLHedr2
-	.word TGLHedr3
-	.word TGLHedr4
-	.word TGLHedr5
-	.word TGLHedr6			; $06
-	; Castlevania - Vampire
-	.word CVampireHedr1		; $07
-	.word CVampireHedr2
-	.word CVampireHedr3
-	.word CVampireHedr4
-	.word CVampireHedr5
-	.word CVampireHedr6
-	.word CVampireHedr7
-	.word CVampireHedr8		; $0E
-	; Gradius II - Dead End
-	.word G2Hedr1			; $0F
-	.word G2Hedr2			; 10
-	.word G2Hedr1			; 11
-	.word G2Hedr2			; 12
-	.word G2Hedr3			; 13
-	.word G2Hedr4			; 14
-	.word G2Hedr3			; 15
-	.word G2Hedr5			; $16
-	; Metal Gear
-	.word MGHedr1			; $17
-	.word MGHedr2
-	.word MGHedr3
-	.word MGHedr4
-	.word MGHedr5
-	.word MGHedr6
-	.word MGHedr5
-	.word MGHedr7
-	.word MGHedr8			; $1F
-	.word MGHedr9			; $20
-	.word MGHedr8			; $21
-	.word MGHedrA			; $22
-	.word MGHedrB			; $23
-	.word MGHedrC			; $24
-	.word MGHedrD			; $25
-	.word MGHedrE			; $26
-
-	.word CaveHedr1			; $27
-	.word CaveHedr2			; $28
-	.word CaveHedr2			; $29
-	.word CaveHedr3			; $2A
-	.word CaveHedr2			; $2B
-	.word CaveHedr4			; $2C
 
 
 Music_Set2B_Headers:
@@ -120,6 +66,13 @@ CaveHedr1:		MusSeg Cave_R1, Cave_1, Cave_Tri1, $03, Cave_Nse1, Cave_DPCM1
 CaveHedr2:		MusSeg Cave_R23, Cave_23, Cave_Tri2, $1A, Cave_Nse2, Cave_DPCM23
 CaveHedr3:		MusSeg Cave_R23, Cave_23, Cave_Tri3, $1A, Cave_Nse2, Cave_DPCM23
 CaveHedr4:		MusSeg Cave_R4, Cave_4, $0000, $17, $0000, $0000
+
+ItoiHedr1:		MusSeg Itoi_R1, Itoi1, Itoi_Tri1, $08, Itoi_Nse1, Itoi_DPCM1
+ItoiHedr2:		MusSeg Itoi_R1, Itoi2, Itoi_Tri1, $08, Itoi_Nse1, Itoi_DPCM1
+ItoiHedr3:		MusSeg Itoi_R1, Itoi3, Itoi_Tri1, $0A, Itoi_Nse1, Itoi_DPCM1
+ItoiHedr4:		MusSeg Itoi_R1, Itoi4, Itoi_Tri1, $08, Itoi_Nse1, Itoi_DPCM1
+ItoiHedr5:		MusSeg Itoi_R1, Itoi5, Itoi_Tri1, $04, Itoi_Nse1, Itoi_DPCM1
+ItoiHedr6:		MusSeg Itoi_R6, Itoi6, Itoi_Tri6, $0C, Itoi_Nse6, Itoi_DPCM6
 
 ;;; Mother - Cave
 Cave_R1:
