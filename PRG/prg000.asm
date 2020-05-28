@@ -508,7 +508,7 @@ SpikesEnable:
 	.byte TILE9_SPIKEUP	;  8 desert levels
 	.byte $FF	;  9 Airship
 	.byte $FF	; 10 Giant World
-	.byte TILE12_BOOTSPIKE+1	; 11 Ice level
+	.byte TILE12_DOWNSPIKE	; 11 Ice level
 	.byte $FF	; 12 Sky level
 	.byte TILE14_BOOTSPIKE+1; 13 Underground
 

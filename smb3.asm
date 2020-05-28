@@ -3874,7 +3874,8 @@ TILE12_ON			= $9D
 TILE12_ON_INACTIVE	= $81
 TILE12_OFF			= $FD
 TILE12_OFF_INACTIVE	= $D1
-TILE12_BOOTSPIKE	= $7E
+TILE12_BOOTSPIKE	= $7D
+TILE12_DOWNSPIKE	= $7E
 ;; -- TS14 (Underground) On/Off, boot spikes
 TILE14_ON		= $7D	; See prg013.asm - solid on block		QUAD 2
 TILE14_ON_INACTIVE	= $5D	; non-solid on block outline
