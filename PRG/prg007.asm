@@ -1110,8 +1110,20 @@ PRG007_A55D:
 
 PRG007_A563:
 	JSR Fireball_ThawTile	 ; Thaw the frozen tile!
+	JMP _orig_PRG007_A566
 
 PRG007_A566:
+	LDY Level_PSwitchCnt
+	BNE _orig_PRG007_A566
+	CMP #TILE12_FIRESWITCH
+	BNE _orig_PRG007_A566
+	LDA <Level_OnOff
+	EOR #$01
+	STA <Level_OnOff
+	LDA #$10
+	STA Level_Vibration	; Level_Vibration = $10 (little shake effect)
+	BNE _j_fireball_poof	; jump always to kill this fireball
+_orig_PRG007_A566:
 	LDA <Temp_Var1
 
 	LDY Level_SlopeEn
@@ -1133,7 +1145,7 @@ PRG007_A579:
 	BNE PRG007_A586	 ; If Fireball_HitChkPass <> 2, jump to PRG007_A586
 
 	; Fireball has been through hit check too many times, it's obviously done
-
+_j_fireball_poof:
 	JMP PRG007_A637	 ; Jump to PRG007_A637 ("Poof" away, fireball..)
 
 PRG007_A586:
