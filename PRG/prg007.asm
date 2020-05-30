@@ -2934,6 +2934,7 @@ SObj_CheckHitSolid:
 
 	LDA <Horz_Scroll_Hi
 	ADC #$00	 ; Apply carry
+	STA <Temp_Var7	 ; High value -> Temp_Var7
 	ASL A		 ; 2 bytes per screen (for Tile_Mem_Addr)
 	TAY		 ; -> 'Y'
 
@@ -2987,6 +2988,8 @@ SObj_CheckHitSolid:
 
 PRG007_AEB3:
 	INC SpecialObj_Data,X	 ; SpecialObj_Data++
+
+	JSR BroFireballDoCollide
 
 	LDA SpecialObj_Data,X
 	CMP #$02
@@ -5987,3 +5990,70 @@ _stomp_micro:
 	RTS
 _j_Player_GetHurt:
 	JMP Player_GetHurt
+
+BroFireballDoCollide:
+	LDA <Temp_Var1		 		; Get the tile at the Projectile
+
+	SUB #TILE12_FROZENCOIN
+	CMP #$02
+	BCC _brofire_thaw			; If this is a frozen coin/muncher, thaw it
+
+	LDA Level_PSwitchCnt
+	BNE _brofile_collide_rts
+	LDA <Temp_Var1		 		; Get the tile at the Projectile
+	CMP #TILE12_FIRESWITCH		; Check if it's a fire switch
+	BNE _brofile_collide_rts	; If not, return
+	LDA <Level_OnOff			; Otherwise, change Level_OnOff
+	EOR #$01
+	STA <Level_OnOff
+	LDA #$10
+	STA Level_Vibration			; Level_Vibration = $10 (little shake effect)
+	BNE _brofire_poof			; jump always to kill this fireball
+_brofile_collide_rts:
+	RTS							; Otherwise, just return
+
+_brofire_poof:
+	LDA #$02
+	STA SpecialObj_Data,X
+	RTS
+
+_brofire_thaw:
+	; A is 0 or 1 depending upon coin (0) or muncher (1)
+	ADD #CHNGTILE_FROZENCOIN
+	CMP #CHNGTILE_FROZENCOIN
+	BEQ _brofire_chngtile
+	LDA #CHNGTILE_FROZENMUNCHER
+_brofire_chngtile:
+	STA Level_ChgTileEvent	 ; Queue tile change event!
+
+	JSR BrickBust_MoveOver	 ; Open up a brick bust
+
+	; Brick bust "poof" style (over top of the changing tile)
+	LDA #$01
+	STA BrickBust_En
+
+	; Set block change Y 
+	LDA <Temp_Var3
+	STA Level_BlockChgYLo
+
+	; Set poof Y
+	SBC Level_VertScroll
+	STA BrickBust_YUpr
+
+	; Set block change Y Hi
+	LDA <Temp_Var4
+	STA Level_BlockChgYHi
+
+	; Set block change X
+	LDA <Temp_Var5
+	AND #$f0
+	STA Level_BlockChgXLo
+
+	; Set poof X
+	SBC <Horz_Scroll
+	STA BrickBust_X	
+
+	; Set block change X Hi
+	LDA <Temp_Var7
+	STA Level_BlockChgXHi
+	RTS
