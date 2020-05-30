@@ -3623,108 +3623,6 @@ Wand_Attributes:	.byte SPR_PAL2, SPR_PAL2, SPR_PAL2, SPR_PAL2 | SPR_VFLIP, SPR_P
 
 SObj_Wand:
 
-	; Load wand graphics
-	LDA #$48
-	STA PatTable_BankSel+4
-
-	LDA <Player_HaltGame
-	BNE PRG007_B254	 ; If gameplay is halted, jump to PRG007_B254
-
-	JSR SObj_ApplyXYVelsWithGravity	 ; Apply X and Y velocities with gravity
-
-	DEC SpecialObj_YVel,X
-
-	; Wand_FrameCnt += Var1 (spin rate)
-	LDA Wand_FrameCnt
-	ADD SpecialObj_Var1,X
-	STA Wand_FrameCnt
-	BCC PRG007_B217	 ; If no carry, jump to PRG007_B217
-
-	INC Wand_Frame	 ; Next wand frame
-
-PRG007_B217:
-
-	JSR SObj_CheckHitSolid
-	BCC PRG007_B254	 ; If wand has not hit solid surface, jump to PRG007_B254
-
-	LDA SpecialObj_YVel,X
-	BMI PRG007_B254	 ; If wand is moving upward, jump to PRG007_B254
-
-	CMP #$20
-	BLT PRG007_B241	 ; If wand Y Vel < $20, jump to PRG007_B241
-
-	; Wand bounces!
-	LSR A		; Divide by 2
-	JSR Negate	; Negate
-	STA SpecialObj_YVel,X
-
-	; Wand Y -= 2
-	DEC SpecialObj_YLo,X
-	DEC SpecialObj_YLo,X
-
-	INC Wand_BounceFlag	 ; Wand_BounceFlag++
-
-	; Var1 += $80 (rapid spin rate!)
-	LDA SpecialObj_Var1,X
-	ADD #$80
-	STA SpecialObj_Var1,X
-
-	JMP PRG007_B254	 ; Jump to PRG007_B254
-
-PRG007_B241:
-
-	; Wand has landed!
-	LDA #$00
-	STA SpecialObj_YVel,X
-	STA Wand_Frame	 ; Wand_Frame = 0
-
-	; Align wand Y to grid + 5
-	LDA SpecialObj_YLo,X
-	AND #$f0
-	ADD #$05
-	STA SpecialObj_YLo,X
-
-PRG007_B254:
-	JSR SObj_GetSprRAMOffChkVScreen
-	BNE PRG007_B291	 ; If wand is not on vertical screen, jump to PRG007_B291 (RTS)
-
-	JSR SObj_Draw16x16	 ; Prepare wand sprite
-
-	; Subtract 4 from sprite Ys
-	LDA Sprite_RAM+$00,Y
-	SBC #$04
-	STA Sprite_RAM+$00,Y
-	STA Sprite_RAM+$04,Y
-
-	LDA Wand_BounceFlag
-	LSR A		; Sets carry on odd bounces
-
-	LDA Wand_Frame
-	AND #$07	; A = 0 to 7 by Wand_Frame
-
-	BCC PRG007_B274	 ; If wand is not on an odd bounce, jump to PRG007_B274
-
-	EOR #$07	 ; Invert result (wand spin)
-
-PRG007_B274:
-	TAX		 ; Frame -> 'X'
-
-	; Set wand sprites patterns
-	LDA Wand_Pattern1,X
-	STA Sprite_RAM+$01,Y
-	LDA Wand_Pattern2,X
-	STA Sprite_RAM+$05,Y
-
-	; Set wand sprite attributes
-	LDA Wand_Attributes,X
-	STA Sprite_RAM+$02,Y
-	ORA #SPR_HFLIP
-	STA Sprite_RAM+$06,Y
-
-	LDX <SlotIndexBackup	 ; X = special object slot index
-	JMP SObj_PlayerCollide	 ; Do Player-to-wand collision and don't come back!
-
-PRG007_B291:
 	RTS		 ; Return
 
 SObj_LavaLotusFire:
@@ -4103,51 +4001,9 @@ PRG007_B483:
 PRG007_B491:
 	RTS		 ; Return
 
-Wrench_Patterns:	.byte $A1, $95, $9F, $95
-Wrench_Attributes:	.byte SPR_PAL2, SPR_PAL2 | SPR_VFLIP, SPR_PAL2, SPR_PAL2
-	
+
 SObj_Wrench:
-	LDA <Player_HaltGame		 
-	BNE PRG007_B4AF	 ; If gameplay halted, jump to PRG007_B4AF
 
-	JSR SObj_OffsetYForRaster	; Offset Y with raster effects (if any)
-	JSR SObj_AddXVelFrac	 	; Apply X velocity
-
-	LDA SpecialObj_YVel,X
-	BEQ PRG007_B4AC	 ; If wrench Y velocity = 0, jump to PRG007_B4AC
-
-	INC SpecialObj_YVel,X	 ; Otherwise, Y Vel++ (fall?)
-
-PRG007_B4AC:
-	JSR SObj_AddYVelFrac	 ; Apply Y velocity
-
-PRG007_B4AF:
-	JSR SObj_PlayerCollide	 ; Do Player-to-wrench collision
-
-	JSR SObj_GetSprRAMOffChkVScreen
-	BNE PRG007_B4EB	 ; If wrench is not vertically on-screen, jump to PRG007_B4EB (RTS)
-
-	; Set Temp_Var1 = $00 or $80, depending on sign bit of X velocity
-	LDA SpecialObj_XVel,X
-	AND #$80
-	STA <Temp_Var1
-
-	LDA Level_NoStopCnt
-	LSR A
-	ADD <SlotIndexBackup
-	AND #$03
-	TAX		 ; X = 0 to 3
-
-	; Set wrench pattern
-	LDA Wrench_Patterns,X
-	STA Sprite_RAM+$01,Y
-
-	; Set wrench attributes
-	LDA Wrench_Attributes,X
-	EOR <Temp_Var1	
-	STA Sprite_RAM+$02,Y
-
-	LDX <SlotIndexBackup	; X = special object slot index
 
 SObj_SetSpriteXYRelative:
 	LDA SpecialObj_YLo,X
