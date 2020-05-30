@@ -854,7 +854,7 @@ CineKing_DialogState:	; Toad & King Cinematic: When 1, we're doing the text vers
 	Player_Slopes:		.ds 3	; for sloped levels only (3 bytes allocated, but only one actually used)
 				; *NOTE: Code at PRG030_9EDB clears Player_Slopes+1 and Player_Slopes+2, but these are never used!
 
-				.ds 1	; $E9 unused
+	SubstTile_Flag:		.ds 1	; $E9 unused [ORANGE] no longer unused; used to flag if we substituted a tile or not
 	Player_Regrabbing:	.ds 1	; $EA unused
 
 	Player_XStart:		.ds 1	; Set to Player's original starting X position (also used to check if level has initialized)
