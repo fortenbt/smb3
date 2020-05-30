@@ -2796,7 +2796,7 @@ _check_off_tile:
 	CMP OnTileTS1,Y		; Check the off tile
 	BNE _onoff_rts	 	; If this is not a match, return
 _matched_tile:
-	STA <Temp_Var5		; Signal we replaced
+	STA <SubstTile_Flag	; Signal we replaced
 	LDA OffAttrTS1,Y	; Get replacement attribute
 	STA <Player_Slopes	; Store into Player_Slopes
 
@@ -2811,21 +2811,21 @@ _onoff_rts:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 DoSubstTileAndAttr:
-	STA <Temp_Var6		; store tile
+	STA <Temp_Var6			; store tile
 	LDA #$00
-	STA <Temp_Var5
-	LDA <Temp_Var6		; get tile
+	STA <SubstTile_Flag
+	LDA <Temp_Var6			; get tile
 	JSR OnOff_SubstTileAndAddr
-	PHA			; store result
-	LDA <Temp_Var5		; did we replace?
+	PHA						; store result
+	LDA <SubstTile_Flag		; did we replace?
 	BEQ _pswitch_subst
-	PLA			; get result
+	PLA						; get result
 	RTS
 _pswitch_subst:
-	PLA			; discard result
-	LDA <Temp_Var6		; get tile
+	PLA						; discard result
+	LDA <Temp_Var6			; get tile
 	JSR PSwitch_SubstTileAndAttr
-	RTS			; Return
+	RTS						; Return
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
