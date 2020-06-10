@@ -3851,6 +3851,7 @@ TILE1_PIPEVR		= $BB	; Pipe middle vertical right
 
 ;; -- TS1 (Plains) On/Off, boot spikes
 TILE1_BOOTSPIKE		= $59	; Spikes that hurt regardless of kuribo's shoe
+TILE1_DOWNSPIKE		= $5A	; Spikes that hurt regardless of kuribo's shoe
 TILE1_ON		= $BE	; See prg015.asm - solid on block
 TILE1_ON_INACTIVE	= $82	; non-solid on block outline
 TILE1_OFF		= $FB	; solid off block
