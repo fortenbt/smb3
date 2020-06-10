@@ -2962,15 +2962,17 @@ SOBJ_BRICKDEBRIS	= $13 	; Brick debris (used for busting e.g. Piledriver Microgr
 SOBJ_BLOOPERKID		= $14 	; Blooper kid
 SOBJ_LASER		= $15 	; Laser
 SOBJ_POOF		= $16 	; Poof
-	SpecialObj_ID:		.ds 8	; $7FC6-$7FCD Special object spawn event IDs
+	SpecialObj_ID:		.ds 10	; $7FC6-$7FCD Special object spawn event IDs [ORANGE] this used to be an array of 8, but is actually 9
 
-				.ds 2	; $7FCE-$7FCF unused
+						;.ds 1	; $7FCE [ORANGE] this was an error, SpecialObj_ID,8 is used by Level_DoChangeReset
+						;.ds 1	; $7FCF [ORANGE] this was an error, SpecialObj_ID,9 is used by Level_DoChangeReset
 
 	Objects_Var3:		.ds 5	; $7FD0-$7FD4 Generic variable 3 for objects SLOT 0 - 4 ONLY
 
 	SpecialObj_YHi:		.ds 8	; $7FD5-$7FDC Special object Y high coordinate
 
-				.ds 2	; $7FDD-$7FDE unused
+	UnlockedGrimmsHouse:	.ds 1	; $7FDD-$7FDE unused
+							.ds 1
 
 	Objects_LastTile:	.ds 8	; $7FDF-$7FE6 Last tile this object detected
 

@@ -2677,7 +2677,7 @@ PRG030_910C:
 	; Player returns to map dead
 
 	;;LDY #$02	 ; Y = 2 (Will be the Map_Operation value)
-	LDY #$0D	; ORANGE - Return to map normal state (skip skid and hbro)
+	LDY #$08	; ORANGE - Return to map normal state (skip skid and hbro)
 
 	; Map_ReturnStatus = 0
 	LDA #$00

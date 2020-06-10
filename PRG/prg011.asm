@@ -2158,207 +2158,32 @@ Map_WhiteObjects:
 	.byte MAPOBJ_NSPADE, MAPOBJ_WHITETOADHOUSE, MAPOBJ_COINSHIP, MAPOBJ_UNK0C 
 Map_WhiteObjects_End
 
-MO_CheckForBonus:
-	INC Map_Operation		; [ORANGE] We don't want any map bonuses...do we?
+CheckGrimmsLock:
+	LDA UnlockedGrimmsHouse
+	BNE _grimm_lock_check_rts
+	; Check to see if we have at least one orb from each level
+	LDX #(LOI_END - Level_Orbs_Initial - 1)
+_grimm_lock_check_loop:
+	CPX #$0A					; Grimm's house is level offset 10 ($0A)
+	BEQ _grimm_lock_check_next
+	LDA Level_Orbs_Initial,X
+	CMP Level_Orbs,X
+	BEQ _grimm_lock_check_rts	; If our current Level_Orb == its initial value, we don't have one orb from each yet
+_grimm_lock_check_next:
+	DEX
+	BPL _grimm_lock_check_loop
+	LDA #$02					; Unlock Grimm's mansion
+	STA Map_DoFortressFX
+	INC UnlockedGrimmsHouse		; Flag that we unlocked his house
+_grimm_lock_check_rts:
 	RTS
-	; Temp_Var16 is our loop counter
-	;;LDA #(Map_WhiteObjects_End - Map_WhiteObjects - 1)
-	;;STA <Temp_Var16
 
-PRG011_AC57:
-	LDY <Temp_Var16	 	; Y = Temp_Var16
-	LDX #(MAPOBJ_TOTAL-1)	; X = (MAPOBJ_TOTAL-1)
+MO_CheckForBonus:
+	JSR CheckGrimmsLock
+	INC Map_Operation
+	RTS
 
-	LDA Map_WhiteObjects,Y
-PRG011_AC5E:
-	CMP Map_Objects_IDs,X
-	BEQ PRG011_AC69	 ; If this is the "white" bonus object we're looking for, jump to PRG011_AC69 (we already have one, can't have more)
-
-	DEX		 ; X-- (previous "white" bonus object to consider)
-	BPL PRG011_AC5E	 ; While X >= 0, loop!
-
-	JSR MO_CheckForBonusRules	; Since we don't have one of these, check the rules to see if we've earned one!
-
-PRG011_AC69:
-	DEC <Temp_Var16	 ; Temp_Var16--
-	BPL PRG011_AC57	 ; While Temp_Var16 >= 0, loop!
-
-	INC Map_Operation	 ; Map_Operation++
-	JMP WorldMap_UpdateAndDraw	 ; Update and draw map, and don't come back!
-
-MO_CheckForBonusRules:
-	LDA <Temp_Var16
-	JSR DynJump
-
-	; THESE MUST FOLLOW DynJump FOR THE DYNAMIC JUMP TO WORK!!
-	.word MapBonusChk_NSpade		; Check if an N-Spade should appear
-	.word MapBonusChk_WhiteToadHouse	; Check if a White Toad House should appear
-	.word MapBonusChk_CoinShip		; Check if a Coin Ship should appear
-	.word MapBonusChk_MAPOBJ_UNK0C		; Check if the UNKNOWN MAPOBJ_UNK0C should appear
-
-
-; N-Spade will appear on the map every 80,000 points you earn
-MapBonusChk_NSpade:
-	LDA World_Num
-	CMP #$07
-	BEQ PRG011_ACF0	 ; If World_Num = 7 (World 8), jump to PRG011_ACF0 (RTS)
-
-	LDX Player_Current	 ; X = Player_Current
-
-	LDA Player_Score
-	CMP Map_NSpade_NextScore
-	BLT PRG011_ACF0	 ; If Score high digit < Map_NSpade_NextScore, jump to PRG011_ACF0 (RTS)
-	BEQ PRG011_AC97	 ; If Score high digit = Map_NSpade_NextScore, jump to PRG011_AC97
-
-	JMP PRG011_ACAC	 ; Jump to PRG011_ACAC
-
-PRG011_AC97:
-	LDA Player_Score+1
-	CMP Map_NSpade_NextScore+1
-	BLT PRG011_ACF0	 ; If Score middle digit < Map_NSpade_NextScore+1, jump to PRG011_ACF0 (RTS)
-	BEQ PRG011_ACA4	 ; If Score middle digit = Map_NSpade_NextScore+1, jump to PRG011_ACA4
-
-	JMP PRG011_ACAC	 ; Jump to PRG011_ACAC
-
-PRG011_ACA4:
-	LDA Player_Score+2
-	CMP Map_NSpade_NextScore+2
-	BLT PRG011_ACF0	 ; If Score low digit < Map_NSpade_NextScore+2, jump to PRG011_ACF0 (RTS)
-
-PRG011_ACAC:
-	JSR Map_FindEmptyObjectSlot
-
-	; Set the N-Spade's location!
-	LDA Map_BonusAppY
-	STA Map_Objects_Y,Y
-	STA Map_Object_ActY,Y
-
-	LDA Map_BonusAppXHi
-	STA Map_Objects_XHi,Y
-	STA Map_Object_ActXH,Y
-
-	LDA Map_BonusAppX
-	STA Map_Objects_XLo,Y
-	STA Map_Object_ActX,Y
-
-	LDX <Temp_Var16	 	; X = Temp_Var16
-	LDA Map_WhiteObjects,X	; Load the proper bonus object ID (will always be MAPOBJ_NSPADE; this is a bit superfluous)
-	STA Map_Objects_IDs,Y	; Set the N-Spade ID
-
-	; N-Spade appears every 80,000 points, but the leading zero is fake, so 8000
-
-	; +8000 (80,000 points) to the Map_NSpade_NextScore
-
-	; High byte of the N-Spade score
-	LDA Map_NSpade_NextScore+2
-	ADD #LOW(8000)
-	STA Map_NSpade_NextScore+2
-
-	; Middle byte of the N-Spade score
-	LDA Map_NSpade_NextScore+1
-	ADC #HIGH(8000)
-	STA Map_NSpade_NextScore+1
-
-	; Low byte of the N-Spade score
-	LDA Map_NSpade_NextScore
-	ADC #$00
-	STA Map_NSpade_NextScore
-
-	; Bonus appearance sound!
-	LDA #SND_MAPBONUSAPPEAR
-	STA Sound_QMap
-
-PRG011_ACF0:
-	RTS		 ; Return
-
-
-MapBonusChk_WhiteToadHouse:
-	LDA Map_WhiteHouse
-	BNE PRG011_AD30	 ; If you already got the White Toad House, jump to PRG011_AD30 (RTS)
-
-	LDA Map_BonusType
-	CMP #$01
-	BNE PRG011_AD30	 ; If Map_BonusType <> 1 (White Toad House enable), jump to PRG011_AD30 (RTS)
-
-	LDA Coins_ThisLevel
-	CMP Map_BonusCoinsReqd
-	BLT PRG011_AD30	 ; If coins collected this level < Map_BonusCoinsReqd (coins needed for White Toad House), jump to PRG011_AD30 (RTS)
-
-	; Find an empty map object slot
-	JSR Map_FindEmptyObjectSlot
-
-	; Put the White Toad House here!
-	LDA #MAPOBJ_WHITETOADHOUSE
-	STA Map_Objects_IDs,Y
-
-	; Set the White Toad House's location!
-	LDA Map_BonusAppY
-	STA Map_Objects_Y,Y
-	STA Map_Object_ActY,Y
-
-	LDA Map_BonusAppXHi
-	STA Map_Objects_XHi,Y
-	STA Map_Object_ActXH,Y
-
-	LDA Map_BonusAppX
-	STA Map_Objects_XLo,Y
-	STA Map_Object_ActX,Y
-
-	INC Map_WhiteHouse	 ; Set Map_WhiteHouse (you got the White Toad House, there won't be any more!)
-
-	; Bonus appearance sound!
-	LDA #SND_MAPBONUSAPPEAR
-	STA Sound_QMap
-
-PRG011_AD30:
-	RTS		 ; Return
-
-
-; The old Coin Ship ruleset:
-; 1.) End the stage with an even number on the clock.
-; 2.) Coins must be a Multiple of 11.
-; 3.) The 10′s digit of your score must be the multiple of 11 that corresponds to your coins.
-; 4.) Finally it must be in World 1, 3, 5, and 6.
-;	NOTE: The worlds that don't count are literally because there's no "Hammer Bro"
-;	map objects there; the code doesn't actually care about the world number!
-
-MapBonusChk_CoinShip:
-	LDA Map_CoinShip	 
-	BNE PRG011_AD5F	 ; If you already got the Coin Ship, jump to PRG011_AD30 (RTS)
-
-	LDA StatusBar_CoinH
-	CMP StatusBar_CoinL
-	BNE PRG011_AD5F	 ; If the two digits of your coins are not the same, jump to PRG011_AD5F (RTS)
-
-	CMP StatusBar_Score+5
-	BNE PRG011_AD5F	 ; If the tens digit of your score is not the same as the equal coins, jump to PRG011_AD5F (RTS) 
-
-	LDY #$00	 ; Y = 0
-PRG011_AD45:
-	LDA Map_Objects_IDs,Y
-	CMP #MAPOBJ_HAMMERBRO
-	BEQ PRG011_AD52	 ; If this is a hammer brother, jump to PRG011_AD52
-
-	INY		 ; Y++
-	CPY #MAPOBJ_TOTAL
-	BNE PRG011_AD45	 ; If index <> passed the last map object, loop!
-
-	RTS		 ; Return
-
-PRG011_AD52:
-
-	; Change the Hammer Bro to the Coin Ship
-	LDA #MAPOBJ_COINSHIP
-	STA Map_Objects_IDs,Y
-
-	INC Map_CoinShip	 ; Set Map_CoinShip (you got the Coin Ship, there won't be any more!)
-
-	; Bonus appearance sound!
-	LDA #SND_MAPBONUSAPPEAR
-	STA Sound_QMap
-
-PRG011_AD5F:
-	RTS		 ; Return
+;;; [ORANGE] Removed map bonus object checks
 
 
 	; This will always appear at the same location!!

@@ -912,8 +912,9 @@ Map_DoOperation:
 	.word MO_SkidAfarFinish	; 5 - Finish the far away skidding
 	.word MO_Wait14Ticks	; 6 - Loads 14 ticks and wait for it
 	.word MO_DoLevelClear	; 7 - Do level completion effect
-	.word MO_DoFortressFX	; 8 - If any Poof-then-Fortress effect (e.g. busting a lock) to do, do it!
-	.word MO_CheckForBonus	; 9 - Check for any map bonuses to appear (White Toad House, Coin Ship)
+	;;; [ORANGE] Switched the check for bonus to be before do fortress fx
+	.word MO_CheckForBonus	; 8 - If any Poof-then-Fortress effect (e.g. busting a lock) to do, do it!
+	.word MO_DoFortressFX	; 9 - Check for any map bonuses to appear (White Toad House, Coin Ship)
 	.word MO_Wait14Ticks	; A - Loads 14 ticks and wait for it
 	.word MO_HammerBroMarch	; B - Map Hammer brother march around (mostly handled elsewhere instead of this state routine)
 	.word MO_Wait8Proceed	; C - After 8 ticks, resume normal operations (if 1P game or didn't end turn), or else go to state $0F
@@ -1544,8 +1545,8 @@ PRG010_C7BA:
 
 	; Indexed by value from FortressFX_Wx
 	; 		        0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F   10
-FortressFX_VAddrH:	.byte $2A, $2A, $2A, $29, $29, $29, $29, $29, $29, $28, $29, $29, $29, $29, $29, $29, $29
-FortressFX_VAddrL:	.byte $06, $50, $12, $4C, $06, $96, $86, $8E, $9A, $92, $8A, $1A, $CE, $10, $52, $98, $CA
+FortressFX_VAddrH:	.byte $2A, $28, $2A, $29, $29, $29, $29, $29, $29, $28, $29, $29, $29, $29, $29, $29, $29
+FortressFX_VAddrL:	.byte $06, $96, $12, $4C, $06, $96, $86, $8E, $9A, $92, $8A, $1A, $CE, $10, $52, $98, $CA
 
 	; Indexed by value from FortressFX_Wx
 	; Stores the column index for Map_Completions followed by which
@@ -1553,7 +1554,7 @@ FortressFX_VAddrL:	.byte $06, $50, $12, $4C, $06, $96, $86, $8E, $9A, $92, $8A, 
 	; is now busted or bridge constructed...
 FortressFX_MapCompIdx:
 	.byte $03, $02	; 0	[ORANGE] our secret bridge
-	.byte $08, $01	; 1
+	.byte $0B, $80	; 1 [ORANGE] the lock to grimm's mansion
 	.byte $09, $02	; 2
 	.byte $16, $10	; 3
 	.byte $13, $20	; 4
@@ -1575,7 +1576,7 @@ FortressFX_MapCompIdx:
 	; or creation of a bridge, whatever is appropriate
 FortressFX_Patterns:
 	.byte $D4, $D6, $D5, $D7	; 0 [ORANGE] modded to be a bridge
-	.byte $FE, $C0, $FE, $C0	; 1
+	.byte $FE, $FE, $C2, $C2	; 1 [ORANGE] modded to be a horiz path
 	.byte $FE, $FE, $E1, $E1	; 2
 	.byte $FE, $C0, $FE, $C0	; 3
 	.byte $FE, $FE, $E1, $E1	; 4
@@ -1595,21 +1596,21 @@ FortressFX_Patterns:
 	; Indexed by value from FortressFX_Wx
 	; The related "row" for the FortressFX_MapLocation
 FortressFX_MapLocationRow:
-	.byte $80, $90, $80, $50, $40, $60, $60, $60, $60, $20, $60, $40, $70, $40, $50, $60, $70
+	.byte $80, $20, $80, $50, $40, $60, $60, $60, $60, $20, $60, $40, $70, $40, $50, $60, $70
 
 	; Indexed by value from FortressFX_Wx
 	; Selects location of tile to bust out
 	; Lower 4 bits are the "screen", upper 4 bits are the column
 FortressFX_MapLocation:
-	.byte $30, $80, $90, $61, $31, $B0, $30, $71, $D0, $91, $52, $D0, $71, $80, $91, $C2, $53
+	.byte $30, $B0, $90, $61, $31, $B0, $30, $71, $D0, $91, $52, $D0, $71, $80, $91, $C2, $53
 
 FortressFX_MapTileReplace:
-	.byte TILE_BRIDGE, $46, $45, $46, $45, $B3, $B3, $DA, $DA, $B3, $45, $46, $45, $46, $45, $46, $45
+	.byte TILE_BRIDGE, TILE_HORZPATH, $45, $46, $45, $B3, $B3, $DA, $DA, $B3, $45, $46, $45, $46, $45, $46, $45
 
 	; Defines slots for post-Mini-Fortress events; since this is looked up 
 	; by an index table (FortressFXBase_ByWorld), there's no need for this 
 	; to be precisely four in every world, but that's what they allocated...
-FortressFX_W1:	.byte $00, $00, $00, $00
+FortressFX_W1:	.byte $00, $01, $00, $00
 FortressFX_W2:	.byte $01, $00, $00, $00
 FortressFX_W3:	.byte $02, $03, $00, $00
 FortressFX_W4:	.byte $04, $05, $00, $00
