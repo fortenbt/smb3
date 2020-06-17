@@ -6118,6 +6118,23 @@ Player_GetCard:
 	STA Inventory_Cards
 	RTS
 
+FireSwitchBlocks:
+	.byte $00					; 1, map, plains
+	.byte TILE2_FIRESWITCH		; 2 fortress
+	.byte $00, $00, $00, $00, $00, $00, $00, $00, $00	; 3-11 tilesets
+	.byte TILE12_FIRESWITCH		; 12 ice
+	.byte $00, $00				; 13, 14, coin heaven, underground
+
+CmpFireSwitch:
+	CMP #$00					; check if the tile is $00
+	BEQ _no_zero_fireswitches	; fireswitch blocks can't be zero (non-supported tilesets have zero placeholders)
+	LDY Level_TilesetIdx
+	CMP FireSwitchBlocks,Y
+	BEQ _fireswitch_rts
+_no_zero_fireswitches:
+	LDA #$01
+_fireswitch_rts
+	RTS
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Player_GetItem
