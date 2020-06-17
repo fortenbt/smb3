@@ -1115,7 +1115,7 @@ PRG007_A563:
 PRG007_A566:
 	LDY Level_PSwitchCnt
 	BNE _orig_PRG007_A566
-	CMP #TILE12_FIRESWITCH
+	JSR CmpFireSwitch
 	BNE _orig_PRG007_A566
 	LDA <Level_OnOff
 	EOR #$01
@@ -6001,7 +6001,7 @@ BroFireballDoCollide:
 	LDA Level_PSwitchCnt
 	BNE _brofile_collide_rts
 	LDA <Temp_Var1		 		; Get the tile at the Projectile
-	CMP #TILE12_FIRESWITCH		; Check if it's a fire switch
+	JSR CmpFireSwitch			; Check if it's a fire switch
 	BNE _brofile_collide_rts	; If not, return
 	LDA <Level_OnOff			; Otherwise, change Level_OnOff
 	EOR #$01

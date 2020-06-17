@@ -3861,6 +3861,7 @@ TILE2_ON		= $19	; See prg021.asm - solid on block
 TILE2_ON_INACTIVE	= $05	; non-solid on block outline
 TILE2_OFF		= $7E	; solid off block
 TILE2_OFF_INACTIVE	= $4B	; non-solid off block outline
+TILE2_FIRESWITCH	= $7F
 ;; -- TS3 (Hills) On/Off, boot spikes
 TILE3_ON		= $7D	; See prg016.asm - solid on block		QUAD 2
 TILE3_ON_INACTIVE	= $5D	; non-solid on block outline
