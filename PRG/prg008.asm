@@ -1213,13 +1213,13 @@ PRG008_A6DA:
 	STA <Pad_Input		; Otherwise, disable 'B' button
 
 PRG008_A6E5:
-	LDA Level_Objects+1
-	CMP #OBJ_TOADANDKING
-	BNE PRG008_A6F2	 	; If first object is not "Toad and the King" (i.e. we're in the end of world castle), jump to PRG008_A6F2
+	;LDA Level_Objects+1
+	;CMP #OBJ_TOADANDKING
+	;BNE PRG008_A6F2	 	; If first object is not "Toad and the King" (i.e. we're in the end of world castle), jump to PRG008_A6F2
 
-	LDA <Pad_Holding
-	AND #~(PAD_LEFT | PAD_RIGHT | PAD_UP | PAD_DOWN)
-	STA <Pad_Holding	; Otherwise, disable all directional inputs
+	;LDA <Pad_Holding
+	;AND #~(PAD_LEFT | PAD_RIGHT | PAD_UP | PAD_DOWN)
+	;STA <Pad_Holding	; Otherwise, disable all directional inputs
 
 PRG008_A6F2:
 	LDY <Player_Suit
@@ -2966,7 +2966,7 @@ PRG008_AEC0:
 	RTS		 ; Return
 
 TwisterSpin_FlipBits:	.byte $00, $40
-
+DogPetFrames: .byte $3E, $51, $52, $51
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Player_SetSpecialFrames
 ;
@@ -2983,8 +2983,21 @@ Player_SetSpecialFrames:
 PRG008_AECA:
 
 	CMP #$37
-	BLT PRG008_AEF0	 ; If magnitude of Player's horizontal velocity is < $37, jump to PRG008_AEF0
+	BCS _fast_enough	 ; If magnitude of Player's horizontal velocity is < $37, jump to PRG008_AEF0
+	LDY Player_Pet_Dog
+	BEQ PRG008_AEF0
+	LDA Player_Pet_Dog
+	LSR A
+	LSR A
+	LSR A
+	LSR A
+	AND #$03
+	TAY
+	LDA DogPetFrames,Y
+	STA <Player_Frame
+	BNE PRG008_AEF0		; branch always
 
+_fast_enough:
 	LDA Player_FlyTime
 	BNE PRG008_AEF0	 ; If Player already has flight time, jump to PRG008_AEF0
 

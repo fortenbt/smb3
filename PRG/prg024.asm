@@ -73,8 +73,8 @@ PRG024_A033:
 PRG024_A03A:
 
 	; Keep the Player halted
-	LDA #$02
-	STA Player_HaltTick
+	;LDA #$02
+	;STA Player_HaltTick
 
 	LDA Player_HaltGame
 	BNE PRG024_A04A	 ; If gameplay is halted, jump to PRG024_A04A
@@ -85,6 +85,14 @@ PRG024_A03A:
 PRG024_A04A:
 	JMP PRG024_A39D	 ; Jump to PRG024_A39D
 
+KingRoom_DisablePlayerInput:
+	; Keep the Player halted
+	LDA #$02
+	STA Player_HaltTick
+	LDA <Pad_Holding
+	AND #~(PAD_LEFT | PAD_RIGHT | PAD_UP | PAD_DOWN)
+	STA <Pad_Holding	; Otherwise, disable all directional inputs
+	RTS
 
 King_DoDialog:
 	; Load font patterns
@@ -110,6 +118,7 @@ DiagBox_RowOffs:
 DiagBox_RowOffs_End
 
 TAndK_DrawDiagBox:
+	JSR KingRoom_DisablePlayerInput
 	LDA CineKing_Timer 
 	BNE PRG024_A119	 ; If CineKing_Timer has not expired, jump to PRG024_A119 (RTS)
 
@@ -224,13 +233,14 @@ KingHelpMsg1:
 KingHelpMsg2:
 	;       H    u    r    r    y    !         H    u    r    r    y    !
 	;.byte $B7, $CE, $CB, $CB, $8C, $EA, $FE, $B7, $CE, $CB, $CB, $8C, $EA, $FE, $FE, $FE, $FE, $FE, $FE, $FE
-	.byte $B1, $CB, $D8, $DD, $D6, $FE, $DC, $D4, $FE, $D0, $DB, $DB, $FE, $9E, $9E, $FE, $D0, $DD, $D3, $FE
+	.byte $B1, $CB, $D8, $DD, $D6, $FE, $DC, $D4, $FE, $D0, $DB, $DB, $FE, $9D, $9E, $FE, $D0, $DD, $D3, $FE
 
 	;       G    e    t         t    h    e         M    a    g    i    c         W    a    n    d
 	;.byte $B6, $D4, $CD, $FE, $CD, $D7, $D4, $FE, $BC, $D0, $D6, $D8, $D2, $FE, $C6, $D0, $DD, $D3, $FE, $FE
 	.byte $8C, $DE, $CE, $FE, $D2, $D0, $DD, $FE, $DF, $D4, $CD, $FE, $B1, $DE, $FE, $D7, $D4, $CB, $D4, $E9
 
 TAndK_DoToadText:
+	JSR KingRoom_DisablePlayerInput
 	LDA SndCur_Music1
 	BNE _TAndK_PostMusic
 	LDA SndCur_Music2
@@ -294,6 +304,14 @@ PRG024_A260:
 
 
 TAndK_WaitPlayerButtonA:
+	INC Player_Pet_Dog
+	RTS
+	;;; [ORANGE] TODO: Logic here:
+	;;; Has all orbs?
+	;;;    - No, disable input and wait for A press
+	;;;    - Yes, do logic to check player X/Y to determine if close enough to dog.
+	;;;      - If so, go to pet-the-dog state: freeze player on ground and play petting animation
+
 	LDA <Pad_Input
 	BPL PRG024_A282	 ; If Player is not pushing 'A', jump to PRG024_A282 (RTS)
 

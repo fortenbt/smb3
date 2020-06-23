@@ -550,7 +550,7 @@ SPPF_Offsets:
 	.byte SPPF(PF38), SPPF(PF39), SPPF(PF3A), SPPF(PF3B), SPPF(PF3C), SPPF(PF3D), SPPF(PF3E), SPPF(PF3F)
 	.byte SPPF(PF40), SPPF(PF41), SPPF(PF42), SPPF(PF43), SPPF(PF44), SPPF(PF45), SPPF(PF46), SPPF(PF47)
 	.byte SPPF(PF48), SPPF(PF49), SPPF(PF4A), SPPF(PF4B), SPPF(PF4C), SPPF(PF4D), SPPF(PF4E), SPPF(PF4F)
-	.byte SPPF(PF50)
+	.byte SPPF(PF50), SPPF(PF51), SPPF(PF52)
 
 	; The six Patterns per Player_Frame to start each of the six Player sprites with!
 	; Note the order is the three patterns for the three sprites that make the upper 
@@ -641,6 +641,8 @@ PF4D:	.byte $F1, $F1, $F1, $35, $37, $F1
 PF4E:	.byte $F1, $F1, $F1, $0F, $3F, $F1
 PF4F:	.byte $19, $1B, $F1, $1D, $21, $F1
 PF50:	.byte $19, $1B, $F1, $1D, $21, $23
+PF51:	.byte $F1, $F1, $F1, $3B, $07, $F1
+PF52:	.byte $F1, $F1, $F1, $39, $07, $F1
 
 	; Selects a VROM page offset per Player_Frame
 Player_FramePageOff:
@@ -649,7 +651,7 @@ Player_FramePageOff:
 	.byte 1,  1,  1,  1,  1,  1,  1,  1,  1,  2,  2,  2,  2,  2,  2,  2	; 20 - 2F
 	.byte 2,  2,  2,  2,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3	; 30 - 3F
 	.byte 3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3	; 40 - 4F
-	.byte 3
+	.byte 3,  3, 3
 
 PRG029_CE88:
 	.byte -8, 10, -8, 18,  8, 10,  8, 18,  1,  9,  0,  8,  2, 10, -2, 6

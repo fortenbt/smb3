@@ -2030,7 +2030,7 @@ OBJSTATE_POOFDEATH	= 8	; "Poof" Death (e.g. Piranha death)
 	MaxPower_Tick:		.ds 1	; When Player has maximum "power" charge, this counts for the flashing [P]
 	Player_Score:		.ds 3	; $0715 (H)-$0717 (L) treated as 3-byte integer, with least significant zero on display not part of this value 
 
-				.ds 1	; $0718 unused
+	Player_Pet_Dog:		.ds 1	; $0718 unused [ORANGE] No long unused. Set when the player is petting the dog.
 
 	; Each byte of PatTable_BankSel sets the VROM available at
 	; 0000 (first half BG), 0800 (second half BG, typ animated), 
