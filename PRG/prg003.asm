@@ -55,7 +55,7 @@ ObjectGroup02_InitJumpTable:
 	.word ObjInit_CheepCheepHopper	; Object $64 - OBJ_CHEEPCHEEPHOPPER
 	.word ObjInit_WaterCurrent	; Object $65 - OBJ_WATERCURRENTUPWARD
 	.word ObjInit_WaterCurrent	; Object $66 - OBJ_WATERCURRENTDOWNARD
-	.word ObjInit_LavaLotus		; Object $67 - OBJ_LAVALOTUS
+	.word ObjInit_DoNothing		; Object $67 - OBJ_LAVALOTUS
 	.word ObjInit_Twirling		; Object $68 - OBJ_TWIRLINGBUZZY
 	.word ObjInit_Twirling		; Object $69 - OBJ_TWIRLINGSPINY
 	.word ObjInit_BlooperWithKids	; Object $6A - OBJ_BLOOPERCHILDSHOOT
@@ -97,7 +97,7 @@ ObjectGroup02_NormalJumpTable:
 	.word ObjNorm_CheepCheepHopper	; Object $64 - OBJ_CHEEPCHEEPHOPPER
 	.word ObjNorm_WaterCurrent	; Object $65 - OBJ_WATERCURRENTUPWARD
 	.word ObjNorm_WaterCurrent	; Object $66 - OBJ_WATERCURRENTDOWNARD
-	.word ObjNorm_LavaLotus		; Object $67 - OBJ_LAVALOTUS
+	.word ObjNorm_DoNothing		; Object $67 - OBJ_LAVALOTUS
 	.word ObjNorm_TwirlingShell	; Object $68 - OBJ_TWIRLINGBUZZY
 	.word ObjNorm_TwirlingShell	; Object $69 - OBJ_TWIRLINGSPINY
 	.word ObjNorm_Blooper		; Object $6A - OBJ_BLOOPERCHILDSHOOT
@@ -3168,216 +3168,83 @@ PRG003_AFFA:
 
 	RTS		 ; Return
 
-LavaLotus_RightEdgePatTop:	.byte $C1, $C9, $D1
-LavaLotus_RightEdgePatBottom:	.byte $C3, $CB, $D3
 
-ObjNorm_LavaLotus:
-	JSR Object_CheckIfNormalState
-	BNE PRG003_B05F	 ; If not in normal state, jump to PRG003_B05F
+;;; [ORANGE] Removed lava lotus
+RotoDiscDetectWorld:
+	LDA <Objects_Var5,X			; If we detected in the last 12 frames, ignore this detection
+	BNE _rotodetect_dec
+	LDA <Objects_Y,X			; Rotodisc Y position
+	ADD #$08					; hack to get to the middle of the disc...but on screen edges this might fail?
+	AND #$f0	 				; Aligned to grid row
+	STA <Temp_Var3	 			; -> Temp_Var3
 
-	JSR Object_DeleteOffScreen	 ; Delete object if it falls too far off-screen
+	LDA Level_VertScrollH		; Current vertical scroll high
+	ADC #$00	 				; Apply carry
 
-	LDA <Player_HaltGame
-	BNE PRG003_B05F		; If gameplay is halted, jump to PRG003_B05F
+	STA <Temp_Var4			 	; -> Temp_Var4
+	BEQ _rotodetect_norm_range	; If vertical high = 0, jump to PRG007_A506
 
-	JSR Player_HitEnemy	 ; Player to Lava Lotus collision
+	CMP #$02
+	BGE _rotodetect_dec	 		; If vertical high >= 2 (way too low), jump to PRG007_A557
 
-	LDA Objects_SprHVis,X
-	AND #%11100000
-	CMP #%11100000
-	BNE PRG003_B030	 ; If the Lava Lotus does not have three horizontally off-screen sprites, jump to PRG003_B030
+	LDA <Temp_Var3
+	CMP #$B0
+	BGE _rotodetect_dec	 		; If at or lower than $1B0 (too low), jump to PRG007_A557
 
-	; Var5 = $FF
-	LDA #$ff
-	STA <Objects_Var5,X
-
-	; Var4 = $05
-	LDA #$05
-	STA <Objects_Var4,X
-
-PRG003_B030:
-	DEC <Objects_Var5,X	 ; Var5--
-
-	LDA <Objects_Var5,X
-	CMP #$50
-	BLT PRG003_B056	 ; If Var5 < $50, jump to PRG003_B056
-
-	LDY #$00	 ; Y = 0
-
-	AND #%00001100
-	BEQ PRG003_B03F	 ; Periodically jump to PRG003_B03F
- 
-	INY		 ; Y = 1
-
-PRG003_B03F:
-	TYA		 
-	STA Objects_Frame,X	 ; Set frame 0/1
-
-	LDA Level_NoStopCnt
-	AND #$1f
-	BNE PRG003_B053	 ; 1:32 ticks proceed, otherwise, jump to PRG003_B053
-
-	LDA <Objects_Var4,X
-	BEQ PRG003_B053	 ; If Var4 = 0, jump to PRG003_B053
-
-	DEC <Objects_Var4,X	 ; Var4--
-
-	JSR LavaLotus_SpitFire	 ; Spit a fireball
-
-PRG003_B053:
-	JMP PRG003_B05F	; Jump to PRG003_B05F
-
-PRG003_B056:
-
-	; Var4 = 5
-	LDA #$05
-	STA <Objects_Var4,X
-
-	; Frame = 2 (open lotus)
-	LDA #$02
-	STA Objects_Frame,X
-
-PRG003_B05F:
-	; Clear flip bits
-	LDA #$00
-	STA Objects_FlipBits,X
-
-	; Draw most of lotus
-	JSR Object_Draw16x32Sprite
-
-	LDA Objects_SprHVis,X
-	AND #%00100000
-	BNE PRG003_B0B1	 ; If edge sprite of lotus is off-screen, jump to PRG003_B0B1 (RTS)
-
-	; Need to draw one more sprite for lotus...
-
-	LDY Object_SprRAM,X	 ; Y = Sprite_RAM offset
-
-	; Right edge sprite, so +16
-	LDA <Objects_SpriteX,X
-	ADD #16
-	STA Sprite_RAM+$13,Y
-	STA Sprite_RAM+$17,Y
-
-	; Vertical off-screen bits -> Temp_Var1
-	LDA Objects_SprVVis,X
-	STA <Temp_Var1
-
-	LDA <Objects_SpriteY,X
-	LSR <Temp_Var1	
-	BCS PRG003_B08A	 ; If this sprite is vertically off-screen, jump to PRG003_B08A
-
-	STA Sprite_RAM+$10,Y	 ; Store this sprite's Y
-
-PRG003_B08A:
-	LSR <Temp_Var1
-	BCS PRG003_B094	 ; If this sprite is vertically off-screen, jump to PRG003_B08A
-
-	ADD #16
-	STA Sprite_RAM+$14,Y	 ; Store this sprite's Y
-
-PRG003_B094:
-	LDA Sprite_RAM+$02,Y	 ; Get sprite attributes from left edge
-	ORA #SPR_HFLIP
-	STA Sprite_RAM+$12,Y	 ; Horizontally flipped compared to left edge
-	STA Sprite_RAM+$16,Y	 ; Horizontally flipped compared to left edge
-
-	LDA Objects_Frame,X
-	TAX
-	LDA LavaLotus_RightEdgePatTop,X	
-	STA Sprite_RAM+$11,Y	 ; Set top pattern
-
-	LDA LavaLotus_RightEdgePatBottom,X
-	STA Sprite_RAM+$15,Y	 ; Set bottom pattern
-
-	LDX <SlotIndexBackup		 ; X = object slot index
-
-PRG003_B0B1:
-	RTS		 ; Return
-
-LavaLotusFire_XOff:	.byte $03, $0D, $06, $0B, $08
-LavaLotusFire_XVel:	.byte $FB, $05, $FD, $03, $00
-LavaLotusFire_YVel:	.byte $F5, $F5, $F0, $F0, $EE
-
-LavaLotus_SpitFire:
-	JSR Object_AnySprOffscreen
-	BNE PRG003_B0D0	 ; If any part of Lava Lotus is off-screen, jump to PRG003_B0D0 (RTS)
-
-	LDY #$07	 ; Y = 7
-
-	; This loop really could be replaced by 
-	;JSR SpecialObj_FindEmptyAbortY
-
-PRG003_B0C8:
-	LDA SpecialObj_ID,Y
-	BEQ PRG003_B0D1	 ; If this special object slot is free, jump to PRG003_B0D1
-
-	DEY		 ; Y--
-	BPL PRG003_B0C8	; If Y >= 0, loop!
-
-PRG003_B0D0:
-	RTS		 ; Return
-
-PRG003_B0D1:
-
-	; Lava Lotus fireball
-	LDA #SOBJ_LAVALOTUSFIRE
-	STA SpecialObj_ID,Y
-
-	LDA #$c0
-	STA SpecialObj_Var2,Y
-
-	; Fireball at Y + 7
-	LDA <Objects_Y,X
-	ADD #$07
-	STA SpecialObj_YLo,Y
-	LDA <Objects_YHi,X
+_rotodetect_norm_range:
+	LDA <Objects_X,X	 		; rotodisc x position
+	STA <Temp_Var5	 			; -> Temp_Var5
+	LDA <Objects_XVel,X
+	BMI _rotodetect_get_tile	; If the velocity is negative, just move on
+	LDA <Temp_Var5
+	ADD #$0E
+	STA <Temp_Var5				; Otherwise, add 8 to its X
+_rotodetect_get_tile:
+	LDA <Objects_XHi,X
 	ADC #$00
-	STA SpecialObj_YHi,Y
 
-	; Temp_Var1 = Var4 (which fireball we're on)
-	LDA <Objects_Var4,X
+	ASL A		 				; Multiply by 2 for Tile_Mem_Addr index
+	TAY		 					; -> 'Y'
+
+	; Temp_Var1 = low byte of Tile_Mem_Addr
+	LDA Tile_Mem_Addr,Y
 	STA <Temp_Var1
 
-	; Fireball X
-	LDA <Objects_X,X
-	CLC	
-	LDX <Temp_Var1		 ; X = Temp_Var1 (Var4)
-	ADC LavaLotusFire_XOff,X
-	STA SpecialObj_XLo,Y
+	; Temp_Var2 = high byte of Tile_Mem_Addr
+	LDA <Temp_Var4
+	AND #$01					; Only 0 or 1 is valid in non-vertical
+	ADD Tile_Mem_Addr+1,Y
+	STA <Temp_Var2
 
-	; Fireball Y velocity
-	LDA LavaLotusFire_YVel,X
-	STA SpecialObj_YVel,Y
+	; Y = row/column offset index
+	LDA <Temp_Var5
+	LSR A
+	LSR A
+	LSR A
+	LSR A
+	ORA <Temp_Var3
+	TAY
 
-	; Fireball X velocity
-	LDA LavaLotusFire_XVel,X
-	STA SpecialObj_XVel,Y
-
-	; Fireball data = 1
-	LDA #$01
-	STA SpecialObj_Data,Y
-
-	LDX <SlotIndexBackup		 ; X = object slot index
-
-	; Store parent's object index into SpecialObj_Var1
-	TXA
-	STA SpecialObj_Var1,Y
-
-	RTS		 ; Return
-
-ObjInit_LavaLotus:
-
-	; Var5 = $FF
-	LDA #$ff
+	LDA [Temp_Var1],Y	 		; Get the tile at the rotodisc
+	JSR CmpFireSwitch
+	BNE _rotodetect_dec
+	LDA #12
 	STA <Objects_Var5,X
-
-	; Var4 = 5
-	LDA #$05
-	STA <Objects_Var4,X
-
-	; Mark object as in water
-	INC Objects_InWater,X
+	LDA <Level_OnOff			; if it's a fireswitch, change Level_OnOff
+	EOR #$01
+	STA <Level_OnOff
+	LDA #$10
+	STA Level_Vibration			; Level_Vibration = $10 (little shake effect)
+	; "Bump" sound
+	LDA Sound_QPlayer
+	ORA #SND_PLAYERBUMP
+	STA Sound_QPlayer
+_rotodetect_dec:
+	LDA <Objects_Var5,X
+	BEQ _rotodetect_rts
+	DEC <Objects_Var5,X
+_rotodetect_rts:
+	RTS
 
 ObjInit_WaterCurrent:
 	RTS		 ; Return
@@ -5767,6 +5634,7 @@ ObjNorm_RotoDisc:
 RotoDisc_CollideAndCycle:
 	JSR Object_CalcSpriteXY_NoHi	; Calculate the sprite
 	JSR Player_HitEnemy	 	; Player to Rotodisc collision detection
+	JSR RotoDiscDetectWorld	; This will trigger fire switches
 
 PRG003_BFAE:
 
