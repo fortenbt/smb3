@@ -2087,10 +2087,11 @@ ObjHit_FireFlower:
 	; NOTE: The "flashing" Fire Flower is never used (but can be found in the
 	; "lost" Big Question Block test level, and it grants you fire power 
 	; regardless of whether you're small or not!!)
-	LDY PUp_StarManFlash
-	BNE PRG001_AA05	 ; If fire flower came from Big (?) block, jump to PRG001_AA05
+	;LDY PUp_StarManFlash
+	;BNE PRG001_AA05	 ; If fire flower came from Big (?) block, jump to PRG001_AA05
 
-	JMP PRG001_A897	 ; Otherwise, jump to PRG001_A897
+	;JMP PRG001_A897	 ; Otherwise, jump to PRG001_A897
+	JMP PRG001_AA05		; [ORANGE] always give the player full fire even if small
 
 PRG001_AA05:
 	CMP #$02
