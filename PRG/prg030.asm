@@ -6167,6 +6167,17 @@ _clear_tbox_orb:
 _tbox_orb_rts:
 	RTS
 
+Do_FireFlower_Bank1:
+	LDA #$01
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+	JSR ObjHit_FireFlower
+	LDA #$05
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+	RTS
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 	; Split arrays defining the vertical screen starting positions

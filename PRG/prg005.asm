@@ -4480,124 +4480,132 @@ ObjNorm_BigQBlock:
 	LDA <Player_HaltGame
 	BNE PRG005_B62E	 ; If gameplay is halted, jump to PRG005_B62E (RTS)
 
-	LDA <Objects_Var5,X
-	BEQ PRG005_B65B	 ; If Var5 = 0 (no more power ups to emerge, mainly for 3-up), jump to PRG005_B65B
+	;LDA <Objects_Var5,X
+	;BEQ PRG005_B65B	 ; If Var5 = 0 (no more power ups to emerge, mainly for 3-up), jump to PRG005_B65B
 
-	LDA Objects_Timer2,X
-	BNE PRG005_B65B	 ; If timer2 not expired, jump to PRG005_B65B
+	;LDA Objects_Timer2,X
+	;BNE PRG005_B65B	 ; If timer2 not expired, jump to PRG005_B65B
 
-	LDY #$04	 ; Y = 4
+	;LDY #$04	 ; Y = 4
 PRG005_B64E:
-	LDA Objects_State,Y
-	BEQ PRG005_B656	 ; If this object slot is dead/empty, jump to PRG005_B656
+	;LDA Objects_State,Y
+	;BEQ PRG005_B656	 ; If this object slot is dead/empty, jump to PRG005_B656
 
-	DEY		 ; Y--
-	BNE PRG005_B64E	 ; While Y >= 0, loop!
+	;DEY		 ; Y--
+	;BNE PRG005_B64E	 ; While Y >= 0, loop!
 
 PRG005_B656:
-	JSR BigQBlock_EmergePowerup	 ; Power up emerges!
-	DEC <Objects_Var5,X	 ; Var5-- (one less power-up to emerge)
+	;JSR BigQBlock_EmergePowerup	 ; Power up emerges!
+	;DEC <Objects_Var5,X	 ; Var5-- (one less power-up to emerge)
 
 PRG005_B65B:
-	LDY Objects_Timer,X
+	;LDY Objects_Timer,X
 
-	; Set proper Y velocity based on value of timer
-	LDA BigQBlock_YVelByTimer,Y
-	STA <Objects_YVel,X
+	; Set proper Y velocity based on value of timer (this is for "bumping" it)
+	;LDA BigQBlock_YVelByTimer,Y
+	;STA <Objects_YVel,X
 
-	JSR Object_ApplyYVel	 ; Apply Y velocity
+	;JSR Object_ApplyYVel	 ; Apply Y velocity
+	;;; [ORANGE] We only let this get touched once
+	LDA <Objects_Var5,X
+	BNE PRG005_B6CF		; If this hasn't been touched, check it. Otherwise, jump to PRG005_B6CF (RTS)
 	JSR Object_HitTest	 ; Test if Player is colliding with Big ? Block
 	BCC PRG005_B6CF	 	; If not, jump to PRG005_B6CF (RTS)
 
-	LDA <Player_SpriteY
-	ADD #24
-	CMP <Objects_SpriteY,X
-	BGE PRG005_B69A	 ; If Player's sprite Y + 24 is beneath top of Big ? Block, jump to PRG005_B69A
+	;LDA <Player_SpriteY
+	;ADD #24
+	;CMP <Objects_SpriteY,X
+	;BGE PRG005_B69A	 ; If Player's sprite Y + 24 is beneath top of Big ? Block, jump to PRG005_B69A
 
 	; Not below the Big ? Block...
 
-	LDA <Player_YVel
-	BMI PRG005_B699	 ; If Player is moving upward (away from top of block), jump to PRG005_B699 (RTS)
+	;LDA <Player_YVel
+	;BMI PRG005_B699	 ; If Player is moving upward (away from top of block), jump to PRG005_B699 (RTS)
 
 	; Set Player on top of the Big ? Block
-	LDA <Objects_Y,X
-	SUB #31
-	STA <Player_Y
-	LDA <Objects_YHi,X
-	SBC #$00
-	STA <Player_YHi
+	;LDA <Objects_Y,X
+	;SUB #31
+	;STA <Player_Y
+	;LDA <Objects_YHi,X
+	;SBC #$00
+	;STA <Player_YHi
 
 	; Mark Player as not in air
-	LDY #$00
-	STY <Player_InAir
+	;LDY #$00
+	;STY <Player_InAir
 
-	LDA Object_VelCarry
-	BPL PRG005_B68F	 ; If carry is positive, jump to PRG005_B68F
+	;LDA Object_VelCarry
+	;BPL PRG005_B68F	 ; If carry is positive, jump to PRG005_B68F
 
-	DEY		 ; Y = -1
+	;DEY		 ; Y = -1
 
 PRG005_B68F:
 
 	; Apply the X velocity carry
-	ADD <Player_X
-	STA <Player_X
-	TYA
-	ADC <Player_XHi
-	STA <Player_XHi
+	;ADD <Player_X
+	;STA <Player_X
+	;TYA
+	;ADC <Player_XHi
+	;STA <Player_XHi
 
 PRG005_B699:
-	RTS		 ; Return
+	;RTS		 ; Return
 
 PRG005_B69A:
-	LDA #-24
+	;LDA #-24
 
 	; If Player is small or ducking, jump to PRG005_B6A5, otherwise jump to PRG005_B6A7
-	LDY <Player_Suit
-	BEQ PRG005_B6A5
-	LDY Player_IsDucking
-	BEQ PRG005_B6A7
+	;LDY <Player_Suit
+	;BEQ PRG005_B6A5
+	;LDY Player_IsDucking
+	;BEQ PRG005_B6A7
 
 PRG005_B6A5:
-	LDA #-8		; For small or ducking only
+	;LDA #-8		; For small or ducking only
 
 PRG005_B6A7:
-	ADD <Player_SpriteY
-	CMP <Objects_SpriteY,X
-	BLT PRG005_B6BA	 ; If Player's head is above Big ? Block, jump to PRG005_B6BA
+	;ADD <Player_SpriteY
+	;CMP <Objects_SpriteY,X
+	;BLT PRG005_B6BA	 ; If Player's head is above Big ? Block, jump to PRG005_B6BA
 
-	LDA <Player_YVel
-	BPL PRG005_B6B9	 ; If Player is not moving upward, jump to PRG005_B6B9
+	;LDA <Player_YVel
+	;BPL PRG005_B6B9	 ; If Player is not moving upward, jump to PRG005_B6B9
 
 	; Bounce off Big ? Block
-	LDA #$10
-	STA <Player_YVel
+	;LDA #$10
+	;STA <Player_YVel
 
-	JSR BigQBlock_Open	 ; Open the Big ? Block...
+	;JSR BigQBlock_Open	 ; Open the Big ? Block...
 
 PRG005_B6B9:
-	RTS		 ; Return
+	;RTS		 ; Return
 
 
 PRG005_B6BA:
 
 	; NOTE: Arrow platform uses this code too
 
-	JSR Level_ObjCalcXDiffs
-	INY	; Makes this value agree with Player pressing left/right on pad
+	;JSR Level_ObjCalcXDiffs
+	;INY	; Makes this value agree with Player pressing left/right on pad
 
-	LDA <Pad_Holding
-	AND #(PAD_LEFT | PAD_RIGHT)
-	STA <Temp_Var1	 ; Temp_Var1 = non-zero if Player is pressing left or right
+	;LDA <Pad_Holding
+	;AND #(PAD_LEFT | PAD_RIGHT)
+	;STA <Temp_Var1	 ; Temp_Var1 = non-zero if Player is pressing left or right
 
-	LDA #$00	; Halt Player if he presses direction "into" the Big ? Block
+	;LDA #$00	; Halt Player if he presses direction "into" the Big ? Block
 
-	CPY <Temp_Var1
-	BNE PRG005_B6CD	 ; If Player is doing that, jump to PRG005_B6CD
+	;CPY <Temp_Var1
+	;BNE PRG005_B6CD	 ; If Player is doing that, jump to PRG005_B6CD
 
-	LDA BigQBlock_PlayerPushXVel-1,Y	 ; Get direction of Player away from block
+	;LDA BigQBlock_PlayerPushXVel-1,Y	 ; Get direction of Player away from block
 
 PRG005_B6CD:
-	STA <Player_XVel	 ; Set Player's velocity appropriately
+	;STA <Player_XVel	 ; Set Player's velocity appropriately
+	JSR Do_FireFlower_Bank1
+	LDA #OBJSTATE_NORMAL
+	STA Objects_State,X
+	STA <Objects_Var5,X
+	INC Objects_Frame,X
 
 PRG005_B6CF:
 	RTS		 ; Return
@@ -4704,8 +4712,9 @@ BigQBlock_EmergePowerup:
 
 	; Patterns of the Big ? Block
 	; These are interlaced between the "unopened" and "opened" block
-BigQBlock_UpperPats:	.byte $87, $9B, $85, $99, $83, $99, $81, $97
-BigQBlock_LowerPats:	.byte $8F, $8F, $8D, $9D, $8B, $9D, $89, $89
+BigQBlock_UpperPats:	.byte $A7, $B5, $A5, $B3, $A3, $B1, $A1, $A1
+BigQBlock_LowerPats:	.byte $AF, $BB, $AD, $B9, $AB, $B7, $A9, $A9
+BigQBlock_Pal:			.byte $02, $01, $02, $01, $02, $01, $02, $01
 
 BigQBlock_Draw:
 	JSR Object_ShakeAndCalcSprite	 
@@ -4754,7 +4763,8 @@ PRG005_B788:
 	STA Sprite_RAM+$05,Y
 
 	; Palette select 3
-	LDA #SPR_PAL3
+	;LDA #SPR_PAL3
+	LDA BigQBlock_Pal,X
 	STA Sprite_RAM+$02,Y
 	STA Sprite_RAM+$06,Y
 

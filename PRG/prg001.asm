@@ -2091,7 +2091,7 @@ ObjHit_FireFlower:
 	;BNE PRG001_AA05	 ; If fire flower came from Big (?) block, jump to PRG001_AA05
 
 	;JMP PRG001_A897	 ; Otherwise, jump to PRG001_A897
-	JMP PRG001_AA05		; [ORANGE] always give the player full fire even if small
+	; [ORANGE] always give the player full fire even if small
 
 PRG001_AA05:
 	CMP #$02
