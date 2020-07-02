@@ -6261,7 +6261,7 @@ PRG001_BF4C:
 	STA Sprite_RAM+4,X
  
 	; Door patterns
-	LDA #$a1 
+	LDA #$83
 	STA Sprite_RAM+1,X 
 	STA Sprite_RAM+5,X
  
