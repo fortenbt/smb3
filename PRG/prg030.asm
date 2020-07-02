@@ -1094,6 +1094,7 @@ PRG030_88AD:
 
 	JSR GraphicsBuf_Prep_And_WaitVSync	 ; Waiting for vertical sync
 
+_do_checkpoint:
 	LDA GotCheckpoint
 	BEQ _post_checkpoint
 	LDA #$00
@@ -1106,9 +1107,11 @@ PRG030_88AD:
 	JSR Clear_Page5_Gameplay
 	JSR Clear_LoMem_Gameplay
 
-	LDA #$B0					; Hard-coded junction X start for our checkpoint
+	;LDA #$B0					; Hard-coded junction X start for our checkpoint
+	LDA #$30					; Hard-coded junction X start for our checkpoint (ORANGE TODO change this for grimm's room support)
 	STA Level_JctXLHStart
-	LDA #$20					; Hard-coded junction Y start for our checkpoint
+	;LDA #$20					; Hard-coded junction Y start for our checkpoint
+	LDA #$50					; Hard-coded junction Y start for our checkpoint (ORANGE TODO change this for grimm's room support)
 	STA Level_JctYLHStart
 	STA Player_XStart			; Force the game to think we've initialized mario's position
 	LDA Chkpnt_Layout			; Our checkpoint set up the following junction pointers for the level it's in
@@ -2477,20 +2480,31 @@ PRG030_8FCA:
 	LDA Player_RescuePrincess
 	BEQ PRG030_8FFC	 ; If not rescuing the Princess, jump to PRG030_8FFC
 
-	; Load page 24 into A000 and page 25 into C000
-	LDA #25
-	STA PAGE_C000
-	LDA #24
-	STA PAGE_A000
-	JSR PRGROM_Change_Both2
-
+	; Rescuing the princess has become entering Grimm's chamber (W1 Castle)
+	INC GotCheckpoint
+	LDA #$00
+	STA Player_RescuePrincess
+	STA <Level_ExitToMap
 	LDA #%10101000
 	STA <PPU_CTL1_Copy	; Keep PPU_CTL1_Copy in sync!
+	STA PPU_CTL1
 
-	LDA #$20
-	STA Update_Select	 ; Update_Select = $20 (Title Screen... or ending in this case)
+	JMP _do_checkpoint
 
-	JMP Rescue_Princess	 ; Do the Princess Rescue sequence!!
+	; Load page 24 into A000 and page 25 into C000
+	;LDA #25
+	;STA PAGE_C000
+	;LDA #24
+	;STA PAGE_A000
+	;JSR PRGROM_Change_Both2
+
+	;LDA #%10101000
+	;STA <PPU_CTL1_Copy	; Keep PPU_CTL1_Copy in sync!
+
+	;LDA #$20
+	;STA Update_Select	 ; Update_Select = $20 (Title Screen... or ending in this case)
+
+	;JMP Rescue_Princess	 ; Do the Princess Rescue sequence!!
 
 PRG030_8FFC:
 

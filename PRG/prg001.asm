@@ -6300,7 +6300,8 @@ PRG001_BF4C:
 	STA Player_RescuePrincess	; Flag for princess rescue! 
 	LDA #$00 
 	STA Map_ReturnStatus 
-	INC Level_ExitToMap 
+	INC Level_ExitToMap
+	JSR SetGrimmJunctionVars
 
 PRG001_BF9B:
 	LDA <Counter_1 
@@ -6322,3 +6323,17 @@ PRG001_BF9B:
 
 ; Rest of ROM bank was empty
 
+SetGrimmJunctionVars:
+	LDA #LOW(KNG1L)
+	STA Chkpnt_Layout
+	LDA #HIGH(KNG1L)
+	STA Chkpnt_Layout+1
+	LDA #LOW(KINGO)
+	STA Chkpnt_Obj
+	LDA #HIGH(KINGO)
+	STA Chkpnt_Obj+1
+	LDA #$02
+	STA Chkpnt_Tileset
+	LDA #$EF
+	STA Level_Jct_VS
+	RTS
