@@ -2757,7 +2757,14 @@ CFIRE_LASER		= $15	; Laser fire
 
 	Map_GameOver_CursorY:	.ds 1	; Game Over popup cursor Y ($60/$68)
 
-				.ds 9	; $7DCC-$7DD4 unused
+	GotCheckpoint:			.ds 1	; [ORANGE] $7DCC no longer unused Used to store the checkpoint global
+	Chkpnt_Layout:			.ds 2
+	Chkpnt_Obj:				.ds 2
+	Chkpnt_Tileset:			.ds 1
+	
+	
+	
+				.ds 3	; $7DCD-$7DD4 unused
 
 	Map_PrevMoveDir:	.ds 1	; Last SUCCESSFUL (allowed) movement direction on map R01 L02 D04 U08
 

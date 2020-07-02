@@ -1094,6 +1094,36 @@ PRG030_88AD:
 
 	JSR GraphicsBuf_Prep_And_WaitVSync	 ; Waiting for vertical sync
 
+	LDA GotCheckpoint
+	BEQ _post_checkpoint
+	LDA #$00
+	STA GotCheckpoint
+	STA <Player_XVel
+	STA <Player_YVel
+	STA <Player_XHi
+	STA <Player_Suit
+	LDA #$B0
+	STA Level_JctXLHStart
+	LDA #$20
+	STA Level_JctYLHStart
+	LDA Chkpnt_Layout
+	STA Level_AltLayout
+	LDA Chkpnt_Layout+1
+	STA Level_AltLayout+1
+	LDA Chkpnt_Obj
+	STA Level_AltObjects
+	LDA Chkpnt_Obj+1
+	STA Level_AltObjects+1
+	LDA Chkpnt_Tileset
+	STA Level_AltTileset
+	LDA #$03
+	STA Level_JctCtl
+	LDA #$04	
+	STA Level_TimerMSD	; Level_TimerMSD = 4
+	JMP Level_MainLoop
+
+_post_checkpoint:
+
 	; Stop Update_Select activity temporarily
 	INC UpdSel_Disable
 
@@ -6328,3 +6358,4 @@ Music_Set2B_IndexOffs:
 	.word ItoiHedr5			; $39
 	.word ItoiHedr5			; $3A
 	.word ItoiHedr6			; $3B
+prg30_end:
