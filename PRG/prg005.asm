@@ -4606,6 +4606,18 @@ PRG005_B6CD:
 	STA Objects_State,X
 	STA <Objects_Var5,X
 	INC Objects_Frame,X
+	; set checkpoint vars
+	INC GotCheckpoint
+	LDA #LOW(W6F2L)
+	STA Chkpnt_Layout
+	LDA #HIGH(W6F2L)
+	STA Chkpnt_Layout+1
+	LDA #LOW(W6F2O)
+	STA Chkpnt_Obj
+	LDA #HIGH(W6F2O)
+	STA Chkpnt_Obj+1
+	LDA #$0C
+	STA Chkpnt_Tileset
 
 PRG005_B6CF:
 	RTS		 ; Return
