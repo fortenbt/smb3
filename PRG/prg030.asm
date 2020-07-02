@@ -1102,11 +1102,16 @@ PRG030_88AD:
 	STA <Player_YVel
 	STA <Player_XHi
 	STA <Player_Suit
-	LDA #$B0
+
+	JSR Clear_Page5_Gameplay
+	JSR Clear_LoMem_Gameplay
+
+	LDA #$B0					; Hard-coded junction X start for our checkpoint
 	STA Level_JctXLHStart
-	LDA #$20
+	LDA #$20					; Hard-coded junction Y start for our checkpoint
 	STA Level_JctYLHStart
-	LDA Chkpnt_Layout
+	STA Player_XStart			; Force the game to think we've initialized mario's position
+	LDA Chkpnt_Layout			; Our checkpoint set up the following junction pointers for the level it's in
 	STA Level_AltLayout
 	LDA Chkpnt_Layout+1
 	STA Level_AltLayout+1
@@ -1116,10 +1121,10 @@ PRG030_88AD:
 	STA Level_AltObjects+1
 	LDA Chkpnt_Tileset
 	STA Level_AltTileset
-	LDA #$03
+	LDA #$03					; Tell the level we're junctioning
 	STA Level_JctCtl
 	LDA #$04	
-	STA Level_TimerMSD	; Level_TimerMSD = 4
+	STA Level_TimerMSD			; Level_TimerMSD = 4
 	JMP Level_MainLoop
 
 _post_checkpoint:
@@ -1153,19 +1158,7 @@ PRG030_88C8:
 	STA Map_BonusCoinsReqd	 ; Clear the "coins required for bonus"
 	STA Map_BonusType	 ; Clear the "bonus type"
 
-	STA <Temp_Var1	; Temp_Var1 = 0
-
-	LDX #$05	
-	STX <Temp_Var2	; Temp_Var2 = 5
-
-	; Going to clear memory from $9D to $01
-	LDY #$9d	; Y = $9D
-PRG030_88E9:
-	STA [Temp_Var1],Y	; Clear this byte
-	DEY		 	; Y--
-	BNE PRG030_88E9	 	; While Y <> 0, loop!
-
-	STA [Temp_Var1],Y	; And address $00 is cleared too (though this is technically unnecessary)
+	JSR Clear_Page5_Gameplay
 
 	LDA <Map_Enter2PFlag
 	BEQ PRG030_891A	 	; If not entering 2P Vs mode, jump to PRG030_891A
@@ -1266,14 +1259,7 @@ PRG030_8968:
 	DEY		 ; Y--
 	BPL PRG030_8968	 ; While Y >= 0, loop!
 
-	; Clears $80 bytes starting at Player_XHi ($75, gameplay context)
-	LDY #$80	 ; Y = $80
-	LDA #$00	 ; A = 0
-	STA LevelJctBQ_Flag	 ; LevelJctBQ_Flag = 0 
-PRG030_8975: 
-	STA Player_XHi,Y
-	DEY		 ; Y--
-	BNE PRG030_8975	 ; While Y >= 0, loop!
+	JSR Clear_LoMem_Gameplay
 
 PRG030_897B:
 	; Level junctions enter here, to continue with preparation to display!
@@ -6207,6 +6193,30 @@ Do_FireFlower_Bank1:
 	JSR PRGROM_Change_A000
 	RTS
 
+Clear_LoMem_Gameplay:
+	; Clears $80 bytes starting at Player_XHi ($75, gameplay context)
+	LDY #$80	 ; Y = $80
+	LDA #$00	 ; A = 0
+	STA LevelJctBQ_Flag	 ; LevelJctBQ_Flag = 0
+;PRG030_8975:
+_clear_lomem_loop:
+	STA Player_XHi,Y
+	DEY		 ; Y--
+	BNE _clear_lomem_loop	 ; While Y >= 0, loop!
+	RTS
+
+Clear_Page5_Gameplay:
+	STA <Temp_Var1	; Temp_Var1 = 0
+	LDX #$05
+	STX <Temp_Var2	; Temp_Var2 = 5
+	; Going to clear memory from $9D to $01
+	LDY #$9d	; Y = $9D
+_clear_page5:
+	STA [Temp_Var1],Y	; Clear this byte
+	DEY		 	; Y--
+	BNE _clear_page5	 	; While Y <> 0, loop!
+	STA [Temp_Var1],Y	; And address $00 is cleared too (though this is technically unnecessary)
+	RTS
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

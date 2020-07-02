@@ -532,6 +532,7 @@ PauseMenuReturnToMap:
 	; Transfer Player's current power up to the World Map counterpart
 	LDA #0
 	STA World_Map_Power
+	STA GotCheckpoint
 
 	;; TODO: remove orb/cards if returned to map after beating a level?
 	;; Maybe don't allow returning to the map after getting the card?
