@@ -2924,11 +2924,9 @@ Title_SpritePattern:
 Title_SpriteVROMPage:
 
 SetCheckpointVars:
-	;LDA #$B0					; Hard-coded junction X start for our checkpoint
-	LDA #$30					; Hard-coded junction X start for our checkpoint (ORANGE TODO change this for grimm's room support)
+	LDA Chkpnt_JctXLHStart
 	STA Level_JctXLHStart
-	;LDA #$20					; Hard-coded junction Y start for our checkpoint
-	LDA #$60					; Hard-coded junction Y start for our checkpoint (ORANGE TODO change this for grimm's room support)
+	LDA Chkpnt_JctYLHStart
 	STA Level_JctYLHStart
 	STA Player_XStart			; Force the game to think we've initialized mario's position
 	LDA Chkpnt_Layout			; Our checkpoint set up the following junction pointers for the level it's in
@@ -2947,7 +2945,7 @@ SetCheckpointVars:
 	STA Level_JctCtl
 	LDA #$04
 	STA Level_TimerMSD			; Level_TimerMSD = 4
-
+	RTS
 
 	;.byte $FF, $FF, $FF
 

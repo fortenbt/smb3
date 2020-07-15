@@ -6334,6 +6334,10 @@ SetGrimmJunctionVars:
 	STA Chkpnt_Obj+1
 	LDA #$40
 	STA Chkpnt_FlipBits
+	LDA #$30
+	STA Chkpnt_JctXLHStart
+	LDA #$60
+	STA Chkpnt_JctYLHStart
 	LDA #$02
 	STA Chkpnt_Tileset
 	RTS
