@@ -6345,6 +6345,8 @@ PRG005_BEFE:
 	DEX		 ; X--
 	BPL PRG005_BEFE	 ; While X >= 0, loop!
 
+	JSR InitCheckpointObjs
+
 	LDA #$4f	 
 	STA PatTable_BankSel+5	 ; Set sixth pattern table to $4F
 

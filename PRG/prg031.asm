@@ -2939,6 +2939,8 @@ SetCheckpointVars:
 	STA Level_AltObjects+1
 	LDA Chkpnt_Tileset
 	STA Level_AltTileset
+	LDA Chkpnt_OnOff
+	STA Level_OnOff
 	LDA Chkpnt_FlipBits
 	STA <Player_FlipBits
 	LDA #$03					; Tell the level we're junctioning
@@ -2947,6 +2949,24 @@ SetCheckpointVars:
 	STA Level_TimerMSD			; Level_TimerMSD = 4
 	RTS
 
+InitCheckpointObjs:
+	LDA GotCheckpoint
+	BEQ _init_chkpnt_objs_rts
+	LDX #$04
+	LDA #$6E
+	STA Level_ObjectID,X
+	LDA #$01
+	STA <Objects_YHi,X
+	STA <Objects_XHi,X
+	STA Objects_State,X
+	LDA #$30
+	STA <Objects_X,X
+	LDA #$90
+	STA <Objects_Y,X
+	LDA #$80
+	STA Level_ObjectsSpawned,X
+_init_chkpnt_objs_rts:
+	RTS
 	;.byte $FF, $FF, $FF
 
 	; A marker of some kind? :)

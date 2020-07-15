@@ -6024,6 +6024,11 @@ PRG004_BE54:
 
 ; Rest of ROM bank was empty
 
+; high byte $00 disables the false checkpoint
+MsgChkpntLayoutHi: 	.byte $00, HIGH(W501L), $00, HIGH(W501L)
+MsgChkpntX:			.byte $00, $D0, $00, $E2
+MsgChkpntY:			.byte $00, $70, $00, $10
+
 ObjInit_ShelledTroop:
 	JSR Object_SetShellState
 	JMP ObjInit_GroundTroop
@@ -6044,6 +6049,27 @@ ObjInit_OrangeCheep_Hook:
 	LSR A
 	STA UserMsg_Index
 	TAX
+	; get the "checkpoint" if relevant
+	LDA MsgChkpntLayoutHi,X
+	BEQ _check_do_usermsg
+	INC GotCheckpoint
+	STA Chkpnt_Layout+1
+	LDA #LOW(W501L)				; hard-coded level 5-1
+	STA Chkpnt_Layout
+	LDA #LOW(W501O)					; hard-coded level 5-1
+	STA Chkpnt_Obj
+	LDA #HIGH(W501O)				; hard-coded level 5-1
+	STA Chkpnt_Obj+1
+	LDA #$01						; hard-coded plains
+	STA Chkpnt_Tileset
+	STA Chkpnt_OnOff				; hard-coded "off"
+	LDA MsgChkpntX,X
+	STA Chkpnt_JctXLHStart
+	LDA MsgChkpntY,X				; see prg026::LevelJct_YLHStarts
+	STA Chkpnt_JctYLHStart
+	LDA #SPR_HFLIP
+	STA Chkpnt_FlipBits
+_check_do_usermsg:
 	LDA UserMsg_Completions,X		; has this message been shown?
 	BNE _occ_rts				; if so, just return
 	LDY #$01				; Otherwise, initialize the message
