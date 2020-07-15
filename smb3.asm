@@ -2767,7 +2767,8 @@ CFIRE_LASER		= $15	; Laser fire
 
 	Map_PrevMoveDir:	.ds 1	; Last SUCCESSFUL (allowed) movement direction on map R01 L02 D04 U08
 
-				.ds 8	; $7DD6-$7DDD unused
+	Chkpnt_OnOff:			.ds 1	; $7DD6 no longer unused
+							.ds 7	; $7DD7-$7DDD unused
 
 	Pal_Data:		.ds 32	; $7DDE-$7DFD Holds an entire bg/sprite palette (this is the MASTER palette, what fades target, and others may source for "original" colors!)
 

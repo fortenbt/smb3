@@ -1098,7 +1098,6 @@ _do_checkpoint:
 	LDA GotCheckpoint
 	BEQ _post_checkpoint
 	LDA #$00
-	STA GotCheckpoint
 	STA <Player_XVel
 	STA <Player_YVel
 	STA <Player_XHi
