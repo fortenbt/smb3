@@ -2762,9 +2762,8 @@ CFIRE_LASER		= $15	; Laser fire
 	Chkpnt_Obj:				.ds 2
 	Chkpnt_Tileset:			.ds 1
 	Chkpnt_FlipBits:		.ds 1
-	
-	
-				.ds 2	; $7DCD-$7DD4 unused
+	Chkpnt_JctXLHStart:		.ds 1
+	Chkpnt_JctYLHStart:		.ds 1
 
 	Map_PrevMoveDir:	.ds 1	; Last SUCCESSFUL (allowed) movement direction on map R01 L02 D04 U08
 

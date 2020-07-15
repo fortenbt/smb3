@@ -4618,6 +4618,10 @@ PRG005_B6CD:
 	STA Chkpnt_Obj+1
 	LDA #$0C
 	STA Chkpnt_Tileset
+	LDA #$B0
+	STA Chkpnt_JctXLHStart
+	LDA #$20
+	STA Chkpnt_JctYLHStart
 
 PRG005_B6CF:
 	RTS		 ; Return
