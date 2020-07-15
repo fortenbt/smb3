@@ -1106,28 +1106,8 @@ _do_checkpoint:
 
 	JSR Clear_Page5_Gameplay
 	JSR Clear_LoMem_Gameplay
+	JSR SetCheckpointVars
 
-	;LDA #$B0					; Hard-coded junction X start for our checkpoint
-	LDA #$30					; Hard-coded junction X start for our checkpoint (ORANGE TODO change this for grimm's room support)
-	STA Level_JctXLHStart
-	;LDA #$20					; Hard-coded junction Y start for our checkpoint
-	LDA #$50					; Hard-coded junction Y start for our checkpoint (ORANGE TODO change this for grimm's room support)
-	STA Level_JctYLHStart
-	STA Player_XStart			; Force the game to think we've initialized mario's position
-	LDA Chkpnt_Layout			; Our checkpoint set up the following junction pointers for the level it's in
-	STA Level_AltLayout
-	LDA Chkpnt_Layout+1
-	STA Level_AltLayout+1
-	LDA Chkpnt_Obj
-	STA Level_AltObjects
-	LDA Chkpnt_Obj+1
-	STA Level_AltObjects+1
-	LDA Chkpnt_Tileset
-	STA Level_AltTileset
-	LDA #$03					; Tell the level we're junctioning
-	STA Level_JctCtl
-	LDA #$04	
-	STA Level_TimerMSD			; Level_TimerMSD = 4
 	JMP Level_MainLoop
 
 _post_checkpoint:
