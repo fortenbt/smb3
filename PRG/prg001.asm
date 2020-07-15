@@ -6332,7 +6332,7 @@ SetGrimmJunctionVars:
 	STA Chkpnt_Obj
 	LDA #HIGH(KINGO)
 	STA Chkpnt_Obj+1
-	LDA #$40
+	LDA #SPR_HFLIP
 	STA Chkpnt_FlipBits
 	LDA #$30
 	STA Chkpnt_JctXLHStart
