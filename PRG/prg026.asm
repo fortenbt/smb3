@@ -3995,10 +3995,8 @@ _msg_do_character:
 	STA UserMsg_TextTimer
 
 _do_text_rts:
-	LDA #$FF
-	STA Player_HaltTick		; This prevents Level_PipeMove from doing anything
-	LDA #$17
-	STA Level_PipeMove		; Hijack Level_PipeMove to halt everything
+	LDA #$01
+	STA Player_HaltGame		; Hijack Level_PipeMove to halt everything
 	RTS
 
 UserMsg_WaitForStart:
