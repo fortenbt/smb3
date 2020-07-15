@@ -1103,6 +1103,7 @@ _do_checkpoint:
 	STA <Player_YVel
 	STA <Player_XHi
 	STA <Player_Suit
+	STA World_Map_Power
 
 	JSR Clear_Page5_Gameplay
 	JSR Clear_LoMem_Gameplay
