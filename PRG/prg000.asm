@@ -3508,7 +3508,9 @@ PRG000_D120:
 
 	; Object is not a Bob-omb and not an Ice Block... 
 
-	LDA Objects_Timer3,X 
+	;;; [ORANGE] We can modify the wakeup timer here for specific objects
+	;;;LDA Objects_Timer3,X
+	JSR GetWakeupTimer
 	BNE PRG000_D15A	 ; If timer 3 is not expired, jump to PRG000_D15A (RTS) 
 
 	LDA Objects_State,X 

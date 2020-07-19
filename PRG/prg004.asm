@@ -26,7 +26,7 @@
 ObjectGroup03_InitJumpTable:
 	.word ObjInit_GroundTroop	; Object $6C - OBJ_GREENTROOPA
 	.word ObjInit_GroundTroop	; Object $6D - OBJ_REDTROOPA
-	.word ObjInit_GroundTroop	; Object $6E - OBJ_PARATROOPAGREENHOP
+	.word ObjInit_ShelledTroop	; Object $6E - OBJ_PARATROOPAGREENHOP
 	.word ObjInit_GroundTroop	; Object $6F - OBJ_FLYINGREDPARATROOPA
 	.word ObjInit_GroundTroop	; Object $70 - OBJ_BUZZYBEATLE
 	.word ObjInit_GroundTroop	; Object $71 - OBJ_SPINY
@@ -3743,8 +3743,14 @@ GroundTroop_FlipTowardsPlayer:	.byte SPR_HFLIP, $00
 SpikeCheep_XVelTowardsPlayer:	.byte $08, -$08
 
 	; DEAD CODE
-	LDA #$10	 
-	STA <Objects_YVel,X
+	;;LDA #$10
+	;;STA <Objects_YVel,X
+
+	;;; [ORANGE] We removed the 4 bytes of dead code above to fit this small Init_Shelled
+	;;; The JSR is only 3 bytes, so we have an extra $FF byte here to fill the 4 bytes we removed.
+	.byte $FF
+ObjInit_ShelledTroop:
+	JSR Object_SetShellState		; [ORANGE] This sets A to $FF and so returns zero flag not set
 	BNE ObjInit_GroundTroop
 
 ObjInit_GiantTroop:
@@ -6205,4 +6211,3 @@ PRG004_BE54:
 	RTS		 ; Return
 
 ; Rest of ROM bank was empty
-
