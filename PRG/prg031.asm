@@ -2953,6 +2953,15 @@ InitCheckpointObjs:
 	LDA GotCheckpoint
 	BEQ _init_chkpnt_objs_rts
 	LDX #$04
+_find_slot_loop:
+	LDA Objects_State,X
+	BEQ _use_this_slot				; If this object slot's state is Dead/Empty, use it to spawn our fake shell
+	DEX		 						; X--
+	BPL _find_slot_loop	 			; While X >= 0, loop!
+	BMI _init_chkpnt_objs_rts	 	; fail to spawn
+_use_this_slot:
+	JSR Level_PrepareNewObject		; Generate new object
+
 	LDA #$6E
 	STA Level_ObjectID,X
 	LDA #$01
@@ -2963,8 +2972,6 @@ InitCheckpointObjs:
 	STA <Objects_X,X
 	LDA #$90
 	STA <Objects_Y,X
-	LDA #$80
-	STA Level_ObjectsSpawned,X
 _init_chkpnt_objs_rts:
 	RTS
 	;.byte $FF, $FF, $FF
