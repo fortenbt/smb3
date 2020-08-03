@@ -6025,9 +6025,9 @@ PRG004_BE54:
 ; Rest of ROM bank was empty
 
 ; high byte $00 disables the false checkpoint
-MsgChkpntLayoutHi: 	.byte $00, HIGH(W501L), $00, HIGH(W501L), $00, HIGH(W501L)
-MsgChkpntX:			.byte $00, $D0, $00, $E2, $00, $44
-MsgChkpntY:			.byte $00, $70, $00, $10, $00, $70
+MsgChkpntLayoutHi: 	.byte $00, HIGH(W501L), $00, HIGH(W501L), HIGH(W501L), HIGH(W501L)
+MsgChkpntX:			.byte $00, $D0, $00, $E2, $D6, $44
+MsgChkpntY:			.byte $00, $70, $00, $10, $10, $70
 MsgChkpntOnOff:		.byte $00, $01, $00, $01, $00, $00
 
 ObjInit_ShelledTroop:
