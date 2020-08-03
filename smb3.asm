@@ -3863,6 +3863,7 @@ TILE1_ON		= $BE	; See prg015.asm - solid on block
 TILE1_ON_INACTIVE	= $82	; non-solid on block outline
 TILE1_OFF		= $FB	; solid off block
 TILE1_OFF_INACTIVE	= $D2	; non-solid off block outline
+TILE1_LILCOIN1		= $12
 ;; -- TS2 (Mini Fortress) On/Off
 TILE2_ON		= $19	; See prg021.asm - solid on block
 TILE2_ON_INACTIVE	= $05	; non-solid on block outline
