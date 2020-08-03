@@ -3813,7 +3813,7 @@ UserMsgPtr_L:
 	.byte LOW(UserMessage2)
 	.byte LOW(UserMessage3)
 	.byte LOW(UserMessage4)
-	.byte $00
+	.byte LOW(UserMessage5)
 	.byte LOW(UserMessage6)
 UserMsgPtr_LEnd
 
@@ -3822,7 +3822,7 @@ UserMsgPtr_H:
 	.byte HIGH(UserMessage2)
 	.byte HIGH(UserMessage3)
 	.byte HIGH(UserMessage4)
-	.byte $00
+	.byte HIGH(UserMessage5)
 	.byte HIGH(UserMessage6)
 
 UserMsg_UpdateStatusBar:
@@ -4148,6 +4148,12 @@ UserMessage4:
 	.byte $C1, $D4, $D6, $CB, $D0, $D1, $D1, $D8, $DD, $D6, $FE, $B0, $FE, $81, $D7, $D8, $DB, $D4, $FE, $D7, $DE, $DB, $D3, $D8, $DD, $D6, $00
 	.byte $C4, $BF, $FE, $81, $D7, $D4, $DD, $FE, $D5, $D0, $DB, $DB, $D8, $DD, $D6, $FE, $DB, $D4, $CD, $CC, $FE, $8C, $DE, $CE, $00
 	.byte $CD, $81, $D8, $CB, $DB, $FE, $CD, $DE, $FE, $CC, $DB, $DE, $81, $FE, $8C, $DE, $CE, $CB, $FE, $D5, $D0, $DB, $DB, $E9, $FF
+
+UserMessage5:
+	;You can throw shells\ndirectly into walls. They\nnow bounce outward.
+	.byte $C8, $DE, $CE, $FE, $D2, $D0, $DD, $FE, $CD, $D7, $CB, $DE, $81, $FE, $CC, $D7, $D4, $DB, $DB, $CC, $00
+	.byte $D3, $D8, $CB, $D4, $D2, $CD, $DB, $8C, $FE, $D8, $DD, $CD, $DE, $FE, $81, $D0, $DB, $DB, $CC, $E9, $FE, $C3, $D7, $D4, $8C, $00
+	.byte $DD, $DE, $81, $FE, $D1, $DE, $CE, $DD, $D2, $D4, $FE, $DE, $CE, $CD, $81, $D0, $CB, $D3, $E9, $FF
 
 UserMessage6:
 	;The first of many double\nshelljumps!
