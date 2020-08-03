@@ -2947,6 +2947,8 @@ SetCheckpointVars:
 	STA Level_JctCtl
 	LDA #$04
 	STA Level_TimerMSD			; Level_TimerMSD = 4
+	LDA #$28
+	STA Player_SprOff ; Player sprite rooted at offset $28
 	RTS
 
 InitCheckpointObjs:
