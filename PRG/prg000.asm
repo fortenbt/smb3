@@ -3162,7 +3162,7 @@ PRG000_CF98:
 
 	LDA Sprite_RAM+$28
 	CMP #$f8
-	;BEQ PRG000_CFA8	 ; ?? If Sprite_RAM+$28 (10th sprite) Y coordinate = $F8 (unused), jump to PRG000_CFA8 ??
+	BEQ PRG000_CFA8	 ; ?? If Sprite_RAM+$28 (10th sprite) Y coordinate = $F8 (unused), jump to PRG000_CFA8 ??
 
 PRG000_CFA5:
 	JSR Object_DrawShelled	 ; Draw shelled object
