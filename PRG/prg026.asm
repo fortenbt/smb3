@@ -3813,6 +3813,8 @@ UserMsgPtr_L:
 	.byte LOW(UserMessage2)
 	.byte LOW(UserMessage3)
 	.byte LOW(UserMessage4)
+	.byte $00
+	.byte LOW(UserMessage6)
 UserMsgPtr_LEnd
 
 UserMsgPtr_H:
@@ -3820,6 +3822,8 @@ UserMsgPtr_H:
 	.byte HIGH(UserMessage2)
 	.byte HIGH(UserMessage3)
 	.byte HIGH(UserMessage4)
+	.byte $00
+	.byte HIGH(UserMessage6)
 
 UserMsg_UpdateStatusBar:
 	JSR StatusBar_Fill_DWO		; Fill in the world number and complete the UserMessage (Orange - added deaths and orbs as well)
@@ -4144,6 +4148,11 @@ UserMessage4:
 	.byte $C1, $D4, $D6, $CB, $D0, $D1, $D1, $D8, $DD, $D6, $FE, $B0, $FE, $81, $D7, $D8, $DB, $D4, $FE, $D7, $DE, $DB, $D3, $D8, $DD, $D6, $00
 	.byte $C4, $BF, $FE, $81, $D7, $D4, $DD, $FE, $D5, $D0, $DB, $DB, $D8, $DD, $D6, $FE, $DB, $D4, $CD, $CC, $FE, $8C, $DE, $CE, $00
 	.byte $CD, $81, $D8, $CB, $DB, $FE, $CD, $DE, $FE, $CC, $DB, $DE, $81, $FE, $8C, $DE, $CE, $CB, $FE, $D5, $D0, $DB, $DB, $E9, $FF
+
+UserMessage6:
+	;The first of many double\nshelljumps!
+	.byte $C3, $D7, $D4, $FE, $D5, $D8, $CB, $CC, $CD, $FE, $DE, $D5, $FE, $DC, $D0, $DD, $8C, $FE, $D3, $DE, $CE, $D1, $DB, $D4, $00
+	.byte $CC, $D7, $D4, $DB, $DB, $D9, $CE, $DC, $DF, $CC, $EA, $FF
 
 ;;;==========================================================================================================
 ;;;= ORANGE - The following is for our new status bar
