@@ -2415,6 +2415,7 @@ PRG030_8FA8:
 	; World_EnterState = 0
 	LDA #$00
 	STA World_EnterState
+	STA GotCheckpoint
 
 	; Disable the display
 	STA <PPU_CTL2_Copy
