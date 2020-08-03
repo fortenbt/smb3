@@ -3876,11 +3876,17 @@ TILE3_ON_INACTIVE	= $5D	; non-solid on block outline
 TILE3_OFF		= $FE	; solid off block				QUAD 3
 TILE3_OFF_INACTIVE	= $98	; non-solid off block outline
 TILE3_BOOTSPIKE		= $7E	; Spikes that hurt regardless of kuribo's shoe
+TILE3_LILCOINDF		= $13
+TILE3_LILCOINDB		= $14
+TILE3_LILCOINU		= $15
+TILE3_LILCOIND		= $16
 ;; -- TS9 (Desert) On/Off
 TILE9_ON		= $FE	; See prg020.asm - solid on block
 TILE9_ON_INACTIVE	= $D4	; non-solid on block outline
 TILE9_OFF		= $3C	; solid off block
 TILE9_OFF_INACTIVE	= $21	; non-solid off block outline
+TILE9_LILCOINU		= $0A
+TILE9_LILCOIND		= $C7
 ;; -- TS12 (Ice) On/Off, boot spikes
 TILE12_ON			= $9D
 TILE12_ON_INACTIVE	= $81
