@@ -21,7 +21,7 @@ Tile_Layout_TS3:
 
 	; Upper left 8x8 pattern per tile
 	.byte $FC, $4E, $FE, $05, $05, $E8, $FF, $58, $FF, $FF, $5D, $5F, $FF, $FF, $FF, $FF ; Tiles $00 - $0F
-	.byte $FF, $FF, $FF, $48, $4A, $26, $FC, $FC, $FC, $FC, $FC, $42, $FC, $33, $32, $05 ; Tiles $10 - $1F
+	.byte $FF, $FF, $FF, $05, $05, $05, $81, $FC, $FC, $FC, $FC, $42, $FC, $33, $32, $05 ; Tiles $10 - $1F
 	.byte $58, $05, $05, $5D, $5F, $FE, $4E, $42, $FE, $48, $4A, $FE, $39, $FF, $B8, $B8 ; Tiles $20 - $2F
 	.byte $B8, $B8, $BC, $44, $34, $4E, $4C, $4C, $FD, $FD, $FE, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
 	.byte $DC, $05, $FE, $FE, $05, $05, $05, $05, $60, $D5, $B2, $FF, $FF, $FF, $FF, $FF ; Tiles $40 - $4F
@@ -39,7 +39,7 @@ Tile_Layout_TS3:
 
 	; Lower left 8x8 pattern per tile
 	.byte $FC, $4F, $FE, $06, $D6, $E9, $FF, $FD, $5B, $FF, $FF, $FF, $46, $FF, $FF, $FF ; Tiles $00 - $0F
-	.byte $FF, $FF, $FF, $24, $FC, $26, $FC, $FC, $33, $45, $FC, $42, $FC, $FC, $FC, $06 ; Tiles $10 - $1F
+	.byte $FF, $FF, $FF, $06, $91, $80, $06, $FC, $33, $45, $FC, $42, $FC, $FC, $FC, $06 ; Tiles $10 - $1F
 	.byte $FD, $5B, $06, $06, $06, $40, $4C, $4C, $48, $4C, $4C, $4A, $4C, $FF, $B9, $B9 ; Tiles $20 - $2F
 	.byte $B9, $B9, $BD, $34, $34, $4C, $4C, $4C, $FD, $4C, $FE, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
 	.byte $DD, $06, $FE, $FE, $06, $06, $06, $06, $61, $B2, $B2, $FF, $FF, $FF, $FF, $FF ; Tiles $40 - $4F
@@ -57,7 +57,7 @@ Tile_Layout_TS3:
 
 	; Upper right 8x8 pattern per tile	
 	.byte $FC, $FC, $FE, $07, $07, $EA, $FF, $59, $FF, $5C, $5E, $FF, $FF, $FF, $FF, $FF ; Tiles $00 - $0F
-	.byte $FF, $FF, $FF, $49, $4B, $FC, $27, $FC, $FC, $FC, $42, $FC, $40, $33, $FC, $07 ; Tiles $10 - $1F
+	.byte $FF, $FF, $FF, $07, $07, $07, $07, $FC, $FC, $FC, $42, $FC, $40, $33, $FC, $07 ; Tiles $10 - $1F
 	.byte $59, $07, $5C, $5E, $07, $40, $4F, $FE, $FE, $49, $4B, $FE, $39, $FF, $BA, $BA ; Tiles $20 - $2F
 	.byte $BA, $BA, $BE, $4F, $4C, $45, $36, $4C, $FD, $4C, $FE, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
 	.byte $DE, $07, $FE, $FE, $07, $07, $07, $07, $62, $D5, $B2, $FF, $FF, $FF, $FF, $FF ; Tiles $40 - $4F
@@ -75,7 +75,7 @@ Tile_Layout_TS3:
 
 	; Lower right 8x8 pattern per tile
 	.byte $FC, $FC, $FE, $08, $D6, $EB, $5A, $FF, $FF, $FF, $FF, $FF, $47, $FF, $FF, $FF ; Tiles $00 - $0F
-	.byte $FF, $FF, $FF, $FC, $25, $FC, $27, $44, $33, $FC, $42, $FC, $FC, $FC, $FC, $5A ; Tiles $10 - $1F
+	.byte $FF, $FF, $FF, $90, $08, $08, $08, $44, $33, $FC, $42, $FC, $FC, $FC, $FC, $5A ; Tiles $10 - $1F
 	.byte $FD, $08, $08, $08, $08, $4C, $4C, $42, $49, $4C, $4C, $4B, $4C, $FF, $BB, $BB ; Tiles $20 - $2F
 	.byte $BB, $BB, $BF, $4C, $4C, $36, $36, $4C, $FD, $FE, $FE, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
 	.byte $DF, $08, $FE, $FE, $08, $08, $08, $08, $63, $B2, $B2, $FF, $FF, $FF, $FF, $FF ; Tiles $40 - $4F
@@ -341,7 +341,7 @@ LeveLoad_FixedSizeGen_TS3:
 	.ds 0x40
 
 Custom_Tiles16:
-	.byte TILE3_BOOTSPIKE, TILE3_ON, TILE3_OFF_INACTIVE
+	.byte TILE3_BOOTSPIKE, TILE3_ON, TILE3_OFF_INACTIVE, TILE3_LILCOINDF, TILE3_LILCOINDB, TILE3_LILCOINU, TILE3_LILCOIND
 
 PRG16_DynJump_LLGen:
 	CMP #78
