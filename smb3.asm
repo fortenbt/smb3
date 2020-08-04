@@ -3879,7 +3879,7 @@ TILE3_BOOTSPIKE		= $7E	; Spikes that hurt regardless of kuribo's shoe
 TILE3_LILCOINDF		= $13
 TILE3_LILCOINDB		= $14
 TILE3_LILCOINU		= $15
-TILE3_LILCOIND		= $16
+TILE3_LILCOIND		= $4B
 ;; -- TS9 (Desert) On/Off
 TILE9_ON		= $FE	; See prg020.asm - solid on block
 TILE9_ON_INACTIVE	= $D4	; non-solid on block outline
