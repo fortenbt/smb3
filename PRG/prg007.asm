@@ -1342,7 +1342,7 @@ PRG007_A66C:
 	RTS		 ; Return
 
 	; A Y range per bounding box index
-Projectile_BBoxY:	.byte $18, $18, $28, $18, $18, $18, $18, $18, $18, $18, $20, $18, $18, $28, $18, $18
+Projectile_BBoxY:	.byte $18, $18, $28, $18, $18, $2c, $18, $18, $18, $18, $20, $18, $18, $28, $18, $18
 
 	; An X range per bounding box index
 Projectile_BBoxX:	.byte $10, $10, $10, $10, $10, $10, $10, $10, $10, $10, $10, $10, $10, $18, $10, $10
