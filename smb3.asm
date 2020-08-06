@@ -1350,7 +1350,8 @@ Level_MusicQueueRestore:	.ds 1	; What to "restore" the BGM to when it changes (e
 	;NseRestOff:			.ds 1	; $04EE unused
 	;TriRestOff:			.ds 1	; $04EF unused
 	;Sq1RestOff:			.ds 1	; $04F0 unused
-	.ds 3
+	.ds 2
+	Sound_BooPause:		.ds 1	; [ORANGE] counter for pausing between the boos
 
 ; For any of these queues, the value is a bit value, which offers
 ; a simple prioritization system; lowest value plays over any other

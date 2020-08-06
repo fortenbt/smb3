@@ -1226,6 +1226,8 @@ Music_Set1_Set2A_IndexOffs:
 
 	.byte M12ASH(Mystery_Hedr)		; $12
 
+	.byte M12ASH(GameOverHedr1)		; $13
+
 
 Music_Set1_Set2A_Headers:
 
@@ -1258,6 +1260,8 @@ MotherHedr8:	MusSeg Mother_R8, Mother_8, Mother_Tri8, $17, Mother_Nse8, Mother_P
 
 Mystery_Hedr:	MusSeg Mystery_R, Mystery_1, $0000, $10, $0000, $0000
 
+GameOverHedr1:	MusSeg GameOver_R, GameOver_1, GameOver_Tri1, $21, $0000, $0000
+
 
 	; Music in Set 2A is played by "index", which is a segment of music.
 	; The index always advances, though what that index actually represents
@@ -1268,17 +1272,13 @@ Mystery_Hedr:	MusSeg Mystery_R, Mystery_1, $0000, $10, $0000, $0000
 	; index of $08, an end index of $09, and a loop index of $08.
 
 Music_Set2A_Starts:
-	.byte $08, $12, $0A, $0B, $0D, $0E, $10, $11, $13, $14, $15, $16, $18, $1C, $1D, $1E
+	.byte $08, $12, $13, $0B, $0D, $0E, $10, $11, $13, $14, $15, $16, $18, $1C, $1D, $1E
 
 Music_Set2A_Ends:
-	.byte $11, $12, $0C, $0D, $0F, $10, $12, $13, $14, $15, $17, $1B, $1C, $1D, $2B
+	.byte $11, $12, $13, $0D, $0F, $10, $12, $13, $14, $15, $17, $1B, $1C, $1D, $2B
 
 Music_Set2A_Loops:
-	.byte $08, $00, $0B, $0D, $0F, $10, $11, $13, $14, $15, $17, $18, $1C, $1D, $23
-
-M12ASegData1A:
-	.byte $D8, $68, $60, $60, $5A, $50, $4C, $68, $60, $60, $5A, $50, $4C, $68, $60 ; $A899 - $A8A8
-	.byte $60, $5A, $50, $4C
+	.byte $08, $00, $00, $0D, $0F, $10, $11, $13, $14, $15, $17, $18, $1C, $1D, $23
 
 M12ASegData17:
 	.byte $00
@@ -1421,26 +1421,6 @@ Mother_PCM8:
 	.byte $B0, $04, $03, $BA, $04, $03, $B0, $03, $04, $03, $BA, $04, $03, $B0, $03, $04
 	.byte $03, $BA, $04, $03, $B0, $03, $B5, $04, $04, $BA, $04
 
-M12ASegData0F:
-	.byte $D8, $6E, $5E, $66, $5E, $6E, $5E, $66, $6A, $70, $60, $68, $60, $70, $60, $68 ; $B0C9 - $B0D8
-	.byte $6C, $00, $D4, $7E, $D8, $56, $56, $56, $56, $56, $56, $56, $56, $58, $58, $58 ; $B0D9 - $B0E8
-	.byte $58, $58, $58, $58, $58, $9C, $7E, $7E, $7E, $7E, $9C, $01, $89, $01, $8D, $02 ; $B0E9 - $B0F8
-	.byte $02, $02, $8A, $01, $00, $8A, $7E, $01, $89, $01, $8D, $03, $03, $03, $8A, $7E ; $B0F9 - $B108
-	.byte $00
-
-M12ASegData10:
-	.byte $D2, $7E, $7E, $30, $36, $7E, $DB, $3A, $D2, $7E, $7E, $7E, $DD, $3A, $3C ; $B109 - $B118
-	.byte $D2, $3A, $7E, $36, $30, $7E, $2C, $00, $D2, $7E, $7E, $26, $2C, $7E, $DB, $30 ; $B119 - $B128
-	.byte $D2, $7E, $7E, $7E, $DD, $30, $32, $D2, $30, $7E, $2C, $26, $7E, $22
-
-M12ASegData11:
-	.byte $D2, $7E ; $B129 - $B138
-	.byte $7E, $30, $36, $7E, $DB, $3A, $D2, $7E, $7E, $7E, $92, $48, $4C, $7E, $98, $4E ; $B139 - $B148
-	.byte $82, $7E, $00, $D2, $7E, $7E, $26, $2C, $7E, $DB, $30, $D2, $7E, $7E, $7E, $92 ; $B149 - $B158
-	.byte $3E, $42, $7E, $98, $44, $82, $7E, $D2, $7E, $7E, $30, $36, $7E, $D9, $3A, $7E ; $B159 - $B168
-	.byte $D2, $7E, $8C, $7E, $7E, $88, $02, $82, $06, $01, $02, $88, $02, $82, $06, $01 ; $B169 - $B178
-	.byte $02, $88, $02, $82, $06, $01, $02, $88, $02, $82, $06, $01, $02, $00, $88, $01 ; $B179 - $B188
-	.byte $86, $7E, $88, $7E, $82, $7E, $88, $03, $7E, $03, $7E, $03, $00
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1909,8 +1889,17 @@ Gradius2_Nse5:
 Gradius2_PCM5:
 	.byte $8C, $05, $8B, $05, $8C, $05, $8B, $05, $8C, $05, $88, $05
 
-
-
+GameOver_R:
+	.byte $20, $21, $24, $26, $ff, $0B, $4C, $10, $11, $31, $13, $15, $16
+GameOver_1:
+	.byte $C5, $7E, $C7, $46, $38, $C8, $3E, $C0, $46, $C8, $42, $C0, $3E, $C8, $3C, $C0
+	.byte $42, $C2, $3E, $CA, $30, $38, $CC, $3C, $CB, $34, $CC, $2A, $C1, $2E, $C0, $7E
+	.byte $00
+	.byte $C7, $46, $38, $C8, $3E, $C1, $46, $C7, $42, $C1, $3E, $C7, $3C, $C1, $42, $C7
+	.byte $3E, $CA, $3E, $30, $38, $CC, $3C, $CB, $34, $CC, $2A, $C3, $2E, $7E
+GameOver_Tri1:
+	.byte $99, $38, $30, $34, $97, $2E, $98, $34, $97, $3C, $93, $3E, $9A, $3C, $9C, $42
+	.byte $9B, $3E, $9C, $3C, $96, $38
 
 ; Remainder of ROM bank was empty
 SFX_Counter3_Hook:
