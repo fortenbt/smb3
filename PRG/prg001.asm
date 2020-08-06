@@ -3594,145 +3594,8 @@ PRG001_B137:
 	RTS		 ; Return
 
 ObjHit_Koopaling:
-	LDA Objects_Frame,X
-	CMP #$04
-	BLT PRG001_B158	 ; If Koopaling's current animation frame < 4 (not in a spinning shell mode), jump to PRG001_B158
-
-	; Koopaling is spinning in his shell...
-
-	JSR Object_CalcCoarseYDiff	 ; Calculate Y difference between Koopaling and Player
-
-	LDY <Temp_Var15
-	CPY #$04	
-	BGS PRG001_B137	 ; If the Y difference value > +4, jump to PRG001_B137 (RTS)
-
-	DEY		 ; Y--
-	BMI PRG001_B158	 ; If the difference was 0 (because now it just turned negative), jump to PRG001_B158
-
-	; This gives the Player a semi-random rebound X Velocity after hitting the Koopaling
-	; that is in his spinning shell mode
-	LDA <Counter_1
-	LSR A		 ; Bit 0 of Counter_1 -> carry
-	LDA #$30	 ; A = $30
-	BCS PRG001_B154	 ; If carry set from Counter_1 (i.e. every other tick), jump to PRG001_B154
-
-	LDA #-$30	 ; A = -$30 instead
-
-PRG001_B154:
-	STA <Player_XVel ; Set Player's rebound velocity
-	BNE PRG001_B160	 ; Jump (technically always) to PRG001_B160
-
-PRG001_B158:
-
-	; From Object_HitTestRespond:
-	; Temp_Var12 holds specific info:
-	;	Bit 0 - Set if Player's bbox bottom is HIGHER than object's bbox bottom
-	;	Bit 1 - Set if Player's bbox left edge is to the LEFT of object's bbox left edge
-
-	LDA <Temp_Var12	
-	LSR A		
-	BCS PRG001_B160	 ; If Player is above the Koopaling, jump to PRG001_B160
-
-	JMP Player_GetHurt ; Hurt Player! (and don't come back
-
-PRG001_B160:
-
-	; Bounce Player off Koopaling!
-	LDA #-$30
-	STA <Player_YVel
-
-	LDA Objects_Timer2,X
-	BNE PRG001_B1C9	 ; If timer 2 is not expired, jump to PRG001_B1C9 (RTS)
-
-	; Squish sound
-	LDA Sound_QPlayer
-	ORA #SND_PLAYERSWIM	
-	STA Sound_QPlayer
-
-	LDA World_Num
-	CMP #$05
-	BNE PRG001_B17B	 ; If World_Num = 5 (World 6, Lemmy), jump to PRG001_B17B
-
-	; Lemmy pops out another ball if hit
-	JSR Lemmy_SpawnBall
-
 PRG001_B17B:
-
-	; Stop Koopaling's horizontal movement
-	LDA #$00
-	STA <Objects_XVel,X
-
-	LDY <Objects_YVel,X
-	BPL PRG001_B185	 ; If Koopaling's Y velocity >= 0 (not moving upward), jump to PRG001_B185
-
-	; If Koopaling was moving upward when stomped, stop him!
-	STA <Objects_YVel,X
-
-PRG001_B185:
-
-	; Hit Koopaling!
-	INC <Objects_Var4,X	; Increment the hit count
-	LDA <Objects_Var4,X
-	CMP #$03
-	BGE PRG001_B193	 ; If Objects_Var4 >= 3 (Koopaling's last hit), jump to PRG001_B193
-
-	LDA #$80
-	STA Objects_Timer2,X	 ; Timer 2 set to $80
-
-	RTS		 ; Return
-
-PRG001_B193:
-
-	; Koopaling defeated!
-
-	; Set all objects besides the Koopaling to "Dying" state!
-	LDY #$04	 ; Y = 4
-PRG001_B195:
-	CPY <SlotIndexBackup
-	BEQ PRG001_B1A8	 ; If this is the Koopaling's object index, jump to PRG001_B1A8 (do nothing)
-
-	LDA Objects_State,Y
-	BEQ PRG001_B1A8	 ; If this object slot is already dead/empty, jmp to PRG001_B1A8
-
-	; There's an object here; set state to Poof Death
-	LDA #OBJSTATE_POOFDEATH
-	STA Objects_State,Y
-
-	; Set object's timer to $1F
-	LDA #$1f	 
-	STA Objects_Timer,Y
-
-PRG001_B1A8:
-	DEY		 ; Y--
-	BPL PRG001_B195	 ; While Y >= 0, loop!
-
-	INC Level_GetWandState	 ; Level_GetWandState = 1
-
-	; Lock the clock
-	LDA #$81
-	STA Level_TimerEn
-
-	; Shoot him all you want >:(
-	LDA #$7f
-	STA Objects_HitCount,X	 
-
-	; Set a velocity that moves Koopaling somewhere towards center
-	; Not really precise though!
-	LDA #$80
-	SUB <Objects_X,X
-	STA <Objects_XVel,X
-	ASL A
-	ROR <Objects_XVel,X
-
-	LDA #$a0
-	STA Objects_Timer2,X	 ; Set timer 2 to $A0
-
-	; Do not return to caller!!
-	PLA
-	PLA
-
-PRG001_B1C9:
-	RTS		 ; Return
+	;; [ORANGE] Removed for space
 
 
 	; End and start frames of animation loop for Koopaling
@@ -3786,45 +3649,24 @@ KPATS .func ((\1 - KPatTable) / 6)
 
 	; Larry
 KoopalingPats_Larry:
-	.byte $81, $83, $85, $87, $89, $8B	; Walk 1
-	.byte $81, $83, $85, $87, $8D, $8F	; Walk 2
-	.byte $81, $91, $85, $93, $95, $8B	; Wand swing
 
 	; Morton
 KoopalingPats_Morton:
-	.byte $81, $83, $85, $87, $89, $8B	; Walk 1
-	.byte $81, $83, $85, $8D, $8F, $91	; Walk 2
-	.byte $81, $93, $85, $95, $A7, $8B	; Wand swing
 
 	; Wendy
 KoopalingPats_Wendy:
-	.byte $9F, $A1, $A3, $B5, $A5, $A7	; Walk 1
-	.byte $9F, $A1, $A3, $B5, $A9, $AB	; Walk 2
-	.byte $9F, $AD, $A3, $AF, $B1, $A7	; Wand swing
 
 	; Iggy
 KoopalingPats_Iggy:
-	.byte $9D, $9F, $A1, $87, $89, $8B	; Walk 1
-	.byte $9D, $9F, $A1, $87, $8D, $8F	; Walk 2
-	.byte $9D, $A3, $A1, $93, $95, $8B	; Wand swing
 
 	; Roy
 KoopalingPats_Roy:
-	.byte $9F, $A1, $85, $87, $89, $8B	; Walk 1
-	.byte $9F, $A1, $85, $8D, $8F, $91	; Walk 2
-	.byte $9F, $A3, $85, $95, $A7, $8B	; Wand swing
 
 	; Lemmy
 KoopalingPats_Lemmy:
-	.byte $A7, $AD, $71, $AF, $B1, $AB	; Walk 1
-	.byte $A7, $AD, $71, $AF, $B3, $B5	; Walk 2
-	.byte $A7, $A5, $71, $71, $A9, $AB	; Wand swing
 
 	; Ludwig
 KoopalingPats_Ludwig:
-	.byte $81, $83, $85, $87, $89, $8B	; Walk 1
-	.byte $81, $83, $85, $8D, $8F, $91	; Walk 2
-	.byte $81, $93, $85, $95, $B7, $8B	; Wand swing
 
 Koopaling_WandFrame:
 	.byte $49, $49, $4B, $4D
@@ -3854,175 +3696,7 @@ Koopaling_OffYOff:
 	.byte $08	; World 7
 
 Koopaling_DrawAndAnimate:
-	LDA <Player_HaltGame
-	BNE PRG001_B336	 ; If game is halted, jump to PRG001_B336
-
-	LDA Objects_Timer2,X
-	BEQ PRG001_B336	 ; If object timer 2 is zero, jump to PRG001_B336
-
-	AND #$03
-	BNE PRG001_B328	 ; 3:4 ticks, jump to PRG001_B328
-
-	LDY Level_GetWandState	 ; Y = Level_GetWandState
-
-	INC Objects_Frame,X	 ; Increment object's frame
-
-	LDA Objects_Frame,X	; Get frame
-	CMP Koopaling_FrameLoopEnd,Y	
-	BLT PRG001_B321	 	; If frame is not at the end of the loop, jump to PRG001_B321
-
-	LDA Koopaling_FrameLoopStart,Y
-	STA Objects_Frame,X	 ; Set back to first frame of animation loop
-
-PRG001_B321:
-	TAY		 ; Frame -> 'Y'
-
-	; Set the Objects_FlipBits setting for this frame
-	LDA Koopaling_LRByFrame,Y
-	STA Objects_FlipBits,X
-
-PRG001_B328:
-
-	; Every 15 ticks, play the shell rotation "swish" sound
-	LDA <Counter_1
-	AND #$0f
-	BNE PRG001_B336
-
-	; Play the shell rotation "swish" sound
-	LDA Sound_QLevel2
-	ORA #SND_LEVELMARCH
-	STA Sound_QLevel2
-
-PRG001_B336:
-	JSR Object_DeleteOffScreen	; Delete object if it falls off screen
-	JSR Draw_KoopalingWand		; Draw the Koopaling's wand
-	JSR Object_ShakeAndCalcSprite	; Calculate sprite info
-
-	LDX <SlotIndexBackup		; X = object's slot index
-
-	LDA Objects_Frame,X
-	CMP #$04	 
-	BLT PRG001_B35C	 	; If object's frame < 4, jump to PRG001_B35C
-
-	; Koopaling spinning shell frames here... (frame 4 - 9)
-
-	; Force pattern table bank 4 to $4B
-	LDY #$4b
-	STY PatTable_BankSel+4
-
-	CMP #$0a
-	BLT PRG001_B368	 	; If object's frame < 10, jump to PRG001_B368
-
-	; Koopaling exiting shell frames here... (frame 10 - 17)
-
-	TAY		 	; Backup the frame -> 'Y'
-
-	; Temp_Var2 += 4 (Sprite_X from Object_ShakeAndCalcSprite)
-	LDA <Temp_Var2
-	ADD #$04
-	STA <Temp_Var2
-
-	TYA		 	; Restore Frame
-	BNE PRG001_B368	 	; Jump (most likely always) to PRG001_B368
-
-PRG001_B35C:
-	CMP #$03	 
-	BNE PRG001_B362	 	; If object's frame <> 3, jump to PRG001_B362
-
-	LDA #$00	 	; Otherwise, A = 0
-
-PRG001_B362:
-	LDY World_Num	 	; Y = World number
-	ADC Koopaling_PatLookup,Y	; Get index into the Koopaling pattern table (divided by 6)
-
-PRG001_B368:
-
-	; A = frame value with offset
-
-	; Multiply by 6
-	ASL A	
-	STA <Temp_Var16
-	ASL A	
-	ADC <Temp_Var16
-	TAX		 	; -> 'X' (offset into Koopaling_PatLookup)
-
-	LDY <Temp_Var7		 ; Y = Sprite_RAM offset
-
-	JSR Draw_KoopalingBody	 ; Draw upper half Koopaling
-
-	; Second row sprites
-	LDA <Temp_Var1
-	ADD #$10
-	STA <Temp_Var1
-
-	; Sprite_RAM offset += 12 (next three sprites)
-	TYA
-	ADD #$0c
-	TAY
-
-	; X += 3 (next sprite pattern set)
-	INX
-	INX
-	INX
-
-	JSR Draw_KoopalingBody	 ; Draw lower half Koopaling
-
-	LDX <SlotIndexBackup	 ; X = object slot index
-
-	LDY <Temp_Var7		 ; Y = starting Sprite_RAM offset
-
-	LDA Objects_Frame,X
-	CMP #$0c	 
-	BEQ PRG001_B395	 ; If sprite frame = $C, jump to PRG001_B395
-
-	CMP #$10	 
-	BNE PRG001_B3A1	 ; If sprite frame <> $10, jump to PRG001_B3A1
-
-PRG001_B395:
-
-	; Set horizontal flip on some shell flip frames
-	LDA Sprite_RAM+6,Y
-	ORA #SPR_HFLIP
-	STA Sprite_RAM+6,Y
-
-	STA Sprite_RAM+$12,Y
-	RTS		 ; Return
-
-PRG001_B3A1:
-	CMP #$04
-	BLT PRG001_B3D0	 ; If frame < 4 (not shell frame), jump to PRG001_B3D0 (RTS)
-
-	CMP #$0a
-	BGE PRG001_B3D0	 ; If frame >= 10 (exiting shell frame), jump to PRG001_B3D0 (RTS)
-
-	; Spinning shell frames only...
-
-	; Offset Y +6
-	LDA Sprite_RAM,Y
-	ADC #$06
-	STA Sprite_RAM,Y
-	STA Sprite_RAM+8,Y
-
-	; Clear horizontal/vertical flip bit on first half
-	LDA Sprite_RAM+2,Y
-	AND #$3f
-	STA Sprite_RAM+2,Y
-
-	; Set horizontal flip on second half
-	ORA #SPR_HFLIP
-	STA Sprite_RAM+10,Y
-
-	LDA Objects_Timer2,X
-	CMP #$60
-	BGE PRG001_B3D0	 ; If Timer 2 >= $60, jump to PRG001_B3D0 (RTS)
-
-	; Otherwise, set pattern $71
-	LDA #$71
-	STA Sprite_RAM+1,Y
-	STA Sprite_RAM+9,Y
-
 PRG001_B3D0:
-	RTS		 ; Return
 
 Draw_KoopalingWand:
 	LDA Objects_Frame,X
@@ -4938,11 +4612,14 @@ PRG001_B819:
 ObjInit_Bowser:
 
 	; Bowser takes 34 fireball hits!
-	LDA #34
+	LDA #20
 	STA Objects_HitCount,X
 
 	; Bowser is giant!
 	INC Objects_IsGiant,X
+
+	LDA #$04
+	STA BowserAttack
 
 	RTS		 ; Return
 
@@ -5117,10 +4794,66 @@ PRG001_B948:
 	.word Bowser_JumpAndLandOnFloor	; 1: Jump and land on floor
 	.word Bowser_AlignAndFall	; 2: Align to tile on the way down (will also use part of Bowser_JumpAndLandOnFloor)
 	.word Bowser_BustFloorLookAround; 3: Bowser busts floor and looks around
+	.word Bowser_AlignCenterAndFall		; 4: align to center and pound with disable
+	.word Bowser_BustFloorAndAttack		; 5: attack with crazy fireballs
 
 PRG001_B955:	.byte $08, $05, $04, $05, $08
 PRG001_B95A:	.byte $40, $40, $00, $00, $00
 
+Bowser_BustFloorAndAttack:
+	LDA Bowser_Vibed
+	BNE _attack_postvibe
+	INC Bowser_Vibed
+	LDA #$20
+	STA Player_VibeDisable
+	LDA #-$10
+	STA <Player_YVel	; Player Y velocity = -$10 (bounce the Player a bit)
+_attack_postvibe:
+	JSR Bowser_DetectTiles	  ; Detect tiles under Bowser's feet
+
+	LDA <Objects_YVel,X
+	CMP #$70
+	BGS __PRG001_BAB6	 ; If Bowser's Y Velocity >= $40, jump to PRG001_BAB6
+
+	INC <Objects_YVel,X
+	INC <Objects_YVel,X
+
+__PRG001_BAB6:
+	JSR Bowser_BustFloor	 ; Bust any bricks Bowser has hit
+
+	LDA <Objects_DetStat,X
+	AND #$04
+	BEQ __PRG001_BAC2	 ; If Bowser has not hit floor, jump to PRG001_BAC2
+
+	JSR Object_HitGround	 ; Align to floor
+
+__PRG001_BAC2:
+	LDA Objects_Timer,X
+	BEQ __PRG001_BACD		; If timer expired, jump to PRG001_BACD
+
+	; Bowser slam frame
+	LDA #$07
+	STA Objects_Frame,X
+
+	RTS		 ; Return
+
+__PRG001_BACD:
+	LDA Objects_Timer3,X
+	BNE _j_PRG001_BAF1	 ; If timer 3 is not expired, jump to PRG001_BAF1
+
+	; Var 4 back to zero
+	LDA #$00
+	STA <Objects_Var4,X
+
+	;LDA RandomN,X
+	;AND #$7f
+	;ORA #$80
+	LDA #$50
+	STA Objects_Timer3,X	 ; Timer 3 = $7F to $FF
+
+	RTS		 ; Return
+_j_PRG001_BAF1:
+	JMP PRG001_BAF1
 
 Bowser_FallToFloor:
 	JSR Bowser_Counter3Do	 ; Update Bowser_Counter3
@@ -5197,11 +4930,11 @@ PRG001_B9BF:
 	BNE PRG001_B9F2	 ; If timer <> $80, jump to PRG001_B9F2 (RTS) 
 
 	; Jump and land on floor mode
-	LDA #$01 
+	LDA #$01
 	STA <Objects_Var4,X
  
 	; Bowser jump!
-	LDA #-$60 
+	LDA #-$70 
 	STA <Objects_YVel,X
  
 	JSR Bowser_CalcPlayersSide 
@@ -5268,7 +5001,7 @@ PRG001_BA01:
 
 PRG001_BA11:
 
-	; Bowser fall rate Y Vel += 3
+	; Bowser fall rate Y Vel += 3 (slow his upward jump vel)
 	INC <Objects_YVel,X
 	INC <Objects_YVel,X
 	INC <Objects_YVel,X
@@ -5297,7 +5030,16 @@ PRG001_BA1F:
 	BEQ PRG001_BA4B	 ; If Y was 1, jump to PRG001_BA4B
 
 	; Var4 = 2
+	LDA #$04
+	PHA
+	LDA RandomN,X
+	AND #$03
+	BEQ _set_align_state
+	PLA
 	LDA #$02
+	PHA
+_set_align_state:
+	PLA
 	STA <Objects_Var4,X
 
 	; Timer = $0A
@@ -5310,8 +5052,8 @@ PRG001_BA1F:
 	AND #$f0
 	STA Objects_TargetingXVal,X
 
-	; Bowser jump!
-	LDA #-$20
+	; Bowser jump! (bowser little extra up after targeting player and ready to fall)
+	LDA #-$70
 	STA <Objects_YVel,X
 
 	; Stop Bowser's horizontal movement
@@ -5340,21 +5082,68 @@ PRG001_BA4B:
 	STA Sound_QLevel1
 
 	; Object timer = $35
-	LDA #$35
+	LDA #$01
 	STA Objects_Timer,X
 
-	LDA RandomN,X
-	AND #$1f	
-	ADC #$67	
+	;LDA RandomN,X
+	;AND #$1f	
+	;ADC #$67
+	LDA #$20
 	STA Objects_Timer3,X	 ; Timer 3 = Random $67 to $86
 	STA Objects_Var7,X	 ; -> Var7
 
 	; Var4 = 3
-	LDA #$03
-	STA <Objects_Var4,X
+	;LDA #$03
+	INC <Objects_Var4,X
 
 PRG001_BA76:
 	RTS		 ; Return
+
+Bowser_AlignCenterAndFall:
+	; Reset Bowser Counter 1
+	LDA #$00
+	STA Bowser_Counter1
+	STA Bowser_Vibed
+
+	; Set Bowser to frame 6 (Bowser's falling frame)
+	LDA #$06
+	STA Objects_Frame,X
+
+	;LDA Objects_Timer,X
+	;BEQ PRG001_BA96	; If timer expired, jump to PRG001_BA96
+
+	LDA <Objects_X,X
+	CMP #$70
+	BEQ _align_center_found	; If Bowser reached the alignment X, jump to PRG001_BA95
+
+	; Bowser moves towards the tile alignment
+	INC <Objects_X,X
+	BCC _align_center_rts	; If carry clear, jump to PRG001_BA95
+
+	; Don't let Bowser's X wrap around!
+	DEC <Objects_X,X
+	DEC <Objects_X,X
+
+_align_center_rts:
+	RTS		 ; Return
+
+_align_center_found:
+	JSR Bowser_DetectTiles	 ; Detect tiles under Bowser
+
+	LDA <Objects_YVel,X
+	BMI _decrease_upward	 ; If Bowser is moving upward, jump to PRG001_BAA1
+
+	CMP #$70
+	BGE _do_fall_to_pound	 ; If Bowser's Y Velocity >= $70, jump to PRG001_BAA6 (RTS)
+
+_decrease_upward:
+
+	; Bowser's rapid stomp fall!
+	ADD #$10
+	STA <Objects_YVel,X
+
+_do_fall_to_pound:
+	JMP PRG001_BA4B	 ; Jump to PRG001_BA4B 
 
 
 Bowser_AlignAndFall:
@@ -5396,7 +5185,7 @@ PRG001_BA96:
 PRG001_BAA1:
 
 	; Bowser's rapid stomp fall!
-	ADD #$06
+	ADD #$10
 	STA <Objects_YVel,X
 
 PRG001_BAA6:
@@ -5407,7 +5196,7 @@ Bowser_BustFloorLookAround:
 	JSR Bowser_DetectTiles	  ; Detect tiles under Bowser's feet
 
 	LDA <Objects_YVel,X
-	CMP #$40
+	CMP #$70
 	BGS PRG001_BAB6	 ; If Bowser's Y Velocity >= $40, jump to PRG001_BAB6
 
 	INC <Objects_YVel,X
@@ -5440,9 +5229,10 @@ PRG001_BACD:
 	LDA #$00
 	STA <Objects_Var4,X
 
-	LDA RandomN,X
-	AND #$7f
-	ORA #$80
+	;LDA RandomN,X
+	;AND #$7f
+	;ORA #$80
+	LDA #$50
 	STA Objects_Timer3,X	 ; Timer 3 = $7F to $FF
 
 	RTS		 ; Return
@@ -5506,6 +5296,20 @@ Bowser_HopAndBreatheFire:
 	LDA Bowser_Counter1
 	BEQ PRG001_BB46	 ; If Bowser_Counter1 = 0, jump to PRG001_BB46 (RTS)
 
+	PHA
+	LDA BowserAttack
+	BNE _hop_breath_fire
+
+_bowser_other_attack:
+	PLA
+	LDA #$04
+	STA BowserAttack
+	;JSR Bowser_DoAttack
+	RTS
+
+
+_hop_breath_fire:
+	PLA
 	LSR A
 	LSR A
 	LSR A
@@ -5521,13 +5325,93 @@ Bowser_HopAndBreatheFire:
 	CMP #$10	 
 	BNE PRG001_BB46	 ; If Bowser_Counter1 <> $10, jump to PRG001_BB46 (RTS)
 
+	DEC BowserAttack
 	JSR Bowser_BreatheFire	 ; Bowser breathe's a fireball!
+	LDA #$01
+	STA Bowser_Counter1
 
 PRG001_BB46:
 	RTS		 ; Return
 
+Bowser_ThingXVels: .byte $08, -$08, $20, -$20, $40, -$40
+Bowser_DoAttack:
+Bowser_ThrowThing:
+	LDA Bowser_Counter1
+	CMP #$21
+	BGS PRG001_BB46
+	CMP #$01
+	BNE _do_attack_every4
+_reset_bowserattack:
+	LDA #$03
+	STA BowserAttack
+_do_attack_every4:
+	LDA Bowser_Counter1
+	AND #$03
+	BNE PRG001_BB46
+
+_bowser_get_sobj:
+
+	JSR SpecialObj_FindEmptyAbort
+	; Set Hammer X/Y at Hammer Bro's position
+	LDA <Objects_X,X
+	ADD #$0A
+	STA SpecialObj_XLo,Y
+	LDA <Objects_Y,X
+	ADD #$10
+	STA SpecialObj_YLo,Y
+	LDA <Objects_YHi,X
+	STA SpecialObj_YHi,Y
+
+	; Hammer Y velocity = -$30
+	LDA #-$38
+	STA SpecialObj_YVel,Y
+
+	STY <Temp_Var1		 ; Temp_Var1 = Special Object slot index
+
+	JSR Level_ObjCalcXDiffs
+	LDA <Temp_Var16
+	BGS _post_neg
+	JSR Negate
+_post_neg:
+	LSR A
+	LSR A
+	LSR A
+	LSR A
+	BEQ _get_thing_xvel
+	INY
+	INY
+	LSR A
+	LSR A
+	BEQ _get_thing_xvel
+	INY
+	INY
+_get_thing_xvel:
+	LDA Bowser_ThingXVels,Y	; Hammer towards Player X Vel
+	LDY <Temp_Var1		 ; Y = Special Object slot index
+	STA SpecialObj_XVel,Y	 ; Set X Velocity
+
+	LDA #SOBJ_NIPPERFIREBALL ; We turned nipper fireballs into bowser hammers
+
+	STA SpecialObj_ID,Y	 ; Set Special Object ID
+
+	; Pushes Hammer Bro's object index into SpecialObj_Data upper 4 bits, sets lower 4 bits to $0F
+	TXA
+	ASL A
+	ASL A
+	ASL A
+	ASL A
+	ORA #$0f
+	STA SpecialObj_Data,Y
+
+	; SpecialObj_Var1 = 0
+	LDA #$00
+	STA SpecialObj_Var1,Y
+
+	RTS		 ; Return
+
 	; Bowser's fireball X velocity and offset by direction
-Bowser_FireballXVel:	.byte -$10, $10
+;Bowser_FireballXVel:	.byte -$10, $10
+Bowser_FireballXVel:	.byte -$18, $18
 Bowser_FireballXOff:	.byte -$08, $18
 
 PRG001_BB4B:	.byte $00, $08, $10, $18, $08, $00, $00, $10
@@ -5628,16 +5512,19 @@ Bowser_Counter3Do:
 	; If Bowser_Counter3 > 0, just decrement it.  Otherwise,
 	; set it to some value $60 to $9F and set Bowser_Counter1 to $3F
 
-	LDA Bowser_Counter3	  
+	LDA Bowser_Counter3
 	BNE PRG001_BBDC	 ; If Bowser_Counter3 <> 0, jump to PRG001_BBDC
 
-	LDA RandomN,X
-	AND #$3f
-	ADC #$60
-	STA Bowser_Counter3	 ; Bowser_Counter3 = $60 + (Random $00 to $3F)
+	;LDA RandomN,X
+	;AND #$3f
+	;ADC #$60
+	LDA #$28			; Bowser_Counter3 controls how often Bowser_Counter1 gets set
+						; Bowser_Counter1 causes Bowser to breathe fire when it hits $10
+	STA Bowser_Counter3	; Bowser_Counter3 = $60 + (Random $00 to $3F)
+						; [ORANGE] This was modified to be consistently breathe fire 4 times
 
 	; Bowser Counter 1 = $3F
-	LDA #$3f
+	LDA #$20
 	STA Bowser_Counter1
 
 	RTS		 ; Return
