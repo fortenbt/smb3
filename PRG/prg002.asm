@@ -2210,6 +2210,7 @@ ObjNorm_WoodenPlatRider:
 
 	JSR Object_ApplyXVel	 ; Apply X velocity
 	JSR PlayerPlatform_Collide	 ; Collide and ride
+	JSR PlayBooIfCarrying
 
 	LDA <Objects_XVel,X
 	BNE PRG002_AA9A	 ; If platform is moving horizontally, jump to PRG002_AA9A
@@ -5837,11 +5838,6 @@ EndLevelCard_Exit:
 	; Removed because we're no longer storing cards
 	;;;LDA Inventory_Cards+2,Y
 	;;BEQ PRG002_BD6B		; If we didn't have three cards, jump to PRG002_BD6B
-	NOP
-	NOP
-	NOP
-	NOP
-	NOP
 
 	; Otherwise, clear them out!
 	LDA #$00
@@ -6258,9 +6254,6 @@ PRG002_BF4B:
 	;;; We hook here so we can clear the EndLevelCard orb bit to know we've found that orb
 	;;;STA EndCard_Flag	 ; Flag end level card as grabbed
 	;;;JSR DoCustomEndLevelCard11
-	NOP
-	NOP
-	NOP
 
 	; Card actually has a slight leftward velocity?
 	;;LDA #-$01
@@ -6299,7 +6292,6 @@ PRG002_BF4B:
 	; [ORANGE] unused section of code
 	; Removed because we won't be storing cards
 	RTS
-	.ds 29
 
 	;;;LDA Inventory_Cards+2,Y
 	;;BEQ PRG002_BF9F	 ; If Player hasn't gotten their third card, jump to PRG002_BF9F (RTS)
@@ -6405,4 +6397,22 @@ _elc_found_orb:
 	JMP Object_SetDeadEmpty
 _elc_init_rts:
 	LDX <SlotIndexBackup		 ; restore X before continuing
+	RTS
+
+PlayBooIfCarrying:
+	BCC _playboo_rts
+	LDA SndCur_Music2
+	CMP #MUS2A_WORLD3
+	BEQ _playboo_rts		; If we're playing the sound, wait
+	LDA Sound_BooPause
+	BNE _boopause_dec_rts	; Wait for a second...
+	LDA SndCur_Music2
+	STA Level_MusicQueueRestore
+	LDA #MUS2A_WORLD3
+	STA Sound_QMusic2
+	LDA #31
+	STA Sound_BooPause
+_boopause_dec_rts:
+	DEC Sound_BooPause
+_playboo_rts:
 	RTS
