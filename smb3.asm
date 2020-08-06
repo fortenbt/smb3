@@ -1398,8 +1398,8 @@ SND_LEVELSKID	= $80 	; Skid
 MUS1_PLAYERDEATH	= $01	; Player death
 MUS1_GAMEOVER		= $02	; Game over
 MUS1_BOSSVICTORY	= $04	; Victory normal
-MUS1_WORLDVICTORY	= $08	; Victory super (King reverted, Bowser defeated, etc.)
-MUS1_BOWSERFALL		= $10	; Bowser dramatic falling
+MUS1_WORLDVICTORY	= $80	; Victory super (King reverted, Bowser defeated, etc.)
+MUS1_BOWSERFALL		= $04	; Bowser dramatic falling
 MUS1_COURSECLEAR	= $20	; Course Clear
 MUS1_TIMEWARNING	= $40	; Time Warning (attempts to speed up song playing)
 MUS1_STOPMUSIC		= $80	; Stops playing any music
@@ -2536,7 +2536,7 @@ Tile_Mem:	.ds 6480	; $6000-$794F Space used to store the 16x16 "tiles" that make
 	Level_AScrlTimer:	.ds 1	; Auto scroll counter, decrements to zero
 	Level_AScrlPosHHi:	.ds 1	; Raster effect horizontal "high" position
 
-				.ds 1	; $7A0B
+	BowserAttack:			.ds 1	; $7A0B
 
 	Level_AScrlPosH:	.ds 1	; Raster effect horizontal position
 	Level_AScrlPosV:	.ds 1	; Raster effect vertical position
@@ -2815,7 +2815,8 @@ CARD_WILD	= 8	; UNUSED Wild card (can match any other!)
 
 	;			.ds 24	; $7E9E-$7EB5 unused
 	Level_Orbs:		.ds 12
-				.ds 12	; unused
+				.ds 11	; unused
+	Bowser_Vibed:		.ds 1
 
 	LevelJctBQ_Flag:	.ds 1	; Set to '1' while in a Big Question block area, locks horizontal scrolling
 	Level_JctBackupTileset:	.ds 1	; Level Junction tileset backup
