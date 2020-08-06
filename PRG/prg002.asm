@@ -5241,6 +5241,8 @@ PlayerPlatform_Collide:
 	BMI PRG002_BABD	 ; If Player is moving upward, jump to PRG002_BABD
 
 	JSR Player_StandOnPlatform	 ; Stand on platform
+	LDA #$00
+	STA <Player_Regrabbing		; allow regrab
 	SEC		 ; Set carry (collided)
 
 PRG002_BABD:
