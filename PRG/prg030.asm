@@ -6297,7 +6297,7 @@ StatusBar_DrawCardPiece_Orbs:
 	; reused where repetitious musical notes exist.  The segment headers are apparently not
 	; stored in any particular order.  This table connects an index to a header:
 Music_Set2B_IndexOffs:
-	; TGL
+	; TGL (Music - Plains)
 	.word TGLHedr4			; $00 small intro (forced due to zero index, where 0 loop ends the segment)
 	.word TGLHedr1
 	.word TGLHedr2
@@ -6305,7 +6305,7 @@ Music_Set2B_IndexOffs:
 	.word TGLHedr4
 	.word TGLHedr5
 	.word TGLHedr6			; $06
-	; Castlevania - Vampire
+	; Castlevania - Vampire (Music - Underground)
 	.word CVampireHedr1		; $07
 	.word CVampireHedr2
 	.word CVampireHedr3
@@ -6314,7 +6314,7 @@ Music_Set2B_IndexOffs:
 	.word CVampireHedr6
 	.word CVampireHedr7
 	.word CVampireHedr8		; $0E
-	; Gradius II - Dead End
+	; Gradius II - Dead End (Music - Water)
 	.word G2Hedr1			; $0F
 	.word G2Hedr2			; 10
 	.word G2Hedr1			; 11
@@ -6323,7 +6323,7 @@ Music_Set2B_IndexOffs:
 	.word G2Hedr4			; 14
 	.word G2Hedr3			; 15
 	.word G2Hedr5			; $16
-	; Metal Gear
+	; Metal Gear (Music - Fortress)
 	.word MGHedr1			; $17
 	.word MGHedr2
 	.word MGHedr3
@@ -6340,14 +6340,14 @@ Music_Set2B_IndexOffs:
 	.word MGHedrC			; $24
 	.word MGHedrD			; $25
 	.word MGHedrE			; $26
-
+	; Mother - Cave (Music - Boss)
 	.word CaveHedr1			; $27
 	.word CaveHedr2			; $28
 	.word CaveHedr2			; $29
 	.word CaveHedr3			; $2A
 	.word CaveHedr2			; $2B
 	.word CaveHedr4			; $2C
-
+	; Mother - Mt. Itoi (Music - Ship)
 	.word ItoiHedr1			; $2D
 	.word ItoiHedr1			; $2E
 	.word ItoiHedr1			; $2F
@@ -6363,4 +6363,15 @@ Music_Set2B_IndexOffs:
 	.word ItoiHedr5			; $39
 	.word ItoiHedr5			; $3A
 	.word ItoiHedr6			; $3B
+	; Castlevania - Ending (Music - Battle)
+	.word CV_EndingHedr1	; $3C
+	.word CV_EndingHedr2	; $3D
+	.word CV_EndingHedr3	; $3E
+	.word CV_EndingHedr4	; $3F
+	.word CV_EndingHedr5	; $40
+	.word CV_EndingHedr6	; $41
+	.word CV_EndingHedr6	; $42
+	.word CV_EndingHedr7	; $43
+	.word CV_EndingHedr7	; $44
+	.word CV_EndingHedr8	; $45
 prg30_end:
