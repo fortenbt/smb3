@@ -596,24 +596,25 @@ Music_EndSegment:
 	BEQ PRG031_E4F7		; If not, jump to PRG031_E4F7
 
 	; Set 1 music...
-	CMP #$40	 
-	BNE Music_StopAll	; If we NOT were playing the "time warning" song, jump to Music_StopAll
+	;CMP #$40	 
+	;BNE Music_StopAll	; If we NOT were playing the "time warning" song, jump to Music_StopAll
+	JMP Music_StopAll
 
 	; If we were playing the "time warning" song, we need to restart the song which was playing...
 	;LDA #$10
 	;STA Music_RestH_Off	; Set the rest lookup offset to $10 (should play song slightly faster!)
-	LDA Music2_Hold	 	; Get which song we ought to be playing right now
+	;LDA Music2_Hold	 	; Get which song we ought to be playing right now
 
 	; OF NOTE: Since this jumps straight to SndMus_QueueSet2B, this prevents "time warning" from
 	; working on any of the world map songs, music box, king's room, etc., places that normally
 	; wouldn't get a time warning anyway.  However, exceptions are made for coin heaven and
 	; invincibility, since both sit in Set 2A but ARE subject to time warning.  This behavior
 	; could be fixed (and even simplified) with a minor tweak, but oh well...
-	CMP #$09
-	BEQ PRG031_E51B	 	; If prior song playing was Coin Heaven / Sky / etc., jump to PRG031_E51B
-	CMP #$0a
-	BEQ PRG031_E51B	 	; If prior song playing was Invincibility, jump to PRG031_E51B
-	JMP SndMus_QueueSet2B	; Otherwise, jump to SndMus_QueueSet2B
+	;CMP #$09
+	;BEQ PRG031_E51B	 	; If prior song playing was Coin Heaven / Sky / etc., jump to PRG031_E51B
+	;CMP #$0a
+	;BEQ PRG031_E51B	 	; If prior song playing was Invincibility, jump to PRG031_E51B
+	;JMP SndMus_QueueSet2B	; Otherwise, jump to SndMus_QueueSet2B
 
 PRG031_E4F7:
 	; Segment ended on a Set 2A/B song...
