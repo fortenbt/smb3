@@ -67,12 +67,23 @@ CaveHedr2:		MusSeg Cave_R23, Cave_23, Cave_Tri2, $1A, Cave_Nse2, Cave_DPCM23
 CaveHedr3:		MusSeg Cave_R23, Cave_23, Cave_Tri3, $1A, Cave_Nse2, Cave_DPCM23
 CaveHedr4:		MusSeg Cave_R4, Cave_4, $0000, $17, $0000, $0000
 
+; Mother - Mt. Itoi
 ItoiHedr1:		MusSeg Itoi_R1, Itoi1, Itoi_Tri1, $08, Itoi_Nse1, Itoi_DPCM1
 ItoiHedr2:		MusSeg Itoi_R1, Itoi2, Itoi_Tri1, $08, Itoi_Nse1, Itoi_DPCM1
 ItoiHedr3:		MusSeg Itoi_R1, Itoi3, Itoi_Tri1, $0A, Itoi_Nse1, Itoi_DPCM1
 ItoiHedr4:		MusSeg Itoi_R1, Itoi4, Itoi_Tri1, $08, Itoi_Nse1, Itoi_DPCM1
 ItoiHedr5:		MusSeg Itoi_R1, Itoi5, Itoi_Tri1, $04, Itoi_Nse1, Itoi_DPCM1
 ItoiHedr6:		MusSeg Itoi_R6, Itoi6, Itoi_Tri6, $0C, Itoi_Nse6, Itoi_DPCM6
+
+; Castlevania - Ending
+CV_EndingHedr1:	MusSeg CV_Ending_R1, CV_Ending1, $0000, $21, $0000, $0000;CV_Ending_DPCM_Silence
+CV_EndingHedr2:	MusSeg CV_Ending_R2, CV_Ending2, CV_Ending_Tri2, $22, $0000, $0000
+CV_EndingHedr3:	MusSeg CV_Ending_R34, CV_Ending3, CV_Ending_Tri3, $17, CV_Ending_Nse34, $0000
+CV_EndingHedr4:	MusSeg CV_Ending_R34, CV_Ending4, CV_Ending_Tri4, $11, CV_Ending_Nse34, $0000
+CV_EndingHedr5:	MusSeg CV_Ending_R5, CV_Ending5, CV_Ending_Tri5, $12, CV_Ending_Nse5, $0000
+CV_EndingHedr6:	MusSeg CV_Ending_R6, CV_Ending6, CV_Ending_Tri6, $09, $0000, $0000
+CV_EndingHedr7:	MusSeg CV_Ending_R7, CV_Ending7, CV_Ending_Tri7, $0A, CV_Ending_Nse7, $0000
+CV_EndingHedr8:	MusSeg CV_Ending_R8, CV_Ending8, CV_Ending_Tri8, $24, CV_Ending_Nse8, $0000
 
 ;;; Mother - Cave
 Cave_R1:
@@ -526,8 +537,63 @@ MG_PCME:
 	.byte $B6, $06, $B5, $06, $B3, $06, $06, $06, $06, $06, $06, $06, $06, $06, $06, $06
 	.byte $06, $06, $06, $06, $06
 
-	;; END HUGE UNUSED SPACE
+CV_Ending_R1:
+	.byte $FF, $2A, $0E, $70, $54, $38, $1C
+CV_Ending_R2:
+	.byte $62, $08, $2A, $0E, $54, $14, $38, $1C
+CV_Ending_R34:
+		;   0    1   *2    3   *4    5   *6    7   *8    9    A   *B    C    D    E    F
+	.byte $01, $02, $03, $24, $05, $06, $04, $08, $09, $0E, $70, $13, $16, $17, $38, $1C
+		;   0    1         2    3    4    5    6    7    8         9    a         b    c
+CV_Ending_R5:
+	.byte $01, $02, $03, $04, $05, $06, $07, $09, $0B, $0E
 
+CV_Ending1:
+	.byte $C2, $2A, $2A, $38, $C6, $42, $C1, $7E, $C2, $2A, $2A, $38, $C6, $42, $C1, $7E
+	.byte $C2, $2A, $2A, $38, $C6, $42, $C1, $7E, $C2, $2A, $2A, $38, $C6, $42, $C1, $7E
+	.byte $00
+	.byte $C4, $42, $C2, $46, $48, $C4, $46, $C2, $42, $3E, $C3, $42, $C5, $42, $40
+
+CV_Ending2:
+	.byte $C3, $2A, $2A, $38, $C7, $42, $C2, $7E, $C3, $2A, $2A, $38, $C7, $42, $C2, $7E
+	.byte $C3, $2A, $2A, $38, $C7, $42, $C2, $7E, $C3, $2A, $2A, $38, $42, $2E, $38, $40
+	.byte $46, $00
+	.byte $C4, $42, $C3, $46, $48, $C4, $46, $C3, $42, $3E, $42, $C0, $34, $C6, $34, $C3
+	.byte $38, $40, $46, $4C
+CV_Ending_Tri2:
+	.byte $95, $42, $91, $7E, $95, $42, $91, $7E, $95, $42, $91, $7E, $95, $42, $91, $7E
+	.byte $95, $3E, $91, $7E, $95, $3E, $91, $7E, $95, $3E, $91, $7E, $95, $3E, $91, $7E
+	.byte $95, $3C, $91, $7E, $95, $3C, $91, $7E, $95, $3C, $91, $7E, $95, $3C, $91, $7E
+	.byte $95, $3A, $91, $7E, $95, $3A, $91, $7E, $95, $38, $91, $7E, $95, $38, $91, $7E
+
+CV_Ending3:
+	.byte $CE, $42, $C9, $3E, $3A, $38, $34, $CA, $3A, $CE, $3E, $C9, $3A, $36, $34, $30
+	.byte $CF, $34, $CE, $34, $CF, $34, $00
+	.byte $CE, $50, $C9, $4C, $48, $46, $42, $CE, $50, $4C, $4C, $C9, $48, $44, $42, $3E
+	.byte $CF, $3E, $CE, $3C, $CF, $42
+CV_Ending_Tri3:
+	.byte $95, $3A, $9C, $7E, $95, $3A, $90, $7E, $95, $3A, $90, $7E, $94, $3A, $91, $7E
+	.byte $95, $3A, $90, $7E, $95, $3A, $97, $7E, $95, $3A, $93, $7E, $94, $44, $9D, $7E
+	.byte $95, $44, $90, $7E, $94, $44, $91, $7E, $95, $44, $90, $7E, $95, $44, $90, $7E
+	.byte $95, $44, $97, $7E, $95, $44, $93, $7E, $95, $36, $9C, $7E, $95, $36, $90, $7E
+	.byte $95, $36, $90, $7E, $94, $36, $91, $7E, $95, $36, $90, $7E, $95, $36, $97, $7E
+	.byte $95, $36, $93, $7E, $95, $34, $9C, $7E, $95, $34, $90, $7E, $95, $34, $90, $7E
+	.byte $95, $34, $90, $7E, $94, $34, $91, $7E, $95, $34, $97, $7E, $95, $34, $99, $7E, $90, $7E
+	.byte $95, $34, $90, $7E, $95, $34, $90, $7E, $95, $34, $90, $7E
+CV_Ending_Nse34:
+	.byte $98, $06, $9B, $01, $92, $02, $96, $01, $92, $02, $96, $01, $92, $02, $96, $01
+	.byte $92, $02, $96, $01, $98, $06, $94, $01, $98, $06, $94, $01, $92, $02, $96, $01
+	.byte $92, $02, $96, $01, $92, $02, $96, $01, $92, $02, $96, $01, $00
+
+CV_Ending4:
+	.byte $C2, $7E, $CE, $3A, $C9, $3E, $3A, $38, $34, $CE, $42, $C9, $3E, $3A, $38, $30
+	.byte $00
+	.byte $CE, $50, $C9, $4C, $48, $46, $42, $CE, $52, $C9, $50, $4C, $CF, $48
+CV_Ending_Tri4:
+	.byte $95, $3A, $9C, $7E, $95, $3A, $90, $7E, $95, $3A, $90, $7E, $95, $3A, $90, $7E
+	.byte $95, $3A, $90, $7E, $94, $3A, $98, $7E, $95, $3A, $93, $7E, $95, $30, $9C, $7E
+	.byte $95, $30, $90, $7E, $95, $30, $90, $7E, $95, $30, $90, $7E, $95, $30, $90, $7E
+	.byte $95, $30, $96, $7E, $95, $30, $93, $7E
 
 	; This defines a table of offsets that point to the start of
 	; each Player_Frame's six patterns
