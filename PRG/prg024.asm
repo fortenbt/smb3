@@ -44,7 +44,7 @@ Cinematic_ToadAndKing:
 	LDA #$46
 	STA ToadTalk_VL
 
-	; Initialize the sound
+	; Initialize the barb get out of my room sound
 	LDA #MUS1_TIMEWARNING
 	STA Sound_QMusic1
 
@@ -508,10 +508,11 @@ PRG024_A40C:
 
 	; Just put a stationary crown there
 	; [ORANGE] modified to place an empty sprite there
-	LDA #$ab
-	STA Sprite_RAM+$61
-	LDA #$02
-	STA Sprite_RAM+$62
+	;LDA #$ab
+	;STA Sprite_RAM+$61
+	LDA #$F8
+	STA Sprite_RAM+$60
+	STA Sprite_RAM+$63
 
 	CPY #$06
 	BNE PRG024_A439	 ; If World_Num <> 6 (World 7), jump to PRG024_A439
