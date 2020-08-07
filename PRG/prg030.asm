@@ -638,19 +638,19 @@ PRG030_8617:
 	DEY		 ; Y--
 	BPL PRG030_8617	 ; While Y >= 0, loop!
 
-	LDA World_8_Dark
-	BEQ PRG030_8625	 	; If World_8_Dark = 0 (not doing the effect), jump to PRG030_8625
+	;LDA World_8_Dark
+	;BEQ PRG030_8625	 	; If World_8_Dark = 0 (not doing the effect), jump to PRG030_8625
 
-	JSR Map_W8DarknessFill	; Fill in the entire screen with black
+	;JSR Map_W8DarknessFill	; Fill in the entire screen with black
 
 PRG030_8625:
-	LDA World_Num	 
-	CMP #$08
-	BNE PRG030_8634	 ; If World_Num <> 8 (World 9 / Warp Zone), jump to PRG030_8634
+	;LDA World_Num	 
+	;CMP #$08
+	;BNE PRG030_8634	 ; If World_Num <> 8 (World 9 / Warp Zone), jump to PRG030_8634
 
-	LDA #$2b	
-	JSR Video_Do_Update	 ; Print the "WELCOME TO WARP ZONE" banner
-	JSR PRGROM_Change_A000	 ; Fix bank A000
+	;LDA #$2b	
+	;JSR Video_Do_Update	 ; Print the "WELCOME TO WARP ZONE" banner
+	;JSR PRGROM_Change_A000	 ; Fix bank A000
 
 PRG030_8634:
 	LDY Player_Current	 ; Y = Player_Current
@@ -711,23 +711,23 @@ PRG030_8676:
 
 	LDX World_Num	 	
 	LDY World_BGM,X		; Get BGM index for this world
-	CPX #4	 	
-	BNE PRG030_8698		; If we're NOT on world 5, jump to PRG030_8698
+	;CPX #4	 	
+	;BNE PRG030_8698		; If we're NOT on world 5, jump to PRG030_8698
 
 	; World 5 special handling (Sky part different music)
-	LDX Player_Current	; X = Player_Current
-	LDA <World_Map_XHi,X	; Get the high byte of this Player's X position
-	BEQ PRG030_8698	 	; If it's equal to 0 (the "lower" part of the Sky World), jump to PRG030_8698
+	;LDX Player_Current	; X = Player_Current
+	;LDA <World_Map_XHi,X	; Get the high byte of this Player's X position
+	;BEQ PRG030_8698	 	; If it's equal to 0 (the "lower" part of the Sky World), jump to PRG030_8698
 
 	; Otherwise...
-	LDY #MUS2A_SKY	 ; Use Sky music!
-	JMP PRG030_869F	 
+	;LDY #MUS2A_SKY	 ; Use Sky music!
+	;JMP PRG030_869F	 
 
 PRG030_8698:
 	; Either not world 5, or ground-side of world 5
-	LDA Map_MusicBox_Cnt	
-	BEQ PRG030_869F		; If Map_MusicBox_Cnt = 0, jump to PRG030_869F
-	LDY #MUS2A_MUSICBOX	 	; Otherwise, play the music box song
+	;LDA Map_MusicBox_Cnt	
+	;BEQ PRG030_869F		; If Map_MusicBox_Cnt = 0, jump to PRG030_869F
+	;LDY #MUS2A_MUSICBOX	 	; Otherwise, play the music box song
 
 PRG030_869F:
 	STY Sound_QMusic2	; Play BGM!
@@ -799,7 +799,7 @@ PRG030_86F9:
 	STA PAGE_A000
 	JSR PRGROM_Change_A000	
 
-	JSR World5_Sky_AddCloudDeco	 ; World 5 sky area gets an extra cloud sprite (strange?)
+	;JSR World5_Sky_AddCloudDeco	 ; World 5 sky area gets an extra cloud sprite (strange?)
 	JSR WorldMap_UpdateAndDraw	 ; Update and draw map graphics
 	JMP WorldMap_Loop	 	; Loop back around...
 
@@ -828,9 +828,9 @@ PRG030_8732:
 	CPY #$0d	 
 	BNE PRG030_873F	 		; If Map_Operation <> $D (Normal), jump to PRG030_873F
 
-	LDA <Map_WarpWind_FX
-	CMP #$03	 
-	BEQ PRG030_874F	 		; If Map_WarpWind_FX = 3 (initialize for warp island), jump to PRG030_874F
+	;LDA <Map_WarpWind_FX
+	;CMP #$03	 
+	;BEQ PRG030_874F	 		; If Map_WarpWind_FX = 3 (initialize for warp island), jump to PRG030_874F
 
 PRG030_873F:
 	; Map_WarpWind_FX <> 3 or Map_Operation <> $D...
@@ -1143,39 +1143,6 @@ PRG030_88C8:
 
 	JSR Clear_Page5_Gameplay
 
-	LDA <Map_Enter2PFlag
-	BEQ PRG030_891A	 	; If not entering 2P Vs mode, jump to PRG030_891A
-
-	; 2P Vs mode begin!
-
-	; Level_Tileset = 18 (2P Vs)
-	LDA #18
-	STA Level_Tileset
-
-	JSR SetPages_ByTileset
-
-	INC Map_2PVsGame	; Map_2PVsGame++ (play next game style)
-
-	LDA Map_2PVsGame
-	CMP #12
-	BNE PRG030_890B	 ; If Map_2PVsGame <> 12 (overflow), jump to PRG030_890B
-
-	; Otherwise, restart count
-	LDA #$00
-	STA Map_2PVsGame
-
-PRG030_890B:
-	ASL A	; Multiply game style by 2
-	TAX	; -> 'X'
-
-	; Load address to battlefield level data
-	LDA Vs_Battlefields,X
-	STA <Level_LayPtr_AddrL
-	LDA Vs_Battlefields+1,X
-	STA <Level_LayPtr_AddrH
-
-	JMP PRG030_892A	 ; Jump to PRG030_892A
-
 PRG030_891A:
 
 	; Non-2P Mode begin!
@@ -1191,45 +1158,12 @@ PRG030_891A:
 	; Level_ObjPtr_AddrL/H and Level_ObjPtrOrig_AddrL/H (object list pointer)
 	; Level_LayPtr_AddrL/H and Level_LayPtrH_AddrL/H (tile layout pointer)
 	; Level_Tileset
-	JSR Map_PrepareLevel	 
-
-PRG030_892A:
-	LDA World_Num
-	CMP #$08	
-	BNE PRG030_893F	 ; If World_Num <> 8 (World 9), jump to PRG030_893F
-
-	; Warp zone special
-	LDA #MUS1_STOPMUSIC	 
-	STA Sound_QMusic1	; Stop BGM
-
-	; The destination world is fed back out through Map_Warp_PrevWorld
-	LDA Map_Warp_PrevWorld
-	STA World_Num	 	; World_Num = Map_Warp_PrevWorld
-	JMP PRG030_84A0	 	; Jump to PRG030_84A0 (initialize the world map!)
+	JSR Map_PrepareLevel
 
 PRG030_893F:
 	LDY Level_Tileset	; Y = Level_Tileset
 	LDA ClearPattern_ByTileset,Y
 	STA ClearPattern	 	; ClearPattern = ClearPattern_ByTileset[Y]
-
-	CPY #$07	 
-	BNE PRG030_8964	 	; If Level_Tileset <> 7 (Toad House), jump to PRG030_8964
-
-	; Toad House object pointer override!
-
-	; The object set pointer has different meaning for a Toad House!
-	LDA <Level_ObjPtr_AddrL
-	STA THouse_ID		; Toad House ID; not used, would have tracked boxes already opened (multiple visits perhaps??)
-	LDA <Level_ObjPtr_AddrH
-	STA THouse_Treasure	 
-
-	; Force object set at TOADO (Toad and the message object)
-	LDA #LOW(TOADO)
-	STA <Level_ObjPtr_AddrL
-	STA Level_ObjPtrOrig_AddrL	
-	LDA #HIGH(TOADO)
-	STA <Level_ObjPtr_AddrH
-	STA Level_ObjPtrOrig_AddrH	
 
 PRG030_8964:
 
@@ -1293,213 +1227,8 @@ PRG030_89AB:
 PRG030_89C4:
 	STA PatTable_BankSel+1	 ; Select second bank of BG VROM
 
-	LDA Level_Tileset	
-	CMP #16
-	BEQ PRG030_89D1	 	; If Level_Tileset = 16 (Spade game sliders), jump to PRG030_89D1
-
-	JMP PRG030_8A4E	 	; Otherwise, jump to PRG030_8A4E
-
-PRG030_89D1:
-	; Spade game sliders (Roulette Game)
-
-	; Set pattern banks on sprite side... only really need the border sprites??
-	LDY #$20
-	STY PatTable_BankSel+2
-	INY
-	STY PatTable_BankSel+3
-	INY
-	STY PatTable_BankSel+4
-	INY
-	STY PatTable_BankSel+5
-
-	; Horizontal mirroring
-	LDA #$00
-	STA MMC3_MIRROR
-
-	JSR Roulette_DrawShapes	 	; Draw in the Roulette Shapes
-	JSR Roulette_DrawBorderSprites	; Draw the sprite borders
-
-	; Render Roulette borders and set attributes
-	LDA #$07
-	JSR Video_Do_Update
-
-	; Status bar suitable for the horizontal mirroring mode
-	LDA #$05
-	JSR Video_Do_Update
-
-	; Switch to page 26 @ A000
-	LDA #MMC3_8K_TO_PRG_A000
-	STA MMC3_COMMAND
-	LDA #26		
-	STA MMC3_PAGE	 
-
-	JSR StatusBar_Update_Cards	 ; Update status bar cards
-	JSR StatusBar_UpdateValues	 ; Update other status bar stuff
-	JSR StatusBar_Fill_MorL	 	 ; Patch in correct M or L on status bar
-	JSR StatusBar_Fill_DWO		 ; Fill in correct world number (Orange - added deaths and orbs as well)
-
-	; Push through what's in graphics buffer
-	LDA #$00
-	JSR Video_Do_Update
-
-	; Update_Select = $C0
-	LDA #$c0
-	STA Update_Select
-
-	; Set scrolling to absolute top
-	LDA #$00
-	STA <Vert_Scroll
-
-	; Resume Update_Select activity
-	STA UpdSel_Disable
-
-	; Set page @ A000 to 27
-	LDA #27
-	STA PAGE_A000
-	JSR PRGROM_Change_A000
-
-	JSR Setup_PalData	 ; Setup palette data
-
-	; Set page @ A000 to 26
-	LDA #26
-	STA PAGE_A000
-	JSR PRGROM_Change_A000
-
-	JSR Palette_FadeIn	 ; Fade in palette
-
-	; Enable the Roulette slider raster effect
-	LDA #UPDATERASTER_SPADEGAME
-	STA Update_Request
-
-	; We actually get hung up here until afer the end of the Roulette
-	; game when it has completely faded out due to Update_Request = UPDATERASTER_SPADEGAME
-	JSR GraphicsBuf_Prep_And_WaitVSync
-
-	; Update_Select = $C0
-	LDA #$c0
-	STA Update_Select
-
-	; Vertical mirroring
-	LDA #$01
-	STA MMC3_MIRROR
-
-	; Stop music
-	LDA #MUS1_STOPMUSIC
-	STA Sound_QMusic1
-
-	; Returning to map
-	JMP PRG030_8FA1	 ; Jump to PRG030_8FA1
-
 PRG030_8A4E:
 	; Not spade game sliders
-
-	CMP #17
-	BEQ PRG030_8A55	 ; If Level_Tileset = 17 (N-Spade game), jump to PRG030_8A55
-	JMP PRG030_8AE0	 ; Otherwise, jump to PRG030_8AE0
-
-PRG030_8A55:
-	; N-Spade Game
-
-	; Load graphics for N-Spade
-	LDY #$28
-	STY PatTable_BankSel+2
-	INY
-	STY PatTable_BankSel+3
-	INY
-	INY
-	STY PatTable_BankSel+5
-	LDA #$5a
-	STA PatTable_BankSel+4
-
-	; Card_Index = $0E (this assignment isn't really used for anything)
-	LDA #$0E
-	STA Card_Index
-
-	; Temp_Var1 = $20 (VRAM High Address for Clear_Nametable_Short)
-	LDA #$20
-	STA <Temp_Var1
-	JSR Clear_Nametable_Short
-
-	; Generate the candystripe background of the N-Spade game
-	LDA #$0d
-	JSR Video_Do_Update
-
-PRG030_8A79:
-	JSR Card_InitGame	 ; Do this stage of initialization
-
-	LDA <Graphics_Queue
-	JSR Video_Do_Update	 ; Push graphics update
-
-	LDA Card_InitState
-	CMP #$03
-	BNE PRG030_8A79		; While Card_InitState <> 3, loop!
-
-	; Status bar suitable for the card game
-	LDA #$05
-	JSR Video_Do_Update
-
-	JSR StatusBar_Update_Cards	 ; Update status bar cards
-	JSR StatusBar_UpdateValues	 ; Update other status bar stuff
-	JSR StatusBar_Fill_MorL	 	 ; Patch in correct M or L on status bar
-	JSR StatusBar_Fill_DWO		 ; Fill in correct world number (Orange - added deaths and orbs as well)
-
-	; Push through what's in graphics buffer
-	LDA #$00
-	JSR Video_Do_Update
-
-	; Update_Select = $C0
-	LDA #$c0
-	STA Update_Select
-
-	; Set scrolling to absolute top
-	LDA #$00
-	STA <Vert_Scroll
-
-	; Resume Update_Select activity
-	STA UpdSel_Disable
-
-	; Set page @ A000 to 27
-	LDA #27
-	STA PAGE_A000
-	JSR PRGROM_Change_A000
-
-	JSR Setup_PalData	 ; Setup palette data
-
-	; Set bank at A000 to page 26
-	LDA #26
-	STA PAGE_A000
-	JSR PRGROM_Change_A000
-
-	JSR Palette_FadeIn	 ; Fade in palette
-
-PRG030_8AC0:
-	JSR GraphicsBuf_Prep_And_WaitVSync	; VSync
-
-	JSR NSpade_DoGame	 ; Run N-Spade game
-
-	JSR StatusBar_UpdateValues	 ; Update status bar
-
-	LDA <Level_ExitToMap
-	BEQ PRG030_8AC0	 ; If we're not exiting to map, loop N-Spade game
-
-	; Stop music
-	LDA #MUS1_STOPMUSIC
-	STA Sound_QMusic1
-
-	; Set bank at A000 to page 26
-	LDA #26
-	STA PAGE_A000
-	JSR PRGROM_Change_A000
-
-	JSR Palette_FadeOut	 		; Fade out
-
-	JMP PRG030_8FA1	 ; Jump to PRG030_8FA1
-
-PRG030_8AE0:
-	CMP #18
-	BNE PRG030_8AE7	 ; If Level_Tileset <> 18 (2P Vs), jump to PRG030_8AE7
-
-	JMP Do_2PVsChallenge	 ; Jump Do_2PVsChallenge
 
 PRG030_8AE7:
 	; Normal gameplay...
@@ -1514,18 +1243,6 @@ PRG030_8AE7:
 
 	LDA #$02	 ; A = 2
 	LDX #$c0	 ; X = $C0 (Normal style updating)
-
-	LDY Level_7Vertical
-	BEQ PRG030_8B03	 	; If level is NOT a vertical one, jump to PRG030_8B03
-
-	; Level is vertical!
-
-	; Horizontal mirroring
-	LDA #$00
-	STA MMC3_MIRROR
-
-	LDA #$01	 ; A = 1
-	LDX #$80	 ; X = $80 (Vertical style updating)
 
 PRG030_8B03:
 	STX Update_Select	; Set Update_Select
@@ -1547,10 +1264,6 @@ PRG030_8B03:
 	JSR Video_Do_Update	 ; Push through what's in graphics buffer
 
 	JSR Scroll_Dirty_Update	 ; Entering level, do dirty update
-
-	LDA Level_Tileset
-	CMP #15
-	BEQ PRG030_8B6D	 ; If Level_Tileset = 15 (Bonus game intro), jump to PRG030_8B6D
 
 	; Changes pages at A000 and C000 to 26 and 6, respectively
 	LDA #6
@@ -1611,15 +1324,6 @@ PRG030_8B78:
 
 	JSR Setup_PalData	 ; Setup palette data
 
-	LDA Level_Tileset
-	CMP #15
-	BNE PRG030_8B9A	 ; If Level_Tileset <> 15 (Bonus game intro), jump to PRG030_8B9A
-
-	; Otherwise, set page @ C000 to 22
-	LDA #22
-	STA PAGE_C000
-	JSR PRGROM_Change_Both2
-
 PRG030_8B9A:
 	; Set page @ A000 to 26
 	LDA #26
@@ -1634,197 +1338,6 @@ PRG030_8B9A:
 	STA PAGE_A000
 	JSR PRGROM_Change_A000
 
-	; This is the init code for the level "boxing out" effect removed in the US release
-
-	; US VERSION DOES THIS:
-	JMP PRG030_8CB8	 ; Jump to PRG030_8CB8 (skipping code related to the "Boxing out" effect, removed in US version)
-
-	; Leftover optional code, see below
-	LDA #$00
-	STA <Map_EnterLevelFX		 ; Map_EnterLevelFX = 0
-
-	; ORIGINAL VERSION DID THIS (addresses relate to original code!):
-;	LDA Level_Tileset
-;	CMP #15
-;	BEQ PRG030_8BC2	 ; If Level_Tileset = 15 (bonus game intro), jump to PRG030_8BC2
-;
-;	LDA Map_UNK713
-;	BEQ PRG030_8BC5	 ; If Map_UNK713 = 0, jump to PRG030_8BC5
-;
-;PRG030_8BC2:
-;	JMP PRG030_8CC9	 ; Jump to PRG030_8CC9
-;
-;PRG030_8BC5:
-;	LDA #$00
-;	STA <Map_EnterLevelFX		 ; Map_EnterLevelFX = 0
-;PRG030_8CC9:
-
-	JSR Map_Clear_EntTranMem	 ; Clear entrance transition memory
-
-	LDA #$ff
-	STA Map_EntTran_Temp	 ; Map_EntTran_Temp = $ff
-
-	LDA Level_7Vertical
-	BEQ PRG030_8BD5	 	; If not a vertical level, jump to PRG030_8BD5
-
-	; Set address as appropriate for vertical
-	LDY Level_SizeOrig
-	LDA Tile_Mem_AddrVL,Y
-	STA <Map_Tile_AddrL
-	LDA Tile_Mem_AddrVH,Y
-	STA <Map_Tile_AddrH
-
-	JMP PRG030_8BDF	; Jump to PRG030_8BDF
-
-PRG030_8BD5: 
-
-	; First screen is always where non-vertical maps start
-	LDA Tile_Mem_Addr
-	STA <Map_Tile_AddrL
-	LDA Tile_Mem_Addr+1
-	STA <Map_Tile_AddrH
-
-PRG030_8BDF:
-	LDA #$00	
-	STA Map_EntTran_VLHalf	 ; Map_EntTran_VLHalf = 0
-
-	LDA <Vert_Scroll
-	BEQ PRG030_8BF4	 	; If Vert_Scroll = 0, jump to PRG030_8BF4
-
-	; Otherwise, offset initial address by $F0 (15 rows) and
-	; flag we're performing this on the lower vertical
-	LDA <Map_Tile_AddrL
-	ADD #$f0	 
-	STA <Map_Tile_AddrL	; Map_Tile_AddrL += $F0
-
-	LDA #$01
-	STA Map_EntTran_VLHalf	 ; Map_EntTran_VLHalf = 1
-
-PRG030_8BF4:
-	LDY #$04	; Y = 4 (search begin)
-
-PRG030_8BF6:
-	LDA <Vert_Scroll
-	CMP BoxOut_ByVStart,Y
-	BEQ PRG030_8C00
-	DEY		 ; Y--
-	BPL PRG030_8BF6	 ; While Y >= 0, loop
-
-PRG030_8C00:
-	STY Map_EntTran_InitValIdx ; Store initial value index
-
-	LDA BoxOut_InitVAddrH,Y	 ; Get initial high part of VRAM address
-	STA Map_EntTran_BVAddrH
-	STA Map_EntTran_BVAddrH+1
-	STA Map_EntTran_BVAddrH+2
-	STA Map_EntTran_BVAddrH+3
-
-	; Copy in the four low bytes
-	LDA BoxOut_InitVAddrL0,Y
-	STA Map_EntTran_BVAddrL	
-
-	LDA BoxOut_InitVAddrL2,Y
-	STA Map_EntTran_BVAddrL+2
-
-	LDA BoxOut_InitVAddrL1,Y
-	STA Map_EntTran_BVAddrL+1
-
-	LDA BoxOut_InitVAddrL3,Y
-	STA Map_EntTran_BVAddrL+3
-
-	LDA #$00
-	STA Map_EntTran_BorderLoop	 ; Map_EntTran_BorderLoop = 0
-
-	LDA #$04
-	STA Map_EntTran_TBCnt	 ; Map_EntTran_TBCnt = 4
-
-	LDY #$01	
-	STY Map_EntTran_LRCnt	 ; Map_EntTran_LRCnt= 1
-
-	LDA #$00	 
-	STA Update_Select	; Insist (again!) that Update_Select = 0
-
-PRG030_8C3E:
-	JSR GraphicsBuf_Prep_And_WaitVSync	; VSync
-
-	; Set page @ A000 as appropriate by Level_Tileset
-	LDY Level_Tileset
-	LDA PAGE_A000_ByTileset,Y
-	STA PAGE_A000
-	JSR PRGROM_Change_A000
-
-	LDX Map_EntTran_BorderLoop	 ; X = current border index (0-3: Top 0, bottom 1, right 2, left 3)
-
-	LDA Map_EntTran_BVAddrH,X	 ; Get high byte of VRAM addres
-	STA Map_EntTran_VAddrH	 	; Store it
-
-	LDA Map_EntTran_BVAddrL,X	 ; Get low byte of VRAM address
-	STA Map_EntTran_VAddrL	 	; Store it
-
-	LDA Map_EntTran_BorderLoop	 ; A = current border index (0-3: Top 0, bottom 1, right 2, left 3)
-	AND #$02
-	BNE PRG030_8C74	 		; If not updating top/bottom, jump to PRG030_8C74
-
-	; top/bottom update...
-	LDX Map_EntTran_TBCnt
-
-	LDA #$01
-	STA Map_EntTran_VRAMGap	 ; Map_EntTran_VRAMGap = 1
-
-	LDA Map_EntTran_VAddrL
-	AND #$01
-	BEQ PRG030_8C8C	 ; If on even address, jump to PRG030_8C8C
-	BNE PRG030_8C83	 ; If on odd address, jump to PRG030_8C83
-
-PRG030_8C74:
-
-	; left/right update...
-	LDX Map_EntTran_LRCnt
-
-	LDA #32
-	STA Map_EntTran_VRAMGap	 ; PRG030_8C8C = 32
-
-	LDA Map_EntTran_VAddrL
-	AND #$20
-	BEQ PRG030_8C8C	 ; If on 32 byte aligned address, jump to PRG030_8C8C
-
-PRG030_8C83:
-	JSR BoxOut_PutPatternInStrip	 ; Put an 8x8 pattern into the strip
-	JSR BoxOut_SetThisBorderVRAM	 ; Set the VRAM offset for this border
-	DEX		 		; X-- (counter decrement)
-	BMI PRG030_8CAA	 		; If X < 0, jump to PRG030_8CAA
-
-PRG030_8C8C:
-	JSR BoxOut_PutPatternInStrip	 ; Put an 8x8 pattern into the strip
-	DEX		 		; X-- (counter decrement)
-	BMI PRG030_8CAA	 		; If X < 0, jump to PRG030_8CAA
-
-	INC <Temp_Var14		 ; Temp_Var14++ (tile pattern layout high, jump to next pattern)
-
-	LDA Map_EntTran_VRAMGap
-	AND #$01	
-	BEQ PRG030_8C9D	 	; If Map_EntTran_VRAMGap & 1 jump to PRG030_8C9D
-
-	INC <Temp_Var14		 ; Temp_Var14++ (tile pattern layout high, jump to next pattern)
-
-PRG030_8C9D:
-	LDA [Temp_Var13],Y	 ; Get 8x8 pattern
-	STA <Scroll_ColorStrip,X	 ; Store into strip
-
-	JSR BoxOut_SetThisBorderVRAM	; Set border VRAM
-	JSR BoxOut_SetThisBorderVRAM	; Called twice??
-	DEX		 ; X--
-	BPL PRG030_8C8C	 ; While X >= 0, loop!
-
-PRG030_8CAA:
-	LDA #$02
-	STA <Map_EnterLevelFX	 ; Map_EnterLevelFX = 2 (begin the proper box out effect!)
-
-	LDA Map_EntTran_Cnt
-	CMP #$34	 
-	BEQ PRG030_8CB8	 ; If Map_EntTran_Cnt = $34, jump to PRG030_8CB8
-	JMP PRG030_8C3E	 ; Otherwise, loop!
-
 PRG030_8CB8:
 	; End of box-out effect (removed in US version)
 
@@ -1838,225 +1351,11 @@ PRG030_8CB8:
 	STA <Map_EnterLevelFX	 ; Map_EnterLevelFX = 0
 
 	LDX #$c0	 	; X = $C0 (Normal style updating)
-	LDA Level_7Vertical	
-	BEQ PRG030_8CD1	 	; If not a vertical level, jump to PRG030_8CD1
-
-	LDX #$80	 ; X = $80 (Vertical style updating)
 
 PRG030_8CD1:
 	STX Update_Select	 ; Set Update_Select as appropriate
 
-	LDA Level_Tileset
-	CMP #15	 
-	BEQ PRG030_8CDE	 ; If Level_Tileset = 15 (bonus game intro), jump to PRG030_8CDE
-	JMP PRG030_8DCB	 ; Jump to PRG030_8DCB
-
-PRG030_8CDE:
-	; Bonus game intro 
-
-	LDA #$04
-	STA BonusText_CharPause	; BonusText_CharPause = $04
-	STA Bonus_UnusedFlag	; Bonus_UnusedFlag = $04
-
-	; Set text VRAM pointer to $28C5
-	LDA #$28
-	STA BonusText_VH
-	LDA #$c5
-	STA BonusText_VL
-
-	LDA #$2b
-	STA ToadTalk_VH
-	STA PatTable_BankSel+4	 ; Load host graphics
-
-	LDA #$35
-	STA ToadTalk_VL
-
-	; BonusDie_YVel = -$60
-	LDA #-$60
-	STA <BonusDie_YVel
-
-	; Set the die to Y = $78, X = $78
-	LDA #$78
-	STA <BonusDie_Y
-	STA <BonusDie_X
-	
-	; Queue the bonus music
-	LDA #MUS2A_BONUSGAME
-	STA Level_MusicQueue
-
-	; The Bonus Game Loop begins here...
-
-BonusGame_Loop:
-	JSR GraphicsBuf_Prep_And_WaitVSync	 ; Wait for VSync
-
-	LDA SndCur_Map
-	AND #SND_MAPENTERLEVEL
-	BNE PRG030_8D23	 ; If the "entering" sound is still playing, jump to PRG030_8D23
-
-	LDA Level_MusicQueue
-	BEQ PRG030_8D23	 ; If nothing is in the music queue, jump to PRG030_8D23
-
-	; Start the queued music
-	STA Sound_QMusic2
-
-	; Clear the music queue
-	LDA #$00
-	STA Level_MusicQueue
-
-PRG030_8D23:
-	JSR BonusGame_Do	 ; Run the Bonus Game
-	JSR StatusBar_Fill_Score ; Update score
-
-	LDA <Level_ExitToMap
-	BEQ BonusGame_Loop	 ; If Level_ExitToMap = 0, loop!!
-
-	; Exiting the Bonus Game loop...
-
-	LDA #%00101000	 	; use 8x16 sprites, sprites use PT2 (NOTE: No VBlank trigger!)
-	STA PPU_CTL1	 	
-	STA <PPU_CTL1_Copy	; Keep PPU_CTL1_Copy in sync!
-
-	LDA Bonus_GameType
-	CMP #BONUS_UNUSED_DDDD
-	BNE PRG030_8D43	 ; If Bonus_GameType <> BONUS_UNUSED_DDDD (??!), jump to PRG030_8D43
-
-	; BONUS_UNUSED_DDDD (??!) only...
-
-	; Set Bonus_DDDD = 1 (??)
-	LDA #$01
-	STA Bonus_DDDD
-
-	JMP PRG030_8D4A	 ; Jump to PRG030_8D4A
-
-PRG030_8D43:
-	CMP #BONUS_UNUSED_2RETURN
-	BNE PRG030_8D4A	 ; If Bonus_GameType <> BONUS_UNUSED_2RETURN (??!), jump to PRG030_8D4A
-
-	; BONUS_UNUSED_2RETURN (??!) only...
-
-	JSR Bonus_Return2_SetMapPos	; Change Player's map position and mark them as having died??
-
-PRG030_8D4A:
-	; BonusText_CPos = 0
-	LDA #$00
-	STA BonusText_CPos
-	STA Bonus_UnusedFlag	 ; Bonus_UnusedFlag = 0
-
-	; Set page @ A000 to 26
-	LDA #26
-	STA PAGE_A000
-	JSR PRGROM_Change_A000
-
-	JSR Palette_FadeOut	 		; Fade out
-
-	LDA #%00011000
-	STA <PPU_CTL2_Copy	; Show BG+Sprites
-
-	JSR GraphicsBuf_Prep_And_WaitVSync	 ; Wait for vertical sync
-
-	LDA #$00
-	STA PPU_CTL2	 ; Most importantly, hide sprites/bg
-
-	; NOTE: This jumps to PRG030_8DC3, which returns to World Map, if the die is face value 1.
-	; Seems like the die face logic for jumping to "Roulette" / "Card" is not implemented.
-	LDA Bonus_DieCnt
-	BEQ PRG030_8DC3	 ; If Bonus_DieCnt = 0 (Face value 1), jump to PRG030_8DC3
-
-	LDY #$00	 ; Level tileset 0 (World Map)
-
-	LDA Bonus_GameType
-	CMP #BONUS_SPADE
-	BNE PRG030_8D85	 ; If Bonus_GameType <> BONUS_SPADE, jump to PRG030_8D85
-
-	; Select palettes
-	LDA #$01
-	STA PalSel_Tile_Colors
-	LDA #$09
-	STA PalSel_Obj_Colors
-
-	LDY #16		; Level tileset 16 (Spade)
-
-	BNE PRG030_8D95	 ; Jump (technically always) to PRG030_8D95
-
-PRG030_8D85:
-	CMP #BONUS_NSPADE
-	BNE PRG030_8D95	 ; If Bonus_GameType <> BONUS_NSPADE, jump to PRG030_8D95
-
-	; Select palettes
-	LDA #$02
-	STA PalSel_Tile_Colors
-	LDA #$0a
-	STA PalSel_Obj_Colors
-
-	LDY #17		; Level tileset 17 (N-Spade)
-
-PRG030_8D95:
-	STY Level_Tileset	; Update Level_Tileset
-	STY Level_BG_Page1_2	; Use proper BG patterns
-
-	CPY #$00
-	BEQ PRG030_8DC3	 ; If tileset = 0 (exit back to world map :(), jump to PRG030_8DC3
-
-
-	; About to enter Spade / N-Spade game!
-
-	; Stop Update_Select activity temporarily
-	INC UpdSel_Disable
-
-	; A little cleanup loop...
-
-	; Clears page 0 addresses $00-$FD, excluding $69-$74 (?)
-
-	LDY #$fd	 ; Y = $FD
-	LDA #$00	 ; A = 0
-PRG030_BDA6:
-	STA Temp_Var1,Y	 ; Clear this byte
-
-PRG030_BDA9:
-	DEY		 ; Y--
-
-	CPY #World_Map_Y
-	BGE PRG030_8DB2	 ; If Y >= World_Map_Y, jump to PRG030_8DB2
-
-	; Range between $69-$74 is not cleared ... mainly protecting sound engine I think
-
-	CPY #Video_Upd_AddrL
-	BGE PRG030_BDA9	 ; If Y >= Video_Upd_AddrL, jump to PRG030_BDA9
-PRG030_8DB2: 
-	CPY #$ff
-	BNE PRG030_BDA6	 ; If Y <> $FF (underflow), loop!
-
-
-	; Clears memory $0400-$04CF (mainly Bonus game cleanup)
-	LDY #$cf	 ; Y = $CF
-PRG030_8DB8:
-	STA Roulette_Pos,Y	; Clear this byte
-
-	DEY		 ; Y--
-	CPY #$ff
-	BNE PRG030_8DB8	 ; If Y <> $FF (underflow), loop!
-
-	JMP PRG030_897B	 ; Jump to PRG030_897B
-
-PRG030_8DC3:
-
-	; Exiting to world map...
-
-	; Bonus_DieCnt = 0
-	LDA #$00
-	STA Bonus_DieCnt
-
-	JMP PRG030_8FA8	; Jump to PRG030_8FA8 (proceed back to World Map)
-
 PRG030_8DCB:
-	LDY Level_Tileset
-	CPY #$05
-	BNE Level_MainLoop	 ; If Level_Tileset <> 5 (pipe world plant infestation), jump to Level_MainLoop
-
-	;LDA PlantInfest_ACnt_MaxConst	; A = [PlantInfest_ACnt_MaxConst] ($1A) (weird specific read??)
-	STA PlantInfest_ACnt_Max	; PlantInfest_ACnt_Max = [PlantInfest_ACnt_MaxConst] ($1A)
-
-
 
 	; LEVEL MAIN LOOP BEGIN!
 
@@ -2084,39 +1383,8 @@ PRG030_8DF4:
 	BMI PRG030_8E2E	 	; If bit 7 is set (animations disabled), jump to PRG030_8E2E
 
 	LDY Level_Tileset
-	CPY #$05	 
-	BNE PRG030_8E1D	 	; If Level_Tileset <> 5 (pipe world plant infestation), jump to PRG030_8E1D
-
-
-	; PLANT INFESTATION ALTERNATE ANIMATION
-
-	; Specific animation style for the pirhana plant world thing in World 7
-	LDA <Counter_1
-	AND #$07
-	BNE PRG030_8E2E 	; Only update every 8 ticks (otherwise, nothing)
-
-	INC <PlantInfest_ACnt	; PlantInfest_ACnt++
-
-	LDA <PlantInfest_ACnt
-	CMP PlantInfest_ACnt_Max
-	BNE PRG030_8E13	 	; If PlantInfest_ACnt <> PlantInfest_ACnt_Max, jump to PRG030_8E13
-
-	LDA #$00	 
-	STA <PlantInfest_ACnt	; PlantInfest_ACnt = 0
-
-PRG030_8E13:
-
-	; Set proper VROM for this animation count of the plant infestation animation
-	TAY		; Y = PlantInfest_ACnt
-	;LDA PlantInfest_PatTablePerACnt,Y
-	STA PatTable_BankSel+1
-
-	JMP PRG030_8E5D	 ; Jump to PlantInfest_ACnt
 
 PRG030_8E1D:
-	CPY #$07
-	BNE PRG030_8E24	 ; If Level_Tileset <> 7 (Toad House), jump to PRG030_8E24
-	JMP PRG030_8EAD	 ; Toad House's also do not use the standard animations
 
 PRG030_8E24:
 	; NOT TOAD HOUSE
@@ -2132,31 +1400,6 @@ PRG030_8E2E:
 	JMP PRG030_8E5D	 ; Jump to PRG030_8E5D (skip main anim code)
 
 PRG030_8E31:
-	CPY #10
-	BNE PRG030_8E4F	 ; If Level_Tileset <> 10 (Airship), jump to PRG030_8E4F
-
-	; AIRSHIP ONLY
-
-	LDY PatTable_BankSel+1
-	CPY #$6a	
-	BEQ PRG030_8E5D	 ; If the current animation active pattern table is $6A (Airship standard), jump to PRG030_8E5D (do nothing)
-
-	; Otherwise...
-	LDA <Counter_1
-	AND #$03	
-	BNE PRG030_8E5D	 ; Only update every 4 ticks (otherwise nothing, jump to PRG030_8E5D)
-
-	INY
-	INY		; +2 pattern tables
-
-	CPY #$76	 
-	BNE PRG030_8E4A	 ; If we're at $76, jump to PRG030_8E4A
-
-	LDY #$70	 ; Otherwise, use $70
-
-PRG030_8E4A:
-	STY PatTable_BankSel+1 ; Update active pattern table
-	BNE PRG030_8E5D	 ; Jump (technically always) to PRG030_8E5D
 
 PRG030_8E4F:
 	; REGULAR LEVEL ANIMATIONS
