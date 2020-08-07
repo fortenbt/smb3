@@ -1419,7 +1419,7 @@ MUS2A_SKY		= $09	; Coin Heaven / Sky World / Warp Zone (World 9)
 MUS2A_INVINCIBILITY	= $0A	; Invincibility
 MUS2A_WARPWHISTLE	= $0B	; Warp whistle
 MUS2A_MUSICBOX		= $0C	; Music box
-MUS2A_THRONEROOM	= $70	; King's room
+MUS2A_THRONEROOM	= $0D	; King's room
 MUS2A_BONUSGAME		= $0E	; Bonus game
 MUS2A_ENDING		= $0F	; Ending music
 

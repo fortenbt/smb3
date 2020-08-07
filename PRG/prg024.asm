@@ -245,7 +245,7 @@ TAndK_DoToadText:
 	BNE _TAndK_PostMusic
 	LDA SndCur_Music2
 	BNE _TAndK_PostMusic
-	LDA #MUS2A_THRONEROOM
+	LDA #MUS2B_BATTLE
 	STA Sound_QMusic2
 _TAndK_PostMusic:
 	LDA CineKing_Timer
