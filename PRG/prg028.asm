@@ -1236,8 +1236,9 @@ MS1_02SegHedr:			;MusSeg Music_RestH_LUT, M12ASegData18, $0020, $12, $0000, $000
 
 ; Boss victory
 MS1_04SegHedr:			MusSeg BossFanfare_R, BossFanfare_1, BossFanfare_Tri1, $11, $0000, $0000
+; World victory
+MS1_08SegHedr:			MusSeg StageClear_R1, StageClear1, StageClear_Tri1, $4F, $0000, $0000
 
-MS1_08SegHedr:			;MusSeg Music_RestH_LUT, M12ASegData19, $004D, $27, $0000, $0000
 MS1_10SegHedr:			;MusSeg Music_RestH_LUT, M12ASegData24, $006F, $4C, $0000, M12ASegData24PCM
 PooOrb_Hdr:				MusSeg PooOrb_R, PooOrb, $0000, $00, $0000, PooOrbPCM
 ;MS1_40SegHedr:			;MusSeg Music_RestH_LUT, M12ASegData13, $0035, $18, $0000, $0000
@@ -1900,9 +1901,6 @@ GameOver_1:
 GameOver_Tri1:
 	.byte $99, $38, $30, $34, $97, $2E, $98, $34, $97, $3C, $93, $3E, $9A, $3C, $9C, $42
 	.byte $9B, $3E, $9C, $3C, $96, $38
-
-CV_Ending_DPCM_Silence:
-	.byte $90, $02, $00
 
 CV_Ending5:
 	.byte $C9, $42, $4C, $50, $42, $4C, $50, $42, $4C, $50, $40, $46, $50, $40, $46, $50
