@@ -6191,11 +6191,10 @@ PRG001_BF4C:
 	CMP #$08 
 	BGE PRG001_BF9B	 ; If Player is way to the right, jump to PRG001_BF9B
 
-	LDA <Player_Y 
-	CMP #$48 
-	BLT PRG001_BF9B	 ; If Player is higher than Y 48, jump to PRG001_BF9B
+	LDA <Player_InAir
+	BNE PRG001_BF9B	 ; If Player is in the air, don't let Mario in
 
-	; Player is low enough and not way to the right
+	; Player is on the ground and not way to the right
 	LDA <Pad_Holding 
 	AND #PAD_UP
 	BEQ PRG001_BF9B	 ; If Player is not pressing UP, jump to PRG001_BF9B
