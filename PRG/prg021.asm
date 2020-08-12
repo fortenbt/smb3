@@ -20,7 +20,7 @@ Tile_Layout_TS2:
 	; I.e. tiles starting at index $00, $40, $80, $C0 are each on that respective palette
 
 	; Upper left 8x8 pattern per tile
-	.byte $FC, $3B, $FF, $05, $05, $D0, $20, $22, $22, $05, $05, $7E, $05, $64, $05, $05 ; Tiles $00 - $0F
+	.byte $FC, $80, $FF, $05, $05, $D0, $20, $22, $22, $05, $05, $7E, $05, $64, $05, $05 ; Tiles $00 - $0F
 	.byte $66, $0A, $0E, $0E, $0C, $0D, $2F, $2E, $FF, $D0, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $10 - $1F
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $B8, $B8 ; Tiles $20 - $2F
 	.byte $B8, $B8, $BC, $FF, $B0, $B1, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
@@ -38,7 +38,7 @@ Tile_Layout_TS2:
 	.byte $50, $D7, $E0, $05, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $F0 - $FF
 
 	; Lower left 8x8 pattern per tile
-	.byte $FC, $3A, $FF, $06, $D6, $D1, $22, $22, $24, $7C, $06, $06, $7F, $65, $06, $06 ; Tiles $00 - $0F
+	.byte $FC, $FC, $FF, $06, $D6, $D1, $22, $22, $24, $7C, $06, $06, $7F, $65, $06, $06 ; Tiles $00 - $0F
 	.byte $67, $0B, $0F, $0F, $2E, $2F, $FD, $FC, $FF, $D1, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $10 - $1F
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $B9, $B9 ; Tiles $20 - $2F
 	.byte $B9, $B9, $BD, $FF, $B1, $B0, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
@@ -957,7 +957,7 @@ PRG021_A7CF:
 ; Rest of ROM was unused
 
 Custom_Tiles21:
-	.byte TILE2_ON, TILE2_OFF_INACTIVE, TILE2_FIRESWITCH
+	.byte TILE2_ON, TILE2_OFF_INACTIVE, TILE2_FIRESWITCH, TILE2_LILCOINU
 
 PRG21_DynJump_LLGen:
 	CMP #59

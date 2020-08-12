@@ -3873,6 +3873,7 @@ TILE2_ON_INACTIVE	= $05	; non-solid on block outline
 TILE2_OFF		= $7E	; solid off block
 TILE2_OFF_INACTIVE	= $4B	; non-solid off block outline
 TILE2_FIRESWITCH	= $7F
+TILE2_LILCOINU		= $01
 ;; -- TS3 (Hills) On/Off, boot spikes
 TILE3_ON		= $7D	; See prg016.asm - solid on block		QUAD 2
 TILE3_ON_INACTIVE	= $5D	; non-solid on block outline
@@ -3889,6 +3890,7 @@ TILE9_ON_INACTIVE	= $D4	; non-solid on block outline
 TILE9_OFF		= $3C	; solid off block
 TILE9_OFF_INACTIVE	= $21	; non-solid off block outline
 TILE9_LILCOINU		= $0A
+TILE9_LILCOINU_BR	= $0B
 TILE9_LILCOIND		= $C7
 ;; -- TS12 (Ice) On/Off, boot spikes
 TILE12_ON			= $9D
