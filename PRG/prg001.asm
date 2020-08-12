@@ -6079,7 +6079,7 @@ PRG001_BEDE:
 
 	RTS		 ; Return
 
-DoorAppear_YUpr:	.byte $60, $70
+DoorAppear_YUpr:	.byte $80, $90
 DoorAppear_X:	.byte $E8, $E8
 
 PRG001_BEFB:	.byte $80, $88
