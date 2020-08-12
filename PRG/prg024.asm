@@ -180,11 +180,6 @@ PRG024_A0DB:
 
 	LDA #$00	 ; A = 0 ("The King has been transformed!")
 
-	LDY Map_Objects_IDs
-	BNE PRG024_A105	 ; If the "HELP!" bubble is still present (haven't been on airship yet), jump to PRG024_A105
-
-	LDA #(KingHelpMsg2 - KingHelpMsg1)	 ; ("Get the magic wand back from little koopa!")
-
 PRG024_A105:
 	STA ToadTalk_CPos	 ; Set proper character position
 
@@ -204,6 +199,7 @@ PRG024_A119:
 	RTS		 ; Return
 
 	; English: "Oh,it's terrible!" / "The King has been" / "transformed!" / "Please find the" / "Magic Wand so we can" / "change him back"
+BadEndingMessage:
 KingHelpMsg1:
 	;       O    h    ,    i    t    '    s         t    e    r    r    i    b    l    e    !
 	;.byte $BE, $D7, $9A, $D8, $CD, $AB, $CC, $FE, $CD, $D4, $CB, $CB, $D8, $D1, $DB, $D4, $EA, $FE, $FE, $FE
@@ -239,6 +235,17 @@ KingHelpMsg2:
 	;.byte $B6, $D4, $CD, $FE, $CD, $D7, $D4, $FE, $BC, $D0, $D6, $D8, $D2, $FE, $C6, $D0, $DD, $D3, $FE, $FE
 	.byte $8C, $DE, $CE, $FE, $D2, $D0, $DD, $FE, $DF, $D4, $CD, $FE, $B1, $DE, $FE, $D7, $D4, $CB, $D4, $E9
 
+GoodEndingMessage:
+	;Well, I see you've\nfound all my orbs.\nSo nice of you to\nreturn them! I'll\ndefinitely put them\nto good use TO DESTR\ner...thanks.You may\nnow pet the dog.
+	.byte $C6, $D4, $DB, $DB, $9A, $FE, $B8, $FE, $CC, $D4, $D4, $FE, $8C, $DE, $CE, $AB, $CF, $D4, $FE, $FE
+	.byte $D5, $DE, $CE, $DD, $D3, $FE, $D0, $DB, $DB, $FE, $DC, $8C, $FE, $DE, $CB, $D1, $CC, $E9, $FE, $FE
+	.byte $C2, $DE, $FE, $DD, $D8, $D2, $D4, $FE, $DE, $D5, $FE, $8C, $DE, $CE, $FE, $CD, $DE, $FE, $FE, $FE
+	.byte $CB, $D4, $CD, $CE, $CB, $DD, $FE, $CD, $D7, $D4, $DC, $EA, $FE, $B8, $AB, $DB, $DB, $FE, $FE, $FE
+	.byte $D3, $D4, $D5, $D8, $DD, $D8, $CD, $D4, $DB, $8C, $FE, $DF, $CE, $CD, $FE, $CD, $D7, $D4, $DC, $FE
+	.byte $CD, $DE, $FE, $D6, $DE, $DE, $D3, $FE, $CE, $CC, $D4, $FE, $C3, $BE, $FE, $B3, $B4, $C2, $C3, $C1
+	.byte $D4, $CB, $E9, $E9, $E9, $CD, $D7, $D0, $DD, $DA, $CC, $E9, $C8, $DE, $CE, $FE, $DC, $D0, $8C, $FE
+	.byte $DD, $DE, $81, $FE, $DF, $D4, $CD, $FE, $CD, $D7, $D4, $FE, $D3, $DE, $D6, $E9, $FE, $FE, $FE, $FE
+
 TAndK_DoToadText:
 	JSR KingRoom_DisablePlayerInput
 	LDA SndCur_Music1
@@ -253,8 +260,13 @@ _TAndK_PostMusic:
 
 	LDY ToadTalk_CPos	 ; Y = dialog message character position
 
-	LDA KingHelpMsg1,Y	 ; Get next character of message
+	LDA BadEndingMessage,Y	 ; Get next character of message
+	LDA Player_Orbs
+	CMP #22
+	BNE _post_grimm_msg_set
+	LDA GoodEndingMessage,Y
 
+_post_grimm_msg_set:
 	LDY Graphics_BufCnt	 ; Y = graphics buffer counter
 	STA Graphics_Buffer+3,Y	 ; Store into buffer
 
@@ -304,6 +316,14 @@ PRG024_A260:
 
 
 TAndK_WaitPlayerButtonA:
+	LDA Player_Orbs
+	CMP #22
+	BNE _bad_ending
+_bad_ending:
+	JSR KingRoom_DisablePlayerInput
+	LDA <Pad_Input
+	BPL PRG024_A260				; If Player is not pushing 'A', jump to PRG024_A260 (RTS)
+
 	INC Player_Pet_Dog
 	RTS
 	;;; [ORANGE] TODO: Logic here:
@@ -1065,17 +1085,17 @@ Title_LoadGraphics:
 
 ; Mario's action script
 Title_MActionScript:
-	.byte $4C, $02, $14, $00, $20, $04, $03, $00, $FF, $03, $BD, $00, $30, $08, $17, $80
-	.byte $05, $00, $23, $82, $02, $00, $25, $80, $20, $00, $35, $01, $05, $10, $04, $01
-	.byte $05, $00, $04, $01, $05, $00, $04, $01, $05, $00, $04, $01, $05, $00, $04, $01
-	.byte $50, $00, $42, $02, $01, $80, $12, $02, $05, $01, $20, $00, $10, $01, $05, $20
-	.byte $20, $01, $05, $40, $C0, $00, $02, $02, $10, $00, $36, $41, $38, $42, $60, $00
-	.byte $60, $51, $FF, $08, $10, $00, $FE, $00
+	;.byte $4C, $02, $14, $00, $20, $04, $03, $00, $FF, $03, $BD, $00, $30, $08, $17, $80
+	;.byte $05, $00, $23, $82, $02, $00, $25, $80, $20, $00, $35, $01, $05, $10, $04, $01
+	;.byte $05, $00, $04, $01, $05, $00, $04, $01, $05, $00, $04, $01, $05, $00, $04, $01
+	;.byte $50, $00, $42, $02, $01, $80, $12, $02, $05, $01, $20, $00, $10, $01, $05, $20
+	;.byte $20, $01, $05, $40, $C0, $00, $02, $02, $10, $00, $36, $41, $38, $42, $60, $00
+	;.byte $60, $51, $FF, $08, $10, $00, $FE, $00
 
 ; Luigi's action script
 Title_LActionScript:
-	.byte $2C, $01, $50, $80, $F0, $01, $90, $00, $70, $00, $10, $02, $10, $22, $09, $00
-	.byte $15, $02, $34, $00, $02, $42, $90, $00, $65, $01, $F0, $00, $FF
+	;.byte $2C, $01, $50, $80, $F0, $01, $90, $00, $70, $00, $10, $02, $10, $22, $09, $00
+	;.byte $15, $02, $34, $00, $02, $42, $90, $00, $65, $01, $F0, $00, $FF
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Title_3Glow
@@ -1263,10 +1283,10 @@ Title_DoEvent:
 	.word Title_DoNothing		; 00 - Do nothing
 	.word Title_DoNothing		; 01 - Do nothing (never used I don't think!)
 	.word Title_LoadSMB3		; 02 - Load title screen into the nametable
-	.word Title_Drop		; 03 - "Drops" the logo onto the screen
-	.word Title_LogoShakeUp		; 04 - Logo shake up
-	.word Title_LogoShakeDown	; 05 - Logo shake down, and check if we're done doing that
-	.word Title_InitObjects		; 06 - Prepare all title screen objects
+	.word Title_DoNothing;Title_Drop		; 03 - "Drops" the logo onto the screen
+	.word Title_DoNothing;Title_LogoShakeUp		; 04 - Logo shake up
+	.word Title_DoNothing;Title_LogoShakeDown	; 05 - Logo shake down, and check if we're done doing that
+	.word Title_DoNothing;Title_InitObjects		; 06 - Prepare all title screen objects
 	.word Title_PalFadeIn		; 07 - Palette fade in
 	.word Title_DoNothing		; 08 - Adds the 1P/2P select menu to the title screen
 	.word Title_DoNothing		; 09 - Do nothing, we're done!
