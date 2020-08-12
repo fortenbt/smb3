@@ -898,11 +898,11 @@ PRG000_C533:
 	STA <Objects_Y,X	 ; Align to tile and apply slope
 
 PRG000_C53D:
+	JSR EnsureSmallWakeupCounter
+
 	LDA #$00
 	STA <Objects_YVel,X	 ; Halt vertical movement
 	STA Objects_Bumped,X
-
-	JSR EnsureSmallWakeupCounter
 
 	RTS		 ; Return
 
