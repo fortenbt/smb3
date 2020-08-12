@@ -4618,7 +4618,7 @@ ObjInit_Bowser:
 	; Bowser is giant!
 	INC Objects_IsGiant,X
 
-	LDA #$04
+	LDA #$03
 	STA BowserAttack
 
 	RTS		 ; Return
@@ -4796,34 +4796,53 @@ PRG001_B948:
 	.word Bowser_BustFloorLookAround; 3: Bowser busts floor and looks around
 	.word Bowser_AlignCenterAndFall		; 4: align to center and pound with disable
 	.word Bowser_BustFloorAndAttack		; 5: attack with crazy fireballs
+	.word Bowser_DoFountainAttack
 
 PRG001_B955:	.byte $08, $05, $04, $05, $08
 PRG001_B95A:	.byte $40, $40, $00, $00, $00
+
+Bowser_DoFountainAttack:
+	LDA Bowser_Counter1
+	BEQ _bowser_reset_attack
+	AND #$07				; throw the fire fountain balls every 8 frames
+	BNE _fount_atk_rts
+	JSR Bowser_ThrowThing
+	LDA #$40
+	STA Objects_Timer3,X	; set up for next state
+_fount_atk_rts:
+	RTS
+_bowser_reset_attack:
+	JMP PRG001_BACD
 
 Bowser_BustFloorAndAttack:
 	LDA Bowser_Vibed
 	BNE _attack_postvibe
 	INC Bowser_Vibed
-	LDA #$20
+	LDA <Player_InAir
+	BNE _attack_postvibe	; If player's in the air, they avoid the vibe
+	LDA #$30
 	STA Player_VibeDisable
-	LDA #-$10
-	STA <Player_YVel	; Player Y velocity = -$10 (bounce the Player a bit)
+	LDA #-$20
+	STA <Player_YVel		; Player Y velocity = -$20 (bounce the Player a bit)
+	INC <Player_InAir
+	LDA #$00
+	STA <Player_XVel
 _attack_postvibe:
-	JSR Bowser_DetectTiles	  ; Detect tiles under Bowser's feet
+	JSR Bowser_DetectTiles	; Detect tiles under Bowser's feet
 
 	LDA <Objects_YVel,X
 	CMP #$70
-	BGS __PRG001_BAB6	 ; If Bowser's Y Velocity >= $40, jump to PRG001_BAB6
+	BGS __PRG001_BAB6	 	; If Bowser's Y Velocity >= $40, jump to PRG001_BAB6
 
 	INC <Objects_YVel,X
 	INC <Objects_YVel,X
 
 __PRG001_BAB6:
-	JSR Bowser_BustFloor	 ; Bust any bricks Bowser has hit
+	JSR Bowser_BustFloor	; Bust any bricks Bowser has hit
 
 	LDA <Objects_DetStat,X
 	AND #$04
-	BEQ __PRG001_BAC2	 ; If Bowser has not hit floor, jump to PRG001_BAC2
+	BEQ __PRG001_BAC2	 	; If Bowser has not hit floor, jump to PRG001_BAC2
 
 	JSR Object_HitGround	 ; Align to floor
 
@@ -4841,9 +4860,10 @@ __PRG001_BACD:
 	LDA Objects_Timer3,X
 	BNE _j_PRG001_BAF1	 ; If timer 3 is not expired, jump to PRG001_BAF1
 
-	; Var 4 back to zero
-	LDA #$00
-	STA <Objects_Var4,X
+	; Var4 to Bowser_DoFountainAttack
+	INC <Objects_Var4,X
+	LDA #64
+	STA Bowser_Counter1
 
 	;LDA RandomN,X
 	;AND #$7f
@@ -4853,6 +4873,7 @@ __PRG001_BACD:
 
 	RTS		 ; Return
 _j_PRG001_BAF1:
+	; do look around thing
 	JMP PRG001_BAF1
 
 Bowser_FallToFloor:
@@ -4901,7 +4922,8 @@ PRG001_B98F:
 	LDY Objects_Timer3,X
 	BNE PRG001_B9A1	 ; If Timer 3 is not expired, jump to PRG001_B9A1
 
-	LDA #$b0	 ; A = $B0
+	;LDA #$b0	 ; A = $B0
+	LDA #$90
 
 PRG001_B9A1:
 	; Set Timer as appropriate
@@ -4912,7 +4934,7 @@ PRG001_B9A4:
 
 	; Base X velocities by Player's distance away from Bowser when he attempts to jump and land on you
 Bowser_XVelByDist:
-	.byte $08, $10, $18, $20, $28, $30, $38, $40, $48, $50, $50, $50, $50, $50, $50, $50
+	.byte $08, $10, $18, $20, $28, $30, $38, $40, $48, $50, $58, $60, $68, $68, $68, $68
 
 PRG001_B9B5:
 	LDA Bowser_Counter2 
@@ -4934,7 +4956,7 @@ PRG001_B9BF:
 	STA <Objects_Var4,X
  
 	; Bowser jump!
-	LDA #-$70 
+	LDA #-$70
 	STA <Objects_YVel,X
  
 	JSR Bowser_CalcPlayersSide 
@@ -4968,7 +4990,7 @@ PRG001_B9F2:
 
 PRG001_B9F3:
 	; Little hop
-	LDA #-$10 
+	LDA #-$8
 	STA <Objects_YVel,X
  
 	RTS		 ; Return
@@ -5070,6 +5092,9 @@ PRG001_BA4B:
 	; Bowser has hit floor...
 
 	JSR Object_HitGround	 ; Align to floor ('A' = 0 at the end of this, hence the following assignment)
+
+	LDA #$03
+	STA BowserAttack
 
 	STA <Objects_XVel,X	 ; Stop Bowser's horizontal movement
 
@@ -5302,8 +5327,8 @@ Bowser_HopAndBreatheFire:
 
 _bowser_other_attack:
 	PLA
-	LDA #$04
-	STA BowserAttack
+	LDA #$00
+	;STA BowserAttack
 	;JSR Bowser_DoAttack
 	RTS
 
@@ -5333,24 +5358,9 @@ _hop_breath_fire:
 PRG001_BB46:
 	RTS		 ; Return
 
-Bowser_ThingXVels: .byte $08, -$08, $20, -$20, $40, -$40
+Bowser_ThingXVels: .byte $02, $06, $0A, $0E, $12, $16, $1A, $1E, $22, $26, $2A, $2E, $32, $36, $3A, $3E
 Bowser_DoAttack:
 Bowser_ThrowThing:
-	LDA Bowser_Counter1
-	CMP #$21
-	BGS PRG001_BB46
-	CMP #$01
-	BNE _do_attack_every4
-_reset_bowserattack:
-	LDA #$03
-	STA BowserAttack
-_do_attack_every4:
-	LDA Bowser_Counter1
-	AND #$03
-	BNE PRG001_BB46
-
-_bowser_get_sobj:
-
 	JSR SpecialObj_FindEmptyAbort
 	; Set Hammer X/Y at Hammer Bro's position
 	LDA <Objects_X,X
@@ -5363,32 +5373,39 @@ _bowser_get_sobj:
 	STA SpecialObj_YHi,Y
 
 	; Hammer Y velocity = -$30
-	LDA #-$38
+	LDA #-$60
 	STA SpecialObj_YVel,Y
 
-	STY <Temp_Var1		 ; Temp_Var1 = Special Object slot index
+	STY <Temp_Var1		 		; Save Y to Temp_Var1 = Special Object slot index
 
 	JSR Level_ObjCalcXDiffs
 	LDA <Temp_Var16
-	BGS _post_neg
+	BGS _get_thing_xvel
 	JSR Negate
-_post_neg:
-	LSR A
-	LSR A
-	LSR A
-	LSR A
-	BEQ _get_thing_xvel
-	INY
-	INY
-	LSR A
-	LSR A
-	BEQ _get_thing_xvel
-	INY
-	INY
 _get_thing_xvel:
-	LDA Bowser_ThingXVels,Y	; Hammer towards Player X Vel
-	LDY <Temp_Var1		 ; Y = Special Object slot index
-	STA SpecialObj_XVel,Y	 ; Set X Velocity
+	LSR A
+	LSR A
+	LSR A
+	LSR A
+	AND #$0F
+	TAY
+	LDA Bowser_ThingXVels,Y
+	; the thing's xvel is modified based on the sobj slot number so that
+	; we don't throw them all the same distance
+	LDY <Temp_Var1
+	BEQ _post_mod_loop
+_mod_thing_xvel:
+	ADD #1
+	DEY
+	BNE _mod_thing_xvel
+_post_mod_loop:
+	LDY <Temp_Var16
+	BGS _set_thing_xvel
+	JSR Negate					; If we're to the left of Bowser, negate the thing's XVel
+
+_set_thing_xvel:
+	LDY <Temp_Var1		 		; Restore Y = Special Object slot index
+	STA SpecialObj_XVel,Y	 	; Set X Velocity
 
 	LDA #SOBJ_NIPPERFIREBALL ; We turned nipper fireballs into bowser hammers
 
@@ -5518,7 +5535,7 @@ Bowser_Counter3Do:
 	;LDA RandomN,X
 	;AND #$3f
 	;ADC #$60
-	LDA #$28			; Bowser_Counter3 controls how often Bowser_Counter1 gets set
+	LDA #$1C			; Bowser_Counter3 controls how often Bowser_Counter1 gets set
 						; Bowser_Counter1 causes Bowser to breathe fire when it hits $10
 	STA Bowser_Counter3	; Bowser_Counter3 = $60 + (Random $00 to $3F)
 						; [ORANGE] This was modified to be consistently breathe fire 4 times
