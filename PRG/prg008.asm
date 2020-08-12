@@ -5193,7 +5193,7 @@ LATP_1up:
 	LDA #$00
 	STA PUp_StarManFlash	 ; PUp_StarManFlash = 0 (don't activate star man flash)
 
-	LDY #$07	 ; Y = 7 (1-up) (index into PRG001 Bouncer_PUp)
+	LDY #$02	 ; Y = 7 (1-up) (index into PRG001 Bouncer_PUp)
 
 	RTS		 ; Return
 
