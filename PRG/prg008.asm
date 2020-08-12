@@ -5188,7 +5188,7 @@ LATP_10Coin:
 	JMP LATP_Coin	; Jump to common coin routine...
 
 LATP_1up:
-	JSR Level_RecordBlockHit	 ; Record having grabbed this 1-up so it does not come back
+	;JSR Level_RecordBlockHit	 ; Record having grabbed this 1-up so it does not come back
 
 	LDA #$00
 	STA PUp_StarManFlash	 ; PUp_StarManFlash = 0 (don't activate star man flash)
