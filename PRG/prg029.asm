@@ -871,6 +871,11 @@ PRG029_CF2F:
 	LDA [Player_SprWorkL],Y	 
 	STA Sprite_RAM+$09,X	 
 
+	LDA Player_Pet_Dog
+	BEQ _set_spr_attr
+	LDA #SPR_HFLIP
+	STA <Player_FlipBits
+_set_spr_attr:
 	LDA <Player_FlipBits
 	AND #$c0
 	ORA <Temp_Var1		 ; Merge with possible other attributes (the star invincibility palette cycle)
@@ -1356,38 +1361,17 @@ PRG029_D26B:
 	JMP PRG029_D457	 	; Jump to PRG029_D457 
 
 PRG029_D279:
-	LDA Level_AirshipCtl
-	BNE PRG029_D281	 ; If Level_AirshipCtl <> 0, jump to PRG029_D281
-
-	JMP PRG029_D33E	 ; Otherwise, jump to PRG029_D33E
 
 PRG029_D281:
 
 	;;; [ORANGE] Removed AirshipCtl things
 
 PRG029_D33E:
-	LDA Level_GetWandState
-	CMP #$03
-	BLS PRG029_D361	 ; If Level_GetWandState < 3 (wand grabbed), jump to PRG029_D361
 
-	CMP #$07
-	BLS PRG029_D354	 ; If Level_GetWandState < 7, jump to PRG029_D354
-
-	; Player's slow decent...
-	LDA <Player_Y
-	ADD #$02
-	STA <Player_Y	 ; Player_Y += 2
-
-	BCC PRG029_D354	 ; If no carry, jump to PRG029_D354
-	INC <Player_YHi	 ; Otherwise, apply carry
+	;;; [ORANGE] Removed holding wand stuff
 
 PRG029_D354:
 	; Player holding wand!
-	LDY <Player_Suit ; Y = Player_Suit
-	LDA Airship_JumpFrameByPup,Y	 
-	STA <Player_Frame	; Use proper "mid-air" frame
-	JSR Player_Draw	 	; Draw Player
-	JMP Wand_Offset_BySuit	 	; Jump to Wand_Offset_BySuit
 
 PRG029_D361:
 
@@ -1527,74 +1511,7 @@ PRG029_D3EC:
 
 	JMP PRG008_A224	 ; Jump to PRG008_A224
 
-
-	; When Player has grabbed wand, offset from Player X/Y by suit / power-up
-Wand_XOff_BySuitL:	.byte -5, -5, -5, -5, -7, -5, -5
-Wand_XOff_BySuitR:	.byte  6,  6,  6,  6,  8,  6,  6
-Wand_YOff_BySuit:	.byte  1, -9, -9, -9,  3, -9, -9
-
-Wand_Offset_BySuit:
-	LDY Object_SprRAM+5	; Y = 5th index object Sprite RAM offset
-	LDX <Player_Suit	; X = Player's suit
-
-	LDA <Player_FlipBits
-	PHP		 	; Save Player flip bits
-
-	LDA Wand_XOff_BySuitR,X	; Wand offset, held right
-
-	PLP		 	; Restore Player flip bits
-	BNE PRG029_D415	 	; If Player is not flipped, jump to PRG029_D415
-
-	LDA Wand_XOff_BySuitL,X	; Wand offset, held left
-
-PRG029_D415:
-	ADD <Player_SpriteX	; Add offset to Player sprite X
-	STA Sprite_RAM+$03,Y	; -> Sprite X
-
-	ADD #$08		; +8
-	STA Sprite_RAM+$07,Y	; -> Sprite X
-
-	; Temp_Var1 = Player_YHi
-	LDA <Player_YHi
-	STA <Temp_Var1
-
-	LDA Wand_YOff_BySuit,X
-	BPL PRG029_D42C	 	; If Y offset is positive, jump to PRG029_D42C
-
-	DEC <Temp_Var1		; Otherwise, Temp_Var1--
-
-PRG029_D42C:
-	ADD <Player_SpriteY	; Add offset to Player Y
-	BCC PRG029_D433	 	; If no carry, jump to PRG029_D433
-
-	INC <Temp_Var1		; Otherwise, apply carry
-
-PRG029_D433:
-	LDX <Temp_Var1		; X = Temp_Var1
-	CPX #$01
-	BPL PRG029_D454	 	; If off-screen, jump to PRG029_D454
-
-	; Store Wand Sprites Y
-	STA Sprite_RAM+$00,Y
-	STA Sprite_RAM+$04,Y
-
-	; Store Wand Sprite Patterns
-	LDA #$99
-	STA Sprite_RAM+$01,Y
-	STA Sprite_RAM+$05,Y
-
-	; Palette cycling of wand
-	LDA <Counter_1
-	AND #$06
-	LSR A
-	STA Sprite_RAM+$02,Y
-
-	; Mirrored half
-	ORA #SPR_HFLIP
-	STA Sprite_RAM+$06,Y
-
-PRG029_D454:
-	RTS		 ; Return
+	;;; [ORANGE] Removed Wand_Offset_BySuit
 
 Level_EndFlipBits:
 	.byte $00, $40
