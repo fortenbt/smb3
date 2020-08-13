@@ -261,8 +261,8 @@ _TAndK_PostMusic:
 	LDY ToadTalk_CPos	 ; Y = dialog message character position
 
 	LDA BadEndingMessage,Y	 ; Get next character of message
-	LDA Player_Orbs
-	CMP #22
+	LDX Player_Orbs
+	CPX #22
 	BNE _post_grimm_msg_set
 	LDA GoodEndingMessage,Y
 
