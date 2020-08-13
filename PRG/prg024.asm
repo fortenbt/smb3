@@ -85,10 +85,11 @@ PRG024_A03A:
 PRG024_A04A:
 	JMP PRG024_A39D	 ; Jump to PRG024_A39D
 
-KingRoom_DisablePlayerInput:
+KingRoom_DisablePlayer:
 	; Keep the Player halted
 	LDA #$02
 	STA Player_HaltTick
+KingRoom_DisablePlayerPad:
 	LDA <Pad_Holding
 	AND #~(PAD_LEFT | PAD_RIGHT | PAD_UP | PAD_DOWN)
 	STA <Pad_Holding	; Otherwise, disable all directional inputs
@@ -118,7 +119,7 @@ DiagBox_RowOffs:
 DiagBox_RowOffs_End
 
 TAndK_DrawDiagBox:
-	JSR KingRoom_DisablePlayerInput
+	JSR KingRoom_DisablePlayer
 	LDA CineKing_Timer 
 	BNE PRG024_A119	 ; If CineKing_Timer has not expired, jump to PRG024_A119 (RTS)
 
@@ -247,7 +248,7 @@ GoodEndingMessage:
 	.byte $DD, $DE, $81, $FE, $DF, $D4, $CD, $FE, $CD, $D7, $D4, $FE, $D3, $DE, $D6, $E9, $FE, $FE, $FE, $FE
 
 TAndK_DoToadText:
-	JSR KingRoom_DisablePlayerInput
+	JSR KingRoom_DisablePlayer
 	LDA SndCur_Music1
 	BNE _TAndK_PostMusic
 	LDA SndCur_Music2
@@ -319,12 +320,49 @@ TAndK_WaitPlayerButtonA:
 	LDA Player_Orbs
 	CMP #22
 	BNE _bad_ending
-_bad_ending:
-	JSR KingRoom_DisablePlayerInput
+_good_ending:
+	LDA Player_Pet_Dog
+	BNE _petting_dog
+	LDA <Player_X
+	CMP #$A6
+	BCC PRG024_A260
+	LDA #$A6
+	STA <Player_X				; Force player to stay at A6 (at dog)
+	LDA #$00
+	STA <Player_XVel
+	LDA <Player_YHi
+	BEQ PRG024_A260				; If player is not low, jump to PRG024_A260 (RTS)
+	LDA <Player_InAir
+	BNE PRG024_A260				; If player is not on the ground, RTS
+_petting_dog:
+	LDA SndCur_Music2
+	BNE _do_pet_dog				; Force pet dog until music is done
 	LDA <Pad_Input
-	BPL PRG024_A260				; If Player is not pushing 'A', jump to PRG024_A260 (RTS)
-
+	BPL _do_pet_dog
+	; pressed A...go to credits
+	JMP IntReset
+_do_pet_dog:
+	LDA #$00
+	STA <Pad_Holding	; Otherwise, disable all inputs
+	STA <Pad_Input
+	STA <Player_XVel	; disable movement
+	STA <Player_YVel
+	STA Sound_QPlayer	; We can't use Player_HaltTick to disable the player's movement
+						; because the draw code won't use his special frames which is
+						; what we use for petting the dog. So we have to fake halt the
+						; player by setting all his movement to 0 and make sure we don't
+						; let any jump effects occur
 	INC Player_Pet_Dog
+	BNE _pet_dog_rts
+	INC Player_Pet_Dog
+_pet_dog_rts:
+	RTS
+_bad_ending:
+	JSR KingRoom_DisablePlayer
+	LDA <Pad_Input
+	BPL _bad_end_rts		; If Player is not pushing 'A', jump to PRG024_A260 (RTS)
+
+_bad_end_rts
 	RTS
 	;;; [ORANGE] TODO: Logic here:
 	;;; Has all orbs?
