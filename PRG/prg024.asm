@@ -263,7 +263,7 @@ _TAndK_PostMusic:
 
 	LDA BadEndingMessage,Y	 ; Get next character of message
 	LDX Player_Orbs
-	CPX #22
+	CPX #18
 	BNE _post_grimm_msg_set
 	LDA GoodEndingMessage,Y
 
@@ -318,7 +318,7 @@ PRG024_A260:
 
 TAndK_WaitPlayerButtonA:
 	LDA Player_Orbs
-	CMP #22
+	CMP #18
 	BNE _bad_ending
 _good_ending:
 	LDA Player_Pet_Dog
