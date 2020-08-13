@@ -469,17 +469,19 @@ TitleScreen_LogoLine14:
 
 TitleScreen_LogoLine15:
 	vaddr $21C0
-	.byte VU_REPEAT | 23, $FE
-	vaddr $21D7
-	.byte $09, $42, $43, $44, $45, $46, $47, $48, $49, $4A
+	.byte VU_REPEAT | 13, $FE
+	vaddr $21CE
+	.byte 18, $20, $21, $22, $24, $24, $FE, $FE, $FE, $FE
+	.byte $42, $43, $44, $45, $46, $47, $48, $49, $4A
 	; Terminator
 	.byte $00
 
 TitleScreen_LogoLine16:
 	vaddr $21E0
-	.byte VU_REPEAT | 24, $FE
-	vaddr $21F8
-	.byte $08, $4B, $4C, $4D, $4E, $4F, $50, $51, $52
+	.byte VU_REPEAT | 13, $FE
+	vaddr $21EE
+	.byte 18, $1F, $33, $36, $21, $33, $FE, $FE, $FE, $FE, $FE
+	.byte $4B, $4C, $4D, $4E, $4F, $50, $51, $52
 	; Terminator
 	.byte $00
 
