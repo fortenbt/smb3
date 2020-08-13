@@ -898,28 +898,28 @@ PRG024_A8C8:
 	BPL PRG024_A8C8	 ; Loop while X >= 0...
 
 	; Set Mario and Luigi's lives to 4
-	LDA #$04
-	STA Player_Lives
-	STA Player_Lives+1
+	;LDA #$04
+	;STA Player_Lives
+	;STA Player_Lives+1
 
-	LDA #$ff
-	STA <Title_ObjInitIdx	; Title_ObjInitIdx = $FF (Should be 0 - 5, does this have an early increment or something?)
+	;LDA #$ff
+	;STA <Title_ObjInitIdx	; Title_ObjInitIdx = $FF (Should be 0 - 5, does this have an early increment or something?)
 
 	; Set Mario and Luigi's Y position to 160
-	LDA #160
-	STA <Title_ObjY
-	STA <Title_ObjY+1
+	;LDA #160
+	;STA <Title_ObjY
+	;STA <Title_ObjY+1
 
-	LDA #240
-	STA <Title_ObjX		; Set Mario's X coordinate to 240
+	;LDA #240
+	;STA <Title_ObjX		; Set Mario's X coordinate to 240
 
-	LDA #$00
-	STA <Title_ObjX+1	; Set Luigi's X coordinate to 0
+	;LDA #$00
+	;STA <Title_ObjX+1	; Set Luigi's X coordinate to 0
 
 	; Set Mario and Luigi to "Big" power level
-	LDA #$01
-	STA <Title_ObjMLPower	
-	STA <Title_ObjMLPower+1	
+	;LDA #$01
+	;STA <Title_ObjMLPower
+	;STA <Title_ObjMLPower+1
 
 	LDA #$88
 	STA Random_Pool		; Seed the randomizer
@@ -1048,11 +1048,66 @@ PRG024_A98A:
 
 	RTS		 ; Return
 
+SuperOrbBros:
+	; OrangeExpo 2020
+	.byte $BC, $81, $01, $18
+	.byte $BC, $83, $01, $20
+	.byte $BC, $85, $01, $28
+	.byte $BC, $87, $01, $30
+	.byte $BC, $91, $01, $38
+	.byte $BC, $93, $01, $40
+	.byte $BC, $95, $01, $48
+	.byte $BC, $97, $01, $50
+	.byte $CC, $A5, $01, $28
+	.byte $CC, $A7, $01, $30
+	.byte $CC, $B5, $01, $38
+	; Super Orb Bros.
+	.byte $10, $C1, $00, $68
+	.byte $10, $C3, $00, $70
+	.byte $10, $C5, $00, $78
+	.byte $10, $C7, $00, $80
+	.byte $10, $C9, $00, $88
+	.byte $10, $CB, $00, $90
+	.byte $10, $CD, $00, $98
+	.byte $10, $CF, $00, $A0
+
+	.byte $20, $E1, $00, $68
+	.byte $20, $E3, $00, $70
+	.byte $20, $E5, $00, $78
+	.byte $20, $E7, $00, $80
+	.byte $20, $E9, $00, $88
+	.byte $20, $EB, $00, $90
+	.byte $20, $ED, $00, $98
+	.byte $20, $EF, $00, $A0
+
+	.byte $30, $D1, $00, $70
+	.byte $30, $D3, $00, $78
+	.byte $30, $D5, $00, $80
+	.byte $30, $D7, $00, $88
+	.byte $30, $D9, $00, $90
+	.byte $30, $DB, $00, $98
+
+	.byte $40, $F1, $00, $70
+	.byte $40, $F3, $00, $78
+	.byte $40, $F5, $00, $80
+	.byte $40, $F7, $00, $88
+	.byte $40, $F9, $00, $90
+	.byte $40, $FB, $00, $98
+SuperOrbBros_END
 
 Title_Custom_Setup:
 	;;; [ORANGE] Removed title display curtain routine
 	LDA #MUS2B_BOSS
 	STA Sound_QMusic2
+
+	;;; [ORANGE] Draw title sprites
+	LDY #(SuperOrbBros_END-SuperOrbBros-1)
+_load_sorb_title:
+	LDA SuperOrbBros,Y
+	STA Sprite_RAM,Y
+	DEY
+	CPY #$FF
+	BNE _load_sorb_title
 
 	RTS		 	; Return!
 
@@ -1084,19 +1139,19 @@ Title_DoState:
 ;
 ; Loads several items from Video_Upd_Table2 in PRG025
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Title_LoadGraphics:
-	LDA #$02
-	STA <Title_EventIndex ; Title_EventIndex = $02 (first action taken [load the logo] and continue doing stuff!)
+;Title_LoadGraphics:
+	;LDA #$02
+	;STA <Title_EventIndex ; Title_EventIndex = $02 (first action taken [load the logo] and continue doing stuff!);
 
-	LDA #$08
-	STA <Title_EventGrafX ; Title_EventGrafX = $08 (first item to load from Video_Upd_Table2 in PRG025, up to item $23; see Title_LoadSMB3)
+	;LDA #$08
+	;STA <Title_EventGrafX ; Title_EventGrafX = $08 (first item to load from Video_Upd_Table2 in PRG025, up to item $23; see Title_LoadSMB3)
 
-	INC <Title_State ; Next title state...
+	;INC <Title_State ; Next title state...;
 
-	LDA #$00	
-	STA <Title_ObjMLStop ; Title_ObjMLStop = 0 (releases Mario and Luigi)
+	;LDA #$00
+	;STA <Title_ObjMLStop ; Title_ObjMLStop = 0 (releases Mario and Luigi)
 
-	RTS		 ; Return
+	;RTS		 ; Return
 
 
 ; This is Mario and Luigi's "action script", which is a simple script to
@@ -1152,20 +1207,34 @@ Title_3Glow:
 	LDY <Title_3GlowIndex		; Y = current 3glow index
 	LDA Title_3GlowColors,Y		; Get the cooresponding color
 	STA Graphics_Buffer+3		; Put that into the graphics buffer
+	STA Graphics_Buffer+6		; Put that into the graphics buffer
+	STA Graphics_Buffer+$C		; Put that into the graphics buffer
 	;LDA Title_ShadowFade,Y		; Get the cooresponding color
 	;STA Graphics_Buffer+4		; Put that into the graphics buffer
 
 	; Address the palette
 	LDA #$3f	 
 	STA Graphics_Buffer
-	LDA #$0e	 
+	LDA #$0e
 	STA Graphics_Buffer+1
 
-	; 1 byte and terminator
-	LDA #$01
-	STA Graphics_Buffer+2	
-	LDA #$00	 	
+	; a bytes and terminator
+	LDA #$0a
+	STA Graphics_Buffer+2
+	LDA #$30
 	STA Graphics_Buffer+4
+	LDA #$0F
+	STA Graphics_Buffer+5
+	STA Graphics_Buffer+9
+	LDA #$36
+	STA Graphics_Buffer+7
+	STA Graphics_Buffer+$B
+	LDA #$30
+	STA Graphics_Buffer+8
+	LDA #$02
+	STA Graphics_Buffer+$A
+	LDA #$00
+	STA Graphics_Buffer+$D
 
 	INC <Title_3GlowIndex
 	LDA <Title_3GlowIndex
@@ -1803,482 +1872,92 @@ Ending_DoChamberScene:
 	JSR DynJump
 
 	; THESE MUST FOLLOW DynJump FOR THE DYNAMIC JUMP TO WORK!!
-	.word Ending_Init		; 0: Prepare the Princess chamber scene
-	.word Ending_FadeIn		; 1: Fade in
-	.word Ending_MarioAppears	; 2: Mario appears, music starts
-	.word Ending_LightsOn		; 3: Lights come on, Princess stands up
-	.word Ending_WalkToCenter	; 4: Mario and Princess walk to the center
-	.word Ending_PrincessSpeech	; 5: Princess's departing message
-	.word Ending_FadeOut		; 6: Fade out
+	;.word Ending_Init		; 0: Prepare the Princess chamber scene
+	;.word Ending_FadeIn		; 1: Fade in
+	;.word Ending_MarioAppears	; 2: Mario appears, music starts
+	;.word Ending_LightsOn		; 3: Lights come on, Princess stands up
+	;.word Ending_WalkToCenter	; 4: Mario and Princess walk to the center
+	;.word Ending_PrincessSpeech	; 5: Princess's departing message
+	;.word Ending_FadeOut		; 6: Fade out
 
 Ending_Init:
-	; Set Mario's X
-	LDA #32
-	STA <Title_ObjX
 
-	; Set Princess's X
-	LDA #200
-	STA <Title_ObjX+1
-
-	; Set both Y = 160
-	LDA #160
-	STA <Title_ObjY
-	STA <Title_ObjY+1
-
-	; Mario standing
-	LDA #$18
-	STA <Title_ObjMLSprite
-
-	; Princess sobbing
-	LDA #$19
-	STA <Title_ObjMLSprite+1
-
-	; Mario turned to face, Princess turned away
-	LDA #SPR_HFLIP
-	STA <Title_ObjMLFlags
-	STA <Title_ObjMLFlags+1
-
-	; Super Mario
-	LDA #$01
-	STA <Title_ObjMLPower
-
-	; Set first ending timer to $0F
-	LDA #$0f
-	STA <Ending_Timer
-
-	INC <Ending_State	; Ending_State = 1
-
-	; Initialize the princess speech dialog box
-
-	; EndText_CPos = 0
-	LDA #$00
-	STA <EndText_CPos
-
-	; EndText_VH = $29
-	LDA #$29
-	STA <EndText_VH
-
-	; EndText_VL = $48
-	LDA #$48
-	STA <EndText_VL
-
-	RTS		 ; Return
 
 Ending_FadeIn:
-	LDA <Ending_Timer
-	BNE PRG024_B93D	 ; If the first ending timer has not expired, jump to PRG024_B93D
-
-	INC <Ending_State	 ; Ending_State = 2
-
-	; Set first ending timer to $30
-	LDY #$30
-	STY <Ending_Timer
-
-PRG024_B93D:
 
 
-	; Ending timer was init'ed to $F (15) so ...
-	LSR A
-	LSR A		; Ending timer / 4
-	ADD #$56	; ... run command scripts $59, $58, $57, $56 (the "fade in" effect)
-
-	STA Graphics_Queue	 ; Execute appropriate scripe
-
-	RTS		 ; Return
 
 Ending_MarioAppears:
-	LDA <Ending_Timer
-	CMP #$01
-	BNE PRG024_B959	 ; If ending timer does not have one tick left, jump to PRG024_B959
 
-	; Mario standing there
-	LDA #$02
-	STA <Title_ObjMLSprite
-
-	; Set ending timer 2 = $80
-	LDA #$80
-	STA <Ending_Timer+1
-
-	; Play finale music
-	LDA #MUS2A_ENDING
-	STA Sound_QMusic2
-
-PRG024_B959:
-	LDA <Ending_Timer+1
-	CMP #$01
-	BNE PRG024_B965	 ; If second ending timer does not have one tick left, jump to PRG024_B965
-
-	; Set first ending timer = $13
-	LDA #$13
-	STA <Ending_Timer
-
-	INC <Ending_State ; Ending_State = 3
-
-PRG024_B965:
-	RTS		 ; Return
 
 	; The "lights on" effect palette levels
 Ending_LightsOnPalSet:
-	.byte $0F, $35, $30, $3B
-	.byte $0F, $23, $35, $3B
-	.byte $0F, $11, $3C, $3B
-	.byte $0F, $1C, $2C, $3B
-	.byte $0F, $0C, $1C, $3B
+
 
 Ending_LightsOn:
-	LDA <Ending_Timer
-	BEQ PRG024_B9BB	 ; If ending timer has expired, jump to PRG024_B9BB
 
-	; Second ending timer = $30
-	LDY #$30
-	STY <Ending_Timer+1
-
-	AND #%00001100
-	TAY		 ; Y = 0, 4, 8, 12 (Ending_LightsOnPalSet level offset)
-
-	LDX Graphics_BufCnt	 ; X = current graphics buffer count
-	TXA
-	ADD #$07
-	STA Graphics_BufCnt	; Make room for 7 bytes
-
-	; VRAM High/Low (for palette)
-	LDA #$3f
-	STA Graphics_Buffer,X
-	LDA #$04
-	STA Graphics_Buffer+1,X
-
-	; Run length of 4
-	LDA #$04
-	STA Graphics_Buffer+2,X
-
-	; Terminator
-	LDA #$00
-	STA Graphics_Buffer+7,X
-
-	; The four palette colors for the "lights on" effect
-	LDA Ending_LightsOnPalSet,Y
-	STA Graphics_Buffer+3,X
-	LDA Ending_LightsOnPalSet+1,Y
-	STA Graphics_Buffer+4,X
-	LDA Ending_LightsOnPalSet+2,Y
-	STA Graphics_Buffer+5,X
-	LDA Ending_LightsOnPalSet+3,Y
-	STA Graphics_Buffer+6,X
-
-PRG024_B9BB:
-	LDA <Ending_Timer+1
-	BNE PRG024_B9C9	 ; If second ending timer has not expired, jump to PRG024_B9C9 (RTS)
-
-	INC <Ending_State	 ; Ending_State = 4
-
-	; First ending timer = $80
-	LDA #$80
-	STA <Ending_Timer
-
-	; Princess stands up
-	LDA #$1a
-	STA <Title_ObjMLSprite+1
-
-PRG024_B9C9:
-	RTS		 ; Return
 
 
 Ending_WalkToCenter:
-	LDA <Ending_Timer
-	BEQ PRG024_B9D7	 ; If first ending timer has not expired, jump to PRG024_B9D7
 
-	CMP #$60
-	BGE PRG024_B9D6	 ; If ending timer >= $60, jump to PRG024_B9D6 (RTS)
-
-	; Princess turns around
-	LDA #$00
-	STA <Title_ObjMLFlags+1
-
-PRG024_B9D6:
-	RTS		 ; Return
-
-PRG024_B9D7:
-	LDA <Title_ObjX
-	CMP #104
-	BLT PRG024_B9EC	 ; If Mario's X < 104, jump to PRG024_B9EC
-
-	; Mario stands
-	LDA #$02
-	STA <Title_ObjMLSprite
-
-	; Princess stands
-	LDA #$1a
-	STA <Title_ObjMLSprite+1
-
-	INC <Ending_State	; Ending_State = 5
-
-	; First Ending Timer = $B0
-	LDA #$b0
-	STA <Ending_Timer
-
-	RTS		 ; Return
-
-PRG024_B9EC:
-
-	; Second ending timer = $50
-	LDA #$50
-	STA <Ending_Timer+1
-
-	; Mario steps to the right
-	INC <Title_ObjX
-
-	; Princess steps to the left
-	DEC <Title_ObjX+1
-
-	LDA <Counter_1
-	AND #%00001100
-	LSR A
-	LSR A
-	TAY	; Y = 0 to 3
-
-	; Set Mario's walk frame
-	;LDA Title_ObjMLWalkSprite+4,Y
-	STA <Title_ObjMLSprite	
-
-	; Set Princess's walk frame
-	;LDA Title_ObjMLWalkSprite+12,Y
-	STA <Title_ObjMLSprite+1
-
-	RTS		 ; Return
 
 
 Ending_PrincessSpeech:
-	LDA <Ending_Timer
-	BNE PRG024_BA0D	 ; If timer not expired, jump to PRG024_BA0D (RTS)
 
-	JMP PRG024_BA2B	 ; Otherwise, jump to PRG024_BA2B
-
-PRG024_BA0D:
-	RTS		 ; Return
 
 
 Ending_FadeOut:
-	LDA <Ending_Timer
-	BNE PRG024_BA19	 ; If first ending timer has not expired, jump to PRG024_BA19
-
-	LDA <Ending_Timer+1
-	BNE PRG024_BA18	 ; If second ending timer has not expired, jump to PRG024_BA18 (RTS)
-
-	INC <Ending_State ; Ending_State = 7
-
-PRG024_BA18:
-	RTS		 ; Return
-
-PRG024_BA19:
-
-	; Ending timer was init'ed to $F (15) so ...
-	LSR A
-	LSR A		; Ending timer / 4
-	STA <Temp_Var1	 ; Temp_Var1 = 0 to 3
-
-	; Execute $5A, $59, $58, $57 (fade out)
-	LDA #$5a
-	SUB <Temp_Var1
-	STA Graphics_Queue
-
-	; Second ending timer = $10
-	LDA #$10
-	STA Ending_Timer+1
-
-	RTS		 ; Return
-
-PRG024_BA2B:
-	LDA <EndText_State
-	JSR DynJump
 
 	; THESE MUST FOLLOW DynJump FOR THE DYNAMIC JUMP TO WORK!!
-	.word EndText_DrawDiagBox	; 0: Draw the dialog box
-	.word EndText_DoPrincessText	; 1: Do the text
-	.word EndText_Wait		; 2: Waits for timer to expire, then advances Ending_State
+	;.word EndText_DrawDiagBox	; 0: Draw the dialog box
+	;.word EndText_DoPrincessText	; 1: Do the text
+	;.word EndText_Wait		; 2: Waits for timer to expire, then advances Ending_State
 
 
-PDiagBox_R1:	.byte $94, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $96
-PDiagBox_R2:	.byte $92, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $93
-PDiagBox_R3:	.byte $95, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $97
+;PDiagBox_R1:	.byte $94, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $96
+;PDiagBox_R2:	.byte $92, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $93
+;PDiagBox_R3:	.byte $95, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $97
 
-PDiagBox_RowOffs:
-	.byte (PDiagBox_R1 - PDiagBox_R1), (PDiagBox_R2 - PDiagBox_R1), (PDiagBox_R2 - PDiagBox_R1), (PDiagBox_R2 - PDiagBox_R1)
-	.byte (PDiagBox_R2 - PDiagBox_R1), (PDiagBox_R2 - PDiagBox_R1), (PDiagBox_R2 - PDiagBox_R1), (PDiagBox_R3 - PDiagBox_R1)
-PDiagBox_RowOffs_End
+;PDiagBox_RowOffs:
+;	.byte (PDiagBox_R1 - PDiagBox_R1), (PDiagBox_R2 - PDiagBox_R1), (PDiagBox_R2 - PDiagBox_R1), (PDiagBox_R2 - PDiagBox_R1)
+;	.byte (PDiagBox_R2 - PDiagBox_R1), (PDiagBox_R2 - PDiagBox_R1), (PDiagBox_R2 - PDiagBox_R1), (PDiagBox_R3 - PDiagBox_R1)
+;PDiagBox_RowOffs_End
 
 
 EndText_DrawDiagBox:
 
-	LDX Graphics_BufCnt	 ; X = buffer count
 
-	; Set current VRAM address 
-	LDA <EndText_VH
-	STA Graphics_Buffer,X
-	LDA <EndText_VL	
-	STA Graphics_Buffer+1,X
-
-	ADD #$20	; 32 bytes to next row
-	STA <EndText_VL
-	BCC PRG024_BA87
-	INC <EndText_VH	 ; Apply carry
-PRG024_BA87:
-	LDA #(PDiagBox_R2 - PDiagBox_R1)	; run count per row
-	STA Graphics_Buffer+2,X
-	STA <Temp_Var1		 ; -> Temp_Var1
-
-	LDY <EndText_CPos	 ; Y = current dialog box row
-	LDA PDiagBox_RowOffs,Y
-	TAY		 	; Y = offset to this row index
-
-PRG024_BA94:
-	; Store next pattern in dialog box
-	LDA PDiagBox_R1,Y
-	STA Graphics_Buffer+3,X
-
-	INY		 ; Y++ (next pattern for dialog box)
-	INX		 ; X++ (next index in graphics buffer)
-
-	DEC <Temp_Var1	 ; Temp_Var1--
-	BNE PRG024_BA94	 ; While Temp_Var1 > 0, loop!
-
-	; Insert terminator
-	LDA #$00
-	STA Graphics_Buffer+3,X
-
-	; X += 3
-	INX
-	INX
-	INX
-	STX Graphics_BufCnt
-
-	INC <EndText_CPos	 ; Next row
-
-	LDA <EndText_CPos
-	CMP #(PDiagBox_RowOffs_End - PDiagBox_RowOffs)
-	BLT PRG024_BAC8	 ; If rows to go, jump to PRG024_BAC8 (RTS)
-
-	LDY #$00	 ; Y = 0
-
-	; This basically just amounts to a zero; kind of strange?
-	LDA PRG024_BB23,Y
-	STA <EndText_CPos
-
-	; EndText_VH = $92
-	LDA #$29
-	STA <EndText_VH
-
-	; EndText_VL = $69
-	LDA #$69
-	STA <EndText_VL
-
-	; EndText_Timer = $10
-	LDA #$10
-	STA <EndText_Timer
-
-	INC <EndText_State	 ; EndText_State = 1
-
-PRG024_BAC8:
-	RTS		 ; Return
 
 	; English: "Thank you. But" / "our Princess is" / "in another" / "castle!...Just" / "kidding! Ha ha" / "ha! Bye bye."
 EndText:
 
 	;       T    h    a    n    k         y    o    u    .         B    u    t
-	.byte $C3, $D7, $D0, $DD, $DA, $FE, $8C, $DE, $CE, $E9, $FE, $B1, $CE, $CD, $FE
+	;.byte $C3, $D7, $D0, $DD, $DA, $FE, $8C, $DE, $CE, $E9, $FE, $B1, $CE, $CD, $FE
 
 	;       o    u    r         P    r    i    n    c    e    s    s         i    s    
-	.byte $DE, $CE, $CB, $FE, $BF, $CB, $D8, $DD, $D2, $D4, $CC, $CC, $FE, $D8, $CC
+	;.byte $DE, $CE, $CB, $FE, $BF, $CB, $D8, $DD, $D2, $D4, $CC, $CC, $FE, $D8, $CC
 
 	;       i    n         a    n    o    t    h    e    r    
-	.byte $D8, $DD, $FE, $D0, $DD, $DE, $CD, $D7, $D4, $CB, $FE, $FE, $FE, $FE, $FE
+	;.byte $D8, $DD, $FE, $D0, $DD, $DE, $CD, $D7, $D4, $CB, $FE, $FE, $FE, $FE, $FE
 
 	;       c    a    s    t    l    e    !    .    .    .    J    u    s    t
-	.byte $D2, $D0, $CC, $CD, $DB, $D4, $EA, $E9, $E9, $E9, $B9, $CE, $CC, $CD, $FE
+	;.byte $D2, $D0, $CC, $CD, $DB, $D4, $EA, $E9, $E9, $E9, $B9, $CE, $CC, $CD, $FE
 
 	;       k    i    d    d    i    n    g    !         H    a         h    a    
-	.byte $DA, $D8, $D3, $D3, $D8, $DD, $D6, $EA, $FE, $B7, $D0, $FE, $D7, $D0, $FE
+	;.byte $DA, $D8, $D3, $D3, $D8, $DD, $D6, $EA, $FE, $B7, $D0, $FE, $D7, $D0, $FE
 
 	;       h    a    !         B    y    e         b    y    e    .
-	.byte $D7, $D0, $EA, $FE, $B1, $8C, $D4, $FE, $D1, $8C, $D4, $E9, $FE, $FE, $FE
+	;.byte $D7, $D0, $EA, $FE, $B1, $8C, $D4, $FE, $D1, $8C, $D4, $E9, $FE, $FE, $FE
 
 PRG024_BB23:
-	; Terminator
-	.byte $00
+
 
 EndText_DoPrincessText:
-	LDA <EndText_Timer
-	BNE PRG024_BB70	 ; If the timer is not expired, jump to PRG024_BB70 (RTS)
 
-	LDX Graphics_BufCnt	 ; X = current graphics buffer count
-
-	LDY <EndText_CPos	 ; Y = dialog message character position
-
-	; Insert one character into graphics buffer
-	LDA <EndText_VH
-	STA Graphics_Buffer,X	; address high
-	LDA #$01	 
-	STA Graphics_Buffer+2,X	; run length
-	LDA EndText,Y
-	STA Graphics_Buffer+3,X	 ; Next character from Princess speech
-	LDA #$00
-	STA Graphics_Buffer+4,X	; terminator
-
-	; Update Graphics_BufCnt
-	TXA
-	ADD #$04
-	STA Graphics_BufCnt
-
-	; VRAM low address
-	LDA <EndText_VL
-	STA Graphics_Buffer+1,X
-
-	INC <EndText_CPos	; Next character in message
-	INC <EndText_VL	 	; Next VRAM byte
-
-	AND #$1f	 	; Get current column
-	CMP #$17
-	BNE PRG024_BB6C	 	; If we're not in column 23, jump to PRG024_BB6C
-
-	; Line break!
-
-	LDA <EndText_VL	
-	ADC #$10		; Add enough bytes to get to next row
-	STA <EndText_VL	
-	BCC PRG024_BB62
-	INC <EndText_VH		; Apply carry
-PRG024_BB62:
-
-	CMP #$29
-	BNE PRG024_BB6C	 ; If we haven't reached the last character, jump to PRG024_BB6C
-
-	INC <EndText_State	 ; EndText_State = 2
-
-	; Second ending timer = $4A
-	LDA #$4a
-	STA <Ending_Timer+1
-
-PRG024_BB6C:
-
-	; First ending timer = $0B
-	LDA #$0b
-	STA <Ending_Timer
-
-PRG024_BB70:
-	RTS		 ; Return
 
 
 EndText_Wait:
-	LDA <Ending_Timer+1
-	BNE PRG024_BB7B	 ; If second ending timer has not expired, jump to PRG024_BB7B (RTS)
 
-	; First ending timer = $0F
-	LDA #$0f
-	STA <Ending_Timer
-
-	INC <Ending_State	 ; Ending_State = 6
-
-PRG024_BB7B:
-	RTS		 ; Return
 
 Ending_Credits:
 	; Debug menu credits jump here
@@ -3121,7 +2800,7 @@ PRG024_BF5D:
 	RTS		 ; Return
 
 PRG024_FREE_SPACE:
-	.ds 0xFE0
+	.ds 0x1180
 
 	; PatTable_BankSel+X values (sprite pattern tables) loaded per "world" of ending picture
 Ending2_EndPicPatTable2:	.byte $57, $53, $51, $00, $43, $02, $44, $54
