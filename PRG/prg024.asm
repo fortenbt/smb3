@@ -107,6 +107,7 @@ King_DoDialog:
 	.word TAndK_DrawDiagBox		; 0: Draw the dialog box
 	.word TAndK_DoToadText		; 1: Do the text
 	.word TAndK_WaitPlayerButtonA	; 2: Wait for Player to push 'A'
+	.word TAndK_FadeToBlack
 
 	; Patterns that make up the rows of the dialog box
 DiagBox_R1:	.byte $94, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $96
@@ -339,8 +340,11 @@ _petting_dog:
 	BNE _do_pet_dog				; Force pet dog until music is done
 	LDA <Pad_Input
 	BPL _do_pet_dog
-	; pressed A...go to credits
-	JMP IntReset
+_go_to_fade_state:			; pressed A...go to credits
+	LDA #20					; 4 frames per palette fade (5 fade states)
+	STA <Ending_Timer
+	INC <CineKing_DialogState
+	RTS
 _do_pet_dog:
 	LDA #$00
 	STA <Pad_Holding	; Otherwise, disable all inputs
@@ -361,7 +365,7 @@ _bad_ending:
 	JSR KingRoom_DisablePlayer
 	LDA <Pad_Input
 	BPL _bad_end_rts		; If Player is not pushing 'A', jump to PRG024_A260 (RTS)
-
+	JMP _go_to_fade_state
 _bad_end_rts
 	RTS
 	;;; [ORANGE] TODO: Logic here:
@@ -390,6 +394,49 @@ _bad_end_rts
 
 	RTS		 ; Return
 
+TAndK_FadeToBlack:
+	PLA
+	PLA
+	PLA
+	PLA
+	; Load page 24 into A000 and page 25 into C000
+	LDA #25
+	STA PAGE_C000
+	LDA #24
+	STA PAGE_A000
+	JSR PRGROM_Change_Both2
+
+_end_game_loop:
+	JSR DoEndGame
+	JSR GraphicsBuf_Prep_And_WaitVSyn2
+	JMP _end_game_loop
+
+DoEndGame:
+	LDA <CineKing_DialogState
+	SUB #3
+
+	JSR DynJump
+	.word DoKingFadeout
+	.word IntReset
+
+DoKingFadeout:
+	; Execute $56, $57, $58, $59, $5A to do the fade
+	LDA <Ending_Timer
+	AND #%00000011		; Every four frames, fade the palette
+	BNE _tandk_fade_dec_rts
+	LDA <Ending_Timer
+	LSR A
+	LSR A
+	STA <Temp_Var1
+	LDA #$5B
+	SUB <Temp_Var1
+	STA Graphics_Queue
+_tandk_fade_dec_rts:
+	DEC <Ending_Timer
+	BNE _tandk_fade_rts
+	INC <CineKing_DialogState	; done fading
+_tandk_fade_rts:
+	RTS
 
 PRG024_A27A:
 	; Standard exit to map
@@ -2800,8 +2847,10 @@ PRG024_BF5D:
 	RTS		 ; Return
 
 PRG024_FREE_SPACE:
-	.ds 0x1180
+	;.ds 0x11ec
 
+.bound_bf5e:	BoundCheck .bound_bf5e, $BF5E
+	.org $BF5E
 	; PatTable_BankSel+X values (sprite pattern tables) loaded per "world" of ending picture
 Ending2_EndPicPatTable2:	.byte $57, $53, $51, $00, $43, $02, $44, $54
 Ending2_EndPicPatTable3:	.byte $00, $04, $00, $76, $76, $76, $04, $76
@@ -2876,6 +2925,3 @@ Ending2_EndPicSprites3:
 	.byte $47, $B5
 
 	; List continued in PRG025
-
-
-
