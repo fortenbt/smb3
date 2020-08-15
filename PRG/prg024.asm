@@ -107,7 +107,7 @@ King_DoDialog:
 	.word TAndK_DrawDiagBox		; 0: Draw the dialog box
 	.word TAndK_DoToadText		; 1: Do the text
 	.word TAndK_WaitPlayerButtonA	; 2: Wait for Player to push 'A'
-	.word TAndK_FadeToBlack
+	.word TAndK_EndGame
 
 	; Patterns that make up the rows of the dialog box
 DiagBox_R1:	.byte $94, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $96
@@ -375,10 +375,10 @@ _bad_end_rts
 	;;;      - If so, go to pet-the-dog state: freeze player on ground and play petting animation
 
 	LDA <Pad_Input
-	BPL PRG024_A282	 ; If Player is not pushing 'A', jump to PRG024_A282 (RTS)
+	BPL _tandk_wait_a_rts	 ; If Player is not pushing 'A', jump to PRG024_A282 (RTS)
 
 	LDA Map_Objects_IDs
-	BEQ PRG024_A27A	 ; If the "HELP!" bubble is gone, jump to PRG024_A27A
+	BEQ _tandk_wait_a_rts	 ; If the "HELP!" bubble is gone, jump to PRG024_A27A
 
 	; Level_JctCtl = 3 (switch to airship)
 	LDA #$03
@@ -391,10 +391,10 @@ _bad_end_rts
 	; Airship is in town now!
 	LDA #MAPOBJ_AIRSHIP
 	STA Map_Objects_IDs+1
-
+_tandk_wait_a_rts:
 	RTS		 ; Return
 
-TAndK_FadeToBlack:
+TAndK_EndGame:
 	PLA
 	PLA
 	PLA
@@ -417,6 +417,7 @@ DoEndGame:
 
 	JSR DynJump
 	.word DoKingFadeout
+	.word InitializeEndCredits
 	.word IntReset
 
 DoKingFadeout:
@@ -437,6 +438,35 @@ _tandk_fade_dec_rts:
 	INC <CineKing_DialogState	; done fading
 _tandk_fade_rts:
 	RTS
+
+InitializeEndCredits:
+	; Disable display
+	LDA #$00
+	STA PPU_CTL2
+	; Clear everything
+	JSR Sprite_RAM_Clear
+	JSR Reset_PPU_Clear_Nametables
+	; Clip sprites/BG, show sprites/BG, and enable intensity
+	LDA #$80
+	STA Update_Select	 ; Update_Select = $20 (Title Screen)
+	STA Raster_Effect	 ; Raster_Effect = $20 (Title Screen style)
+
+	LDA #%00011110
+	STA <PPU_CTL2_Copy
+	LDA #%10101000	; In addition to anything else specified by PPU_CTL1_Mod, Generate VBlank Resets, use 8x16 sprites, sprites use PT2
+	STA PPU_CTL1	; Set above settings
+	STA <PPU_CTL1_Copy	; Keep PPU_CTL1_Copy in sync!
+
+_do_pic:
+	JSR GraphicsBuf_Prep_And_WaitVSyn2	 ; Probably mainly for VSync
+
+	JSR Ending2_DoEndPic	 ; Update and draw end picture per world
+
+	LDA <Ending2_CurWorld
+	CMP #$08
+	BNE _do_pic	 ; While Ending2_CurWorld <> 8, loop!
+
+	JMP IntReset
 
 PRG024_A27A:
 	; Standard exit to map
