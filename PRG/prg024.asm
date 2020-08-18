@@ -446,6 +446,8 @@ _tandk_fade_rts:
 	RTS
 
 InitializeEndCredits:
+	LDA #MUS2B_UNDERWATER
+	STA Sound_QMusic2
 	; Disable display
 	LDA #$00
 	STA PPU_CTL2
