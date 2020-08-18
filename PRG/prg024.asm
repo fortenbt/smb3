@@ -447,7 +447,7 @@ InitializeEndCredits:
 	JSR Sprite_RAM_Clear
 	JSR Reset_PPU_Clear_Nametables
 	; Clip sprites/BG, show sprites/BG, and enable intensity
-	LDA #$80
+	LDA #$20
 	STA Update_Select	 ; Update_Select = $20 (Title Screen)
 	STA Raster_Effect	 ; Raster_Effect = $20 (Title Screen style)
 

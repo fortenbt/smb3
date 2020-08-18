@@ -1689,13 +1689,13 @@ PRG031_F4D5:
 	CMP #$a0	 ; 
 	BNE PRG031_F4DC	 ; If Update_Select <> $A0 (32 pixel parition), jump to PRG031_F4DC
 
-	JMP UpdSel_32PixPart	 ; Otherwise, jump to UpdSel_32PixPart
+	;JMP UpdSel_32PixPart	 ; Otherwise, jump to UpdSel_32PixPart
 
 PRG031_F4DC:
 	CMP #$20	 ;  
 	BNE PRG031_F4E3	 ; If Update_Select <> $20 (Title Screen), jump to PRG031_F4E3
 	;;; [ORANGE] We don't use this, as our title screen is the full screen
-	;JMP UpdSel_Title	 ; Otherwise, jump to UpdSel_Title
+	JMP UpdSel_Title	 ; Otherwise, jump to UpdSel_Title
 
 PRG031_F4E3:
 
@@ -1963,50 +1963,58 @@ PRG031_F631:
 	DEC <VBlank_Tick ; Decrement VBlank_Tick
 	JMP PRG031_F567	 ; 
 
-UpdSel_32PixPart:
+UpdSel_Title:
 	LDA #$00	 ; A = 0
 	STA PPU_CTL2	 ; Hide sprites and bg (most importantly)
 	STA PPU_SPR_ADDR ; Resets to sprite 0 in memory
-
 	LDA #$02	 ; A = 2
 	STA SPR_DMA	 ; DMA sprites from RAM @ $200 (probably trying to blank them out)
 	JSR PT2_Full_CHRROM_Switch	 ; Set up PT2 (Sprites) CHRROM
 
 	LDA <VBlank_Tick
-	BNE PRG031_F6BC	 		; If VBlank_Tick <> 0, jump to PRG031_F6BC
+	BNE PRG031_F748	 ; If VBlank_Tick <> 0, go to PRG031_F748
 
+	LDA <Ending2_IntCmd
+	BEQ PRG031_F72B	 ; If Ending2_IntCmd = 0, go to PRG031_F72B
+
+	LDA #MMC3_8K_TO_PRG_C000	; Changing PRG ROM at C000
+	STA MMC3_COMMAND 		; Set MMC3 command
+	LDA #25	 			; Page 25
+	STA MMC3_PAGE	 		; Set MMC3 page
+
+	LDA #MMC3_8K_TO_PRG_A000	; Changing PRG ROM at A000
+	STA MMC3_COMMAND 		; Set MMC3 command
+	LDA #24	 			; Page 24
+	STA MMC3_PAGE	 		; Set MMC3 page
+
+	JSR Do_Ending2_IntCmd	; Perform action of Ending2_IntCmd
+
+	JMP PRG031_F748	 ; Jump to PRG031_F748
+
+PRG031_F72B:
 	LDA #MMC3_8K_TO_PRG_A000	; Changing PRG ROM at A000
 	STA MMC3_COMMAND 		; Set MMC3 command
 	LDA #26	 			; Page 26
 	STA MMC3_PAGE	 		; Set MMC3 page
 
-	JSR Scroll_Commit_Column ; Update nametable as screen scrolls (differs from call made in UpdSel_Vertical, UpdSel_32PixPart)
 	JSR Video_Misc_Updates	 ; Various updates other than scrolling (palettes, status bar, etc.)
-	JSR TileChng_VRAMCommit	 ; Commit 16x16 tile change to VRAM
-
-	; Set pages at A000 and C000
-	JSR PRGROM_Change_Both
 
 	LDA <Graphics_Queue
-	BNE PRG031_F6B8	 ; If we don't need to reset the buffer, jump to PRG031_F6B8
+	BNE PRG031_F744	 ; If we don't need to reset the graphics buffer, jump to PRG031_F744
 
 	; Reset graphics buffer
 	LDA #$00	 
 	STA Graphics_BufCnt
 	STA Graphics_Buffer
 
-PRG031_F6B8:
+PRG031_F744:
 	LDA #$00	 
-	STA <Graphics_Queue	; Graphics Buffer reset
+	STA <Graphics_Queue	 ; Graphics Buffer reset
 
-PRG031_F6BC:
-	LDA PPU_STAT	 	; read PPU status to reset the high/low latch
+PRG031_F748:
+	LDA PPU_STAT
 
-	; Unknown hardware thing?  Is this for synchronization?
-	LDA #$3f	 	; 
-	STA PPU_VRAM_ADDR	; Access PPU address #3Fxx
-	LDA #$00	 	; 
-	STA PPU_VRAM_ADDR	; Access PPU address #3F00 (palettes?)
+	LDA #$00
 	STA PPU_VRAM_ADDR	; 
 	STA PPU_VRAM_ADDR	; Now accessing $0000 (Pattern tables?)
 
@@ -2024,13 +2032,22 @@ PRG031_F6BC:
 	LDA <Vert_Scroll
 	STA PPU_SCROLL	; Vertical scroll set
 
-	; 32 pixel partition begins at line 160
-	LDA #160
-	STA MMC3_IRQCNT		; Store 160 into the IRQ count
+	; NOTE: Different from the typical 192 scanline count!
+	LDA #193		; A = 193
+	STA MMC3_IRQCNT		; Store 193 into the IRQ count
 	STA MMC3_IRQLATCH	; Store it into the latch (will be used later)
 	STA MMC3_IRQENABLE	; Start the IRQ counter
 	CLI		; Enable maskable interrupts
-	JMP PRG031_F55B	 ; Jump to PRG031_F55B
+
+	LDA <VBlank_TickEn	 ; Check VBlank flag
+	BEQ PRG031_F786	 	; If A = 0, jump to PRG031_F786
+	JSR Randomize	 	; Shake up the randomizer!
+	JSR Read_Joypads	 ; Updates both joypads in RAM
+
+	DEC <VBlank_Tick	 ; Decrement VBlank_Tick
+
+PRG031_F786:
+	JMP PRG031_F567	 ; Jump to PRG031_F567
 
 
 
