@@ -343,6 +343,12 @@ _petting_dog:
 _go_to_fade_state:			; pressed A...go to credits
 	LDA #20					; 4 frames per palette fade (5 fade states)
 	STA <Ending_Timer
+	LDA #$00
+	STA <Pad_Holding
+	STA <Pad_Input
+	STA <Player_XVel
+	STA <Player_YVel
+	STA Sound_QPlayer		; Have to disable everything here as well to avoid the sound being played
 	INC <CineKing_DialogState
 	RTS
 _do_pet_dog:
