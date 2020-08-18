@@ -4612,7 +4612,7 @@ PRG001_B819:
 ObjInit_Bowser:
 
 	; Bowser takes 34 fireball hits!
-	LDA #20
+	LDA #34
 	STA Objects_HitCount,X
 
 	; Bowser is giant!
