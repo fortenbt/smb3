@@ -5760,6 +5760,69 @@ Bowser_SprRAMOff:
 	.byte $EC, $E8, $E4, $E0	; Middle sprites
 	.byte $FC, $F8, $F4, $F0	; Bottom sprites
 
+BowserPalettes:
+	;.byte $00, $05, $16, $07, $00, $06, $36, $17, $00, $07, $36, $27
+	.byte $00, $06, $36, $17, $00, $07, $36, $27
+BowserPalettes_End
+
+UpdateBowserPalettes:
+	LDA Graphics_BufCnt
+	BNE _bowser_pal_rts
+	TYA
+	PHA		; Save off Y
+	TXA
+	PHA		; Save off X
+	LDX Graphics_BufCnt
+	LDA #$3f
+	STA Graphics_Buffer,X
+	LDA #$18
+	STA Graphics_Buffer+1,X
+	LDA #(BowserPalettes_End-BowserPalettes)
+	STA Graphics_Buffer+2,X
+	LDY #$00
+_bowser_pal_loop:
+	LDA BowserPalettes,Y
+	STA Graphics_Buffer+3,X
+	INX
+	INY
+	CPY #(BowserPalettes_End-BowserPalettes)
+	BNE _bowser_pal_loop
+	LDA #$00
+	STA Graphics_Buffer+3,X
+	LDA Graphics_BufCnt
+	ADD #(BowserPalettes_End-BowserPalettes+3)	; addr, len, bytes
+	STA Graphics_BufCnt
+	PLA
+	TAX
+	PLA
+	TAY
+_bowser_pal_rts:
+	RTS
+
+SetBowserAttrs:
+	PHA
+	LDA Objects_HitCount+4
+	CMP #21				; >= 21, use spr3
+	BPL _set_bowser_spr_attr3
+	CMP #11				; >= 11, use spr2
+	BPL _set_bowser_spr_attr2
+	LDA <Counter_1
+	AND #4				; every other 4 frames, use spr1/spr2
+	BEQ _set_bowser_spr_attr2
+	PLA
+	ORA #SPR_PAL1
+	BNE _set_bowser_spr_attr	; branch (always)
+_set_bowser_spr_attr2:
+	PLA
+	ORA #SPR_PAL2
+	BNE _set_bowser_spr_attr	; branch (always)
+_set_bowser_spr_attr3:
+	PLA
+	ORA #SPR_PAL3	 	; Lock in palette 3 (change based on life left)
+_set_bowser_spr_attr:
+	STA Sprite_RAM+2,Y	; Store sprite attributes
+
+	RTS
 
 	; Bowser is a very large character drawn using 4x3 8x16-sized sprites
 Bowser_Draw:
@@ -5898,8 +5961,10 @@ PRG001_BE1A:
 	LDA <Temp_Var4		; A = Temp_Var4 (Bowser's flip bits alternate)
 
 PRG001_BE30:
-	ORA #SPR_PAL3	 	; Lock in palette 3
-	STA Sprite_RAM+2,Y	; Store sprite attributes
+	JSR SetBowserAttrs
+	;ORA #SPR_PAL1	 	; Lock in palette 3 (change based on life left)
+	;STA Sprite_RAM+2,Y	; Store sprite attributes
+	JSR UpdateBowserPalettes
 
 	LDA <Temp_Var3
 	AND #SPR_HFLIP
