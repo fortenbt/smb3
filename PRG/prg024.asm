@@ -457,9 +457,11 @@ InitializeEndCredits:
 	STA PPU_CTL1	; Set above settings
 	STA <PPU_CTL1_Copy	; Keep PPU_CTL1_Copy in sync!
 
+	LDA #$01
+	STA <Ending2_PicState
+
 _do_pic:
 	JSR GraphicsBuf_Prep_And_WaitVSyn2	 ; Probably mainly for VSync
-
 	JSR Ending2_DoEndPic	 ; Update and draw end picture per world
 
 	LDA <Ending2_CurWorld
