@@ -445,6 +445,28 @@ _tandk_fade_dec_rts:
 _tandk_fade_rts:
 	RTS
 
+MusicSelections:
+	.byte MUS2B_UNDERWATER, MUS2B_FORTRESS, MUS2B_BOSS, MUS2B_AIRSHIP, MUS2B_BATTLE, MUS2B_OVERWORLD, MUS2B_UNDERGROUND
+	.byte MUS2A_WORLD1
+MusSelsEnd
+
+DoMusicMenu:
+	LDA <Pad_Input
+	AND #PAD_SELECT
+	BEQ _mus_sel_rts
+	INC <Ending2_MusicSel
+	LDA <Ending2_MusicSel
+	CMP #(MusSelsEnd-MusicSelections)
+	BNE _set_mus_sel
+	LDA #$00
+	STA <Ending2_MusicSel
+_set_mus_sel:
+	LDX <Ending2_MusicSel
+	LDA MusicSelections,X
+	STA Sound_QMusic2
+_mus_sel_rts:
+	RTS
+
 InitializeEndCredits:
 	LDA #MUS2B_UNDERWATER
 	STA Sound_QMusic2
@@ -471,6 +493,8 @@ InitializeEndCredits:
 _do_pic:
 	JSR GraphicsBuf_Prep_And_WaitVSyn2	 ; Probably mainly for VSync
 	JSR Ending2_DoEndPic	 ; Update and draw end picture per world
+
+	JSR DoMusicMenu
 
 	LDA <Ending2_CurWorld
 	CMP #$08

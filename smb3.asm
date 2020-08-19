@@ -588,6 +588,7 @@ PAD_RIGHT	= $01
 	Ending2_TimerH:		.ds 1	; Ending part 2 timer "high" part
 	Ending2_TimerL:		.ds 1	; Ending part 2 timer "low" part
 	Ending2_CurWorld:	.ds 1	; Current world we're showing (8 = THE END)
+	Ending2_MusicSel:	.ds 1
 
 	.org $D2
 	Ending_Timer:		.ds 2	; $D2-$D3 Twin ending timers, generally one for Mario and one for Princess
