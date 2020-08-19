@@ -476,7 +476,17 @@ DoEndCredits:
 
 	; Clear everything
 	JSR Sprite_RAM_Clear
-	JSR Reset_PPU_Clear_Nametables
+	; Reset graphics buffer
+	LDA #$00
+	STA Graphics_BufCnt
+	STA Graphics_Buffer
+	JSR Clear_PPU_CTL2_Copy	; Clear RAM copy and actual PPU_CTL2
+	; Clear the whole nametable to $ff
+	LDA #$ff
+	STA ClearPattern
+	LDA #$28
+	STA <Temp_Var1
+	JSR Clear_Nametable_Short
 	; Clip sprites/BG, show sprites/BG, and enable intensity
 	LDA #$20
 	STA Update_Select	 ; Update_Select = $20 (Title Screen)
@@ -2495,7 +2505,7 @@ Ending2_PrepClear:
 	STA <Ending2_ClearLen
 
 	; Ending2_ClearPat = $5C
-	LDA #$5c
+	LDA #$ff
 	STA <Ending2_ClearPat
 
 	INC <Ending2_PicState	; Ending2_PicState = 2
