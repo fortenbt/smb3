@@ -2678,9 +2678,9 @@ Ending2_SetFlag2:
 EndPic_PatTable:
 	.byte 15, 36, 52, 107, 15, 36, 52, 107
 EndPic_StartCmd:
-	.byte $2A, $2D, $32, $36, $3A, $3E, $44, $49
+	.byte $2A, $2D, $30, $36, $3A, $3E, $44, $49
 EndPic_EndCmd:
-	.byte $2C, $2E, $35, $39, $3D, $43, $48, $4C
+	.byte $2C, $2F, $30, $39, $3D, $43, $48, $4C
 
 Ending2_CommitPicture:
 	JMP _skip_commit_pic
@@ -2744,6 +2744,10 @@ Ending2_AddSprites:
 
 	; Clear ending sprites
 	LDA #$f8
+	STA Sprite_RAM+$00
+	STA Sprite_RAM+$04
+	STA Sprite_RAM+$08
+	STA Sprite_RAM+$0C
 	STA Sprite_RAM+$10
 	STA Sprite_RAM+$14
 	STA Sprite_RAM+$18
@@ -2772,6 +2776,10 @@ Ending2_AddSprites:
 	STA Sprite_RAM+$74
 	STA Sprite_RAM+$78
 	STA Sprite_RAM+$7C
+	STA Sprite_RAM+$80
+	STA Sprite_RAM+$84
+	STA Sprite_RAM+$88
+	STA Sprite_RAM+$8C
 
 	;JMP _skip_end_sprites
 
@@ -2796,14 +2804,16 @@ Ending2_AddSprites:
 	; Load length of sprite list
 	LDA Ending2_EndPicSpriteListLen,Y
 	TAY
+	INY
 
 	; Copy sprite data in
 PRG024_BEBE:
+	DEY
 	LDA [Temp_Var1],Y
 	STA Sprite_RAM,Y
 
-	DEY		 ; Y--
-	BPL PRG024_BEBE	 ; While Y >= 0, loop
+	CPY #$00
+	BNE PRG024_BEBE	 ; While Y >= 0, loop
 
 _skip_end_sprites:
 	INC <Ending2_PicState	 ; Ending2_PicState = 7
@@ -2969,37 +2979,37 @@ orange_expo_credit:
 	.byte $6C, $97, $01, $d8
 
 	; Super Orb Bros.
-	;.byte $10, $C1, $00, $68
-	;.byte $10, $C3, $00, $70
-	;.byte $10, $C5, $00, $78
-	;.byte $10, $C7, $00, $80
-	;.byte $10, $C9, $00, $88
-	;.byte $10, $CB, $00, $90
-	;.byte $10, $CD, $00, $98
-	;.byte $10, $CF, $00, $A0
+	.byte $10, $C1, $00, $68
+	.byte $10, $C3, $00, $70
+	.byte $10, $C5, $00, $78
+	.byte $10, $C7, $00, $80
+	.byte $10, $C9, $00, $88
+	.byte $10, $CB, $00, $90
+	.byte $10, $CD, $00, $98
+	.byte $10, $CF, $00, $A0
 
-	;.byte $20, $E1, $00, $68
-	;.byte $20, $E3, $00, $70
-	;.byte $20, $E5, $00, $78
-	;.byte $20, $E7, $00, $80
-	;.byte $20, $E9, $00, $88
-	;.byte $20, $EB, $00, $90
-	;.byte $20, $ED, $00, $98
-	;.byte $20, $EF, $00, $A0
+	.byte $20, $E1, $00, $68
+	.byte $20, $E3, $00, $70
+	.byte $20, $E5, $00, $78
+	.byte $20, $E7, $00, $80
+	.byte $20, $E9, $00, $88
+	.byte $20, $EB, $00, $90
+	.byte $20, $ED, $00, $98
+	.byte $20, $EF, $00, $A0
 
-	;.byte $30, $D1, $00, $70
-	;.byte $30, $D3, $00, $78
-	;.byte $30, $D5, $00, $80
-	;.byte $30, $D7, $00, $88
-	;.byte $30, $D9, $00, $90
-	;.byte $30, $DB, $00, $98
+	.byte $30, $D1, $00, $70
+	.byte $30, $D3, $00, $78
+	.byte $30, $D5, $00, $80
+	.byte $30, $D7, $00, $88
+	.byte $30, $D9, $00, $90
+	.byte $30, $DB, $00, $98
 
-	;.byte $40, $F1, $00, $70
-	;.byte $40, $F3, $00, $78
-	;.byte $40, $F5, $00, $80
-	;.byte $40, $F7, $00, $88
-	;.byte $40, $F9, $00, $90
-	;.byte $40, $FB, $00, $98
+	.byte $40, $F1, $00, $70
+	.byte $40, $F3, $00, $78
+	.byte $40, $F5, $00, $80
+	.byte $40, $F7, $00, $88
+	.byte $40, $F9, $00, $90
+	.byte $40, $FB, $00, $98
 orange_expo_credit_END
 
 .bound_bf5e:	BoundCheck .bound_bf5e, $BF5E
@@ -3007,14 +3017,14 @@ orange_expo_credit_END
 	; PatTable_BankSel+X values (sprite pattern tables) loaded per "world" of ending picture
 Ending2_EndPicPatTable2:	.byte $57, $53, $51, $00, $43, $02, $44, $54
 Ending2_EndPicPatTable3:	.byte 95,  $04, $00, $76, $76, $76, $04, $76
-Ending2_EndPicPatTable4:	.byte 111, 111, $1A, $1A, $00, $0B, $00, $00
-Ending2_EndPicPatTable5:	.byte 110, 110, $00, $00, $4F, $4F, $4F, $00
+Ending2_EndPicPatTable4:	.byte 111, 111, 111, $1A, $00, $0B, $00, $00
+Ending2_EndPicPatTable5:	.byte 110, 110, 110, $00, $4F, $4F, $4F, $00
 
 	; Split address, parallel tables for the starting address of the end picture sprite lists for each world
 Ending2_EndPicSpriteListH:	
 	.byte HIGH(_sorb_start)
 	.byte HIGH(orange_expo_credit)
-	.byte HIGH(Ending2_EndPicSprites3)
+	.byte HIGH(_sorb_start)
 	.byte HIGH(Ending2_EndPicSprites4)
 	.byte HIGH(Ending2_EndPicSprites5)
 	.byte HIGH(Ending2_EndPicSprites6)
@@ -3024,7 +3034,7 @@ Ending2_EndPicSpriteListH:
 Ending2_EndPicSpriteListL:
 	.byte LOW(_sorb_start)
 	.byte LOW(orange_expo_credit)
-	.byte LOW(Ending2_EndPicSprites3)
+	.byte LOW(_sorb_start)
 	.byte LOW(Ending2_EndPicSprites4)
 	.byte LOW(Ending2_EndPicSprites5)
 	.byte LOW(Ending2_EndPicSprites6)
@@ -3035,7 +3045,7 @@ Ending2_EndPicSpriteListL:
 Ending2_EndPicSpriteListLen:	
 	.byte (_orb_sprite_END - _sorb_start - 1)
 	.byte (orange_expo_credit_END - orange_expo_credit - 1)
-	.byte (Ending2_EndPicSprites3_End - Ending2_EndPicSprites3 - 1)
+	.byte (SuperOrbBros_END - _sorb_start - 1)
 	.byte (Ending2_EndPicSprites4_End - Ending2_EndPicSprites4 - 1)
 	.byte (Ending2_EndPicSprites5_End - Ending2_EndPicSprites5 - 1)
 	.byte (Ending2_EndPicSprites6_End - Ending2_EndPicSprites6 - 1)
