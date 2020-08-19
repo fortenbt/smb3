@@ -2593,6 +2593,7 @@ PRG024_BDD8:
 	RTS		 ; Return
 
 Ending2_PrepEndPic:
+	JMP _skip_endpics
 	LDY <Ending2_CurWorld	; Y = current world we're depicting
 
 	; Temp_Var2/1 hold the address to the end world picture
@@ -2637,7 +2638,7 @@ PRG024_BE02:
 	BLT PRG024_BDF0	 ; While buffer index < $C1, loop!
 
 	; Buffer filled...
-
+_skip_endpics:
 	LDY <Ending2_CurWorld	; Y = current world we're depicting
 
 	; Set starting VRAM address
@@ -2672,6 +2673,7 @@ PRG024_BE31:
 	.byte $2D, $31, $35, $39, $3D, $43, $48, $4C
 
 Ending2_CommitPicture:
+	JMP _skip_commit_pic
 	LDA PPU_STAT	
 
 	; Set VRAM Address to Ending2_PicVRAMH/L
@@ -2698,15 +2700,15 @@ PRG024_BE4A:
 
 	DEC <Ending2_ClearLen	; Ending2_ClearLen--
 	BPL PRG024_BE6B	 	; If Ending2_ClearLen >= 0, jump to PRG024_BE6B (RTS)
-
+_skip_commit_pic:
 	INC <Ending2_PicState	; Ending2_PicState++
 
 	LDX <Ending2_CurWorld	; X = current world we're depicting
 
-	LDA PRG024_BE29,X
+	LDA EndPic_StartCmd,X
 	STA <Ending2_QueueCmd
 
-	LDA PRG024_BE31,X
+	LDA EndPic_EndCmd,X
 	STA <Ending2_QCmdEnd
 
 PRG024_BE6B:
