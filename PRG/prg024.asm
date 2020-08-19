@@ -423,8 +423,7 @@ DoEndGame:
 
 	JSR DynJump
 	.word DoKingFadeout
-	.word InitializeEndCredits
-	.word IntReset
+	.word DoEndCredits
 
 DoKingFadeout:
 	; Execute $56, $57, $58, $59, $5A to do the fade
@@ -467,12 +466,14 @@ _set_mus_sel:
 _mus_sel_rts:
 	RTS
 
-InitializeEndCredits:
+DoEndCredits:
 	LDA #MUS2B_UNDERWATER
 	STA Sound_QMusic2
 	; Disable display
 	LDA #$00
 	STA PPU_CTL2
+	STA <Ending2_CurWorld		; reset this
+
 	; Clear everything
 	JSR Sprite_RAM_Clear
 	JSR Reset_PPU_Clear_Nametables
