@@ -482,7 +482,7 @@ DoEndCredits:
 	STA Graphics_Buffer
 	JSR Clear_PPU_CTL2_Copy	; Clear RAM copy and actual PPU_CTL2
 	; Clear the whole nametable to $ff
-	LDA #$ff
+	LDA #$fe
 	STA ClearPattern
 	LDA #$28
 	STA <Temp_Var1
@@ -1183,6 +1183,8 @@ SuperOrbBros:
 	.byte $CC, $A5, $01, $28
 	.byte $CC, $A7, $01, $30
 	.byte $CC, $B5, $01, $38
+_oe2020_end
+_sorb_start:
 	; Super Orb Bros.
 	.byte $10, $C1, $00, $68
 	.byte $10, $C3, $00, $70
@@ -1216,6 +1218,10 @@ SuperOrbBros:
 	.byte $40, $F9, $00, $90
 	.byte $40, $FB, $00, $98
 SuperOrbBros_END
+_orb_sprite:
+	.byte $b0, $DD, $03, $7c
+	.byte $b0, $DF, $03, $84
+_orb_sprite_END
 
 Title_Custom_Setup:
 	;;; [ORANGE] Removed title display curtain routine
@@ -2497,11 +2503,11 @@ Ending2_PrepClear:
 	; Set Ending2_PicVRAMH/L
 	LDA #$28
 	STA <Ending2_PicVRAMH
-	LDA #$60
+	LDA #$00
 	STA <Ending2_PicVRAML
 
 	; Ending2_ClearLen = $14
-	LDA #$14
+	LDA #$0A
 	STA <Ending2_ClearLen
 
 	; Ending2_ClearPat = $5C
@@ -2547,11 +2553,11 @@ PRG024_BDA0:
 	; Set Ending2_PicVRAMH 
 	LDA #$2b
 	STA <Ending2_PicVRAMH
-	LDA #$c8
+	LDA #$c0				; start of attribute table
 	STA <Ending2_PicVRAML
 
 	; Ending2_ClearLen = 4
-	LDA #$04
+	LDA #$07				; clear 8 blocks of 8 bytes
 	STA <Ending2_ClearLen
 
 	RTS		 ; Return
@@ -2570,8 +2576,8 @@ PRG024_BDBB:
 	LDA <Ending2_PicVRAML
 	STA PPU_VRAM_ADDR
 
-	LDY #$07	 ; Y = $07
-	LDA #$aa	 ; Pattern $AA
+	LDY #$07	 ; Y = $07 (blocks of 8 bytes)
+	LDA #$ff	 ; Pattern $AA (attribute table pattern)
 PRG024_BDCC:
 	STA PPU_VRAM_DATA	; Store pattern
 
@@ -2647,6 +2653,9 @@ _skip_endpics:
 	LDA EndPic_VRAMStart_L,Y
 	STA <Ending2_PicVRAML
 
+	LDA EndPic_PatTable,Y
+	STA PatTable_BankSel
+
 	INC <Ending2_PicState		 ; Ending2_PicState = 4
 
 	; Ending2_ClearLen = $B
@@ -2666,11 +2675,12 @@ Ending2_SetFlag2:
 
 	RTS		 ; Return
 
-
-PRG024_BE29:
-	.byte $2A, $2E, $32, $36, $3A, $3E, $44, $49
-PRG024_BE31:
-	.byte $2D, $31, $35, $39, $3D, $43, $48, $4C
+EndPic_PatTable:
+	.byte 15, 36, 52, 107, 15, 36, 52, 107
+EndPic_StartCmd:
+	.byte $2A, $2D, $32, $36, $3A, $3E, $44, $49
+EndPic_EndCmd:
+	.byte $2C, $2E, $35, $39, $3D, $43, $48, $4C
 
 Ending2_CommitPicture:
 	JMP _skip_commit_pic
@@ -2734,6 +2744,11 @@ Ending2_AddSprites:
 
 	; Clear ending sprites
 	LDA #$f8
+	STA Sprite_RAM+$10
+	STA Sprite_RAM+$14
+	STA Sprite_RAM+$18
+	STA Sprite_RAM+$1c
+	STA Sprite_RAM+$20
 	STA Sprite_RAM+$24
 	STA Sprite_RAM+$28
 	STA Sprite_RAM+$2C
@@ -2743,6 +2758,22 @@ Ending2_AddSprites:
 	STA Sprite_RAM+$3C
 	STA Sprite_RAM+$40
 	STA Sprite_RAM+$44
+	STA Sprite_RAM+$48
+	STA Sprite_RAM+$4C
+	STA Sprite_RAM+$50
+	STA Sprite_RAM+$54
+	STA Sprite_RAM+$58
+	STA Sprite_RAM+$5C
+	STA Sprite_RAM+$60
+	STA Sprite_RAM+$64
+	STA Sprite_RAM+$68
+	STA Sprite_RAM+$6C
+	STA Sprite_RAM+$70
+	STA Sprite_RAM+$74
+	STA Sprite_RAM+$78
+	STA Sprite_RAM+$7C
+
+	;JMP _skip_end_sprites
 
 	LDY <Ending2_CurWorld	; Y = current world we're depicting
 
@@ -2774,6 +2805,7 @@ PRG024_BEBE:
 	DEY		 ; Y--
 	BPL PRG024_BEBE	 ; While Y >= 0, loop
 
+_skip_end_sprites:
 	INC <Ending2_PicState	 ; Ending2_PicState = 7
 
 	; Ending2_FadeTimer = 3
@@ -2926,18 +2958,62 @@ PRG024_BF5D:
 PRG024_FREE_SPACE:
 	;.ds 0x11ec
 
+orange_expo_credit:
+	.byte $6C, $81, $01, $a0
+	.byte $6C, $83, $01, $a8
+	.byte $6C, $85, $01, $b0
+	.byte $6C, $87, $01, $b8
+	.byte $6C, $91, $01, $c0
+	.byte $6C, $93, $01, $c8
+	.byte $6C, $95, $01, $d0
+	.byte $6C, $97, $01, $d8
+
+	; Super Orb Bros.
+	;.byte $10, $C1, $00, $68
+	;.byte $10, $C3, $00, $70
+	;.byte $10, $C5, $00, $78
+	;.byte $10, $C7, $00, $80
+	;.byte $10, $C9, $00, $88
+	;.byte $10, $CB, $00, $90
+	;.byte $10, $CD, $00, $98
+	;.byte $10, $CF, $00, $A0
+
+	;.byte $20, $E1, $00, $68
+	;.byte $20, $E3, $00, $70
+	;.byte $20, $E5, $00, $78
+	;.byte $20, $E7, $00, $80
+	;.byte $20, $E9, $00, $88
+	;.byte $20, $EB, $00, $90
+	;.byte $20, $ED, $00, $98
+	;.byte $20, $EF, $00, $A0
+
+	;.byte $30, $D1, $00, $70
+	;.byte $30, $D3, $00, $78
+	;.byte $30, $D5, $00, $80
+	;.byte $30, $D7, $00, $88
+	;.byte $30, $D9, $00, $90
+	;.byte $30, $DB, $00, $98
+
+	;.byte $40, $F1, $00, $70
+	;.byte $40, $F3, $00, $78
+	;.byte $40, $F5, $00, $80
+	;.byte $40, $F7, $00, $88
+	;.byte $40, $F9, $00, $90
+	;.byte $40, $FB, $00, $98
+orange_expo_credit_END
+
 .bound_bf5e:	BoundCheck .bound_bf5e, $BF5E
 	.org $BF5E
 	; PatTable_BankSel+X values (sprite pattern tables) loaded per "world" of ending picture
 Ending2_EndPicPatTable2:	.byte $57, $53, $51, $00, $43, $02, $44, $54
-Ending2_EndPicPatTable3:	.byte $00, $04, $00, $76, $76, $76, $04, $76
-Ending2_EndPicPatTable4:	.byte $57, $4E, $1A, $1A, $00, $0B, $00, $00
-Ending2_EndPicPatTable5:	.byte $4F, $4F, $00, $00, $4F, $4F, $4F, $00
+Ending2_EndPicPatTable3:	.byte 95,  $04, $00, $76, $76, $76, $04, $76
+Ending2_EndPicPatTable4:	.byte 111, 111, $1A, $1A, $00, $0B, $00, $00
+Ending2_EndPicPatTable5:	.byte 110, 110, $00, $00, $4F, $4F, $4F, $00
 
 	; Split address, parallel tables for the starting address of the end picture sprite lists for each world
 Ending2_EndPicSpriteListH:	
-	.byte HIGH(Ending2_EndPicSprites1)
-	.byte HIGH(Ending2_EndPicSprites2)
+	.byte HIGH(_sorb_start)
+	.byte HIGH(orange_expo_credit)
 	.byte HIGH(Ending2_EndPicSprites3)
 	.byte HIGH(Ending2_EndPicSprites4)
 	.byte HIGH(Ending2_EndPicSprites5)
@@ -2946,8 +3022,8 @@ Ending2_EndPicSpriteListH:
 	.byte HIGH(Ending2_EndPicSprites8)
 
 Ending2_EndPicSpriteListL:
-	.byte LOW(Ending2_EndPicSprites1)
-	.byte LOW(Ending2_EndPicSprites2)
+	.byte LOW(_sorb_start)
+	.byte LOW(orange_expo_credit)
 	.byte LOW(Ending2_EndPicSprites3)
 	.byte LOW(Ending2_EndPicSprites4)
 	.byte LOW(Ending2_EndPicSprites5)
@@ -2957,8 +3033,8 @@ Ending2_EndPicSpriteListL:
 
 	; Length of the sprite list per world - 1 (or last index, if you prefer)
 Ending2_EndPicSpriteListLen:	
-	.byte (Ending2_EndPicSprites1_End - Ending2_EndPicSprites1 - 1)
-	.byte (Ending2_EndPicSprites2_End - Ending2_EndPicSprites2 - 1)
+	.byte (_orb_sprite_END - _sorb_start - 1)
+	.byte (orange_expo_credit_END - orange_expo_credit - 1)
 	.byte (Ending2_EndPicSprites3_End - Ending2_EndPicSprites3 - 1)
 	.byte (Ending2_EndPicSprites4_End - Ending2_EndPicSprites4 - 1)
 	.byte (Ending2_EndPicSprites5_End - Ending2_EndPicSprites5 - 1)
@@ -2966,35 +3042,35 @@ Ending2_EndPicSpriteListLen:
 	.byte (Ending2_EndPicSprites7_End - Ending2_EndPicSprites7 - 1)
 	.byte (Ending2_EndPicSprites8_End - Ending2_EndPicSprites8 - 1)
 
-Ending2_EndPicSprites1:
-	.byte $81, $19, $00, $B0
-	.byte $81, $1B, $00, $B8
-	.byte $91, $1D, $00, $B0
-	.byte $91, $21, $00, $B8
-	.byte $B1, $EB, $01, $B8
-	.byte $B1, $EB, $41, $C0
-	.byte $B1, $D9, $01, $80
-	.byte $B1, $DB, $41, $88
-	.byte $B1, $D9, $01, $90
-	.byte $B1, $DB, $41, $98
-Ending2_EndPicSprites1_End
+;Ending2_EndPicSprites1:
+;	.byte $81, $19, $00, $B0
+;	.byte $81, $1B, $00, $B8
+;	.byte $91, $1D, $00, $B0
+;	.byte $91, $21, $00, $B8
+;	.byte $B1, $EB, $01, $B8
+;	.byte $B1, $EB, $41, $C0
+;	.byte $B1, $D9, $01, $80
+;	.byte $B1, $DB, $41, $88
+;	.byte $B1, $D9, $01, $90
+;	.byte $B1, $DB, $41, $98
+;Ending2_EndPicSprites1_End
 
-Ending2_EndPicSprites2:
-	.byte $79, $1B, $40, $38
-	.byte $79, $19, $40, $40
-	.byte $99, $67, $01, $50
-	.byte $B1, $65, $01, $70
-	.byte $A9, $85, $01, $88
-	.byte $A9, $87, $01, $90
-	.byte $B9, $A5, $01, $88
-	.byte $B9, $A7, $01, $90
-	.byte $91, $8D, $02, $A8
-	.byte $91, $8F, $02, $B0
-	.byte $99, $B1, $02, $D0
-	.byte $99, $B3, $02, $D8
-	.byte $A9, $B5, $02, $D0
-	.byte $A9, $B7, $02, $D8
-Ending2_EndPicSprites2_End
+;Ending2_EndPicSprites2:
+;	.byte $79, $1B, $40, $38
+;	.byte $79, $19, $40, $40
+;	.byte $99, $67, $01, $50
+;	.byte $B1, $65, $01, $70
+;	.byte $A9, $85, $01, $88
+;	.byte $A9, $87, $01, $90
+;	.byte $B9, $A5, $01, $88
+;	.byte $B9, $A7, $01, $90
+;	.byte $91, $8D, $02, $A8
+;	.byte $91, $8F, $02, $B0
+;	.byte $99, $B1, $02, $D0
+;	.byte $99, $B3, $02, $D8
+;	.byte $A9, $B5, $02, $D0
+;	.byte $A9, $B7, $02, $D8
+;Ending2_EndPicSprites2_End
 
 Ending2_EndPicSprites3:
 	.byte $3F, $B1, $01, $30
