@@ -274,8 +274,8 @@ Video_Upd_Table2:
 	.word credit_pic1_3		; $2C - ???
 	.word credit_pic2_1		; $2D - ???
 	.word credit_pic2_2		; $2E - ???
-	.word PRG025_CE02		; $2F - ???
-	.word PRG025_CE19		; $30 - ???
+	.word credit_pic2_3		; $2F - ???
+	.word credit_pic3_1		; $30 - ???
 	.word PRG025_CE2D		; $31 - 
 	.word PRG025_CE43		; $32 - 
 	.word PRG025_CE57		; $33 - 
@@ -823,9 +823,41 @@ credit_pic2_2:
 	.byte $C2, $D0, $DD, $D3, $D4, $CB, $F1, $F7, $E5
 	.byte $00
 
-PRG025_CE02:
-	.byte $2A, $65, $01, $58, $2A, $82, $05, $58 ; $CDFA - $CE09
-	.byte $5C, $57, $5C, $56, $2A, $A1, $07, $57, $5C, $5A, $5C, $5C, $5C, $56, $00
+credit_pic2_3:
+	vaddr $2b01
+	.byte $01, $94
+	vaddr $2b02
+	.byte VU_REPEAT | $1c, $90
+	vaddr $2b1e
+	.byte $01, $96
+	vaddr $2b21
+	.byte $1e
+	.byte $92, $BF, $CB, $D4, $CC, $CC, $FE, $CC, $D4, $DB, $D4, $D2, $CD, $FE, $CD, $DE, $FE
+	.byte $D2, $8C, $D2, $DB, $D4, $FE, $DC, $CE, $CC, $D8, $D2, $E9, $93
+	vaddr $2b41
+	.byte $01, $95
+	vaddr $2b42
+	.byte VU_REPEAT | $1c, $91
+	vaddr $2b5e
+	.byte $01, $97
+	.byte $00
+
+credit_pic3_1:
+	vaddr $2981
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $29c1
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $2a01
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $2a41
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $2a81
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $2986
+	.byte $14
+	.byte $C2, $DF, $D4, $D2, $D8, $D0, $DB, $FE, $CD, $D7, $D0, $DD, $DA, $CC, $FE, $CD
+	.byte $DE, $E9, $E9, $E9
+	.byte $00
 
 PRG025_CE19:
 	.byte $2A ; $CE0A - $CE19
@@ -969,9 +1001,9 @@ EndSeq_World2Pal:
 
 EndSeq_World3Pal:
         vaddr $3F00
-	.byte $20, $0F, $0F, $30, $16, $0F, $17, $2A, $37, $0F, $2C, $30, $37, $0F, $2C, $2A
-	.byte $37, $0F, $16, $36, $0F, $0F, $0F, $30, $16, $0F, $0F, $30, $2A, $0F, $0F, $30
-	.byte $2A
+	.byte $20, $0F, $0F, $30, $16, $0F, $17, $2A, $3b, $0F, $2C, $30, $3b, $0F, $2C, $2A
+	.byte $3b, $0F, $0C, $36, $3B, $0F, $0F, $30, $27, $0F, $0F, $30, $16, $0F, $0F, $30
+	.byte $16
 
 	; Terminator
 	.byte $00
