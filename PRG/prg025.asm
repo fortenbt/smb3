@@ -269,11 +269,11 @@ Video_Upd_Table2:
 	.word EndSeq_WorldFadeIn2	; $27 - End pic world fade in effect part 2
 	.word EndSeq_WorldFadeIn3	; $28 - End pic world fade in effect part 3
 	.word EndSeq_WorldFadeIn4	; $29 - End pic world fade in effect part 4
-	.word PRG025_CD82		; $2A - ???
-	.word PRG025_CDA6		; $2B - ???
-	.word PRG025_CDBB		; $2C - ???
-	.word PRG025_CDD1		; $2D - ???
-	.word PRG025_CDE7		; $2E - ???
+	.word credit_pic1_1		; $2A - ???
+	.word credit_pic1_2		; $2B - ???
+	.word credit_pic1_3		; $2C - ???
+	.word credit_pic2_1		; $2D - ???
+	.word credit_pic2_2		; $2E - ???
 	.word PRG025_CE02		; $2F - ???
 	.word PRG025_CE19		; $30 - ???
 	.word PRG025_CE2D		; $31 - 
@@ -717,8 +717,8 @@ PRG025_CCCE:
 
 EndSeq_WorldFadeIn1:
 	vaddr $3F00
-	.byte $20, $0F, $0F, $30, $16, $0F, $0F, $0F, $00, $0F, $0F, $00, $0F, $0F, $0F, $00
-	.byte $00, $0F, $0F, $0F, $00, $0F, $00, $0F, $0F, $0F, $00, $0F, $0F, $0F, $00, $0F
+	.byte $20, $0F, $0F, $00, $0F, $0F, $0F, $0F, $00, $0F, $0F, $00, $00, $0F, $0F, $00
+	.byte $00, $0F, $0F, $00, $00, $0F, $0F, $00, $0F, $0F, $0F, $00, $0F, $0F, $0F, $00
 	.byte $0F
 
 	; Terminator
@@ -726,8 +726,8 @@ EndSeq_WorldFadeIn1:
 
 EndSeq_WorldFadeIn2:
 	vaddr $3F00
-	.byte $20, $0F, $0F, $30, $16, $0F, $0F, $00, $10, $0F, $00, $10, $00, $0F, $00, $10
-	.byte $10, $0F, $00, $00, $10, $0F, $10, $00, $00, $0F, $10, $00, $00, $0F, $10, $00
+	.byte $20, $0F, $0F, $10, $00, $0F, $00, $00, $10, $0F, $00, $10, $10, $0F, $00, $10
+	.byte $10, $0F, $00, $10, $10, $0F, $0F, $10, $00, $0F, $0F, $10, $00, $0F, $0F, $10
 	.byte $00
 
 	; Terminator
@@ -735,8 +735,8 @@ EndSeq_WorldFadeIn2:
 
 EndSeq_WorldFadeIn3:
 	vaddr $3F00
-	.byte $20, $0F, $0F, $30, $16, $0F, $00, $10, $30, $0F, $10, $30, $10, $0F, $10, $30
-	.byte $30, $0F, $10, $10, $30, $0F, $30, $10, $10, $0F, $30, $10, $10, $0F, $30, $10
+	.byte $20, $0F, $0F, $20, $10, $0F, $10, $10, $30, $0F, $10, $30, $20, $0F, $10, $20
+	.byte $30, $0F, $00, $30, $30, $0F, $0f, $20, $10, $0F, $0F, $20, $10, $0F, $0F, $20
 	.byte $10
 
 	; Terminator
@@ -744,35 +744,84 @@ EndSeq_WorldFadeIn3:
 
 EndSeq_WorldFadeIn4:
 	vaddr $3F00
-	.byte $20, $0F, $0F, $30, $16, $0F, $27, $2A, $36, $0F, $3C, $30, $37, $0F, $21, $2A
-	.byte $36, $0F, $10, $36, $0F, $0F, $25, $36, $0F, $0F, $29, $36, $0F, $0F, $29, $36
-	.byte $0F
+	.byte $20, $0F, $0F, $30, $16, $0F, $17, $2A, $3b, $0F, $2C, $30, $3b, $0F, $2C, $2A
+	.byte $3b, $0F, $0C, $36, $3B, $0F, $0F, $30, $16, $0F, $0F, $30, $16, $0F, $0F, $30
+	.byte $16
 
 	; Terminator
 	.byte $00
 
-PRG025_CD82:
-	.byte $28, $F4, $07, $DE, $F4, $EF, $F1, $E3 ; $CD7A - $CD89
-	.byte $5C, $77, $29, $74, $0A, $E8, $EF, $E0, $F8, $F8, $5C, $F1, $E0, $F3, $E3, $2A ; $CD8A - $CD99
-	.byte $5C, $04, $D0, $D1, $D2, $D3, $2A, $7C, $82, $D4, $D6, $00
-
-PRG025_CDA6:
-	.byte $2A, $7F, $85, $D5 ; $CD9A - $CDA9
-	.byte $D7, $D7, $D7, $D7, $2A, $BA, $04, $D0, $D1, $D2, $D3, $2A, $DA, $82, $D4, $D6 ; $CDAA - $CDB9
+credit_pic1_1:
+	vaddr $2981
+	.byte 27
+	.byte $C3, $D7, $D4, $FE, $CF, $D8, $DB, $DB, $D0, $D6, $D4, $CB, $CC, $FE, $CD, $D7
+	.byte $D0, $DD, $DA, $FE, $8C, $DE, $CE, $FE, $D5, $DE, $CB
+	vaddr $29c1
+	.byte 29
+	.byte $8C, $DE, $CE, $CB, $FE, $D7, $D4, $DB, $DF, $9A, $D1, $CE, $CD, $FE, $D5, $D4
+	.byte $D0, $CB, $FE, $81, $D7, $D0, $CD, $FE, $D2, $DE, $CE, $DB, $D3
 	.byte $00
 
-PRG025_CDBB:
-	.byte $2A, $80, $03, $D1, $D2, $D3, $2A, $A2, $01, $D5, $2A, $C1, $04, $D0, $D1 ; $CDBA - $CDC9
-	.byte $D2, $D3, $2A, $E4, $01, $D5, $00
+credit_pic1_2:
+	vaddr $2a01
+	.byte 29
+	.byte $D1, $D4, $FE, $D8, $DD, $FE, $CC, $CD, $DE, $CB, $D4, $FE, $D5, $DE, $CB, $FE
+	.byte $CD, $D7, $D4, $DC, $FE, $DD, $DE, $81, $FE, $CD, $D7, $D0, $CD
+	vaddr $2a41
+	.byte 24
+	.byte $CD, $D7, $D4, $FE, $DE, $CB, $D1, $CC, $FE, $D0, $CB, $D4, $FE, $D1, $D0, $D2
+	.byte $DA, $FE, $D8, $DD, $FE, $CD, $D7, $D4
+	.byte $00
 
-PRG025_CDD1:
-	.byte $2B, $D1, $04, $55, $55, $55, $99, $2B, $D9 ; $CDCA - $CDD9
-	.byte $04, $55, $55, $7F, $BB, $2B, $E1, $04, $A5, $A5, $AF, $AB, $00
+credit_pic1_3:
+	vaddr $2a81
+	.byte 30
+	.byte $DF, $DE, $CC, $CC, $D4, $CC, $CC, $D8, $DE, $DD, $FE, $DE, $D5, $FE, $BE, $DB
+	.byte $D3, $FE, $BC, $D0, $DD, $FE, $B6, $CB, $D8, $DC, $DC, $E9, $E9, $E9
+	.byte $00
 
-PRG025_CDE7:
-	.byte $28, $E3, $07 ; $CDDA - $CDE9
-	.byte $DE, $F4, $EF, $F1, $E3, $5C, $78, $29, $24, $06, $E3, $E4, $F8, $E4, $EF, $F9 ; $CDEA - $CDF9
-	.byte $29, $67, $04, $F1, $E0, $F3, $E3, $00
+credit_pic2_1:
+	vaddr $2981
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $29c1
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $2a01
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $2a41
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $2a81
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $2985
+	.byte 8
+	.byte $B6, $CB, $D0, $DF, $D7, $D8, $D2, $CC
+	vaddr $29a5
+	.byte 5
+	.byte $BC, $CE, $CC, $D8, $D2
+	vaddr $29c5
+	.byte 5
+	.byte $C2, $DE, $CE, $DD, $D3
+	vaddr $29e5
+	.byte 12
+	.byte $BB, $D4, $CF, $D4, $DB, $FE, $B3, $D4, $CC, $D8, $D6, $DD
+	vaddr $2a05
+	.byte 8
+	.byte $B0, $C2, $BC, $FA, $C3, $D4, $D2, $D7
+	.byte $00
+
+credit_pic2_2:
+	vaddr $2a45
+	.byte 11
+	.byte $BF, $DB, $D0, $8C, $CD, $D4, $CC, $CD, $D8, $DD, $D6
+	vaddr $2a54
+	.byte 7
+	.byte $D4, $CF, $D8, $DB, $D4, $DB, $D5
+	vaddr $2a74
+	.byte 5
+	.byte $B9, $D0, $D1, $D4, $DC
+	vaddr $2a94
+	.byte 9
+	.byte $C2, $D0, $DD, $D3, $D4, $CB, $F1, $F7, $E5
+	.byte $00
 
 PRG025_CE02:
 	.byte $2A, $65, $01, $58, $2A, $82, $05, $58 ; $CDFA - $CE09
@@ -902,8 +951,8 @@ PRG025_D059:
 
 EndSeq_World1Pal:
         vaddr $3F00
-	.byte $20, $0F, $0F, $30, $16, $0F, $17, $2A, $37, $0F, $2C, $30, $37, $0F, $2C, $2A
-	.byte $37, $0F, $16, $36, $0F, $0F, $0F, $30, $16, $0F, $0F, $30, $16, $0F, $0F, $30
+	.byte $20, $0F, $0F, $30, $16, $0F, $17, $2A, $3b, $0F, $2C, $30, $3b, $0F, $2C, $2A
+	.byte $3b, $0F, $0C, $36, $3B, $0F, $0F, $30, $16, $0F, $0F, $30, $16, $0F, $0F, $30
 	.byte $16
 
 	; Terminator
@@ -911,9 +960,9 @@ EndSeq_World1Pal:
 
 EndSeq_World2Pal:
         vaddr $3F00
-	.byte $20, $0F, $0F, $30, $16, $0F, $17, $2A, $37, $0F, $2C, $30, $37, $0F, $2C, $2A
-	.byte $37, $0F, $16, $36, $0F, $0F, $0F, $30, $16, $0F, $0F, $30, $2A, $0F, $0F, $30
-	.byte $2A
+	.byte $20, $0F, $0F, $30, $16, $0F, $17, $2A, $3b, $0F, $2C, $30, $3b, $0F, $2C, $2A
+	.byte $3b, $0F, $0C, $36, $3B, $0F, $0F, $30, $27, $0F, $0F, $30, $16, $0F, $0F, $30
+	.byte $16
 
 	; Terminator
 	.byte $00
@@ -921,8 +970,8 @@ EndSeq_World2Pal:
 EndSeq_World3Pal:
         vaddr $3F00
 	.byte $20, $0F, $0F, $30, $16, $0F, $17, $2A, $37, $0F, $2C, $30, $37, $0F, $2C, $2A
-	.byte $37, $0F, $2A, $36, $0F, $0F, $0F, $30, $16, $0F, $0F, $30, $16, $0F, $0F, $30
-	.byte $16
+	.byte $37, $0F, $16, $36, $0F, $0F, $0F, $30, $16, $0F, $0F, $30, $2A, $0F, $0F, $30
+	.byte $2A
 
 	; Terminator
 	.byte $00
