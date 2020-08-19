@@ -2689,8 +2689,11 @@ PRG031_FDFB:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Clear_Nametable_Short
 ;
-; This subroutine sets ClearPattern over half a nametable, which
+; This subroutine sets ClearPattern over half (3/4) a nametable, which
 ; is the initial value of A ($20 for NT 0, $28 for NT2)
+; [ORANGE] I'm sure this was to avoid the status bar.
+; At some point, I removed anything that used it, though, so I modified
+; it to clear the whole thing, which I use in the credits.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Clear_Nametable_Short:	; $FE02
 	LDA PPU_STAT	 	; 
@@ -2702,7 +2705,7 @@ Clear_Nametable_Short:	; $FE02
 	LDA #$00 
 	STA PPU_VRAM_ADDR	; $00 as low byte for VRAM address (Reset_PPU_Clear_Nametables selects nametable 1 or 2)
 
-	LDX #$03	 ; X = 3
+	LDX #$04	 ; X = 3
 	LDY #$c0	 ; Y = $C0
 	LDA ClearPattern	 ; A = ClearPattern
 PRG031_FE1B:
