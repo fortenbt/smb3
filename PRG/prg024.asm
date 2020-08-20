@@ -1218,10 +1218,6 @@ _sorb_start:
 	.byte $40, $F9, $00, $90
 	.byte $40, $FB, $00, $98
 SuperOrbBros_END
-_orb_sprite:
-	.byte $b0, $DD, $03, $7c
-	.byte $b0, $DF, $03, $84
-_orb_sprite_END
 
 Title_Custom_Setup:
 	;;; [ORANGE] Removed title display curtain routine
@@ -2968,7 +2964,38 @@ PRG024_BF5D:
 PRG024_FREE_SPACE:
 	;.ds 0x11ec
 
-orange_expo_credit:
+_credit1_spr:
+	.byte $2c, $61, $02, $64
+	.byte $2c, $63, $02, $6c	; fire1
+
+	.byte $46, $65, $02, $79
+	.byte $46, $67, $02, $81	; fire2
+
+	.byte $30, $DD, $03, $74
+	.byte $30, $DF, $03, $7c
+
+	.byte $40, $DD, $00, $8a
+	.byte $40, $DF, $00, $92
+
+	.byte $3c, $DD, $02, $6d
+	.byte $3c, $DF, $02, $75
+
+	.byte $38, $DD, $01, $84
+	.byte $38, $DF, $01, $8c
+
+	.byte $30, $49, $02, $94
+
+	.byte $1c, $01, $01, $78
+	.byte $1c, $03, $01, $80
+	.byte $1c, $05, $01, $88
+	.byte $2c, $07, $01, $78
+	.byte $2c, $09, $01, $80
+	.byte $2c, $0b, $01, $88
+
+_credit1_spr_END
+
+_credit2_spr:
+_credit3_spr:
 	.byte $6C, $81, $01, $a0
 	.byte $6C, $83, $01, $a8
 	.byte $6C, $85, $01, $b0
@@ -3010,21 +3037,22 @@ orange_expo_credit:
 	.byte $40, $F7, $00, $88
 	.byte $40, $F9, $00, $90
 	.byte $40, $FB, $00, $98
-orange_expo_credit_END
+_credit2_spr_END
+_credit3_spr_END
 
 .bound_bf5e:	BoundCheck .bound_bf5e, $BF5E
 	.org $BF5E
 	; PatTable_BankSel+X values (sprite pattern tables) loaded per "world" of ending picture
-Ending2_EndPicPatTable2:	.byte $57, $53, $51, $00, $43, $02, $44, $54
-Ending2_EndPicPatTable3:	.byte 95,  $04, $00, $76, $76, $76, $04, $76
+Ending2_EndPicPatTable2:	.byte 39, $53, $51, $00, $43, $02, $44, $54
+Ending2_EndPicPatTable3:	.byte 14,  $04, $00, $76, $76, $76, $04, $76
 Ending2_EndPicPatTable4:	.byte 111, 111, 111, $1A, $00, $0B, $00, $00
 Ending2_EndPicPatTable5:	.byte 110, 110, 110, $00, $4F, $4F, $4F, $00
 
 	; Split address, parallel tables for the starting address of the end picture sprite lists for each world
 Ending2_EndPicSpriteListH:	
-	.byte HIGH(_sorb_start)
-	.byte HIGH(orange_expo_credit)
-	.byte HIGH(_sorb_start)
+	.byte HIGH(_credit1_spr)
+	.byte HIGH(_credit2_spr)
+	.byte HIGH(_credit3_spr)
 	.byte HIGH(Ending2_EndPicSprites4)
 	.byte HIGH(Ending2_EndPicSprites5)
 	.byte HIGH(Ending2_EndPicSprites6)
@@ -3032,9 +3060,9 @@ Ending2_EndPicSpriteListH:
 	.byte HIGH(Ending2_EndPicSprites8)
 
 Ending2_EndPicSpriteListL:
-	.byte LOW(_sorb_start)
-	.byte LOW(orange_expo_credit)
-	.byte LOW(_sorb_start)
+	.byte LOW(_credit1_spr)
+	.byte LOW(_credit2_spr)
+	.byte LOW(_credit3_spr)
 	.byte LOW(Ending2_EndPicSprites4)
 	.byte LOW(Ending2_EndPicSprites5)
 	.byte LOW(Ending2_EndPicSprites6)
@@ -3043,9 +3071,9 @@ Ending2_EndPicSpriteListL:
 
 	; Length of the sprite list per world - 1 (or last index, if you prefer)
 Ending2_EndPicSpriteListLen:	
-	.byte (_orb_sprite_END - _sorb_start - 1)
-	.byte (orange_expo_credit_END - orange_expo_credit - 1)
-	.byte (SuperOrbBros_END - _sorb_start - 1)
+	.byte (_credit1_spr_END - _credit1_spr - 1)
+	.byte (_credit2_spr_END - _credit2_spr - 1)
+	.byte (_credit3_spr_END - _credit3_spr - 1)
 	.byte (Ending2_EndPicSprites4_End - Ending2_EndPicSprites4 - 1)
 	.byte (Ending2_EndPicSprites5_End - Ending2_EndPicSprites5 - 1)
 	.byte (Ending2_EndPicSprites6_End - Ending2_EndPicSprites6 - 1)
