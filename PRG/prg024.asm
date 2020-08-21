@@ -508,9 +508,19 @@ _do_pic:
 	JSR DoMusicMenu
 
 	LDA <Ending2_CurWorld
-	CMP #$06
+	CMP #$05
 	BNE _do_pic	 ; While Ending2_CurWorld <> 8, loop!
 
+	LDA #$10
+	STA <Ending2_TimerH				; Ensure we just wait at this picture forever
+
+	BIT <Pad_Input
+	BVS _credits_to_world_map		; Player presses B, go back to map
+	LDA <Pad_Input
+	BMI _j_reset
+	JMP _do_pic
+
+_credits_to_world_map:
 	;;; [ORANGE] allow the user to go back to title or to overworld to complete orbs at this point
 	PLA						; Remove the return addresses...we're going back
 	PLA
@@ -528,6 +538,7 @@ _do_pic:
 	STA <World_Map_Move
 	JMP PRG030_8FFC
 
+_j_reset:
 	JMP IntReset
 
 PRG024_A27A:
