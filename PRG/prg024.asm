@@ -2674,9 +2674,9 @@ Ending2_SetFlag2:
 EndPic_PatTable:
 	.byte 15, 36, 52, 91, 107, 36, 52, 107
 EndPic_StartCmd:
-	.byte $2A, $2D, $2F, $30, $32, $3E, $44, $49
+	.byte $2A, $2D, $2F, $30, $32, $35, $44, $49
 EndPic_EndCmd:
-	.byte $2C, $2E, $2F, $31, $34, $43, $48, $4C
+	.byte $2C, $2E, $2F, $31, $34, $35, $48, $4C
 
 Ending2_CommitPicture:
 	JMP _skip_commit_pic
@@ -3045,17 +3045,30 @@ _credit3_spr:
 	.byte $40, $3d, $42, $80
 _credit3_spr_END
 
+_credit6_spr:
+	.byte $20, $61, $01, $78
+	.byte $20, $63, $01, $80
+	.byte $30, $65, $01, $78
+	.byte $30, $67, $01, $80
+
+	.byte $25, $bf, $02, $88
+_credit6_spr_END
+
 _credit4_spr:
 _credit4_spr_END
 _credit5_spr:
 _credit5_spr_END
+_credit7_spr:
+_credit7_spr_END
+_credit8_spr:
+_credit8_spr_END
 
 .bound_bf5e:	BoundCheck .bound_bf5e, $BF5E
 	.org $BF5E
 	; PatTable_BankSel+X values (sprite pattern tables) loaded per "world" of ending picture
-Ending2_EndPicPatTable2:	.byte 39,  $53, $00, $00, $43, $02, $44, $54
-Ending2_EndPicPatTable3:	.byte 14,  $04,  96, $76, $76, $76, $04, $76
-Ending2_EndPicPatTable4:	.byte 111, 111, 111, $1A, $00, $0B, $00, $00
+Ending2_EndPicPatTable2:	.byte 39,  $53, $00, $00, $43, $00, $44, $54
+Ending2_EndPicPatTable3:	.byte 14,  $04,  96, $76, $76,  39, $04, $76
+Ending2_EndPicPatTable4:	.byte 111, 111, 111, $1A, $00,  37, $00, $00
 Ending2_EndPicPatTable5:	.byte 110, 110, 110, $00, $4F, $4F, $4F, $00
 
 	; Split address, parallel tables for the starting address of the end picture sprite lists for each world
@@ -3065,9 +3078,9 @@ Ending2_EndPicSpriteListH:
 	.byte HIGH(_credit3_spr)
 	.byte HIGH(_credit4_spr)
 	.byte HIGH(_credit5_spr)
-	.byte HIGH(Ending2_EndPicSprites6)
-	.byte HIGH(Ending2_EndPicSprites7)
-	.byte HIGH(Ending2_EndPicSprites8)
+	.byte HIGH(_credit6_spr)
+	.byte HIGH(_credit7_spr)
+	.byte HIGH(_credit8_spr)
 
 Ending2_EndPicSpriteListL:
 	.byte LOW(_credit1_spr)
@@ -3075,9 +3088,9 @@ Ending2_EndPicSpriteListL:
 	.byte LOW(_credit3_spr)
 	.byte LOW(_credit4_spr)
 	.byte LOW(_credit5_spr)
-	.byte LOW(Ending2_EndPicSprites6)
-	.byte LOW(Ending2_EndPicSprites7)
-	.byte LOW(Ending2_EndPicSprites8)
+	.byte LOW(_credit6_spr)
+	.byte LOW(_credit7_spr)
+	.byte LOW(_credit8_spr)
 
 	; Length of the sprite list per world - 1 (or last index, if you prefer)
 Ending2_EndPicSpriteListLen:	
@@ -3086,9 +3099,9 @@ Ending2_EndPicSpriteListLen:
 	.byte (_credit3_spr_END - _credit3_spr - 1)
 	.byte (_credit4_spr_END - _credit4_spr - 1)
 	.byte (_credit5_spr_END - _credit5_spr - 1)
-	.byte (Ending2_EndPicSprites6_End - Ending2_EndPicSprites6 - 1)
-	.byte (Ending2_EndPicSprites7_End - Ending2_EndPicSprites7 - 1)
-	.byte (Ending2_EndPicSprites8_End - Ending2_EndPicSprites8 - 1)
+	.byte (_credit6_spr_END - _credit6_spr - 1)
+	.byte (_credit7_spr_END - _credit7_spr - 1)
+	.byte (_credit8_spr_END - _credit8_spr - 1)
 
 ;Ending2_EndPicSprites1:
 ;	.byte $81, $19, $00, $B0
@@ -3120,9 +3133,9 @@ Ending2_EndPicSpriteListLen:
 ;	.byte $A9, $B7, $02, $D8
 ;Ending2_EndPicSprites2_End
 
-Ending2_EndPicSprites3:
-	.byte $3F, $B1, $01, $30
-	.byte $3F, $B1, $41, $38
-	.byte $47, $B5
+;Ending2_EndPicSprites3:
+;	.byte $3F, $B1, $01, $30
+;	.byte $3F, $B1, $41, $38
+;	.byte $47, $B5
 
 	; List continued in PRG025
