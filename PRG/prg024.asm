@@ -2848,7 +2848,7 @@ Ending2_FadeIn:
 	STA Graphics_Queue
 
 	; Ending2_TimerH = $F
-	LDA #$0f
+	LDA #$25
 	STA <Ending2_TimerH
 
 	; Ending2_TimerL = $16
