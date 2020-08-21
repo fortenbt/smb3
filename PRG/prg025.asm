@@ -820,7 +820,7 @@ credit_pic2_2:
 	.byte $B9, $D0, $D1, $D4, $DC
 	vaddr $2a94
 	.byte 9
-	.byte $C2, $D0, $DD, $D3, $D4, $CB, $F1, $F7, $E5
+	.byte $C2, $D0, $DD, $D3, $D4, $CB, $9D, $7C, $E5
 	.byte $00
 
 credit_pic2_3:
