@@ -736,6 +736,16 @@ credit_pic2_2:
 	vaddr $2a94
 	.byte 9
 	.byte $C2, $D0, $DD, $D3, $D4, $CB, $9D, $7C, $E5
+	vaddr $2b05
+	.byte 17
+	.byte $B3, $D4, $D3, $D8, $D2, $D0, $CD, $D4, $D3, $FE, $CD, $DE, $fe, $fe, $fe
+	.byte $B9, $E9	; J.
+	vaddr $2b34
+	.byte 2, $BE, $E9  ; O.
+	vaddr $2b54
+	.byte 2, $B0, $E9	; A.
+	vaddr $2b74
+	.byte 1, $7B		; 4
 	.byte $00
 
 credit_pic3_1:
@@ -748,6 +758,14 @@ credit_pic3_1:
 	vaddr $2a41
 	.byte VU_REPEAT | $3f, $FE
 	vaddr $2a81
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $2b01
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $2b21
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $2b41
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $2b61
 	.byte VU_REPEAT | $3f, $FE
 	vaddr $2981
 	.byte $01, $94
