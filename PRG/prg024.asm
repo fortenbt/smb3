@@ -511,6 +511,23 @@ _do_pic:
 	CMP #$06
 	BNE _do_pic	 ; While Ending2_CurWorld <> 8, loop!
 
+	;;; [ORANGE] allow the user to go back to title or to overworld to complete orbs at this point
+	PLA						; Remove the return addresses...we're going back
+	PLA
+	PLA
+	PLA
+	LDA #$01
+	STA Map_ReturnStatus	; force the player to "die" and return to map
+	STA Map_NoLoseTurn
+	LDA #$00
+	STA GotCheckpoint
+	STA Level_TimerEn
+	STA <World_Map_Twirl	; clear the twirl if it's set
+	STA <Map_Skid_Count
+	STA <Map_Skid_Counter
+	STA <World_Map_Move
+	JMP PRG030_8FFC
+
 	JMP IntReset
 
 PRG024_A27A:
