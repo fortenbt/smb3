@@ -706,25 +706,25 @@ credit_pic2_1:
 	.byte VU_REPEAT | $3f, $FE
 	vaddr $2a81
 	.byte VU_REPEAT | $3f, $FE
-	vaddr $2985
+	vaddr $2984
 	.byte 8
 	.byte $B6, $CB, $D0, $DF, $D7, $D8, $D2, $CC
-	vaddr $29a5
+	vaddr $29a4
 	.byte 5
 	.byte $BC, $CE, $CC, $D8, $D2
-	vaddr $29c5
+	vaddr $29c4
 	.byte 5
 	.byte $C2, $DE, $CE, $DD, $D3
-	vaddr $29e5
+	vaddr $29e4
 	.byte 12
 	.byte $BB, $D4, $CF, $D4, $DB, $FE, $B3, $D4, $CC, $D8, $D6, $DD
-	vaddr $2a05
+	vaddr $2a04
 	.byte 8
 	.byte $B0, $C2, $BC, $FA, $C3, $D4, $D2, $D7
 	.byte $00
 
 credit_pic2_2:
-	vaddr $2a45
+	vaddr $2a44
 	.byte 11
 	.byte $BF, $DB, $D0, $8C, $CD, $D4, $CC, $CD, $D8, $DD, $D6
 	vaddr $2a54
@@ -736,16 +736,21 @@ credit_pic2_2:
 	vaddr $2a94
 	.byte 9
 	.byte $C2, $D0, $DD, $D3, $D4, $CB, $9D, $7C, $E5
-	vaddr $2b05
-	.byte 17
-	.byte $B3, $D4, $D3, $D8, $D2, $D0, $CD, $D4, $D3, $FE, $CD, $DE, $fe, $fe, $fe
-	.byte $B9, $E9	; J.
-	vaddr $2b34
-	.byte 2, $BE, $E9  ; O.
-	vaddr $2b54
-	.byte 2, $B0, $E9	; A.
-	vaddr $2b74
-	.byte 1, $7B		; 4
+	vaddr $2ab4
+	.byte 7
+	.byte $B9, $DE, $D4, $FE, $C2, $DC, $DE
+	vaddr $2ae3
+	.byte $19
+	.byte $C2, $D7, $DE, $CE, $CD, $DE, $CE, $CD, $CC, $FE, $CD, $DE, $FE, $C3, $D7, $D4
+	.byte $B7, $D0, $88, $DE, $CB, $FE, $D0, $DD, $D3
+	vaddr $2b03
+	.byte $18
+	.byte $BF, $D0, $D2, $DE, $FE, $D5, $DE, $CB, $FE, $CD, $D7, $D4, $D8, $CB, $FE, $D5
+	.byte $D4, $D4, $D3, $D1, $D0, $D2, $DA, $E9
+	vaddr $2b64
+	.byte 23
+	.byte $B3, $D4, $D3, $D8, $D2, $D0, $CD, $D4, $D3, $FE, $CD, $DE, $fe
+	.byte $B9, $E9, $9A, $BE, $E9, $9A, $B0, $E9, $9A, $7B
 	.byte $00
 
 credit_pic3_1:
@@ -758,6 +763,8 @@ credit_pic3_1:
 	vaddr $2a41
 	.byte VU_REPEAT | $3f, $FE
 	vaddr $2a81
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $2ae1
 	.byte VU_REPEAT | $3f, $FE
 	vaddr $2b01
 	.byte VU_REPEAT | $3f, $FE
