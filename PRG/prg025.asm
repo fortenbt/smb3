@@ -972,6 +972,10 @@ credit_pic5_3:
 credit_pic6_1:
 ;;; [     special thanks to...     ]
 ;;;              You.
+;;;  Press B to return to the map.
+;;;  Press A to reset.
+;;;  Hold select at start to skip
+;;;  level 1 messages.
 	vaddr $2a09
 	.byte VU_REPEAT | $3f, $FE
 	vaddr $2a49
@@ -981,6 +985,23 @@ credit_pic6_1:
 	vaddr $2a2e
 	.byte 4
 	.byte $C8, $DE, $CE, $E9
+
+	vaddr $2b01
+	.byte $1e
+	.byte $EE, $BF, $CB, $D4, $CC, $CC, $FE, $B1, $FE, $CD, $DE, $FE, $CB, $D4, $CD, $CE
+	.byte $CB, $DD, $FE, $CD, $DE, $FE, $CD, $D7, $D4, $FE, $DC, $D0, $DF, $E9
+	vaddr $2b21
+	.byte $12
+	.byte $EE, $BF, $CB, $D4, $CC, $CC, $FE, $B0, $FE, $CD, $DE, $FE, $CB, $D4, $CC, $D4
+	.byte $CD, $E9
+	vaddr $2b41
+	.byte $1d
+	.byte $EE, $B7, $DE, $DB, $D3, $FE, $CC, $D4, $DB, $D4, $D2, $CD, $FE, $D0, $CD, $FE
+	.byte $CC, $CD, $D0, $CB, $CD, $FE, $CD, $DE, $FE, $CC, $DA, $D8, $DF
+	vaddr $2b62
+	.byte $11
+	.byte $DB, $D4, $CF, $D4, $DB, $FE, $9D, $FE, $DC, $D4, $CC, $CC, $D0, $D6, $D4, $CC
+	.byte $E9
 
 	.byte $00
 
@@ -1128,7 +1149,7 @@ EndSeq_World5Pal:
 
 EndSeq_World6Pal:
         vaddr $3F00
-	.byte $20, $0F, $08, $18, $37, $0F, $08, $18, $30, $0F, $08, $28, $30, $0F, $2C, $2A
+	.byte $20, $0F, $08, $18, $37, $0F, $08, $18, $30, $0F, $08, $28, $30, $0F, $0F, $2A
 	.byte $3A, $0F, $0F, $30, $21, $0F, $0F, $30, $27, $0F, $0F, $30, $16, $0F, $0F, $30
 	.byte $24
 
