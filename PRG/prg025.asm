@@ -14,92 +14,7 @@
 
 	; Ending Sprite list continued from PRG024 ...
 
-	.byte           $01, $28
-	.byte $4F, $B7, $01, $20
-	.byte $57, $B5, $01, $18
-	.byte $6F, $01, $00, $D8
-	.byte $6F, $01, $40, $E0
-	.byte $7F, $03, $00, $D8
-	.byte $7F, $03, $40, $E0
-Ending2_EndPicSprites3_End
-
-Ending2_EndPicSprites4:
-	.byte $21, $81, $01, $70
-	.byte $21, $83, $01, $78
-	.byte $21, $85, $01, $80
-	.byte $31, $87, $01, $70
-	.byte $31, $89, $01, $78
-	.byte $31, $41, $01, $80
-	.byte $31, $43, $01, $88
-	.byte $31, $45, $01, $90
-	.byte $3F, $47, $01, $20
-	.byte $3F, $49, $01, $28
-	.byte $3F, $4B, $01, $30
-	.byte $3F, $4D, $01, $38
-Ending2_EndPicSprites4_End
-
-Ending2_EndPicSprites5:
-	.byte $69, $29, $00, $B0
-	.byte $69, $2B, $00, $B8
-	.byte $79, $01, $00, $B0
-	.byte $79, $03, $00, $B8
-	.byte $79, $05, $00, $C0
-	.byte $A1, $53, $02, $B8
-	.byte $A1, $55, $02, $C0
-	.byte $B1, $57, $02, $B8
-	.byte $B1, $59, $02, $C0
-	.byte $99, $61, $01, $D0
-	.byte $99, $63, $01, $D8
-	.byte $A9, $65, $01, $D0
-	.byte $A9, $67, $01, $D8
-Ending2_EndPicSprites5_End
-
-Ending2_EndPicSprites6:
-	.byte $69, $19, $40, $20
-	.byte $69, $27, $40, $28
-	.byte $79, $1F, $40, $20
-	.byte $79, $1D, $40, $28
-	.byte $79, $1B, $40, $30
-	.byte $61, $A7, $41, $58
-	.byte $61, $AF, $41, $50
-	.byte $A9, $D3, $02, $70
-	.byte $A9, $D5, $02, $78
-	.byte $A9, $5B, $01, $A0
-	.byte $A9, $5D, $01, $A8
-Ending2_EndPicSprites6_End
-
-Ending2_EndPicSprites7:
-	.byte $41, $F1, $02, $D8
-	.byte $41, $F3, $02, $E0
-	.byte $51, $E3, $01, $D8
-	.byte $51, $E3, $41, $E0
-	.byte $51, $67, $42, $C8
-	.byte $61, $65, $02, $B8
-	.byte $79, $65, $42, $A8
-	.byte $89, $37, $40, $A8
-	.byte $89, $35, $40, $B0
-Ending2_EndPicSprites7_End
-
-Ending2_EndPicSprites8:
-	.byte $79, $03, $40, $28
-	.byte $79, $01, $40, $30
-	.byte $89, $07, $40, $28
-	.byte $89, $05, $40, $30
-	.byte $99, $51, $02, $50
-	.byte $99, $5F, $02, $58
-	.byte $90, $69, $01, $B0
-	.byte $90, $6B, $01, $B8
-	.byte $90, $6D, $01, $C0
-	.byte $90, $6F, $01, $C8
-	.byte $A0, $71, $01, $B0
-	.byte $A0, $73, $01, $B8
-	.byte $A0, $75, $01, $C0
-	.byte $A0, $77, $01, $C8
-	.byte $B0, $79, $01, $B0
-	.byte $B0, $7B, $01, $B8
-	.byte $B0, $7D, $01, $C0
-	.byte $B0, $7F, $01, $C8
-Ending2_EndPicSprites8_End
+;;; [ORANGE] Removed their credits sprites
 
 
 	; Split address, parallel tables for the starting address of the end picture for each world
@@ -280,7 +195,7 @@ Video_Upd_Table2:
 	.word credit_pic5_1		; $32 -
 	.word credit_pic5_2		; $33 -
 	.word credit_pic5_3		; $34 -
-	.word PRG025_CE7B		; $35 - 
+	.word credit_pic6_1		; $35 -
 	.word PRG025_CE91		; $36 - 
 	.word PRG025_CE9E		; $37 - 
 	.word PRG025_CEAE		; $38 - 
@@ -1021,6 +936,7 @@ credit_pic5_3:
 ;;; [        BarbarousKing         ]
 ;;; [             and              ]
 ;;; [         GrandPooBear         ]
+;;; for your voices.
 	vaddr $2a09
 	.byte 13
 	.byte $B1, $D0, $CB, $D1, $D0, $CB, $DE, $CE, $CC, $BA, $D8, $DD, $D6
@@ -1035,9 +951,21 @@ credit_pic5_3:
 	.byte $B5, $DE, $CB, $FE, $8C, $DE, $CE, $CB, $FE, $CF, $DE, $D8, $D2, $D4, $CC, $E9
 	.byte $00
 
-PRG025_CE7B:
-	.byte $2B, $D2, $04, $E6, $FF, $FF, $FF, $2B, $DA, $04, $EE, $FF, $FF, $FF, $2B ; $CE7A - $CE89
-	.byte $E2, $04, $AE, $AF, $AF, $AF, $00
+credit_pic6_1:
+;;; [     special thanks to...     ]
+;;;              You.
+	vaddr $2a09
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $2a49
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $2aa1
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $2a2e
+	.byte 4
+	.byte $C8, $DE, $CE, $E9
+
+	.byte $00
+
 
 PRG025_CE91:
 	.byte $29, $78, $05, $DE, $F4, $EF, $F1, $E3, $29 ; $CE8A - $CE99
@@ -1182,9 +1110,9 @@ EndSeq_World5Pal:
 
 EndSeq_World6Pal:
         vaddr $3F00
-	.byte $20, $0F, $0F, $30, $16, $0F, $17, $2A, $30, $0F, $2C, $30, $37, $0F, $2C, $30
-	.byte $30, $0F, $16, $36, $0F, $0F, $0F, $30, $16, $0F, $0F, $30, $2A, $0F, $0F, $30
-	.byte $2A
+	.byte $20, $0F, $08, $18, $37, $0F, $08, $18, $30, $0F, $08, $28, $30, $0F, $2C, $2A
+	.byte $3A, $0F, $0F, $30, $21, $0F, $0F, $30, $27, $0F, $0F, $30, $16, $0F, $0F, $30
+	.byte $24
 
 	; Terminator
 	.byte $00
