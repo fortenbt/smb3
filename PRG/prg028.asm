@@ -1228,6 +1228,9 @@ Music_Set1_Set2A_IndexOffs:
 
 	.byte M12ASH(GameOverHedr1)		; $13
 
+	.byte M12ASH(PooOrb_Hdr)		; $14
+	.byte M12ASH(BarbRoom_Hdr)		; $15
+
 
 Music_Set1_Set2A_Headers:
 
@@ -1273,13 +1276,13 @@ GameOverHedr1:	MusSeg GameOver_R, GameOver_1, GameOver_Tri1, $21, $0000, $0000
 	; index of $08, an end index of $09, and a loop index of $08.
 
 Music_Set2A_Starts:
-	.byte $08, $12, $13, $0B, $0D, $0E, $10, $11, $13, $14, $15, $16, $18, $1C, $1D, $1E
+	.byte $08, $12, $13, $14, $15, $0E, $10, $11, $13, $14, $15, $16, $18, $1C, $1D, $1E
 
 Music_Set2A_Ends:
-	.byte $11, $12, $13, $0D, $0F, $10, $12, $13, $14, $15, $17, $1B, $1C, $1D, $2B
+	.byte $11, $12, $13, $14, $15, $10, $12, $13, $14, $15, $17, $1B, $1C, $1D, $2B
 
 Music_Set2A_Loops:
-	.byte $08, $00, $00, $0D, $0F, $10, $11, $13, $14, $15, $17, $18, $1C, $1D, $23
+	.byte $08, $00, $00, $14, $15, $10, $11, $13, $14, $15, $17, $18, $1C, $1D, $23
 
 M12ASegData17:
 	.byte $00
