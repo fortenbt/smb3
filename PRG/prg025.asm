@@ -269,17 +269,17 @@ Video_Upd_Table2:
 	.word EndSeq_WorldFadeIn2	; $27 - End pic world fade in effect part 2
 	.word EndSeq_WorldFadeIn3	; $28 - End pic world fade in effect part 3
 	.word EndSeq_WorldFadeIn4	; $29 - End pic world fade in effect part 4
-	.word credit_pic1_1		; $2A - ???
-	.word credit_pic1_2		; $2B - ???
-	.word credit_pic1_3		; $2C - ???
-	.word credit_pic2_1		; $2D - ???
-	.word credit_pic2_2		; $2E - ???
-	.word credit_pic2_3		; $2F - ???
-	.word credit_pic3_1		; $30 - ???
-	.word PRG025_CE2D		; $31 - 
-	.word PRG025_CE43		; $32 - 
-	.word PRG025_CE57		; $33 - 
-	.word PRG025_CE6D		; $34 - 
+	.word credit_pic1_1		; $2A -
+	.word credit_pic1_2		; $2B -
+	.word credit_pic1_3		; $2C -
+	.word credit_pic2_1		; $2D -
+	.word credit_pic2_2		; $2E -
+	.word credit_pic3_1		; $2F -
+	.word credit_pic4_1		; $30 -
+	.word credit_pic4_2		; $31 -
+	.word credit_pic5_1		; $32 -
+	.word credit_pic5_2		; $33 -
+	.word credit_pic5_3		; $34 -
 	.word PRG025_CE7B		; $35 - 
 	.word PRG025_CE91		; $36 - 
 	.word PRG025_CE9E		; $37 - 
@@ -708,7 +708,7 @@ Ending_CurtainExtension:
 
 PRG025_CCCE:
 	vaddr $3F00
-	.byte $20, $0F, $0F, $30, $16, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F
+	.byte $20, $0F, $0F, $0f, $0f, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F
 	.byte $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F, $0F
 	.byte $0F
 
@@ -744,8 +744,8 @@ EndSeq_WorldFadeIn3:
 
 EndSeq_WorldFadeIn4:
 	vaddr $3F00
-	.byte $20, $0F, $0F, $30, $16, $0F, $17, $2A, $3b, $0F, $2C, $30, $3b, $0F, $2C, $2A
-	.byte $3b, $0F, $0C, $36, $3B, $0F, $0F, $30, $16, $0F, $0F, $30, $16, $0F, $0F, $30
+	.byte $20, $0F, $0F, $30, $10, $0F, $10, $20, $30, $0F, $20, $30, $30, $0F, $20, $20
+	.byte $30, $0F, $0C, $36, $3B, $0F, $0F, $30, $16, $0F, $0F, $30, $16, $0F, $0F, $30
 	.byte $16
 
 	; Terminator
@@ -823,25 +823,6 @@ credit_pic2_2:
 	.byte $C2, $D0, $DD, $D3, $D4, $CB, $9D, $7C, $E5
 	.byte $00
 
-credit_pic2_3:
-	vaddr $2b01
-	.byte $01, $94
-	vaddr $2b02
-	.byte VU_REPEAT | $1c, $90
-	vaddr $2b1e
-	.byte $01, $96
-	vaddr $2b21
-	.byte $1e
-	.byte $92, $BF, $CB, $D4, $CC, $CC, $FE, $CC, $D4, $DB, $D4, $D2, $CD, $FE, $CD, $DE, $FE
-	.byte $D2, $8C, $D2, $DB, $D4, $FE, $DC, $CE, $CC, $D8, $D2, $E9, $93
-	vaddr $2b41
-	.byte $01, $95
-	vaddr $2b42
-	.byte VU_REPEAT | $1c, $91
-	vaddr $2b5e
-	.byte $01, $97
-	.byte $00
-
 credit_pic3_1:
 	vaddr $2981
 	.byte VU_REPEAT | $3f, $FE
@@ -853,32 +834,205 @@ credit_pic3_1:
 	.byte VU_REPEAT | $3f, $FE
 	vaddr $2a81
 	.byte VU_REPEAT | $3f, $FE
-	vaddr $2986
+	vaddr $2981
+	.byte $01, $94
+	vaddr $2982
+	.byte VU_REPEAT | $1c, $90
+	vaddr $299e
+	.byte $01, $96
+	; |  Press select at any time  |
+	; | to cycle through the music.|
+	vaddr $29a1
+	.byte $3e
+	.byte $92, $FE, $FE, $BF, $CB, $D4, $CC, $CC, $FE, $CC, $D4, $DB, $D4, $D2, $CD, $FE
+	.byte $D0, $CD, $FE, $D0, $DD, $8C, $FE, $CD, $D8, $DC, $D4, $FE, $FE, $93, $FE, $FE
+	.byte $92, $FE, $CD, $DE, $FE, $D2, $8C, $D2, $DB, $D4, $FE, $CD, $D7, $CB, $DE, $CE
+	.byte $D6, $D7, $FE, $CD, $D7, $D4, $FE, $DC, $CE, $CC, $D8, $D2, $E9, $93
+	vaddr $29e1
+	.byte $01, $95
+	vaddr $29e2
+	.byte VU_REPEAT | $1c, $91
+	vaddr $29fe
+	.byte $01, $97
+	.byte $00
+
+credit_pic4_1:
+;;; MFP flower
+	vaddr $2981
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $29c1
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $2a01
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $2a41
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $2a81
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $2bc0
+	.byte VU_REPEAT | $18, $aa
+	vaddr $284f
+	.byte 2
+	.byte $40, $41
+	vaddr $286e
+	.byte 4
+	.byte $42, $43, $44, $45
+	vaddr $288c
+	.byte 8
+	.byte $46, $47, $4A, $4B, $4C, $4D, $4E, $4F
+	vaddr $28ac
+	.byte 8
+	.byte $60, $61, $62, $63, $64, $65, $66, $67
+	vaddr $28cc
+	.byte 8
+	.byte $70, $71, $72, $73, $74, $75, $76, $77
+	vaddr $28ed
+	.byte 7
+	.byte $52, $6a, $6b, $6c, $6d, $6e, $6f
+	vaddr $290c
+	.byte 8
+	.byte $78, $79, $7a, $7b, $7c, $7d, $7e, $7f
+	vaddr $292d
+	.byte 6
+	.byte $5a, $5b, $5c, $5d, $5e, $5f
+	vaddr $2960
+	.byte VU_REPEAT | $20, $ff
+	.byte $00
+
+credit_pic4_2:
+;;; [     special thanks to...     ]
+;;; [       Mitchflowerpower       ]
+;;; [ Your dedication to Mario 3   ]
+;;; [ has kept the community around]
+;;; [ it alive and growing. I would]
+;;; [ not be in it this deep if it ]
+;;; [ were not for what you do.    ]
+	vaddr $29a6
 	.byte $14
 	.byte $C2, $DF, $D4, $D2, $D8, $D0, $DB, $FE, $CD, $D7, $D0, $DD, $DA, $CC, $FE, $CD
 	.byte $DE, $E9, $E9, $E9
+	vaddr $2a08
+	.byte $10
+	.byte $BC, $D8, $CD, $D2, $D7, $D5, $DB, $DE, $81, $D4, $CB, $DF, $DE, $81, $D4, $CB
+	vaddr $2a41
+	.byte $1a
+	.byte $C8, $DE, $CE, $CB, $FE, $D3, $D4, $D3, $D8, $D2, $D0, $CD, $D8, $DE, $DD, $FE
+	.byte $CD, $DE, $FE, $BC, $D0, $CB, $D8, $DE, $FE, $9F
+	vaddr $2a81
+	.byte $1d
+	.byte $D7, $D0, $CC, $FE, $DA, $D4, $DF, $CD, $FE, $CD, $D7, $D4, $FE, $D2, $DE, $DC
+	.byte $DC, $CE, $DD, $D8, $CD, $8C, $FE, $D0, $CB, $DE, $CE, $DD, $D3
+	vaddr $2ac1
+	.byte $1d
+	.byte $D8, $CD, $FE, $D0, $DB, $D8, $CF, $D4, $FE, $D0, $DD, $D3, $FE, $D6, $CB, $DE
+	.byte $81, $D8, $DD, $D6, $E9, $FE, $B8, $FE, $81, $DE, $CE, $DB, $D3
+	vaddr $2b01
+	.byte $1c
+	.byte $DD, $DE, $CD, $FE, $D1, $D4, $FE, $D8, $DD, $FE, $D8, $CD, $FE, $CD, $D7, $D8
+	.byte $CC, $FE, $D3, $D4, $D4, $DF, $FE, $D8, $D5, $FE, $D8, $CD
+	vaddr $2b41
+	.byte $19
+	.byte $81, $D4, $CB, $D4, $FE, $DD, $DE, $CD, $FE, $D5, $DE, $CB, $FE, $81, $D7, $D0
+	.byte $CD, $FE, $8C, $DE, $CE, $FE, $D3, $DE, $E9
+
 	.byte $00
 
-PRG025_CE19:
-	.byte $2A ; $CE0A - $CE19
-	.byte $C0, $03, $57, $5C, $57, $2A, $C8, $01, $56, $2A, $E1, $01, $57, $2A, $E9, $01 ; $CE1A - $CE29
-	.byte $56, $00, $00
+credit_pic5_1:
+;;; clear
+	vaddr $2981
+	.byte VU_REPEAT | $1f, $FE	; keep the Special thanks to
+	vaddr $29c1
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $2a01
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $2a41
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $2a81
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $2ac1
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $2b01
+	.byte VU_REPEAT | $3f, $FE
+	vaddr $2b41
+	.byte VU_REPEAT | $3f, $FE
+;;; barb and gpb palettes
+	vaddr $2bc0
+	.byte $18
+	.byte $00, $00, $00, $aa, $aa, $aa, $aa, $00, $00, $00, $00, $55, $aa, $aa, $aa, $00
+	.byte $00, $04, $55, $00, $aa, $aa, $aa, $00
+;;; barb logo
+	vaddr $2848
+	.byte 3
+	.byte $46, $47, $48
+	vaddr $2867
+	.byte 6
+	.byte $40, $41, $42, $43, $44, $45
+	vaddr $2887
+	.byte 6
+	.byte $50, $51, $52, $53, $54, $55
+	vaddr $28a7
+	.byte 6
+	.byte $60, $61, $62, $63, $64, $65
+	vaddr $28c7
+	.byte 6
+	.byte $70, $71, $72, $73, $74, $75
+	vaddr $28e7
+	.byte 6
+	.byte $56, $57, $58, $59, $5a, $5b
+	vaddr $2907
+	.byte 6
+	.byte $66, $67, $68, $69, $6a, $6b
+	vaddr $2927
+	.byte 6
+	.byte $76, $77, $78, $79, $7a, $7b
+	.byte $00
 
-PRG025_CE2D:
-	.byte $2B, $CB, $04, $EA, $5A, $5A, $5A, $2B, $D3, $04, $66, $55, $55 ; $CE2A - $CE39
-	.byte $55, $2B, $DB, $04, $66, $55, $55, $55, $00
+credit_pic5_2:
+;;; gpb logo
+	vaddr $2850
+	.byte 8
+	.byte $4c, $4d, $4e, $4f, $00, $01, $02, $03
+	vaddr $2870
+	.byte 8
+	.byte $5c, $5d, $5e, $5f, $10, $11, $12, $13
+	vaddr $2890
+	.byte 8
+	.byte $6c, $6d, $6e, $6f, $20, $21, $22, $23
+	vaddr $28b0
+	.byte 8
+	.byte $7c, $7d, $7e, $7f, $30, $31, $32, $33
+	vaddr $28d0
+	.byte 8
+	.byte $04, $05, $06, $07, $08, $09, $0a, $0b
+	vaddr $28f0
+	.byte 8
+	.byte $14, $15, $16, $17, $18, $19, $1a, $1b
+	vaddr $2910
+	.byte 8
+	.byte $24, $25, $26, $27, $28, $29, $2a, $2b
+	vaddr $2930
+	.byte 8
+	.byte $34, $35, $36, $37, $38, $39, $3a, $3b
+	;vaddr $2960
+	;.byte VU_REPEAT | $20, $ff
+	.byte $00
 
-PRG025_CE43:
-	.byte $29, $A2, $05, $DE, $F4, $EF, $F1 ; $CE3A - $CE49
-	.byte $E3, $29, $E4, $01, $79, $2A, $9A, $04, $CA, $CB, $CC, $CD, $00
-
-PRG025_CE57:
-	.byte $2A, $BA, $04 ; $CE4A - $CE59
-	.byte $DA, $DB, $DC, $DD, $2A, $DA, $04, $CE, $CF, $5C, $DF, $2A, $FA, $04, $CE, $CF ; $CE5A - $CE69
-	.byte $5C, $DF, $00
-
-PRG025_CE6D:
-	.byte $2A, $89, $0A, $DE, $E0, $F9, $E4, $EF, $5C, $F1, $E0, $F3, $E3 ; $CE6A - $CE79
+credit_pic5_3:
+;;; [     special thanks to...     ]
+;;; [        BarbarousKing         ]
+;;; [             and              ]
+;;; [         GrandPooBear         ]
+	vaddr $2a09
+	.byte 13
+	.byte $B1, $D0, $CB, $D1, $D0, $CB, $DE, $CE, $CC, $BA, $D8, $DD, $D6
+	vaddr $2a2e
+	.byte 3
+	.byte $D0, $DD, $D3
+	vaddr $2a49
+	.byte 12
+	.byte $B6, $CB, $D0, $DD, $D3, $BF, $DE, $DE, $B1, $D4, $D0, $CB
+	vaddr $2aa1
+	.byte $10
+	.byte $B5, $DE, $CB, $FE, $8C, $DE, $CE, $CB, $FE, $CF, $DE, $D8, $D2, $D4, $CC, $E9
 	.byte $00
 
 PRG025_CE7B:
@@ -1002,7 +1156,7 @@ EndSeq_World2Pal:
 EndSeq_World3Pal:
         vaddr $3F00
 	.byte $20, $0F, $0F, $30, $16, $0F, $17, $2A, $3b, $0F, $2C, $30, $3b, $0F, $2C, $2A
-	.byte $3b, $0F, $0C, $36, $3B, $0F, $0F, $30, $27, $0F, $0F, $30, $16, $0F, $0F, $30
+	.byte $3b, $0F, $0C, $36, $3B, $0F, $0F, $30, $27, $0F, $16, $36, $0F, $0F, $0F, $30
 	.byte $16
 
 	; Terminator
@@ -1010,7 +1164,7 @@ EndSeq_World3Pal:
 
 EndSeq_World4Pal:
         vaddr $3F00
-	.byte $20, $0F, $0F, $30, $16, $0F, $17, $2A, $37, $0F, $2C, $30, $37, $0F, $2C, $2A
+	.byte $20, $0F, $0F, $30, $16, $0F, $17, $2A, $37, $0F, $2a, $30, $16, $0F, $2C, $2A
 	.byte $3A, $0F, $0F, $30, $16, $0F, $0F, $30, $16, $0F, $0F, $30, $16, $0F, $0F, $30
 	.byte $16
 
@@ -1019,8 +1173,8 @@ EndSeq_World4Pal:
 
 EndSeq_World5Pal:
         vaddr $3F00
-	.byte $20, $0F, $0F, $30, $16, $0F, $17, $2A, $30, $0F, $2C, $30, $37, $0F, $2C, $30
-	.byte $30, $0F, $17, $36, $0F, $0F, $0F, $00, $10, $0F, $0F, $30, $26, $0F, $0F, $30
+	.byte $20, $0F, $08, $18, $37, $0F, $08, $18, $30, $0F, $08, $28, $30, $0F, $2C, $2A
+	.byte $3A, $0F, $0F, $30, $16, $0F, $0F, $30, $16, $0F, $0F, $30, $16, $0F, $0F, $30
 	.byte $16
 
 	; Terminator
