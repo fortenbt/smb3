@@ -508,7 +508,7 @@ _do_pic:
 	JSR DoMusicMenu
 
 	LDA <Ending2_CurWorld
-	CMP #$08
+	CMP #$06
 	BNE _do_pic	 ; While Ending2_CurWorld <> 8, loop!
 
 	JMP IntReset
