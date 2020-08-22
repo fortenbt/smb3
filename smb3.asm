@@ -3894,6 +3894,7 @@ TILE9_OFF		= $3C	; solid off block
 TILE9_OFF_INACTIVE	= $21	; non-solid off block outline
 TILE9_LILCOINU		= $0A
 TILE9_LILCOINU_BR	= $0B
+TILE9_LILCOINB		= $0C
 TILE9_LILCOIND		= $C7
 ;; -- TS12 (Ice) On/Off, boot spikes
 TILE12_ON			= $9D
