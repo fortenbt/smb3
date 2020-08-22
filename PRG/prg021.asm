@@ -24,7 +24,7 @@ Tile_Layout_TS2:
 	.byte $66, $0A, $0E, $0E, $0C, $0D, $2F, $2E, $FF, $D0, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $10 - $1F
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $B8, $B8 ; Tiles $20 - $2F
 	.byte $B8, $B8, $BC, $FF, $B0, $B1, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
-	.byte $DC, $05, $05, $FC, $05, $05, $05, $91, $04, $04, $04, $F4, $FE, $04, $FE, $FE ; Tiles $40 - $4F
+	.byte $DC, $05, $05, $FC, $05, $05, $05, $84, $04, $04, $04, $F4, $FE, $04, $FE, $FE ; Tiles $40 - $4F
 	.byte $FE, $7E, $10, $12, $24, $26, $28, $2A, $06, $05, $26, $5C, $FF, $FF, $FF, $D8 ; Tiles $50 - $5F
 	.byte $98, $98, $98, $98, $98, $98, $92, $B4, $B4, $B4, $B4, $B4, $B4, $B4, $B4, $B4 ; Tiles $60 - $6F
 	.byte $B4, $B8, $C0, $C0, $C0, $C0, $A4, $EC, $E4, $C0, $D5, $B2, $05, $FF, $F4, $6C ; Tiles $70 - $7F
@@ -42,7 +42,7 @@ Tile_Layout_TS2:
 	.byte $67, $0B, $0F, $0F, $2E, $2F, $FD, $FC, $FF, $D1, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $10 - $1F
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $B9, $B9 ; Tiles $20 - $2F
 	.byte $B9, $B9, $BD, $FF, $B1, $B0, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
-	.byte $DD, $06, $06, $FC, $06, $06, $06, $FF, $FE, $FE, $09, $F5, $FE, $09, $09, $7C ; Tiles $40 - $4F
+	.byte $DD, $06, $06, $FC, $06, $06, $06, $85, $FE, $FE, $09, $F5, $FE, $09, $09, $7C ; Tiles $40 - $4F
 	.byte $5E, $FF, $20, $22, $18, $1A, $0A, $0E, $05, $05, $27, $5D, $FF, $FF, $FF, $D9 ; Tiles $50 - $5F
 	.byte $99, $99, $99, $99, $99, $99, $93, $B5, $B5, $B5, $B5, $B5, $B5, $B5, $B5, $B5 ; Tiles $60 - $6F
 	.byte $B5, $B9, $C1, $C1, $C1, $C1, $A5, $ED, $E4, $C1, $B2, $B2, $05, $FF, $F5, $6D ; Tiles $70 - $7F
@@ -957,7 +957,7 @@ PRG021_A7CF:
 ; Rest of ROM was unused
 
 Custom_Tiles21:
-	.byte TILE2_ON, TILE2_OFF_INACTIVE, TILE2_FIRESWITCH, TILE2_LILCOINU, TILE2_LILCOINDB
+	.byte TILE2_ON, TILE2_OFF_INACTIVE, TILE2_FIRESWITCH, TILE2_LILCOINU, TILE2_LILCOINB
 
 PRG21_DynJump_LLGen:
 	CMP #59
