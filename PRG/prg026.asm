@@ -3815,6 +3815,9 @@ UserMsgPtr_L:
 	.byte LOW(UserMessage4)
 	.byte LOW(UserMessage5)
 	.byte LOW(UserMessage6)
+	.byte LOW(UserMessage7)
+	.byte LOW(UserMessage8)
+	;.byte LOW(UserMessage9)
 UserMsgPtr_LEnd
 
 UserMsgPtr_H:
@@ -3824,6 +3827,9 @@ UserMsgPtr_H:
 	.byte HIGH(UserMessage4)
 	.byte HIGH(UserMessage5)
 	.byte HIGH(UserMessage6)
+	.byte HIGH(UserMessage7)
+	.byte HIGH(UserMessage8)
+	;.byte HIGH(UserMessage9)
 
 UserMsg_UpdateStatusBar:
 	JSR StatusBar_Fill_DWO		; Fill in the world number and complete the UserMessage (Orange - added deaths and orbs as well)
@@ -4159,6 +4165,30 @@ UserMessage6:
 	;The first of many double\nshelljumps!
 	.byte $C3, $D7, $D4, $FE, $D5, $D8, $CB, $CC, $CD, $FE, $DE, $D5, $FE, $DC, $D0, $DD, $8C, $FE, $D3, $DE, $CE, $D1, $DB, $D4, $00
 	.byte $CC, $D7, $D4, $DB, $DB, $D9, $CE, $DC, $DF, $CC, $EA, $FF
+
+UserMessage7:
+	.byte $C4, $CC, $D4, $D5, $CE, $DB, $FE, $CF, $D8, $CC, $CE, $D0, $DB, $FE, $D2, $CE, $D4, $CC, $E9, $E9, $E9, $00
+	.byte $1C, $C2, $DB, $DE, $81, $FE, $CC, $DF, $D8, $DD, $FE, $D5, $D0, $DB, $DB, $E9, $FE, $2E, $BA, $D8, $D2, $DA, $FE, $CC, $D7, $D4, $DB, $DB, $E9, $00
+	.byte $1D, $B3, $CB, $DE, $DF, $DA, $D8, $D2, $DA, $FE, $CC, $D7, $D4, $DB, $DB, $E9, $FE, $1F, $2F, $B1, $D4, $FE, $D7, $D4, $CB, $D4, $E9, $FF
+	;.byte $C3, $D7, $D4, $FE, $1D, $FE, $CF, $D8, $CC, $CE, $D0, $DB, $FE, $D2, $CE, $D4, $FE, $D7, $D4, $DB, $DF, $CC, $00
+	;.byte $CD, $DE, $FE, $CC, $D7, $DE, $81, $FE, $81, $D7, $D4, $CB, $D4, $FE, $D0, $DD, $D3, $FE, $81, $D7, $D4, $DD, $FE, $CD, $DE, $00
+	;.byte $CE, $CC, $D4, $FE, $CD, $D7, $D4, $FE, $D3, $CB, $DE, $DF, $DA, $D8, $D2, $DA, $E9, $FF
+
+UserMessage8: ;The [up] sprite gives a cue\nto use the UP A regrab.
+	.byte $1E, $C3, $D7, $CB, $DE, $81, $FE, $CC, $D7, $D4, $DB, $DB, $FE, $D7, $D4, $CB, $D4, $E9, $00
+	.byte $B0, $FE, $D2, $DE, $D8, $DD, $FE, $CC, $CD, $D0, $D2, $DA, $FE, $CE, $CC, $CE, $D0, $DB, $DB, $8C, $FE, $DC, $D4, $D0, $DD, $CC, $00
+	.byte $CD, $D7, $CB, $DE, $81, $FE, $CD, $D7, $D4, $FE, $CC, $D7, $D4, $DB, $DB, $FE, $CE, $DF, $81, $D0, $CB, $D3, $CC, $E9, $FF
+	;.byte $C3, $D7, $D4, $FE, $1C, $FE, $CC, $DF, $CB, $D8, $CD, $D4, $FE, $D6, $D8, $CF, $D4, $CC, $FE, $D0, $FE, $D2, $CE, $D4, $00
+	;.byte $CD, $DE, $FE, $CE, $CC, $D4, $FE, $CD, $D7, $D4, $FE, $C4, $BF, $FE, $B0, $FE, $CB, $D4, $D6, $CB, $D0, $D1, $E9, $FF
+
+;UserMessage9:
+;	.byte $C3, $D7, $D4, $FE, $1C, $FE, $CC, $DF, $CB, $D8, $CD, $D4, $FE, $D6, $D8, $CF, $D4, $CC, $FE, $D0, $FE, $D2, $CE, $D4, $00
+;	.byte $CD, $DE, $FE, $CE, $CC, $D4, $FE, $CD, $D7, $D4, $FE, $C4, $BF, $FE, $B0, $FE, $CB, $D4, $D6, $CB, $D0, $D1, $E9, $FF
+
+;UserMessage10:
+;	.byte $BE, $CD, $D7, $D4, $CB, $FE, $D2, $CE, $D4, $CC, $E9, $E9, $E9, $FE, $C2, $CD, $D0, $DD, $D3, $FE, $D7, $D4, $CB, $D4, $00
+;	.byte $B0, $DD, $D3, $FE, $CC, $CD, $D0, $D2, $DA, $CC, $FE, $DE, $D5, $FE, $D2, $DE, $D8, $DD, $CC, $FE, $CE, $CC, $CE, $D0, $DB, $DB, $8C, $00
+;	.byte $DC, $D4, $D0, $DD, $FE, $CD, $D7, $CB, $DE, $81, $FE, $CD, $D7, $D4, $FE, $CC, $D7, $D4, $DB, $DB, $FE, $CE, $DF, $81, $D0, $CB, $D3, $E9, $FF
 
 ;;;==========================================================================================================
 ;;;= ORANGE - The following is for our new status bar
