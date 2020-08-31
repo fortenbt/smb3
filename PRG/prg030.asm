@@ -5108,6 +5108,7 @@ RestartLevelPRG030:		; This is jumped to from Level_MainLoop->RunPauseMenu->DoMe
 
 	LDA #$00
 	STA Player_HaltGame			; In case gameplay was halted when we died.
+	STA Player_Pet_Dog
 
 	LDA #$10
 	STA Map_Operation

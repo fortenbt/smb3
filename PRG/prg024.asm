@@ -22,6 +22,7 @@ FALLRATE_MAX		= $40	; Maximum Y velocity falling rate
 FALLRATE_OBJECTMAX	= $60	; Maximum Y velocity falling rate of an object
 
 Cinematic_ToadAndKing:
+	INC DisablePause		; Don't allow pause at this point
 	LDA Cine_ToadKing
 	LSR A
 	BNE PRG024_A03A	 ; If Cine_ToadKing > 1, jump to PRG024_A03A
@@ -411,6 +412,9 @@ TAndK_EndGame:
 	LDA #24
 	STA PAGE_A000
 	JSR PRGROM_Change_Both2
+
+	LDA #$00
+	STA Player_Pet_Dog
 
 _end_game_loop:
 	JSR DoEndGame
