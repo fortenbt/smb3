@@ -4217,13 +4217,17 @@ NPCMessage1:
 ;Please continue
 ;searching until you
 ;have found all the
-;orbs.
+;orbs.You won't be
+;allowed into Grimm's
+;manor without them.
 NPCMessage2:
 	.byte $00
 	.byte $D9, $90, $DC, $E0, $A9, $DC, $FE, $E2, $93, $92, $AA, $84, $92, $AB, $DC, $00
 	.byte $A9, $DC, $E0, $A8, $E2, $FA, $84, $92, $DE, $FE, $AB, $92, $AA, $84, $90, $FE, $B3, $93, $AB, $00
 	.byte $FA, $E0, $B0, $DC, $FE, $DD, $93, $AB, $92, $EF, $FE, $E0, $90, $90, $FE, $AA, $FA, $DC, $00
-	.byte $93, $A8, $E1, $A9, $58, $FF
+	.byte $93, $A8, $E1, $A9, $58, $B3, $93, $AB, $FE, $B1, $93, $92, $B5, $AA, $FE, $E1, $DC, $00
+	.byte $E0, $90, $90, $93, $B1, $DC, $EF, $FE, $84, $92, $AA, $93, $FE, $EB, $A8, $84, $91, $91, $B5, $A9, $00
+	.byte $91, $E0, $92, $93, $A8, $FE, $B1, $84, $AA, $FA, $93, $AB, $AA, $FE, $AA, $FA, $DC, $91, $58, $FF
 
 ;It's so sad,what's\n
 ;happened to Mr. Grimm.\n
