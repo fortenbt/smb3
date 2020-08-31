@@ -4601,30 +4601,65 @@ PRG005_B6BA:
 
 PRG005_B6CD:
 	;STA <Player_XVel	 ; Set Player's velocity appropriately
+
+	;;; [ORANGE] Note this is still inside the ObjNorm_BigQBlock subroutine
+_checkpoint_touched:
+	LDA Level_ObjectID,X
+	SUB #$94						; Use the object ID normalized to the first big q block as the index
+	TAY
+	LDA Chkpnt_Powerup,Y
+	BNE _chkpnt_do_powerup			; If non-zero, do the powerup
+	LDA Sound_QLevel1				; Otherwise, just play the powerup sound
+	ORA #SND_LEVELPOWER
+	STA Sound_QLevel1
+	BNE _chkpnt_post_powerup		; branch always
+_chkpnt_do_powerup:
 	JSR Do_FireFlower_Bank1
+_chkpnt_post_powerup:
 	LDA #OBJSTATE_NORMAL
 	STA Objects_State,X
-	STA <Objects_Var5,X
-	INC Objects_Frame,X
+	STA <Objects_Var5,X				; determines if it's already been touched
+	INC Objects_Frame,X				; changes it from the gray img to the M
 	; set checkpoint vars
 	INC GotCheckpoint
-	LDA #LOW(W6F2L)
+	LDA Chkpnt_Dsts_Lo,Y
 	STA Chkpnt_Layout
-	LDA #HIGH(W6F2L)
+	LDA Chkpnt_Dsts_Hi,Y
 	STA Chkpnt_Layout+1
-	LDA #LOW(W6F2O)
+	LDA Chkpnt_ObjPtr_Lo,Y
 	STA Chkpnt_Obj
-	LDA #HIGH(W6F2O)
+	LDA Chkpnt_ObjPtr_Hi,Y
 	STA Chkpnt_Obj+1
-	LDA #$0C
+	LDA Chkpnt_Tilesets,Y
 	STA Chkpnt_Tileset
-	LDA #$B0
+	LDA Chkpnt_XLHStarts,Y
 	STA Chkpnt_JctXLHStart
-	LDA #$20
+	LDA Chkpnt_YLHStarts,Y
 	STA Chkpnt_JctYLHStart
 
 PRG005_B6CF:
 	RTS		 ; Return
+
+		;  Bowser, 		Boom Boom
+Chkpnt_Powerup:
+	.byte $01,			$00
+Chkpnt_Dsts_Lo:
+	.byte LOW(W6F2L), 	LOW(W10FL)
+Chkpnt_Dsts_Hi:
+	.byte HIGH(W6F2L),  HIGH(W10FL)
+
+Chkpnt_ObjPtr_Lo:
+	.byte LOW(W6F2O), 	LOW(W10FO)
+Chkpnt_ObjPtr_Hi:
+	.byte HIGH(W6F2O), 	HIGH(W10FO)
+
+Chkpnt_Tilesets:
+	.byte $0C, 			$02
+
+Chkpnt_XLHStarts:
+	.byte $B0,			$E4
+Chkpnt_YLHStarts:
+	.byte $20,			$20
 
 BigQBlock_PlayerPushXVel:	.byte $04, -$04
 
