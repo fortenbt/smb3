@@ -5106,6 +5106,9 @@ RestartLevelPRG030:		; This is jumped to from Level_MainLoop->RunPauseMenu->DoMe
 	JSR Sprite_RAM_Clear
 	JSR Scroll_PPU_Reset
 
+	LDA #$00
+	STA Player_HaltGame			; In case gameplay was halted when we died.
+
 	LDA #$10
 	STA Map_Operation
 	LDA #PLAYERSUIT_SMALL
