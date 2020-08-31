@@ -3869,6 +3869,7 @@ TILE1_OFF_INACTIVE	= $D2	; non-solid off block outline
 TILE1_LILCOINU		= $12
 TILE1_LILCOIND		= $4B
 TILE1_LILCOINB		= $11
+TILE1_LILCOINKICK	= $10
 ;; -- TS2 (Mini Fortress) On/Off
 TILE2_ON		= $19	; See prg021.asm - solid on block
 TILE2_ON_INACTIVE	= $05	; non-solid on block outline
@@ -3877,6 +3878,7 @@ TILE2_OFF_INACTIVE	= $4B	; non-solid off block outline
 TILE2_FIRESWITCH	= $7F
 TILE2_LILCOINU		= $01
 TILE2_LILCOINB		= $47
+TILE2_LILCOINKICK	= $04
 ;; -- TS3 (Hills) On/Off, boot spikes
 TILE3_ON		= $7D	; See prg016.asm - solid on block		QUAD 2
 TILE3_ON_INACTIVE	= $5D	; non-solid on block outline
@@ -3896,6 +3898,7 @@ TILE9_LILCOINU		= $0A
 TILE9_LILCOINU_BR	= $0B
 TILE9_LILCOINB		= $0C
 TILE9_LILCOIND		= $C7
+TILE9_LILCOINKICK	= $0D
 ;; -- TS12 (Ice) On/Off, boot spikes
 TILE12_ON			= $9D
 TILE12_ON_INACTIVE	= $81
