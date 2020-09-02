@@ -1781,7 +1781,9 @@ CHNGTILE_GIANTBRICKFIX	= $18	; Giant World brick restore (small Mario hit giant 
 
 	SpecialObj_XVel:	.ds 8	; $05DD-$05E4 X Velocity of special object
 
-				.ds 8	; $05E5-$05EC unused
+	KonamiIndex:		.ds 1
+	KonamiCounter:		.ds 1
+				.ds 6	; $05E5-$05EC unused
 
 	Misc_Counter:		.ds 1	; Miscellaneous loop counter ?
 	Level_TimerMSD:		.ds 1	; Leftmost / most significant digit on timer
@@ -2982,7 +2984,8 @@ SOBJ_POOF		= $16 	; Poof
 	SpecialObj_YHi:		.ds 8	; $7FD5-$7FDC Special object Y high coordinate
 
 	UnlockedGrimmsHouse:	.ds 1	; $7FDD-$7FDE unused
-							.ds 1
+
+	KonamiActive:		.ds 1
 
 	Objects_LastTile:	.ds 8	; $7FDF-$7FE6 Last tile this object detected
 
