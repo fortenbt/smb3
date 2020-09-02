@@ -3944,6 +3944,8 @@ CheckAllowedToPass:
 	LDA World_Map_Tile
 	CMP #TILE_FORTPARTIAL
 	BEQ _allow_pass
+	CMP #TILE_MARIOCOMP_P
+	BEQ _allow_pass
 	SEC
 	SBC #13
 	CMP #12			; tiles 0 - 11 (after subtracting 13) are our reenterable tiles
