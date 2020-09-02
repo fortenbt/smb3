@@ -1804,10 +1804,13 @@ PRG024_AC6B:
 
 	JSR Title_3Glow	 	; Keep the big '3' glowing!
 
+	JSR CheckKonamiCode
+	BCS DoKonamiSecret
+
 	LDA <Pad_Input	
 	AND #PAD_START
 	BEQ PRG024_ACBA	 	; If Player is not pressing START, jump to PRG024_ACBA (RTS)
-
+_start_super_orb_bros:
 	LDA <Pad_Holding
 	AND #PAD_SELECT		; If player is holding select during start press, don't display user messages
 	BEQ	_post_skip_usermsg
@@ -1860,6 +1863,48 @@ PRG024_ACA5:
 
 PRG024_ACBA:
 	RTS		 ; Return
+
+
+DoKonamiSecret:
+	;;; [ORANGE] Note that KonamiActive is used to set proper map and player graphics
+	INC KonamiActive
+	LDA #MUS1_TIMEWARNING
+	STA Sound_QMusic1
+	RTS
+
+KonamiCode:
+    .byte PAD_UP, PAD_UP, PAD_DOWN, PAD_DOWN, PAD_LEFT, PAD_RIGHT, PAD_LEFT, PAD_RIGHT
+    .byte PAD_B, PAD_A, PAD_B, PAD_A, PAD_SELECT, PAD_START
+KonamiCode_END
+
+CheckKonamiCode:
+    LDA <Pad_Input      ; Check if they pressed anything on this frame
+    BEQ _konami_dec     ; just dec our counter if nothing is being pressed
+    LDX KonamiIndex
+    LDA KonamiCode,X    ; Otherwise, check our current code key
+    AND <Pad_Input
+    BEQ _konami_reset   ; If it was the wrong key, reset our code entry state
+    LDA #60             ; If it was the right key, increment to the next code key
+    STA KonamiCounter
+    INC KonamiIndex
+	LDA KonamiIndex
+	CMP #(KonamiCode_END-KonamiCode)
+	BNE _konami_dec		; If we haven't reached the end, just continue on
+	SEC					; Otherwise, set the carry for success!
+	RTS
+_konami_dec:
+    LDA KonamiIndex
+    BEQ _konami_rts     ; Don't dec if we're waiting for the first key to be pressed
+    DEC KonamiCounter
+    BNE _konami_rts
+_konami_reset:
+    LDA #$00
+    STA KonamiIndex     ; Reset the index to 0
+    LDA #60             ; 60 frames per input before resetting
+    STA KonamiCounter
+_konami_rts:
+    CLC                 ; Standard return, clear the carry
+    RTS
 
 Title_PrepForWorldMap:
 	LDA #$00

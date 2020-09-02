@@ -741,8 +741,17 @@ Player_Draw:
 	LDA Player_FramePageOff,X
 	STA <Temp_Var1		 ; Get VROM page offset for this animation frame -> Temp_Var1
 
+	LDA KonamiActive
+	BEQ _set_pup_rootpage	; if konami code is not active, we use normal graphics
+	LDA <Player_Suit
+	BNE _set_pup_rootpage	; If we're not small, we use normal graphics
+	LDA #$04				; otherwise, we use chr004 as our base (6 and 7 have our fall guys graphics)
+	BNE _add_pframe_pageoff	; branch always
+
+_set_pup_rootpage:
 	LDY <Player_Suit
 	LDA Player_PUpRootPage,Y ; Get VROM root page for this power up
+_add_pframe_pageoff:
 	ADD <Temp_Var1		 ; Add appropriate offset to the VROM base for the animation frame
 
 	STA PatTable_BankSel+2	 ; Set VROM bank switch for sprites 1/4

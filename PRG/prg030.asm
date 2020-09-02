@@ -470,7 +470,14 @@ PRG030_84D7:
 	LDA #$16
 	STA PatTable_BankSel+1
 	LDX #$20
+	LDA KonamiActive
+	BEQ _set_map_pattable2	; if konami code is not active, we use normal graphics
+	LDA #30					; otherwise we use chr030 for fall guys graphics
+	STA PatTable_BankSel+2
+	BNE _set_map_pattable3	; branch always
+_set_map_pattable2:
 	STX PatTable_BankSel+2
+_set_map_pattable3:
 	INX
 	STX PatTable_BankSel+3
 	INX
