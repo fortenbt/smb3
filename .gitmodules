@@ -1,0 +1,3 @@
+[submodule "foundry-joe"]
+	path = foundry-joe
+	url = git@github.com:TheJoeSmo/SMB3-Foundry.git
