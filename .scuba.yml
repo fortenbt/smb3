@@ -1,0 +1,9 @@
+image: fortenbt/smb3-foundry:1.4
+
+aliases:
+        build: nesasm smb3.asm
+        foundry:
+                environment:
+                        DISPLAY:
+                        LIBGL_ALWAYS_INDIRECT: 1
+                script: python3.8 foundry-joe/smb3-foundry.py
