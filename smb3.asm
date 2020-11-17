@@ -1,5 +1,5 @@
-	.inesprg 16  ; 16x 16KB PRG code (32 banks of 8KB)
-	.ineschr 16  ; 16x  8KB CHR data (128 banks of 1KB)
+	.inesprg 32  ; 16x 16KB PRG code (32 banks of 8KB)
+	.ineschr 32  ; 16x  8KB CHR data (128 banks of 1KB)
 	.inesmap 4   ; mapper 4 = MMC3, 8KB PRG, 1/2KB CHR bank swapping
 	.inesmir 0   ; background mirroring
 
@@ -4806,13 +4806,15 @@ TILE18_BOUNCEDBLOCK	= $C2	; Temporary tile for when block has been bounced
 
 	; This bank is ALWAYS active in ROM, sitting at 8000h-9FFFh
 	; Contains interrupt handling code and other constantly reused functionality
-	.bank 30
+	;.bank 30
+	.bank 62
 	.org $8000
 	.include "PRG/prg030.asm"
 
 	; This bank is ALWAYS active in ROM, sitting at E000h-FFFFh
 	; Contains interrupt handling code and other constantly reused functionality
-	.bank 31
+	;.bank 31
+	.bank 63
 	.org $E000
 	.include "PRG/prg031.asm"
 
