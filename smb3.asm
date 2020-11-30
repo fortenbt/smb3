@@ -4843,6 +4843,9 @@ TILE18_BOUNCEDBLOCK	= $C2	; Temporary tile for when block has been bounced
 	.org $C000
 	.include "PRG/prg039.asm"
 
+	.bank 59
+	.org $C000
+	.include "PRG/prg059.asm"
 	.bank 60
 	.org $C000
 	.include "PRG/prg060.asm"

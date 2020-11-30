@@ -1380,13 +1380,13 @@ M2BSegHedr24:	MusSeg 60, Music_RestH_LUT40, M2BSegData1B, $19, M2BSegData1B_Tri,
 	; be played ($10, $20, $30, ... $C0), so that song $10 uses a start
 	; index of $00, an end index of $06, and a loop index of $01.
 Music_Set2B_Starts:
-	.byte $00, $07, $08, $0C, $0F, $13, $15, $1B, $1E, $1B, $27, $2C
+	.byte $2D, $07, $08, $0C, $0F, $13, $15, $1B, $1E, $1B, $27, $2C
 
 Music_Set2B_Ends:
-	.byte $06, $07, $0B, $0E, $12, $14, $1A, $1D, $26, $1D, $2B, $2C
+	.byte $32, $07, $0B, $0E, $12, $14, $1A, $1D, $26, $1D, $2B, $2C
 
 Music_Set2B_Loops:
-	.byte $01, $07, $09, $0C, $10, $13, $18, $1B, $1F, $1B, $28, $2C
+	.byte $2E, $07, $09, $0C, $10, $13, $18, $1B, $1F, $1B, $28, $2C
 
 
 	; These are Set 2B music segments.  Note that more exist on page 29.
@@ -1513,6 +1513,12 @@ Music_Set2B_HedrPtrs:
 	.word M2BSegHedr20, M2BSegHedr21, M2BSegHedr22, M2BSegHedr23	; Index $28-$2B
 	.word M2BSegHedr24	; Index $2C
 
+	.word AladdinHedr1	; $2D
+	.word AladdinHedr2	; $2E
+	.word AladdinHedr3	; $2F
+	.word AladdinHedr4	; $30
+	.word AladdinHedr5	; $31
+	.word AladdinHedr6	; $32
 
 .set1_set2a_ptrs: Align100h .set1_set2a_ptrs
 Music_Set1_Set2A_Ptrs:
@@ -1571,5 +1577,7 @@ _orig_getrestticks:
 	TAY
 	LDA [Music_Rest_PtrL],Y
 	RTS		 	; Return
+
+AladdinHedr1:	MusSeg 59, Aladdin_R1, Aladdin_1, $14, Aladdin_Tri1, Aladdin_Nse1, $0000
 
 _prg038_end:
