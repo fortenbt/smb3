@@ -1065,8 +1065,8 @@ PRG027_A75B:
 PRG027_A75E:
 	STA <Player_Frame	; Set appropriate Player frame
 
-	; Load page 29 @ C000
-	LDA #29
+	; Load page 39 @ C000
+	LDA #39
 	STA PAGE_C000
 	JSR PRGROM_Change_C000
 

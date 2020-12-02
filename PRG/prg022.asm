@@ -2645,10 +2645,10 @@ PRG022_CF7C:
 
 	JSR StatusBar_UpdateValues	 ; Update Status Bar (not really used)
 
-	; Switch to page 28 @ A000
+	; Switch to page 38 @ A000
 	LDA #MMC3_8K_TO_PRG_A000
 	STA MMC3_COMMAND
-	LDA #28	
+	LDA #38
 	STA MMC3_PAGE	 
 
 	; Jump to the sound engine, newly inserted at page A000!

@@ -439,8 +439,8 @@ PAD_RIGHT	= $01
 	; resets to zero.
 	Graphics_Queue:		.ds 1
 
-				.ds 1	; $5F unused
-				.ds 1	; $60 unused
+	Music_Rest_PtrL: 	.ds 1	; [ORANGE] $5F-$60 used for current music rest array pointer
+	Music_Rest_PtrH: 	.ds 1
 
 	Level_LayPtr_AddrL:	.ds 1	; Low byte of address to tile layout (ORIGINAL stored in Level_LayPtrOrig_AddrL)
 	Level_LayPtr_AddrH:	.ds 1	; High byte of address to tile layout (ORIGINAL stored in Level_LayPtrOrig_AddrH)
@@ -2477,7 +2477,20 @@ Tile_Mem:	.ds 6480	; $6000-$794F Space used to store the 16x16 "tiles" that make
 
 	Player_NoSlopeStick:	.ds 1	; If set, Player does not stick to slopes (noticeable running downhill)
 
-				.ds 105	; $7997-$79FF unused
+TRACK_TRI = 0
+TRACK_NSE = 2
+TRACK_PCM = 4
+	Music_TriTrkLo:		.ds 1	; [ORANGE] $7997-$7998 hold Triangle track pos ptr
+	Music_TriTrkHi:		.ds 1
+	Music_NseTrkLo:		.ds 1	; [ORANGE] $7999-$799A hold Noise track pos ptr
+	Music_NseTrkHi:		.ds 1
+	Music_PCMTrkLo:		.ds 1	; [ORANGE] $799B-$799C hold PCM track pos ptr
+	Music_PCMTrkHi:		.ds 1
+	Music_NseStartLo:	.ds 1	; [ORANGE] $799D-$799E hold Noise track base ptr
+	Music_NseStartHi:	.ds 1	;          (noise track restarts when it ends)
+	Music_PCMStartLo:	.ds 1	; [ORANGE] $799F-$79A0 hold PCM track base ptr
+	Music_PCMStartHi:	.ds 1	;          (pcm track restarts when it ends)
+				.ds 95	; $79A1-$79FF unused
 	; Auto scroll effect variables -- everything to do with screens that aren't scrolling in the normal way
 	; NOTE: Post-airship cinematic scene with Toad and King ONLY uses $7A01-$7A11 MMC3 SRAM (from Level_AScrlSelect to Level_AScrlHVelCarry)
 
@@ -4794,15 +4807,23 @@ TILE18_BOUNCEDBLOCK	= $C2	; Temporary tile for when block has been bounced
 	.include "PRG/prg027.asm"
 
 	; First bank of the sound engine
-	.bank 28
-	.org $A000
-	.include "PRG/prg028.asm"
+	;.bank 28
+	;.org $A000
+	;.include "PRG/prg028.asm"
 
 	; Some of the music segments, tile/block change event, pipe movement code, Toad House code,
 	; Player's draw and animation routines
-	.bank 29
+	;.bank 29
+	;.org $C000
+	;.include "PRG/prg029.asm"
+
+	; [ORANGE] banks 38-39 are used for the extended music engine
+	.bank 38
+	.org $A000
+	.include "PRG/prg038.asm"
+	.bank 39
 	.org $C000
-	.include "PRG/prg029.asm"
+	.include "PRG/prg039.asm"
 
 	; This bank is ALWAYS active in ROM, sitting at 8000h-9FFFh
 	; Contains interrupt handling code and other constantly reused functionality
