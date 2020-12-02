@@ -1249,13 +1249,13 @@ MS1_10SegHedr:	MusSeg 60, Music_RestH_LUT30, M12ASegData24, $4C, M12ASegData24_T
 	; index of $08, an end index of $09, and a loop index of $08.
 
 Music_Set2A_Starts:
-	.byte $08, $0A, $0B, $0D, $0E, $10, $11, $13, $14, $15, $16, $18, $1C, $1D, $1E
+	.byte $2C, $0A, $0B, $0D, $0E, $10, $11, $13, $14, $15, $16, $18, $1C, $1D, $1E
 
 Music_Set2A_Ends:
-	.byte $09, $0A, $0C, $0D, $0F, $10, $12, $13, $14, $15, $17, $1B, $1C, $1D, $2B
+	.byte $2F, $0A, $0C, $0D, $0F, $10, $12, $13, $14, $15, $17, $1B, $1C, $1D, $2B
 
 Music_Set2A_Loops:
-	.byte $08, $0A, $0B, $0D, $0F, $10, $11, $13, $14, $15, $17, $18, $1C, $1D, $23
+	.byte $2C, $0A, $0B, $0D, $0F, $10, $11, $13, $14, $15, $17, $18, $1C, $1D, $23
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1530,6 +1530,10 @@ Music_Set1_Set2A_Ptrs:
 	.word MS2ASegHedr1C, MS2ASegHedr1B, MS2ASegHedr1D, MS2ASegHedr1E	; Index $20-$23
 	.word MS2ASegHedr1E, MS2ASegHedr1F, MS2ASegHedr1F, MS2ASegHedr20	; Index $24-$27
 	.word MS2ASegHedr21, MS2ASegHedr22, MS2ASegHedr21, MS2ASegHedr23	; Index $28-$2B
+	.word TGLA12CorrHedr1	; $2C
+	.word TGLA12CorrHedr2	; $2D
+	.word TGLA12CorrHedr3	; $2E
+	.word TGLA12CorrHedr4	; $2F
 
 .SET1_SET2A_PTRS_END: Align100h .SET1_SET2A_PTRS_END
 
@@ -1571,5 +1575,10 @@ _orig_getrestticks:
 	TAY
 	LDA [Music_Rest_PtrL],Y
 	RTS		 	; Return
+
+; First song header must be in bank 38, but the rest can be in the
+; bank specified by the "bank" byte in this header, e.g. 61
+TGLA12CorrHedr1:
+	MusSeg 55, TGLA12Corr_R, TGLA12Corr_1, $69, TGLA12Corr_Tri, TGLA12Corr_Nse, $0000
 
 _prg038_end:
