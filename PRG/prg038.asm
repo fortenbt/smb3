@@ -1192,23 +1192,6 @@ MusSeg .macro
    .word \7	; DCM track pointer
    .endm	; Square 2 cannot be disabled and always starts at offset $00
 
-Music_Set1_Set2A_Ptrs:
-	; Index 0 - 7 are Set 1 songs, accessed by bit weight
-	.word MS1_01SegHedr, MS1_02SegHedr, MS1_04SegHedr, MS1_08SegHedr	; Index $00-$03
-	.word MS1_10SegHedr, MS1_20SegHedr, MS1_40SegHedr, MS1_80SegHedr	; Index $04-$07
-
-	; 8+ are Set 2A
-	.word MS2ASegHedr09, MS2ASegHedr0C, MS2ASegHedr07, MS2ASegHedr0A	; Index $08-$0B
-	.word MS2ASegHedr0B, MS2ASegHedr05, MS2ASegHedr08, MS2ASegHedr06	; Index $0C-$0F
-	.word MS2ASegHedr0F, MS2ASegHedr10, MS2ASegHedr11, MS2ASegHedr0E	; Index $10-$13
-	.word MS2ASegHedr04, MS2ASegHedr12, MS2ASegHedr03, MS2ASegHedr04	; Index $14-$17
-	.word MS2ASegHedr00, MS2ASegHedr01, MS2ASegHedr00, MS2ASegHedr02	; Index $18-$1B
-	.word MS2ASegHedr1A, MS2ASegHedr0D, MS2ASegHedr1B, MS2ASegHedr1B	; Index $1C-$1F
-	.word MS2ASegHedr1C, MS2ASegHedr1B, MS2ASegHedr1D, MS2ASegHedr1E	; Index $20-$23
-	.word MS2ASegHedr1E, MS2ASegHedr1F, MS2ASegHedr1F, MS2ASegHedr20	; Index $24-$27
-	.word MS2ASegHedr21, MS2ASegHedr22, MS2ASegHedr21, MS2ASegHedr23	; Index $28-$2B
-
-
 Music_Set1_Set2A_Headers:
 ;					   Bnk  Rest Ptr          Square data    sq1  tri    nse    dpcm
 MS2ASegHedr00:	MusSeg 60, Music_RestH_LUT00, M12ASegData00, $13, $0000, $0000, $0000
@@ -1345,24 +1328,6 @@ PatS8:	.byte $50, $51, $51, $51, $51, $51, $51, $51, $51, $51, $51, $51, $51, $5
 	.byte $55, $56, $57, $58, $19, $DA, $9B
 
 	.byte $15, $07, $C8, $E8, $E0, $03, $D0, $F4
-
-	; Each "index" of music is tied to a header of a "segment" of music.  Some segments are
-	; reused where repetitious musical notes exist.  The segment headers are apparently not
-	; stored in any particular order.  This table connects an index to a header:
-	;;; [ORANGE] This was changed to be a full pointer to the header
-Music_Set2B_HedrPtrs:
-	.word M2BSegHedr0F, M2BSegHedr10, M2BSegHedr11, M2BSegHedr10	; Index $00-$03
-	.word M2BSegHedr12, M2BSegHedr13, M2BSegHedr14, M2BSegHedr1B	; Index $04-$07
-	.word M2BSegHedr0C, M2BSegHedr0D, M2BSegHedr0D, M2BSegHedr0E	; Index $08-$0B
-	.word M2BSegHedr08, M2BSegHedr08, M2BSegHedr09, M2BSegHedr1C	; Index $0C-$0F
-	.word M2BSegHedr1D, M2BSegHedr1D, M2BSegHedr1E, M2BSegHedr0A	; Index $10-$13
-	.word M2BSegHedr0B, M2BSegHedr17, M2BSegHedr18, M2BSegHedr18	; Index $14-$17
-	.word M2BSegHedr19, M2BSegHedr19, M2BSegHedr1A, M2BSegHedr15	; Index $18-$1B
-	.word M2BSegHedr15, M2BSegHedr16, M2BSegHedr00, M2BSegHedr01	; Index $1C-$1F
-	.word M2BSegHedr02, M2BSegHedr03, M2BSegHedr04, M2BSegHedr05	; Index $20-$23
-	.word M2BSegHedr06, M2BSegHedr05, M2BSegHedr07, M2BSegHedr1F	; Index $24-$27
-	.word M2BSegHedr20, M2BSegHedr21, M2BSegHedr22, M2BSegHedr23	; Index $28-$2B
-	.word M2BSegHedr24	; Index $2C
 
 Music_Set2B_Headers:
 	; The following is all of the segment headers for Set 2B music.
@@ -1502,4 +1467,51 @@ SndMusAll_LoadHedr_38:
 	STA Music_PCMStartHi
 
 	JMP PRG031_E48C
+
+	; Each "index" of music is tied to a header of a "segment" of music.  Some segments are
+	; reused where repetitious musical notes exist.  The segment headers are apparently not
+	; stored in any particular order.  This table connects an index to a header:
+	;;; [ORANGE] This was changed to be a full pointer to the header
+
+;;; [ORANGE] This macro allows us to have a full $100 block of pointers for
+;;;          possible song indices.
+Align100h: .macro
+		.ds ((\1 + $FF) & $FF00) - \1
+	.endm
+
+.set2b_hedr_ptrs: Align100h .set2b_hedr_ptrs
+Music_Set2B_HedrPtrs:
+	.word M2BSegHedr0F, M2BSegHedr10, M2BSegHedr11, M2BSegHedr10	; Index $00-$03
+	.word M2BSegHedr12, M2BSegHedr13, M2BSegHedr14, M2BSegHedr1B	; Index $04-$07
+	.word M2BSegHedr0C, M2BSegHedr0D, M2BSegHedr0D, M2BSegHedr0E	; Index $08-$0B
+	.word M2BSegHedr08, M2BSegHedr08, M2BSegHedr09, M2BSegHedr1C	; Index $0C-$0F
+	.word M2BSegHedr1D, M2BSegHedr1D, M2BSegHedr1E, M2BSegHedr0A	; Index $10-$13
+	.word M2BSegHedr0B, M2BSegHedr17, M2BSegHedr18, M2BSegHedr18	; Index $14-$17
+	.word M2BSegHedr19, M2BSegHedr19, M2BSegHedr1A, M2BSegHedr15	; Index $18-$1B
+	.word M2BSegHedr15, M2BSegHedr16, M2BSegHedr00, M2BSegHedr01	; Index $1C-$1F
+	.word M2BSegHedr02, M2BSegHedr03, M2BSegHedr04, M2BSegHedr05	; Index $20-$23
+	.word M2BSegHedr06, M2BSegHedr05, M2BSegHedr07, M2BSegHedr1F	; Index $24-$27
+	.word M2BSegHedr20, M2BSegHedr21, M2BSegHedr22, M2BSegHedr23	; Index $28-$2B
+	.word M2BSegHedr24	; Index $2C
+
+
+.set1_set2a_ptrs: Align100h .set1_set2a_ptrs
+Music_Set1_Set2A_Ptrs:
+	; Index 0 - 7 are Set 1 songs, accessed by bit weight
+	.word MS1_01SegHedr, MS1_02SegHedr, MS1_04SegHedr, MS1_08SegHedr	; Index $00-$03
+	.word MS1_10SegHedr, MS1_20SegHedr, MS1_40SegHedr, MS1_80SegHedr	; Index $04-$07
+
+	; 8+ are Set 2A
+	.word MS2ASegHedr09, MS2ASegHedr0C, MS2ASegHedr07, MS2ASegHedr0A	; Index $08-$0B
+	.word MS2ASegHedr0B, MS2ASegHedr05, MS2ASegHedr08, MS2ASegHedr06	; Index $0C-$0F
+	.word MS2ASegHedr0F, MS2ASegHedr10, MS2ASegHedr11, MS2ASegHedr0E	; Index $10-$13
+	.word MS2ASegHedr04, MS2ASegHedr12, MS2ASegHedr03, MS2ASegHedr04	; Index $14-$17
+	.word MS2ASegHedr00, MS2ASegHedr01, MS2ASegHedr00, MS2ASegHedr02	; Index $18-$1B
+	.word MS2ASegHedr1A, MS2ASegHedr0D, MS2ASegHedr1B, MS2ASegHedr1B	; Index $1C-$1F
+	.word MS2ASegHedr1C, MS2ASegHedr1B, MS2ASegHedr1D, MS2ASegHedr1E	; Index $20-$23
+	.word MS2ASegHedr1E, MS2ASegHedr1F, MS2ASegHedr1F, MS2ASegHedr20	; Index $24-$27
+	.word MS2ASegHedr21, MS2ASegHedr22, MS2ASegHedr21, MS2ASegHedr23	; Index $28-$2B
+
+.SET1_SET2A_PTRS_END: Align100h .SET1_SET2A_PTRS_END
+
 _prg038_end:
