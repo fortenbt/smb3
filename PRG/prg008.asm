@@ -447,8 +447,8 @@ PRG008_A224:
 	JMP PChg_C000_To_0	 ; Jump to PChg_C000_To_0 (switch C000 back to page 0 and return)
 
 PChg_C000_To_29:
-	; Change page @ C000 to 29
-	LDA #29
+	; Change page @ C000 to 39
+	LDA #39
 	STA PAGE_C000
 	JMP PRGROM_Change_C000
 
