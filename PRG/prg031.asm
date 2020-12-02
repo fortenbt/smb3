@@ -199,10 +199,11 @@ Music_GetRestTicks:
 	;RTS		 	; Return
 	AND #$0f	 	; Get lower 4 bits
 	ADD Music_RestH_Base	; Add this to Music_RestH_Base
+	ADC Music_RestH_Off	; Add this to Music_RestH_Off
 	TAY			; Y = A
 	LDA [Music_Rest_PtrL],Y
 	RTS		 	; Return
-	.ds 4
+	.ds 1
 
 
 SndMus_QueueCommonJ:
