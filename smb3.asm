@@ -2480,17 +2480,18 @@ Tile_Mem:	.ds 6480	; $6000-$794F Space used to store the 16x16 "tiles" that make
 TRACK_TRI = 0
 TRACK_NSE = 2
 TRACK_PCM = 4
-	Music_TriTrkLo:		.ds 1	; [ORANGE] $7997-$7998 hold Triangle track pos ptr
+	Music_Bank:			.ds 1	; [ORANGE] $7997 hold bank this music is in
+	Music_TriTrkLo:		.ds 1	; [ORANGE] $7998-$7999 hold Triangle track pos ptr
 	Music_TriTrkHi:		.ds 1
-	Music_NseTrkLo:		.ds 1	; [ORANGE] $7999-$799A hold Noise track pos ptr
+	Music_NseTrkLo:		.ds 1	; [ORANGE] $799A-$799B hold Noise track pos ptr
 	Music_NseTrkHi:		.ds 1
-	Music_PCMTrkLo:		.ds 1	; [ORANGE] $799B-$799C hold PCM track pos ptr
+	Music_PCMTrkLo:		.ds 1	; [ORANGE] $799C-$799D hold PCM track pos ptr
 	Music_PCMTrkHi:		.ds 1
-	Music_NseStartLo:	.ds 1	; [ORANGE] $799D-$799E hold Noise track base ptr
+	Music_NseStartLo:	.ds 1	; [ORANGE] $799E-$799F hold Noise track base ptr
 	Music_NseStartHi:	.ds 1	;          (noise track restarts when it ends)
-	Music_PCMStartLo:	.ds 1	; [ORANGE] $799F-$79A0 hold PCM track base ptr
+	Music_PCMStartLo:	.ds 1	; [ORANGE] $79A0-$79A1 hold PCM track base ptr
 	Music_PCMStartHi:	.ds 1	;          (pcm track restarts when it ends)
-				.ds 95	; $79A1-$79FF unused
+				.ds 94	; $79A2-$79FF unused
 	; Auto scroll effect variables -- everything to do with screens that aren't scrolling in the normal way
 	; NOTE: Post-airship cinematic scene with Toad and King ONLY uses $7A01-$7A11 MMC3 SRAM (from Level_AScrlSelect to Level_AScrlHVelCarry)
 
@@ -4825,6 +4826,9 @@ TILE18_BOUNCEDBLOCK	= $C2	; Temporary tile for when block has been bounced
 	.org $C000
 	.include "PRG/prg039.asm"
 
+	.bank 60
+	.org $C000
+	.include "PRG/prg060.asm"
 	; This bank is ALWAYS active in ROM, sitting at 8000h-9FFFh
 	; Contains interrupt handling code and other constantly reused functionality
 	;.bank 30

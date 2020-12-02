@@ -551,8 +551,8 @@ PRG031_E4BD:
 ; Square 2's music track code
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Music_Sq2Track:
-
-	DEC Music_Sq2Rest	; Music_Sq2Rest--
+	;DEC Music_Sq2Rest	; Music_Sq2Rest--
+	JSR DoMusicBankSwap	; [ORANGE] Hook this to do our bank swap!
 	BEQ PRG031_E4CD	 	; If Music_Sq2Rest = 0, time to update Track Square 2!
 	JMP PRG031_E57A	 	; Otherwise, jump to PRG031_E57A
 
@@ -1267,7 +1267,7 @@ PRG031_E870:
 	STA PAPU_FT1,X	 ; Update PAPU_FT1/2!
 	RTS		 ; Return
 
-
+	;;; [ORANGE] These tables moved to prg060.asm
 	; Music_RestH_LUT is indexed by (Music_RestH_Base + Music_RestH_Off + [0 to 15])
 	; * Music_RestH_Base is always divisible by $10, Music_RestH_Off is $00 or $10
 	;
@@ -1278,26 +1278,26 @@ PRG031_E870:
 	;
 	; * Obviously that means a song is "optimized" by selecting the best set, and
 	;   must have a correct row +$10 if it plans on being "low time warning compatible"
-Music_RestH_LUT:
-Music_RestH_LUT00:
+__Music_RestH_LUT:
+__Music_RestH_LUT00:
 	.byte $08, $08, $0B, $0A, $10, $18, $15, $16, $20, $30, $40, $60, $80, $01, $1F, $00 ; $00 - $0F
-Music_RestH_LUT10:
+__Music_RestH_LUT10:
 	.byte $07, $08, $0A, $0A, $0F, $16, $14, $14, $1E, $2D, $3C, $5A, $78, $05, $00, $00 ; $10 - $1F
-Music_RestH_LUT20:
+__Music_RestH_LUT20:
 	.byte $07, $07, $09, $0A, $0E, $15, $13, $12, $1C, $2A, $38, $54, $70, $01, $04, $00 ; $20 - $2F
-Music_RestH_LUT30:
+__Music_RestH_LUT30:
 	.byte $06, $06, $08, $08, $0C, $12, $10, $10, $18, $24, $30, $48, $60, $04, $02, $16 ; $30 - $3F
-Music_RestH_LUT40:
+__Music_RestH_LUT40:
 	.byte $05, $05, $07, $06, $0A, $0F, $0D, $0E, $14, $1E, $28, $3C, $50, $03, $01, $13 ; $40 - $4F
-Music_RestH_LUT50:
+__Music_RestH_LUT50:
 	.byte $04, $05, $06, $06, $09, $0D, $0C, $0C, $12, $1B, $24, $36, $48, $1E, $03, $00 ; $50 - $5F
-Music_RestH_LUT60:
+__Music_RestH_LUT60:
 	.byte $04, $04, $05, $06, $08, $0C, $0B, $0A, $10, $18, $20, $30, $40, $00, $00, $00 ; $60 - $6F
-Music_RestH_LUT70:
+__Music_RestH_LUT70:
 	.byte $03, $04, $05, $04, $07, $0A, $09, $0A, $0E, $15, $1C, $2A, $38, $0B, $00, $00 ; $70 - $7F
-Music_RestH_LUT80:
+__Music_RestH_LUT80:
 	.byte $03, $03, $04, $04, $06, $09, $08, $08, $0C, $12, $18, $24, $30, $02, $00, $00 ; $80 - $8F
-Music_RestH_LUT90:
+__Music_RestH_LUT90:
 	.byte $02, $02, $03, $02, $04, $06, $05, $06, $08, $0C, $10, $18, $20		     ; $90 - $9C
 
 	; BEGIN UNUSED SPACE (alignment for DMC04)
@@ -3574,11 +3574,25 @@ PRGROM_Change_C000:	; $FFD1
 	STA MMC3_PAGE			; Set MMC3 page
 	RTS				; Return
 
+DoMusicBankSwap:
+	;;; [ORANGE] This code called from hooked Music_Sq2Track
+	;;; [ORANGE] This block adds 12 bytes of code along with
+	;;;          3 more to do the DEC Music_Sq2Rest that we hooked
+	; Swap bank C000 (which is currently prg039 with this song's bank)
+	LDA #MMC3_8K_TO_PRG_C000	; Changing PRG ROM at C000
+	STA MMC3_COMMAND 		; Set MMC3 command
+	LDA Music_Bank
+	STA MMC3_PAGE	 		; Set MMC3 page
 
-	.byte $FF, $FF, $FF
+	DEC Music_Sq2Rest	; Music_Sq2Rest--
 
+	RTS
+
+	;;; [ORANGE] These bytes removed for space
+	;.byte $FF, $FF, $FF
 	; A marker of some kind? :)
-	.byte "SUPER MARIO 3"
+	;.byte "SUPER MARIO "
+	.byte "3"
 
 	; Signature?
 	.byte $00, $00, $6C, $56, $03, $00, $01, $0C, $01, $2D
