@@ -4846,6 +4846,9 @@ TILE18_BOUNCEDBLOCK	= $C2	; Temporary tile for when block has been bounced
 	.bank 60
 	.org $C000
 	.include "PRG/prg060.asm"
+	.bank 61
+	.org $C000
+	.include "PRG/prg061.asm"
 	; This bank is ALWAYS active in ROM, sitting at 8000h-9FFFh
 	; Contains interrupt handling code and other constantly reused functionality
 	;.bank 30
