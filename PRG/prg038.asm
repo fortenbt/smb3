@@ -1249,13 +1249,13 @@ MS1_10SegHedr:	MusSeg 60, Music_RestH_LUT30, M12ASegData24, $4C, M12ASegData24_T
 	; index of $08, an end index of $09, and a loop index of $08.
 
 Music_Set2A_Starts:
-	.byte $08, $0A, $0B, $0D, $0E, $10, $11, $13, $14, $15, $16, $18, $1C, $1D, $1E
+	.byte $2C, $0A, $0B, $0D, $0E, $10, $11, $13, $14, $15, $16, $18, $1C, $1D, $1E
 
 Music_Set2A_Ends:
-	.byte $09, $0A, $0C, $0D, $0F, $10, $12, $13, $14, $15, $17, $1B, $1C, $1D, $2B
+	.byte $2C, $0A, $0C, $0D, $0F, $10, $12, $13, $14, $15, $17, $1B, $1C, $1D, $2B
 
 Music_Set2A_Loops:
-	.byte $08, $0A, $0B, $0D, $0F, $10, $11, $13, $14, $15, $17, $18, $1C, $1D, $23
+	.byte $2C, $0A, $0B, $0D, $0F, $10, $11, $13, $14, $15, $17, $18, $1C, $1D, $23
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1531,6 +1531,20 @@ Music_Set1_Set2A_Ptrs:
 	.word MS2ASegHedr1E, MS2ASegHedr1F, MS2ASegHedr1F, MS2ASegHedr20	; Index $24-$27
 	.word MS2ASegHedr21, MS2ASegHedr22, MS2ASegHedr21, MS2ASegHedr23	; Index $28-$2B
 
+	.word Doom_Hedr1	; $2C
+	.word Doom_Hedr1	; $2D
+	.word Doom_Hedr2	; $2D
+	.word Doom_Hedr2	; $2e
+	.word Doom_Hedr2	; $2f
+	.word Doom_Hedr2	; $30
+	.word Doom_Hedr2	; $31
+	.word Doom_Hedr2	; $32
+	.word Doom_Hedr2	; $33
+	.word Doom_Hedr2	; $34
+	.word Doom_Hedr2	; $35
+	.word Doom_Hedr2	; $36
+	.word Doom_Hedr2	; $37
+
 .SET1_SET2A_PTRS_END: Align100h .SET1_SET2A_PTRS_END
 
 Music_GetRestTicks_Sq1:
@@ -1571,5 +1585,7 @@ _orig_getrestticks:
 	TAY
 	LDA [Music_Rest_PtrL],Y
 	RTS		 	; Return
+
+Doom_Hedr1:	MusSeg 61, Doom_R1, Doom_1, $04, $0000, $0000, Doom_Dpcm1
 
 _prg038_end:

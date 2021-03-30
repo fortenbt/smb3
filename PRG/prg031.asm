@@ -14,14 +14,35 @@
 ; DMC sounds are here!
 ; Note that due to limitation of the register, these sounds must be aligned on 64-byte ($40) boundaries
 
-DMC01:	.byte $55, $55, $55, $95, $AA, $2A, $95, $E0, $7F, $FC, $C0, $F1, $03, $28, $FE, $FF 
-	.byte $FF, $F1, $5F, $3F, $00, $00, $00, $00, $00, $00, $08, $80, $C0, $F1, $FF, $C7 
-	.byte $8B, $1F, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $AB, $6A, $9B, $AA, $92, $52, $25 
-	.byte $95, $24, $25, $92, $80, $4A, $50, $05, $00, $00, $80, $20, $42, $04, $08, $E2 
-	.byte $FF, $01, $80, $6D, $AB, $6D, $DF, $BB, $77, $7B, $AB, $AF, $DD, $D5, $7D, $DD 
-	.byte $BF, $FF, $EF, $B6, $6D, $6F, $BB, $6D, $AF, $2A, $95, $94, $24, $49, $92, $88 
-	.byte $42, $84, $48, $88, $04, $09, $49, $92, $24, $51, $22, $A5, $92, $22, $49, $AA 
-	.byte $52, $A9, $AA, $5A, $55, $AD, $55, $55, $AD, $6D, $B5, $AD, $6D, $B5, $6D, $DB 
+DMC01:	;.byte $55, $55, $55, $95, $AA, $2A, $95, $E0, $7F, $FC, $C0, $F1, $03, $28, $FE, $FF 
+;	.byte $FF, $F1, $5F, $3F, $00, $00, $00, $00, $00, $00, $08, $80, $C0, $F1, $FF, $C7 
+;	.byte $8B, $1F, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $AB, $6A, $9B, $AA, $92, $52, $25 
+;	.byte $95, $24, $25, $92, $80, $4A, $50, $05, $00, $00, $80, $20, $42, $04, $08, $E2 
+;	.byte $FF, $01, $80, $6D, $AB, $6D, $DF, $BB, $77, $7B, $AB, $AF, $DD, $D5, $7D, $DD 
+;	.byte $BF, $FF, $EF, $B6, $6D, $6F, $BB, $6D, $AF, $2A, $95, $94, $24, $49, $92, $88 
+;	.byte $42, $84, $48, $88, $04, $09, $49, $92, $24, $51, $22, $A5, $92, $22, $49, $AA 
+;	.byte $52, $A9, $AA, $5A, $55, $AD, $55, $55, $AD, $6D, $B5, $AD, $6D, $B5, $6D, $DB 
+	.byte $75, $59, $CD, $EC, $69, $B5, $A9, $D6, $56, $5A, $6E, $09, $3E, $0C, $0E, $04, $03, $F8, $60, $08, $AB, $AA, $AA, $AA, $AA, $AA, $55, $55, $55, $55, $55, $55
+	.byte $D5, $DA, $F6, $8F, $FF, $DD, $9F, $95, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $54, $55, $55, $55, $56, $2A, $86, $21, $45, $25, $55, $A5, $A6, $E1
+	.byte $8A, $59, $95, $CE, $70, $8B, $3C, $3A, $BC, $48, $8E, $45, $35, $52, $45, $11, $0B, $16, $62, $A1, $AA, $2A, $55, $55, $55, $55, $55, $55, $55, $55, $55, $4B
+	.byte $6B, $B9, $EA, $39, $3D, $75, $D9, $C3, $CB, $AD, $56, $5D, $BC, $A5, $57, $D5, $5A, $97, $A7, $AD, $DD, $D2, $AB, $AB, $AB, $AE, $AC, $D5, $DA, $95, $2E, $75
+	.byte $AA, $5A, $B5, $D4, $4A, $AD, $AC, $56, $B9, $5A, $55, $5B, $6A, $A9, $55, $A5, $AA, $B2, $34, $59, $85, $2D, $52, $29, $51, $52, $28, $45, $4A, $89, $54, $22
+	.byte $13, $55, $45, $A3, $54, $91, $92, $52, $8A, $64, $A9, $22, $55, $25, $8B, $8A, $55, $E2, $52, $29, $9B, $B4, $96, $AA, $96, $AD, $DA, $6A, $6B, $6B, $6D, $B5
+	.byte $AE, $B6, $76, $B5, $6B, $5B, $6D, $6B, $DD, $D6, $B6, $AD, $6E, $AD, $36, $AB, $4D, $55, $B3, $B2, $54, $35, $95, $54, $AA, $A4, $24, $15, $45, $29, $A5, $50
+	.byte $29, $95, $92, $49, $A5, $AA, $54, $55, $A9, $96, $AA, $AA, $AA, $6A, $39, $55, $AB, $AC, $AA, $AA, $A6, $B2, $B4, $AA, $AA, $AC, $54, $55, $55, $4B, $55, $55
+	.byte $55, $55, $55, $55, $D5, $54, $B5, $6A, $2D, $6D, $55, $97, $55, $55, $73, $55, $AD, $96, $95, $55, $53, $55, $55, $D5, $52, $AB, $4A, $4B, $B5, $54, $55, $59
+	.byte $55, $5A, $A9, $9A, $AA, $9A, $6A, $69, $55, $CD, $5A, $5A, $55, $55, $4B, $55, $53, $AD, $D2, $2A, $55, $A5, $AA, $64, $53, $5A, $A9, $9A, $4A, $2B, $B5, $52
+	.byte $55, $A9, $AA, $D4, $54, $55, $29, $4D, $99, $9A, $AA, $A5, $AA, $69, $56, $55, $D3, $D2, $AA, $59, $65, $55, $55, $55, $65, $69, $55, $55, $55, $55, $55, $55
+	.byte $53, $2D, $4D, $4B, $55, $55, $55, $69, $65, $72, $69, $6A, $55, $55, $55, $2B, $AB, $4A, $D5, $54, $2D, $55, $55, $55, $55, $55, $55, $55, $AB, $AA, $D5, $D2
+	.byte $AA, $B2, $AA, $AA, $AA, $D4, $54, $55, $95, $56, $CA, $2A, $D3, $D2, $B4, $AC, $AA, $2C, $4B, $55, $D5, $52, $B5, $54, $55, $55, $55, $55, $69, $56, $5A, $55
+	.byte $55, $55, $55, $55, $A5, $AA, $AA, $AA, $B2, $CA, $32, $55, $B5, $AA, $6C, $59, $56, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $D3, $54, $55, $55, $55, $55, $55, $56, $A9, $55, $55, $55, $55, $55, $55, $D5, $AA, $AA, $55, $69, $65, $6A, $AA, $AA, $AA, $4A, $4B, $55, $53, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $95, $A5, $A9, $55, $55, $55, $D5, $B4, $5A, $55, $AB, $9A, $96, $A6, $96, $CA, $A2, $A9, $D4, $54, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $A9, $56, $AA, $96, $56, $55, $55, $55, $55, $B3, $AA, $6A, $6A, $5A, $59, $56, $AA, $4A, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $59, $55, $AA, $AA, $52, $55, $95, $5A, $AA, $56, $55, $55, $D5, $2A, $35, $D3, $AA, $B2, $6A, $AA, $96, $56, $55, $55, $55, $55, $55, $55, $35
+	.byte $55, $4B, $D5, $D2, $54, $35, $AD, $AA, $AA, $AA, $CA, $CA, $52, $55, $55, $55, $D3, $D2, $B2, $AA, $AA, $6A, $A9, $35, $55, $4D, $55, $53, $55, $55, $55, $55
+	.byte $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $6A, $55, $55, $55, $55, $55, $55, $55, $55, $D5, $54, $55, $55, $55, $55, $55, $55, $B5, $4C, $55, $55, $55
+	.byte $55
 DMC01_End
 
 DMC02:	.byte $55, $60, $6B, $79, $EA, $F8, $FF, $43, $82, $24, $00, $20, $8E, $ED, $C7, $A5 
@@ -31,39 +52,29 @@ DMC02:	.byte $55, $60, $6B, $79, $EA, $F8, $FF, $43, $82, $24, $00, $20, $8E, $E
 	.byte $ED, $E7, $D7, $AA, $6C, $59, $16, $A2, $00, $61, $83, $F0, $72, $3A, $0B, $81 
 	.byte $45, $41, $09, $DA, $F1, $FD, $FF, $FF, $5E, $AF, $C4, $4B, $D3, $C9, $8A, $82 
 	.byte $24, $89, $28, $06, $02, $47, $55, $E1, $3D, $AE, $EF, $BC, $F4, $52, $D5, $55 
-	.byte $BD, $BC, $7A, $1E, $57, $51, $0A, $25, $29, $A8, $A8, $38, $69, $D3, $88, $AA 
-	.byte $18, $78, $6C, $BA, $DE, $7D, $ED, $FB, $43, $E7, $34, $4C, $2C, $25, $AD, $92 
-	.byte $A4, $51, $A5, $C8, $62, $E2, $06, $8D, $C7, $F1, $AD, $65, $37, $B4, $AC, $5A 
-	.byte $4D, $9F, $3E, $6D, $3C, $A5, $B2, $24, $A9, $A2, $92, $86, $A9, $44, $45, $EE 
-	.byte $2C, $5E, $AA, $2D, $AE, $53, $9F, $4A, $9D, $3D, $4E, $8D, $3B, $8A, $A9, $E5 
-	.byte $C8, $B2, $2C, $34, $52, $D4, $59, $B1, $D2, $8A, $55, $C3, $5B, $A9, $55, $8B 
-	.byte $76, $7C, $79, $6C, $2B, $CE, $F2, $64, $31, $8E, $64, $45, $72, $64, $D1, $92 
-	.byte $E3, $54, $AD, $5A, $35, $55, $D7, $58, $1E, $1D, $55, $4E, $1D, $57, $56, $55 
-	.byte $CB, $AA, $AA, $2A, $69, $A5, $4A, $AA, $AA, $4A, $4D, $6A, $31, $4D, $D3, $A9 
-	.byte $6A, $AD, $7A, $5C, $65, $AB, $AA, $AC, $CA, $72, $AA, $4A, $B5, $D0, $8A, $95 
-	.byte $AC, $54, $95, $6C, $D9, $52, $5B, $A5, $AA, $D5, $4A, $B5, $2C, $4B, $B6, $D4 
-	.byte $34, $9D, $95, $56, $55, $55, $55, $55, $9A, $2A, $15, $A7, $AA, $52, $2D, $55 
-	.byte $69, $95, $B6, $AA, $65, $D5, $6A, $AA, $5A, $EA, $58, $55, $69, $6A, $A9, $96 
-	.byte $D2, $34, $95, $53, $A9, $A9, $2A, $35, $55, $D3, $AA, $6A, $55, $B5, $E2, $AA 
-	.byte $34, $B5, $9C, $C6, $B1, $95, $AA, $A9, $AA, $B4, $52, $55, $8B, $A9, $9A, $A6 
-	.byte $AA, $9A, $5A, $6A, $A5, $56, $56, $65, $55, $55, $AD, $B4, $B2, $AA, $54, $55 
-	.byte $2D, $D5, $AA, $AC, $AA, $52, $2B, $4B, $95, $AA, $AA, $B2, $2A, $AB, $AA, $6A 
-	.byte $A5, $55, $D5, $B4, $AA, $AA, $AA, $A9, $AA, $AA, $52, $55, $59, $A9, $A5, $AA 
-	.byte $56, $5A, $A5, $95, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55 
-	.byte $55, $55, $55, $55, $55, $55, $53, $35, $55, $D5, $54, $55, $55, $55, $A9, $A5 
-	.byte $AA, $AA, $6A, $59, $69, $55, $55, $B5, $AA, $AA, $B2, $2C, $2B, $55, $55, $55 
+	;.byte $BD, $BC, $7A, $1E, $57, $51, $0A, $25, $29, $A8, $A8, $38, $69, $D3, $88, $AA 
+	;.byte $18, $78, $6C, $BA, $DE, $7D, $ED, $FB, $43, $E7, $34, $4C, $2C, $25, $AD, $92 
+	;.byte $A4, $51, $A5, $C8, $62, $E2, $06, $8D, $C7, $F1, $AD, $65, $37, $B4, $AC, $5A 
+	;.byte $4D, $9F, $3E, $6D, $3C, $A5, $B2, $24, $A9, $A2, $92, $86, $A9, $44, $45, $EE 
+	;.byte $2C, $5E, $AA, $2D, $AE, $53, $9F, $4A, $9D, $3D, $4E, $8D, $3B, $8A, $A9, $E5 
+	;.byte $C8, $B2, $2C, $34, $52, $D4, $59, $B1, $D2, $8A, $55, $C3, $5B, $A9, $55, $8B 
+	;.byte $76, $7C, $79, $6C, $2B, $CE, $F2, $64, $31, $8E, $64, $45, $72, $64, $D1, $92 
+	;.byte $E3, $54, $AD, $5A, $35, $55, $D7, $58, $1E, $1D, $55, $4E, $1D, $57, $56, $55 
+	;.byte $CB, $AA, $AA, $2A, $69, $A5, $4A, $AA, $AA, $4A, $4D, $6A, $31, $4D, $D3, $A9 
+	;.byte $6A, $AD, $7A, $5C, $65, $AB, $AA, $AC, $CA, $72, $AA, $4A, $B5, $D0, $8A, $95 
+	;.byte $AC, $54, $95, $6C, $D9, $52, $5B, $A5, $AA, $D5, $4A, $B5, $2C, $4B, $B6, $D4 
+	;.byte $34, $9D, $95, $56, $55, $55, $55, $55, $9A, $2A, $15, $A7, $AA, $52, $2D, $55 
+	;.byte $69, $95, $B6, $AA, $65, $D5, $6A, $AA, $5A, $EA, $58, $55, $69, $6A, $A9, $96 
+	;.byte $D2, $34, $95, $53, $A9, $A9, $2A, $35, $55, $D3, $AA, $6A, $55, $B5, $E2, $AA 
+	;.byte $34, $B5, $9C, $C6, $B1, $95, $AA, $A9, $AA, $B4, $52, $55, $8B, $A9, $9A, $A6 
+	;.byte $AA, $9A, $5A, $6A, $A5, $56, $56, $65, $55, $55, $AD, $B4, $B2, $AA, $54, $55 
+	;;.byte $2D, $D5, $AA, $AC, $AA, $52, $2B, $4B, $95, $AA, $AA, $B2, $2A, $AB, $AA, $6A 
+	;.byte $A5, $55, $D5, $B4, $AA, $AA, $AA, $A9, $AA, $AA, $52, $55, $59, $A9, $A5, $AA 
+	;.byte $56, $5A, $A5, $95, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55 
+	;.byte $55, $55, $55, $55, $55, $55, $53, $35, $55, $D5, $54, $55, $55, $55, $A9, $A5 
+	;.byte $AA, $AA, $6A, $59, $69, $55, $55, $B5, $AA, $AA, $B2, $2C, $2B, $55, $55, $55 
 DMC02_End
 
-	;
-
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
 
 Music_PlayDMC:
 	LDA DMC_Queue	 ; Get value queued for DMC
@@ -1310,18 +1321,7 @@ __Music_RestH_LUT90:
 
 	; NOTE NOTE NOTE!!
 	; If you're creating a custom hack, delete these $FFs and use the following line instead:
-; .AlignDMC04:	DMCAlign .AlignDMC04
-
-	.byte $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-
-	; END UNUSED SPACE
+.AlignDMC04:	DMCAlign .AlignDMC04
 
 DMC04:	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $B5, $82, $DC
 	.byte $7F, $00, $E0, $FF, $03, $E8, $FF, $03, $00, $F8, $FF, $00, $F0, $FF, $62, $0B
@@ -3416,30 +3416,6 @@ Read_Joypad_Loop:
 
 	RTS		 ; Return
 
-	; Most likely filler / reserved space here
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; IntReset
 ; Game begins here...
@@ -3598,10 +3574,8 @@ DoMusicBankSwap:
 	;.byte $FF, $FF, $FF
 	; A marker of some kind? :)
 	;.byte "SUPER MARIO "
-	.byte "3"
 
 	; Signature?
-	.byte $00, $00, $6C, $56, $03, $00, $01, $0C, $01, $2D
 
 	; ASSEMBLER BOUNDARY CHECK, END OF $FFFA
 .Bound_FFFA:	BoundCheck .Bound_FFFA, $FFFA, PRG031: Vector space
