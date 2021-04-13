@@ -50,6 +50,12 @@ NEG	.macro	; RegEx S&R "EOR #\$ff.*\n.*ADD #\$01" -> "NEG"
 	ADD #$01
 	.endm
 
+PageCall .macro
+	LDA \1			; Bank/Page number
+	LDX #LOW(\2)		; Low byte of function
+	LDY #HIGH(\2)	; High byte of function
+	JSR LoadCallAndRestoreC000
+	.endm
 
 ; This is used in video update streams; since the video address register
 ; takes the address high-then-low (contrary to 6502's normal low-then-high),
@@ -357,7 +363,7 @@ MMC3_IRQENABLE	= $E001 ; Enables IRQ generation
 
 	VBlank_Tick:		.ds 1	; can be used for timing, or knowing when an NMI just fired off
 
-				.ds 1	; $11 unused
+	PageCallCtx:	.ds 1	; $11 [ORANGE] Now used to store various things during LocalCallAndRestoreC000
 
 	Horz_Scroll_Hi:		.ds 1	; Provides a "High" byte for horizontally scrolling, or could be phrased as "current screen"
 	PPU_CTL1_Mod:		; NOT DURING GAMEPLAY, this is used as an additional modifier to PPU_CTL1
@@ -2642,7 +2648,7 @@ CFIRE_LASER		= $15	; Laser fire
 
 	Music_Sq1Bend:		.ds 1	; Alters PAPU_FT1 for bend effects
 
-				.ds 3	; $7AF1-$7AF3 unused
+	PageCallVars:		.ds 3	; $7AF1-$7AF3 [ORANGE] To be used for args to any PageCall
 
 	Music_Sq2Bend:		.ds 1	; Alters PAPU_FT2 for bend effects
 
