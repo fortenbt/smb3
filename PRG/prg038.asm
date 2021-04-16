@@ -1249,13 +1249,13 @@ MS1_10SegHedr:	MusSeg 60, Music_RestH_LUT30, M12ASegData24, $4C, M12ASegData24_T
 	; index of $08, an end index of $09, and a loop index of $08.
 
 Music_Set2A_Starts:
-	.byte $08, $0A, $0B, $0D, $0E, $10, $11, $13, $14, $15, $16, $18, $1C, $1D, $1E
+	.byte $2C, $0A, $0B, $0D, $0E, $10, $11, $13, $14, $15, $16, $18, $1C, $1D, $1E
 
 Music_Set2A_Ends:
-	.byte $09, $0A, $0C, $0D, $0F, $10, $12, $13, $14, $15, $17, $1B, $1C, $1D, $2B
+	.byte $5B, $0A, $0C, $0D, $0F, $10, $12, $13, $14, $15, $17, $1B, $1C, $1D, $2B
 
 Music_Set2A_Loops:
-	.byte $08, $0A, $0B, $0D, $0F, $10, $11, $13, $14, $15, $17, $18, $1C, $1D, $23
+	.byte $2C, $0A, $0B, $0D, $0F, $10, $11, $13, $14, $15, $17, $18, $1C, $1D, $23
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1513,7 +1513,6 @@ Music_Set2B_HedrPtrs:
 	.word M2BSegHedr20, M2BSegHedr21, M2BSegHedr22, M2BSegHedr23	; Index $28-$2B
 	.word M2BSegHedr24	; Index $2C
 
-
 .set1_set2a_ptrs: Align100h .set1_set2a_ptrs
 Music_Set1_Set2A_Ptrs:
 	; Index 0 - 7 are Set 1 songs, accessed by bit weight
@@ -1530,6 +1529,15 @@ Music_Set1_Set2A_Ptrs:
 	.word MS2ASegHedr1C, MS2ASegHedr1B, MS2ASegHedr1D, MS2ASegHedr1E	; Index $20-$23
 	.word MS2ASegHedr1E, MS2ASegHedr1F, MS2ASegHedr1F, MS2ASegHedr20	; Index $24-$27
 	.word MS2ASegHedr21, MS2ASegHedr22, MS2ASegHedr21, MS2ASegHedr23	; Index $28-$2B
+
+	.word SSHedr1, SSHedr2, SSHedr3, SSHedr4, SSHedr5, SSHedr6	; $2C, $2D, $2E, $2F, $30, $31
+	.word SSHedr5, SSHedr6, SSHedr7, SSHedr8, SSHedr9, SSHedr10	; $32, $33, $34, $35, $36, $37
+	.word SSHedr11, SSHedr12, SSHedr13, SSHedr14, SSHedr15, SSHedr16	; $38, $39, $3A, $3B, $3C, $3D
+	.word SSHedr17, SSHedr18, SSHedr19, SSHedr20, SSHedr21, SSHedr22	; $3E, $3F, $40, $41, $42, $43
+	.word SSHedr23, SSHedr24, SSHedr25, SSHedr26, SSHedr27, SSHedr28	; $44, $45, $46, $47, $48, $49
+	.word SSHedr29, SSHedr30, SSHedr31, SSHedr32, SSHedr33, SSHedr34	; $4A, $4B, $4C, $4D, $4E, $4F
+	.word SSHedr35, SSHedr36, SSHedr37, SSHedr38, SSHedr39, SSHedr39	; $50, $51, $52, $53, $54, $55
+	.word SSHedr40, SSHedr40, SSHedr41, SSHedr41, SSHedr42, SSHedr42	; $56, $57, $58, $59, $5A, $5B
 
 .SET1_SET2A_PTRS_END: Align100h .SET1_SET2A_PTRS_END
 
@@ -1571,5 +1579,7 @@ _orig_getrestticks:
 	TAY
 	LDA [Music_Rest_PtrL],Y
 	RTS		 	; Return
+
+SSHedr1: MusSeg 61, SS_R1, SS_1, $5B, SS_Tri1, SS_Nse1, $0000
 
 _prg038_end:
