@@ -181,6 +181,10 @@ DMC_MODCTL_LUT:
 	.byte $60	; ???
 
 Music_GetRestTicks:
+	; This entire function had to move to check which track we're
+	; getting rest ticks for.
+	JMP Music_GetRestTicks_38
+
 	; A is a byte from the music segment, $80-$fe/$ff on non-squares
 	; Only the lower 4 bits are used here
 	;
@@ -197,13 +201,14 @@ Music_GetRestTicks:
 	;TAY			; Y = A
 	;;;LDA Music_RestH_LUT,Y 	; Get value from Music_RestH_LUT
 	;RTS		 	; Return
-	AND #$0f	 	; Get lower 4 bits
-	ADD Music_RestH_Base	; Add this to Music_RestH_Base
-	ADC Music_RestH_Off	; Add this to Music_RestH_Off
-	TAY			; Y = A
-	LDA [Music_Rest_PtrL],Y
-	RTS		 	; Return
-	.ds 1
+	;
+	;;AND #$0f	 	; Get lower 4 bits
+	;;;;ADD Music_RestH_Base	; Add this to Music_RestH_Base
+	;;;ADC Music_RestH_Off	; Add this to Music_RestH_Off
+	;TAY			; Y = A
+	;;LDA [Music_Rest_PtrL],Y
+	;RTS		 	; Return
+	.ds 11
 
 
 SndMus_QueueCommonJ:
@@ -635,7 +640,7 @@ PRG031_E528:
 
 	TXA			 ; A = X (restoring A)
 
-	JSR Music_GetRestTicks
+	JSR Music_GetRestTicks_Sq2
 	STA Music_Sq2RestH	 ; Update Music_Sq2RestH
 
 PRG031_E535:
@@ -744,7 +749,7 @@ PRG031_E5C5:
 	AND #$f0		; A &= $f0 
 	STA Music_Sq1Patch	; Result -> Music_Sq1Patch
 	TXA		 	; Restore A (current byte of music data)
-	JSR Music_GetRestTicks
+	JSR Music_GetRestTicks_Sq1
 	STA Music_Sq1RestH	; Store new rest value (returned by Music_GetRestTicks)
 
 PRG031_E5D2:
