@@ -4654,21 +4654,31 @@ PRG008_B5BB:
 	; This checks if the given tile is greater-than-or-equal-to
 	; the related "AttrTable" slot and, if so, returns 'carry set'
 Level_CheckGndLR_TileGTAttr:
+	;;; [ORANGE] This entire function moved to allow for checks for
+	;;; one-way tiles for Mario's collision.
+	TYA
+	PHA
+	STA PageCallVars	; First arg is offset from Level_Tile_GndL/R
+	PageCall 40, Level_CheckGndLR_TileGTAttr_40
+	PLA
+	TAY
+	RTS
+	;;;LDX Level_Tile_Quad+1,Y	; Get this particular "quad" (0-3) index
+	;;;LDA Level_Tile_GndR,Y		; Check the tile here
+	;;;CMP Tile_AttrTable+4,X
+	;;BGE PRG008_B5D0			; If the tile is >= the attr value, jump to PRG008_B5D0 (NOTE: Carry set when true)
 
-	LDX Level_Tile_Quad+1,Y	; Get this particular "quad" (0-3) index
-	LDA Level_Tile_GndR,Y		; Check the tile here
-	CMP Tile_AttrTable+4,X
-	BGE PRG008_B5D0			; If the tile is >= the attr value, jump to PRG008_B5D0 (NOTE: Carry set when true)
-
-	LDX Level_Tile_Quad,Y		; Get this particular "quad" (0-3) index
-	LDA Level_Tile_GndL,Y		; Check the tile here
-	CMP Tile_AttrTable+4,X		; Set carry if tile is >= the attr value
+	;;;LDX Level_Tile_Quad,Y		; Get this particular "quad" (0-3) index
+	;;;LDA Level_Tile_GndL,Y		; Check the tile here
+	;;;CMP Tile_AttrTable+4,X		; Set carry if tile is >= the attr value
 
 PRG008_B5D0:
 
 	; NOTE: The return value is "carry set" for true!
 
-	RTS		 ; Return
+	;RTS		 ; Return
+	;.ds 21
+	.ds 3
 
 
 	; Handle all common special tiles (ice blocks, P-Switches, bump blocks, etc.)

@@ -50,8 +50,9 @@ NEG	.macro	; RegEx S&R "EOR #\$ff.*\n.*ADD #\$01" -> "NEG"
 	ADD #$01
 	.endm
 
+;;; 9-byte macro
 PageCall .macro
-	LDA \1			; Bank/Page number
+	LDA #\1			; Bank/Page number
 	LDX #LOW(\2)		; Low byte of function
 	LDY #HIGH(\2)	; High byte of function
 	JSR LoadCallAndRestoreC000
