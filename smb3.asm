@@ -2477,9 +2477,15 @@ Tile_Mem:	.ds 6480	; $6000-$794F Space used to store the 16x16 "tiles" that make
 
 	Player_NoSlopeStick:	.ds 1	; If set, Player does not stick to slopes (noticeable running downhill)
 
-TRACK_TRI = 0
+TRACK_TRI = 0	; These three values are used as offsets from Music_TriTrkLo
+				; within Music_GetPtrNote_38 to use a single function
+				; to get a note and increment a pointer to track position
 TRACK_NSE = 2
 TRACK_PCM = 4
+TRACK_SQ1 = 6	; These two are only used for Music_GetRestTicks to know
+				; which track rests he needs to look at, since when
+				; Music_GetRestTicks has these values in X upon entry.
+TRACK_SQ2 = 8
 	Music_Bank:			.ds 1	; [ORANGE] $7997 hold bank this music is in
 	Music_TriTrkLo:		.ds 1	; [ORANGE] $7998-$7999 hold Triangle track pos ptr
 	Music_TriTrkHi:		.ds 1
@@ -2491,7 +2497,18 @@ TRACK_PCM = 4
 	Music_NseStartHi:	.ds 1	;          (noise track restarts when it ends)
 	Music_PCMStartLo:	.ds 1	; [ORANGE] $79A0-$79A1 hold PCM track base ptr
 	Music_PCMStartHi:	.ds 1	;          (pcm track restarts when it ends)
-				.ds 94	; $79A2-$79FF unused
+	Music_ExRest_Ptrs:	.ds 10	; $79A2-$79AB used for extended rest pointers
+	Music_ExRest_Ptr_TriLo:
+	Music_ExRest_Ptr_TriHi:
+	Music_ExRest_Ptr_NseLo:
+	Music_ExRest_Ptr_NseHi:
+	Music_ExRest_Ptr_PcmLo:
+	Music_ExRest_Ptr_PcmHi:
+	Music_ExRest_Ptr_Sq1Lo:
+	Music_ExRest_Ptr_Sq1Hi:
+	Music_ExRest_Ptr_Sq2Lo:
+	Music_ExRest_Ptr_Sq2Hi:
+				.ds 84	; $79AC-$79FF unused
 	; Auto scroll effect variables -- everything to do with screens that aren't scrolling in the normal way
 	; NOTE: Post-airship cinematic scene with Toad and King ONLY uses $7A01-$7A11 MMC3 SRAM (from Level_AScrlSelect to Level_AScrlHVelCarry)
 

@@ -1465,7 +1465,26 @@ SndMusAll_LoadHedr_38:
 	LDA [Temp_Var1],Y
 	STA Music_PCMTrkHi
 	STA Music_PCMStartHi
+	INY
 
+	; If our rest array pointer is #$FFFF, the header has extended rest pointers
+	LDA <Music_Rest_PtrL
+	CMP #$FF
+	BNE _music_header_done
+	LDA <Music_Rest_PtrH
+	CMP #$FF
+	BNE _music_header_done
+	; Read 5 track pointers into Music_ExRest_Ptrs
+	LDX #$00
+_music_exrest_loop:
+	LDA [Temp_Var1],Y
+	INY
+	STA Music_ExRest_Ptrs,X
+	INX
+	CPX #10
+	BNE _music_exrest_loop
+
+_music_header_done:
 	JMP PRG031_E48C
 
 	; Each "index" of music is tied to a header of a "segment" of music.  Some segments are
@@ -1513,5 +1532,44 @@ Music_Set1_Set2A_Ptrs:
 	.word MS2ASegHedr21, MS2ASegHedr22, MS2ASegHedr21, MS2ASegHedr23	; Index $28-$2B
 
 .SET1_SET2A_PTRS_END: Align100h .SET1_SET2A_PTRS_END
+
+Music_GetRestTicks_Sq1:
+	LDX #TRACK_SQ1
+	BNE Music_GetRestTicks_38 ; always branch
+Music_GetRestTicks_Sq2:
+	LDX #TRACK_SQ2
+	; fall through
+Music_GetRestTicks_38:
+	PHA						; save off the rest offset
+	LDA <Music_Rest_PtrL
+	CMP #$FF
+	BNE _use_normal_rest_ptr
+	LDA <Music_Rest_PtrH
+	CMP #$FF
+	BNE _use_normal_rest_ptr
+
+	; Otherwise, our rest pointer is #$FFFF, we should use our
+	; extended rest pointers from the music header
+	LDA Music_ExRest_Ptrs,X
+	STA <Music_Rest_PtrL	; put our extended pointer into Music_Rest_PtrL/H
+	LDA Music_ExRest_Ptrs+1,X
+	STA <Music_Rest_PtrH
+	PLA						; restore the rest offset
+	JSR _orig_getrestticks	; get our reset
+	LDX #$FF
+	STX <Music_Rest_PtrL	; reset Music_Rest_PtrL/H to #$FFFF
+	STX <Music_Rest_PtrH
+	RTS
+
+_use_normal_rest_ptr:
+	PLA						; restore the rest offset
+_orig_getrestticks:
+	AND #$0f	 			; Get lower 4 bits to get offset
+	ADD Music_RestH_Off		; Add this to Music_RestH_Off
+							; This allows stock's low time music speedup
+							; to work
+	TAY
+	LDA [Music_Rest_PtrL],Y
+	RTS		 	; Return
 
 _prg038_end:
