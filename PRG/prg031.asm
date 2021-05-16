@@ -56,9 +56,43 @@ DMC02_End
 
 	;
 
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+LoadCallAndRestoreC000:
+	;;; 45 bytes
+	;;; A = page
+	;;; X = Func pointer Lo
+	;;; Y = Func pointer Hi
+	STA <PageCallCtx		; save off the page we're going to
+	LDA PAGE_C000
+	PHA						; save the current C000 page to the stack
+	LDA <Temp_Var1
+	PHA
+	LDA <Temp_Var2			; Temp_Var1/2 are saved to the stack
+	PHA
+	LDA <PageCallCtx
+	STA PAGE_C000
+	JSR PRGROM_Change_C000	; change page C000 to our destination page
+	STX <Temp_Var1
+	STY <Temp_Var2
+	JSR Jmp_Temp_Var1		; perform the indirect jmp to our function
+							; in a different page
+	STA <PageCallCtx		; save the return value
+	PLA
+	STA <Temp_Var2
+	PLA
+	STA <Temp_Var1			; restore Temp_Var1/2
+	PLA
+	STA PAGE_C000
+	JSR PRGROM_Change_C000	; restore page C000
+	LDA <PageCallCtx		; restore return value
+	RTS
+
+Jmp_Temp_Var1:
+	;;; 3 bytes
+	JMP [Temp_Var1]
+
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
