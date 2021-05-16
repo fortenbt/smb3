@@ -5939,7 +5939,7 @@ PRG030_9FAF:
 
 ; NOTE: The remaining ROM space was all blank ($FF)
 
-CheckTileSolidness:
+CheckTileSolidnessObj:
 	;;; Tile to check against is in A
 	;;; Offset into AttrTable is in Y
 	STA PageCallVars
@@ -5949,7 +5949,14 @@ CheckTileSolidness:
 	STA PageCallVars+2
 	TXA
 	PHA		; save off X
-	PageCall 40, CheckTileSolidness_WithOneWays_40
+	PageCall 40, CheckTileSolidness_SecondHalf_40
 	PLA		; doesn't mess with the carry
 	TAX		; restore X
+	RTS
+CheckTileSolidnessMario:
+	STA PageCallVars
+	STY PageCallVars+1
+	LDA #$00
+	STA PageCallVars+2
+	PageCall 40, CheckTileSolidness_SecondHalf_40
 	RTS

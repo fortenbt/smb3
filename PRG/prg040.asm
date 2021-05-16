@@ -39,7 +39,34 @@ OneWayTileIDsByTSIdx:
     .byte $40, $40	; 17 - N-spade
     .byte $40, $40	; 18 - 2P Vs
 
-CheckTileSolidness_WithOneWays_40:
+CheckTileSolidness_FirstHalf_40:
+    ;;; FirstHalf vs SecondHalf is which half of the Tile_AttrTable we're checking
+    ;;; FirstHalf is for "only solid on ground" tiles
+    ;;;     If we're a oneway tile, this is always nonsolid
+    ;;;     Note that Level_Tile_GndL/R will be set to tiles above head if Player_YVel < 0
+    ;;;     So if Player_YVel > 0 (moving downward), we'll check AttrTable
+    ;;;     If Player_YVel < 0 (moving upward), we'll check AttrTable+4
+    ;;; SecondHalf is for "solid all around" tiles
+    LDX PageCallVars+2
+    LDA Level_TilesetIdx
+    ASL A
+    TAY                             ; Y << 1
+    LDA OneWayTileIDsByTSIdx,Y
+    CMP #$40
+    BEQ _norm_1h_solid_chk           ; if not supported, just do normal check
+    LDA PageCallVars                ; tile we're checking against is stored in PageCallVars
+    CMP OneWayTileIDsByTSIdx,Y      ; check oneway left
+    BEQ _set_as_nonsolid
+    CMP OneWayTileIDsByTSIdx+1,Y    ; check oneway right
+    BEQ _set_as_nonsolid
+
+_norm_1h_solid_chk:
+    LDA PageCallVars
+    LDY PageCallVars+1
+    CMP Tile_AttrTable,Y
+    RTS
+
+CheckTileSolidness_SecondHalf_40:
     ;;; First, check if this tile ID is one of our one-ways.
     ;;; If it is, we need to check Objects_XVel to see if we
     ;;; collide or not.
@@ -54,12 +81,12 @@ CheckTileSolidness_WithOneWays_40:
     TAY                             ; Y << 1
     LDA OneWayTileIDsByTSIdx,Y
     CMP #$40
-    BEQ _norm_solid_check           ; if not supported, just do normal check
+    BEQ _norm_2h_solid_chk           ; if not supported, just do normal check
     LDA PageCallVars                ; tile we're checking against is stored in PageCallVars
     CMP OneWayTileIDsByTSIdx,Y      ; check oneway left
     BEQ _oneway_check
     CMP OneWayTileIDsByTSIdx+1,Y    ; check oneway right
-    BNE _norm_solid_check
+    BNE _norm_2h_solid_chk
 _oneway_check:
     ; We collided with a one-way. Are we hitting its solid side?
     CMP OneWayTileIDsByTSIdx,Y      ; check solid left
@@ -78,7 +105,8 @@ _set_as_nonsolid:
 _set_as_solid:
     SEC ; carry set means solid
     RTS
-_norm_solid_check:
+
+_norm_2h_solid_chk:
     LDA PageCallVars
     LDY PageCallVars+1
     CMP Tile_AttrTable+4,Y
@@ -95,10 +123,33 @@ Level_CheckGndLR_TileGTAttr_40:
     LDA #$00
     STA PageCallVars+2
 
-    JSR CheckTileSolidness_WithOneWays_40
-    BGE _gndlr_check_40_pla_rts
+    LDA <Player_YVel
+    BPL _do1h2h_check
+    LDA <Player_InAir
+    BEQ _do1h2h_check
+    ;;; if we're moving upward/in air, we do 2h
+    BNE _2h_attr_check  ; branch always
 
+_do1h2h_check:
     PLA
+    PHA
+    CMP #$00                    ; Offset of 0 means we're checking feet/head tiles
+    BEQ _1h_attr_check          ; so we need to run FirstHalf
+_2h_attr_check:
+    JSR CheckTileSolidness_SecondHalf_40
+    BGE _gndlr_check_40_pla_rts
+    BCC _next_tile_attr_check
+_1h_attr_check:
+    JSR CheckTileSolidness_FirstHalf_40
+    BCC _next_tile_attr_check
+
+_gndlr_check_40_pla_rts:
+    PLA
+    RTS
+
+_next_tile_attr_check:
+    PLA
+    PHA
     TAY                         ; Restore our original Y
     LDX Level_Tile_Quad,Y		; Get this particular "quad" (0-3) index
     STX PageCallVars+1
@@ -106,13 +157,26 @@ Level_CheckGndLR_TileGTAttr_40:
     STA PageCallVars
     LDA #$00
     STA PageCallVars+2
-    JSR CheckTileSolidness_WithOneWays_40
 
-    RTS
+    LDA <Player_YVel
+    BPL _do1h2h_check_2
+    LDA <Player_InAir
+    BEQ _do1h2h_check_2
+    ;;; if we're moving upward/in air, we do 2h
+    PLA ; just remove this
+    JMP _2h_attr_check2
 
-_gndlr_check_40_pla_rts:
+_do1h2h_check_2:
     PLA
+    CMP #$00                    ; Offset of 0 means we're checking feet tiles
+    BEQ _1h_attr_check2
+_2h_attr_check2:
+    JSR CheckTileSolidness_SecondHalf_40
     RTS
+_1h_attr_check2:
+    JSR CheckTileSolidness_FirstHalf_40
+    RTS
+
 
 LoadLevel_OneWays_40:
     ; PageCallVars contains our one-way ID (0 or 1)

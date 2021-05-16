@@ -1480,7 +1480,8 @@ PRG008_A77E:
 
 	; Checks for solid tile at Player's head
 	LDA <Temp_Var1	 
-	CMP Tile_AttrTable+4,Y	; Wall/ceiling-solid tile quadrant limits begin at Tile_AttrTable+4
+	JSR CheckTileSolidnessMario
+	;;;CMP Tile_AttrTable+4,Y	; Wall/ceiling-solid tile quadrant limits begin at Tile_AttrTable+4
 	BLT PRG008_A7AD	 ; If tile index is less than value in Tile_AttrTable (not solid for wall/ceiling), jump to PRG008_A7AD
 
 	LDA <Player_InAir
@@ -4584,16 +4585,25 @@ PRG008_B55A:
 	RTS		 ; Return
 
 PRG008_B55B:
-	LDX Level_Tile_Quad+1	 ; Get right tile quadrant
-	LDA Level_Tile_GndR	 ; Get right tile
-	CMP Tile_AttrTable,X	
-	BGE PRG008_B57E	 	 ; If the tile is >= the attr value, jump to PRG008_B57E
+	;;;LDX Level_Tile_Quad+1	 ; Get right tile quadrant
+	;;;LDA Level_Tile_GndR	 ; Get right tile
+	;;;CMP Tile_AttrTable,X
+	;;BGE PRG008_B57E	 	 ; If the tile is >= the attr value, jump to PRG008_B57E
 
-	LDX Level_Tile_Quad	 ; Get left tile quadrant
-	LDA Level_Tile_GndL	 ; Get left tile
-	CMP Tile_AttrTable,X	
+	;;;LDX Level_Tile_Quad	 ; Get left tile quadrant
+	;;;LDA Level_Tile_GndL	 ; Get left tile
+	;;;CMP Tile_AttrTable,X
+	;;BGE PRG008_B57E	 	 ; If the tile is >= the attr value, jump to PRG008_B57E
+	LDA #$00
+	STA PageCallVars	; First arg is offset from Level_Tile_GndL/R
+	PageCall 40, Level_CheckGndLR_TileGTAttr_40
 	BGE PRG008_B57E	 	 ; If the tile is >= the attr value, jump to PRG008_B57E
-
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
 
 	LDA <Player_InAir
 	BNE PRG008_B5BB	 ; If Player is mid air, jump to PRG008_B5BB
@@ -4678,7 +4688,7 @@ PRG008_B5D0:
 
 	;RTS		 ; Return
 	;.ds 21
-	.ds 3
+	.ds 4
 
 
 	; Handle all common special tiles (ice blocks, P-Switches, bump blocks, etc.)
