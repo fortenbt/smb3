@@ -3817,10 +3817,11 @@ PRG000_D218:
 PRG000_D22E:
 	STY <Temp_Var2		 ; -> Temp_Var2 (height above object considered "stompable" range)
 
-	LDA <Objects_Y,X	 ; Get object's Y
-	SUB <Temp_Var2		 ; Subtract Temp_Var2 (height above object considered "stompable" range)
-	ROL <Temp_Var1		 ; Stores the carry bit into Temp_Var1 bit 0
-	CMP <Player_Y
+	;;LDA <Objects_Y,X	 ; Get object's Y
+	;;;SUB <Temp_Var2		 ; Subtract Temp_Var2 (height above object considered "stompable" range)
+	;;ROL <Temp_Var1		 ; Stores the carry bit into Temp_Var1 bit 0
+	;;CMP <Player_Y
+	JSR DoStompComparison
 
 	PHP		 ; Save CPU state (the comparison)
 
@@ -3831,7 +3832,8 @@ PRG000_D22E:
 	PLP		 ; Restore CPU state (the comparison)
 
 	SBC <Player_YHi		; Get the difference against the Player_YHi
-	BMI PRG000_D20F	 	; If negative (Player_YHi > Objects_YHi, Player is lower), jump to PRG000_D20F (Object_HoldKickOrHurtPlayer)
+	;;BMI PRG000_D20F	 	; If negative (Player_YHi > Objects_YHi, Player is lower), jump to PRG000_D20F (Object_HoldKickOrHurtPlayer)
+	BCC PRG000_D20F	 	; If negative (Player_YHi > Objects_YHi, Player is lower), jump to PRG000_D20F (Object_HoldKickOrHurtPlayer)
 
 	LDA <Player_YVel	
 	BPL PRG000_D253	 	; If Player's Y Velocity >= 0 (stationary or moving downward), jump to PRG000_D253
@@ -6999,4 +7001,23 @@ Video_3CMFlowBot
 	vaddr $226C
 	.byte VU_REPEAT | $08, $A9
 	.byte $00	; Terminator
+
+;;; [ORANGE] Allow grabbing shelled objects from any orientation
+;;; as long as the player is holding B
+DoStompComparison:
+    ;;;  27-bytes
+    LDA Objects_State,X
+    CMP #OBJSTATE_SHELLED
+    BNE _not_shelled
+    ; We're shelled and we collided, remove this return address and jmp to Object_HoldKickOrHurtPlayer
+    ; This allows us to grab shelled objects if we're holding B no matter what
+    PLA
+    PLA
+    JMP Object_HoldKickOrHurtPlayer
+_not_shelled:			; For non-shells, do normal stomp comparison
+    LDA <Objects_Y,X	; Get object's Y
+    SUB <Temp_Var2		; Subtract Temp_Var2 (height above object considered "stompable" range)
+    ROL <Temp_Var1		; Stores the carry bit into Temp_Var1 bit 0
+    CMP <Player_Y
+    RTS
 
