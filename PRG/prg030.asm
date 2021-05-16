@@ -5939,3 +5939,10 @@ PRG030_9FAF:
 
 ; NOTE: The remaining ROM space was all blank ($FF)
 
+CheckTileSolidness:
+	TXA
+	PHA		; save off X
+	PageCall #40, CheckTileSolidness_40
+	PLA		; doesn't mess with the carry
+	TAX		; restore X
+	RTS

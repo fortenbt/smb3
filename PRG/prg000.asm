@@ -948,9 +948,16 @@ PRG000_C559:
 	PLA		 ; Restore input value
 	STA <Temp_Var1	 ; Store into Temp_Var1
 
-	LDY Object_AttrWall	; Y = detected quadrant of potential wall tile
-	LDA Object_TileWall	; A = detected tile index
-	CMP Tile_AttrTable+4,Y
+	;;;LDY Object_AttrWall	; Y = detected quadrant of potential wall tile
+	;;;LDA Object_TileWall	; A = detected tile index
+	;;;CMP Tile_AttrTable+4,Y
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	NOP
+	JSR CheckTileSolidness
 	BLT PRG000_C584	 	; If the tile's index < the beginning wall/ceiling solid tile for this quad, jump to PRG000_C584
 
 	; Object is touching solid wall tile

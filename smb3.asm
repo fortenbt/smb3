@@ -4849,6 +4849,11 @@ TILE18_BOUNCEDBLOCK	= $C2	; Temporary tile for when block has been bounced
 	.org $C000
 	.include "PRG/prg039.asm"
 
+	; [ORANGE] bank 40 is used for one-ways and collision mods
+	.bank 40
+	.org $C000
+	.include "PRG/prg040.asm"
+
 	.bank 60
 	.org $C000
 	.include "PRG/prg060.asm"
