@@ -3895,6 +3895,9 @@ TILE1_WGROUNDML		= $F7	; Underwater ground middle-left
 TILE1_WGROUNDTR		= $F8	; Underwater ground top right
 TILE1_WGROUNDMR		= $F9	; Underwater ground middle-right
 
+;;; [ORANGE] Custom Tiles!
+TILE1_ONEWAY_SL		= $BD
+TILE1_ONEWAY_SR		= $BE
 
 ; Tileset 2 (Fortress style)
 TILE2_BLACK		= $02	; Solid black background
