@@ -5518,3 +5518,17 @@ CheckTileSolidnessMario:
 	STA PageCallVars+2
 	PageCall 40, CheckTileSolidness_SecondHalf_40
 	RTS
+
+SetKickedYVel:
+	LDA #$00
+	STA <Objects_YVel,X
+	LDY ThrowUpward
+	BEQ _post_up_throw
+	STA ThrowUpward	; Zero this back out
+	STA <Objects_XVel,X
+	LDA #-$78
+	STA <Objects_YVel,X
+	LDA #OBJSTATE_SHELLED
+	STA Objects_State,X
+_post_up_throw:
+	RTS
