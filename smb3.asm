@@ -801,7 +801,8 @@ CineKing_DialogState:	; Toad & King Cinematic: When 1, we're doing the text vers
 	; Otherwise, they are replaced with a lookup address
 	Level_GndLUT_Addr:	.ds 2
 
-				.ds 1	; $86 unused
+	Objects_YVelBackup:	.ds 1	; $86 [ORANGE] No longer unused. Set in Objects_Move, used
+								; to store each object's YVel prior to collisions modifying it.
 
 	Player_YHi:		.ds 1	; Player Y Hi
 	Objects_YHi:		.ds 8	; $88-$8F Other object's Y Hi positions

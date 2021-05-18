@@ -2178,7 +2178,7 @@ PRG000_CB10:
 	BNE PRG000_CB5B	 ; If gameplay is halted, jump to PRG000_CB5B
  
 	JSR Object_ShellDoWakeUp	 ; Handle waking up (MAY not return here, if object "wakes up"!) 
-	JSR Object_Move	 		; Perform standard object movements
+	JSR Object_Move_Hook		; Perform standard object movements and store YVel backup
  
 	LDA <Objects_DetStat,X 
 	AND #$04 
@@ -2239,7 +2239,21 @@ PRG000_CB4F:
 	JSR Object_AboutFace	 ; Turn around... 
 
 PRG000_CB58:
-	JSR Object_HandleBumpUnderneath	 ; Handle object getting hit from underside 
+	;;; [ORANGE] This is within ObjState_Shelled
+	;;; The call hierarchy is as follows:
+	; prg030::Level_MainLoop
+	;     ...
+	;     Load bank 00 into PAGE_C000
+	;     Load bank 08 into PAGE_A000
+	;     JSR Player_DoGameplay
+	;     JSR Objects_HandleScrollAndUpdate
+	;         JSR Object_DoStateAction
+	;             JSR ObjState_Shelled
+	; This is a good place to check for object and tile collisions (bump blocks)
+	; for shelled objects thrown upward. We hook here and call the
+	; Object_HandleBumpUnderneath routine from our new function.
+	;JSR Object_HandleBumpUnderneath	 ; Handle object getting hit from underside
+	JSR Object_VerticalBumps
 
 PRG000_CB5B:
 	JSR Object_BumpOffOthers	 ; Bump off and turn away from other objects 

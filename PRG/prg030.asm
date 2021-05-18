@@ -5532,3 +5532,87 @@ SetKickedYVel:
 	STA Objects_State,X
 _post_up_throw:
 	RTS
+
+Object_VerticalBumps:
+	LDA <Objects_YVelBackup
+	BPL _obj_vbump_rts			; If object wasn't moving upward, don't bump blocks
+
+	;;; We're moving upward...did we hit another object?
+	JSR ObjectToObject_HitTest
+	BCS _obj_vbump_kill_obj		; If object has hit another object, kill other obj
+
+	LDX <SlotIndexBackup		; restore object slot index
+	LDA <Objects_DetStat,X
+	AND #$08					; Hit ceiling?
+	BEQ _obj_vbump_rts			; If not, just continue as normal
+
+	; Handle object bouncing off blocks
+
+	;; Custom Object_BumpBlocks due to needing special offsets for a thrown shell
+
+	LDA ObjTile_DetYLo
+	SUB #$08
+	AND #$F0
+	STA <Temp_Var14		; YLo
+
+	PHP
+	LDA ObjTile_DetYHi
+	STA <Temp_Var13		; YHi
+	PLP
+	BCS _post_yhi_dec
+	DEC <Temp_Var13
+_post_yhi_dec:
+
+	LDA ObjTile_DetXLo
+	SUB #$07
+	AND #$F0
+	STA <Temp_Var16		; XLo
+
+	PHP
+	LDA ObjTile_DetXHi
+	STA <Temp_Var15		; XHi
+	PLP
+	BCS _post_xhi_dec
+	DEC <Temp_Var15
+_post_xhi_dec:
+
+	; Send detected tile over to check if object has hit any blocks
+	; that respond to being hit with head.
+	LDA PAGE_A000
+	PHA
+	LDA #$08
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+	LDA Object_TileFeet2
+	JSR Object_BumpOffBlocks
+	PLA
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+
+	;;; End Custom Object_BumpBlocks
+
+	LDX <SlotIndexBackup			; restore object slot index
+	JMP _obj_vbump_rts
+
+
+_obj_vbump_kill_obj:
+	; Play object-to-object collision sound
+	LDA Sound_QPlayer
+	ORA #SND_PLAYERKICK
+	STA Sound_QPlayer
+
+	TYA
+	TAX
+	JSR ObjectKill_SetShellKillVars	; Kill the object we collided with and set ShellKill variables
+	LDX <SlotIndexBackup			; restore object slot index
+
+_obj_vbump_rts:
+	JSR Object_HandleBumpUnderneath	; Call our hooked routine
+	RTS
+
+Object_Move_Hook:
+	;;; [ORANGE] We want to save off YVel as it existed at the end of
+	;;; Object_Move prior to any collision code modifying it.
+	JSR Object_Move
+	STA <Objects_YVelBackup
+	RTS
