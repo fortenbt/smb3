@@ -5519,18 +5519,57 @@ CheckTileSolidnessMario:
 	PageCall 40, CheckTileSolidness_SecondHalf_40
 	RTS
 
+ThrownYVels:
+	;     n/a  DOWN  UP
+	.byte $00, $04, -$78
 SetKickedYVel:
 	LDA #$00
 	STA <Objects_YVel,X
-	LDY ThrowUpward
-	BEQ _post_up_throw
-	STA ThrowUpward	; Zero this back out
+	LDY ThrowDirection
+	BEQ _post_skyv		; (RTS)
+	STA ThrowDirection	; Zero this back out
+
+	TYA					; Get throw direction
+	PHA					; Setting a shell down uses Mario's xvel+-8
+						; Throwing a shell up uses Mario's xvel/4
+    AND #PAD_UP
+	BEQ _set_shell_down
+
+_throw_shell_upward:
+	CLC
+	LDA <Player_XVel	; Use CLC/SEC and BPL to do an arithmetic right shift
+	BPL _skyv_xvel_ror1	; BPL branch on N=0
+	SEC
+_skyv_xvel_ror1:
+	ROR A				; mod N,Z,C
+	CLC
+	BPL _skyv_xvel_ror2
+	SEC
+_skyv_xvel_ror2:
+	ROR A
 	STA <Objects_XVel,X
-	LDA #-$78
+	JMP _skyv_set_yvel
+
+_set_shell_down:
+	;; Override XVel if setting down
+	LDA #-$08
+	LDY <Player_FlipBits
+	BEQ _skyv_shell_down_xvel
+	NEG
+_skyv_shell_down_xvel:
+	ADD <Player_XVel
+	STA <Objects_XVel,X
+
+_skyv_set_yvel:
+	PLA					; Restore shell throw direction
+	LSR A
+	LSR A
+	TAY
+	LDA ThrownYVels,Y
 	STA <Objects_YVel,X
 	LDA #OBJSTATE_SHELLED
 	STA Objects_State,X
-_post_up_throw:
+_post_skyv:
 	RTS
 
 Object_VerticalBumps:
@@ -5615,4 +5654,18 @@ Object_Move_Hook:
 	;;; Object_Move prior to any collision code modifying it.
 	JSR Object_Move
 	STA <Objects_YVelBackup
+	RTS
+
+SetThrowDirection:
+_check_upthrow:
+	LDA <Pad_Holding
+	AND #PAD_UP
+	BEQ _check_set_down
+	STA ThrowDirection
+	RTS
+_check_set_down:
+	;;; ThrowDirection is either zero or down after this, which is what we want
+	LDA <Pad_Holding
+	AND #PAD_DOWN
+	STA ThrowDirection
 	RTS

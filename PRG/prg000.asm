@@ -2832,16 +2832,13 @@ PRG000_CE28:
 	JSR Object_ShellDoWakeUp ; Wake up while Player is holding object... 
 	BIT <Pad_Holding 
 	;;BVC Player_KickObject	 ; If Player is NOT holding B button, jump to Player_KickObject
-	BVC _check_upthrow
+	BVC _check_throw_dir
 
 PRG000_CE2F:
 	JMP PRG000_CEEF	 ; Jump to PRG000_CEEF
 
-_check_upthrow:
-	LDA <Pad_Holding
-	AND #PAD_UP
-	BEQ Player_KickObject
-	INC ThrowUpward
+_check_throw_dir:
+	JSR SetThrowDirection
 
 Player_KickObject:
 	LDA Level_PipeMove	 
