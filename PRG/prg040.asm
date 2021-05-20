@@ -14,6 +14,47 @@ LoadLevel_TileMemNextRow_40:
 	RTS		 ; Return
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Identical to LoadLevel_NextColumn from prg014
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+LoadLevel_NextColumn_40:
+	INY		 ; Y++
+	TYA		 ; A = Y
+	AND #$0f	 ; Check column
+	BNE __PRG014_DFCC	 ; If on column 1-15, jump to PRG014_DFCC (RTS)
+
+	; Otherwise, need to move over to the next screen (+$1B0)
+	LDA <Map_Tile_AddrL
+	ADD #$b0
+	STA <Map_Tile_AddrL
+	LDA <Map_Tile_AddrH
+	ADC #$01
+	STA <Map_Tile_AddrH
+
+	; Get TileAddr_Off and only keep the row, but clear 'Y' lower bits since
+	; we're going to column 0 on the same row, new screen...
+	LDA TileAddr_Off
+	AND #$f0
+	TAY
+
+__PRG014_DFCC:
+	RTS		 ; Return
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+LoadLevel15_Generic_40:
+    ;;; [ORANGE] This function handles loading the following custom
+    ;;; tiles in TileSet 1 based on the value in PageCallVars:
+    ;;; 0 = One-Way Solid Left
+    ;;; 1 = One-Way Solid Right
+    ;;; 2 = On block
+    ;;; 3 = Off block
+    LDA PageCallVars
+    JSR DynJump
+    .word LoadLevel_OneWays_40
+    .word LoadLevel_OneWays_40
+    .word LoadLevel_OnOffs_TS1
+    .word LoadLevel_OnOffs_TS1
 
 
 OneWayTileIDsByTSIdx:
@@ -201,6 +242,11 @@ _load_oneway_loop:
     BPL _load_oneway_loop		; loop for all one-ways in this run
 
     RTS		 ; Return
+
+LoadLevel_OnOffs_TS1:
+    DEC PageCallVars    ; PageCallVars contains 2 or 3, and we need 0 or 1
+    DEC PageCallVars
+    ; Fall into LoadLevel_OnOffs_40
 
 LoadLevel_OnOffs_40:
     ; PageCallVars contains our On/Off ID (0 or 1)
