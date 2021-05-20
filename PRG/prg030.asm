@@ -408,8 +408,15 @@ PlantInfest_PatTablePerACnt:
 	.byte $3E, $3E, $3E, $3E, $3E, $3E, $3E, $66, $64, $62, $06
 PlantInfest_PTPAC_End
 
-	.byte $34, $36, $38, $3A, $3C
-	.byte $3E, $08, $34, $36, $38, $36, $34, $3A, $3E, $3A
+	;;; [ORANGE] Pretty sure these are unused. Perfect spot for our new
+	;;; graphic pages for on/off blocks
+	;;;.byte $34, $36, $38, $3A, $3C
+	;;;.byte $3E, $08, $34, $36, $38, $36, $34, $3A, $3E, $3A
+LevelAnimPages:
+	.byte  96,  98, 100, 102	; Normal (on/off switch starts on)
+	.byte 128, 130, 132, 134	; Off (on/off switched off)
+PRG030_FREE_SPACE_7_BYTES:
+	.ds 7
 
 	; List of C000 pages to switch to by Level_Tileset
 PAGE_C000_ByTileset: ; $83D6
@@ -2028,7 +2035,7 @@ PRG030_8DEF:
 
 PRG030_8DF4:
 	LDA Level_TimerEn
-	BMI PRG030_8E2E	 	; If bit 7 is set (animations disabled), jump to PRG030_8E2E
+	BMI _PRG030_8E1A	 	; If bit 7 is set (animations disabled), jump to _PRG030_8E1A
 
 	LDY Level_Tileset
 	CPY #$05	 
@@ -2040,7 +2047,7 @@ PRG030_8DF4:
 	; Specific animation style for the pirhana plant world thing in World 7
 	LDA <Counter_1
 	AND #$07
-	BNE PRG030_8E2E 	; Only update every 8 ticks (otherwise, nothing)
+	BNE _PRG030_8E17 	; Only update every 8 ticks (otherwise, nothing)
 
 	INC <PlantInfest_ACnt	; PlantInfest_ACnt++
 
@@ -2056,8 +2063,11 @@ PRG030_8E13:
 	; Set proper VROM for this animation count of the plant infestation animation
 	TAY		; Y = PlantInfest_ACnt
 	LDA PlantInfest_PatTablePerACnt,Y
+_PRG030_8E17:
+	;;; [ORANGE] This is a convenient location that stores to the
+	;;; PatTable_BankSel+1 then jumps to where we want to go.
 	STA PatTable_BankSel+1
-
+_PRG030_8E1A:
 	JMP PRG030_8E5D	 ; Jump to PlantInfest_ACnt
 
 PRG030_8E1D:
@@ -2071,12 +2081,16 @@ PRG030_8E24:
 	LDA Level_PSwitchCnt
 	BEQ PRG030_8E31	 	; If P-Switch is not active, jump to PRG030_8E31
 
-	; Otherwise force pattern override to $3E
-	LDA #$3e
-	STA PatTable_BankSel+1
+	;;; [ORANGE] We now have a pattern array for on/off during a pswitch
+	; ~~Otherwise force pattern override to $3E~~
+	;;LDA #$3e
+	;;;STA PatTable_BankSel+1
 
-PRG030_8E2E:
-	JMP PRG030_8E5D	 ; Jump to PRG030_8E5D (skip main anim code)
+;PRG030_8E2E:
+	;;;JMP PRG030_8E5D	 ; Jump to PRG030_8E5D (skip main anim code)
+	LDX <Level_OnOff
+	LDA PSwitchPats,X
+	JMP _PRG030_8E17
 
 PRG030_8E31:
 	CPY #10
@@ -2110,12 +2124,14 @@ PRG030_8E4F:
 
 	LDA <Counter_1
 	AND #$18
-	LSR A	
-	LSR A	
-	LSR A		
-	TAX	        ; 0-3, changing every 8 ticks
+	;LSR A
+	;LSR A
+	;LSR A
+	JSR GetAnimCounter
+	TAX	        ; 0-3 or 4-7, changing every 8 ticks based on Counter_1 and Level_OnOff
 
-	LDA PT2_Anim,X	
+	;;;LDA PT2_Anim,X
+	LDA LevelAnimPages,X
 	STA PatTable_BankSel+1 ; Set pattern for this tick
 
 PRG030_8E5D:
@@ -5669,3 +5685,75 @@ _check_set_down:
 	AND #PAD_DOWN
 	STA ThrowDirection
 	RTS
+
+;;; [ORANGE] Get the animation counter along with our on/off
+GetAnimCounter:
+	LSR A
+	LSR A
+	LSR A
+	EOR <Level_OnOff
+	RTS
+;;; [ORANGE] Switch Level_OnOff between LEVEL_OFF and LEVEL_ON
+LATP_CoinCommon_Hook:
+	LDA #LEVEL_OFF
+	EOR <Level_OnOff
+	STA <Level_OnOff
+	JMP LATP_CoinCommon
+
+PSwitchPats:
+	;;; [ORANGE] These patterns are used during a PSwitch for:
+	;;; LEVEL_ON		LEVEL_OFF
+	.byte 136,	0,	 0,	 0, 138
+
+SubstAttrs:
+		; On is always 00, Off is always 03 when substituting
+	.byte $00, $03
+
+ OnOff_SubstTileAndAddr:
+	;;; ==================================================================================
+	;;; = Check if we want to substitute this tile because the on/off switch is switched.
+	;;; = This check is performed when collisions would occur with the tile. If the on/off
+	;;; = switch is switched, solid on blocks are now non-solid and vice-versa
+	STA <TmpTile				; Save off the tile we're checking
+	JSR CheckShouldSubst		; Check to see if we should subst. If not, this doesn't return here!
+								; Otherwise, it sets Y to the right offset into OnOffTileByTS
+	LDA <TmpTile				; Restore the tile we're checking
+	;;; ==================================================================================
+	;;; = If we got here, we support this tileset and the on/off switch is switched, so
+	;;; = we need to loop through the 2 possible blocks this could be (on or off_inactive)
+_check_onoff_tiles:
+	CMP OnOffTileByTS,Y			; Check the tile
+	BEQ _matched_tile			; If it matches, do the replacing
+	INY							; Y++
+	CMP OnOffTileByTS,Y			; Check the off tile
+	BNE _onoff_rts	 			; If this is not a match, clear the carry and return
+_matched_tile:
+	;;; ==================================================================================
+	;;; = Our tile matched, increment Y by 2 to get the replacement tile. The least
+	;;; = significant bit is used as an offset into SubstAttrs to get the replacement
+	;;; = attribute.
+	INY
+	INY
+	LDA OnOffTileByTS,Y			; Get the replacement tile
+	STA <TmpTile				; Store it
+	TYA
+	AND #%00000001				; Get the least significant bit of Y
+	TAY
+	LDA SubstAttrs,Y			; Get the replacement attribute
+	STA <Player_Slopes			; Store into Player_Slopes
+	LDA <TmpTile				; Set A = replacement tile
+	SEC							; Set the carry to signal we replaced
+	RTS
+ _onoff_rts:
+	CLC							; Clear carry to signal we didn't replace
+	RTS							; Return
+
+DoSubstTileAndAttr:
+	STA <TmpTile				; store the incoming tile
+	CLC							; clear the carry so we can set it if substituted
+	JSR OnOff_SubstTileAndAddr
+	BCC _pswitch_subst			; if carry is still clear, check for normal pswitch substitution
+	RTS							; otherwise, return our resulting tile
+_pswitch_subst:
+	LDA <TmpTile				; get tile
+	JMP PSwitch_SubstTileAndAttr

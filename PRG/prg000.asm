@@ -128,7 +128,7 @@ Level_MinTileUWByQuad:
 	.byte $FF, $FF, $FF, $C1	;  3 Hills style
 	.byte $FF, $FF, $FF, $DA	;  4 High-Up style
 	.byte $FF, $FF, $FF, $DA	;  5 pipe world plant infestation
-	.byte $02, $3F, $8A, $C0	;  6 water world
+	.byte $02, $3F, $8A, $C1	;  6 water world
 	.byte $FF, $FF, $FF, $DA	;  7 Toad House
 	.byte $FF, $FF, $8A, $DA	;  8 Vertical pipe maze
 	.byte $FF, $FF, $FF, $DA	;  9 desert levels
@@ -1576,7 +1576,7 @@ PRG000_C7FA:
 PRG000_C82A:
 	LDA [Temp_Var1],Y	; Get tile
  
-	JSR PSwitch_SubstTileAndAttr	 ; Substitute tile if P-Switch is active
+	JSR DoSubstTileAndAttr	 ; Substitute tile if P-Switch is active
 
 	JMP PRG000_C834	 ; Jump to PRG000_C834
 

@@ -201,3 +201,37 @@ _load_oneway_loop:
     BPL _load_oneway_loop		; loop for all one-ways in this run
 
     RTS		 ; Return
+
+LoadLevel_OnOffs_40:
+    ; PageCallVars contains our On/Off ID (0 or 1)
+    LDA LL_ShapeDef
+    AND #$0f
+    STA <Temp_Var4			; Temp_Var4 = lower 4 bits of LL_ShapeDef (width of run)
+
+    LDA Level_Tileset
+    CMP #$06                    ; If this is a water tileset, we actually start our On/Off block IDs
+                                ; at the previous tileset in order to support water and air on/offs
+    BNE _post_water_sub
+    SUB #$01
+_post_water_sub:
+    SUB #$01                    ; You actually can't use Level_TilesetIdx outside of gameplay context,
+                                ; as it is set in Player_DoGameplay
+    ASL A
+    ASL A
+    ADD PageCallVars
+    TAX
+    LDA PageCallVars
+    SUB #$02                    ; If this was 2 or 3 (water tileset's air tiles), we need to add it again
+                                ; to offset to the next tileset IDs rather than the off+ons
+    BMI _post_id_offset
+    INX
+    INX
+_post_id_offset:
+    LDY TileAddr_Off		; Y = TileAddr_Off
+_load_onoff_loop:
+    LDA OnOffTileByTS,X		; One of our custom tiles
+    STA [Map_Tile_AddrL],Y		; Store into tile mem
+    JSR LoadLevel_NextColumn_40	; Next column
+    DEC <Temp_Var4				; Temp_Var4--
+    BPL _load_onoff_loop		; While Temp_Var4 >= 0, loop!
+    RTS

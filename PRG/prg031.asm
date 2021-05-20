@@ -93,11 +93,69 @@ Jmp_Temp_Var1:
 	;;; 3 bytes
 	JMP [Temp_Var1]
 
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF 
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+CheckShouldSubst:
+	LDA <Level_OnOff
+	BEQ _no_subst				; if on/off is 0, we don't need to substitute, return
+	LDA Level_TilesetIdx
+	CMP #14
+	BCS _no_subst				; Only support up to underground tileset
+	CMP #4						; Don't support Plant Infestation, but we do use that
+								; section in OnOffTileByTS for water, so we check explicitly
+	BEQ _no_subst
+	ASL A
+	ASL A						; A << 2 for our index into OnOffTileByTS
+	TAY
+	LDA OnOffTileByTS,Y
+	BEQ _no_subst				; If we don't have support in this tileset, return
+	;;; At this point, we do have support for this tileset.
+	;;; Now we need to check if this is the water tileset so that we can specially
+	;;; set our Y index correctly based on if it's in the water or air.
+	LDA Level_Tileset
+	CMP #6						; If this isn't water, just return, Y is already set correctly
+	BNE _subst_rts
+	LDA <TmpTile				; Otherwise, check the tile.
+_subst_check_water:
+	CMP OnOffTileByTS-4,Y
+	BEQ _subst_is_water
+	CMP OnOffTileByTS-3,Y
+	BEQ _subst_is_water
+	RTS							; If it's not a water on/off tile, just return with Y as-is
+_subst_is_water:
+	TYA
+	SUB #4						; If it is a water on/off tile, return with Y decremented 4
+	TAY
+_subst_rts:
+	RTS
+_no_subst:
+	PLA
+	PLA							; Remove our caller ret addr
+	CLC							; Clear the carry to signal we didn't replace
+	RTS
+
+OnOffTileByTS:
+	; Index by Level_TilesetIdx << 2
+	; Lowest 2 bits:
+	;        b00           b01                 b10            b11
+	.byte TILE1_ON, TILE1_OFF_INACTIVE, TILE1_ON_INACTIVE, TILE1_OFF	; 1 - Plains [15]
+	.byte TILE2_ON, TILE2_OFF_INACTIVE, TILE2_ON_INACTIVE, TILE2_OFF	; 2 - Fortress [21]
+	.byte TILE3_ON, TILE3_OFF_INACTIVE, TILE3_ON_INACTIVE, TILE3_OFF	; 3 - Hills [16]
+	.byte TILE4_ON, TILE4_OFF_INACTIVE, TILE4_ON_INACTIVE, TILE4_OFF	; 4 - High Up [17]
+	.byte TILE6_ON_WATER, TILE6_OFF_W_INACTIVE, TILE6_ON_W_INACTIVE, TILE6_OFF_WATER	; 5 - Plant infestation (unsupported - special code
+								;     uses this location for water tiles)
+	.byte TILE6_ON, TILE6_OFF_INACTIVE, TILE6_ON_INACTIVE, TILE6_OFF	; 6 - Water [18]
+	.byte $00, $00, $00, $00	; 7 - Toad house (unsupported)
+	.byte TILE6_ON, TILE6_OFF_INACTIVE, TILE6_ON_INACTIVE, TILE6_OFF	; 8 - Pipe maze [18]
+	.byte TILE9_ON, TILE9_OFF_INACTIVE, TILE9_ON_INACTIVE, TILE9_OFF	; 9 - Desert [20]
+	.byte $00, $00, $00, $00	; 10 - Airship (unsupported)
+	.byte TILE11_ON, TILE11_OFF_INACTIVE, TILE11_ON_INACTIVE, TILE11_OFF	; 11 - Giant [19]
+	.byte TILE4_ON, TILE4_OFF_INACTIVE, TILE4_ON_INACTIVE, TILE4_OFF	; 12 - Ice [17]
+	.byte TILE11_ON, TILE11_OFF_INACTIVE, TILE11_ON_INACTIVE, TILE11_OFF	; 13 - Coin heaven/sky [19]
+	.byte TILE14_ON, TILE14_OFF_INACTIVE, TILE14_ON_INACTIVE, TILE14_OFF	; 14 - Underground [13]
 
 Music_PlayDMC:
 	LDA DMC_Queue	 ; Get value queued for DMC
@@ -3450,29 +3508,6 @@ Read_Joypad_Loop:
 
 	RTS		 ; Return
 
-	; Most likely filler / reserved space here
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
-	.byte $ff
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; IntReset
@@ -3549,11 +3584,6 @@ PRG031_FF80:
 	LDA #24
 	STA PAGE_A000	 
 	JSR PRGROM_Change_Both2		; Change A000 to page 25 and C000 to page 24
-
-	; NOPs?
-	NOP
-	NOP
-	NOP
 
 	JMP IntReset_Part2	; Rest of Reset continues in the $8000 bank...
 
@@ -3632,10 +3662,10 @@ DoMusicBankSwap:
 	;.byte $FF, $FF, $FF
 	; A marker of some kind? :)
 	;.byte "SUPER MARIO "
-	.byte "3"
+	;.byte "3"
 
 	; Signature?
-	.byte $00, $00, $6C, $56, $03, $00, $01, $0C, $01, $2D
+	;.byte $00, $00, $6C, $56, $03, $00, $01, $0C, $01, $2D
 
 	; ASSEMBLER BOUNDARY CHECK, END OF $FFFA
 .Bound_FFFA:	BoundCheck .Bound_FFFA, $FFFA, PRG031: Vector space

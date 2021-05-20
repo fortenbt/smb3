@@ -850,7 +850,8 @@ CineKing_DialogState:	; Toad & King Cinematic: When 1, we're doing the text vers
 	Player_SprWorkL:	.ds 1	; Sprite work address low
 	Player_SprWorkH:	.ds 1	; Sprite work address high
 
-				.ds 1	; $E3 unused
+	TmpTile:			.ds 1	; [ORANGE] $E3 no longer unused
+								; stores a tile temporarily while checking for attribute substitutions
 
 	Level_TileOff:		.ds 1	; Tile mem offset
 	Level_Tile:		.ds 1	; Temporary holding point for a detected tile index
@@ -862,7 +863,7 @@ CineKing_DialogState:	; Toad & King Cinematic: When 1, we're doing the text vers
 
 	Player_XStart:		.ds 1	; Set to Player's original starting X position (also used to check if level has initialized)
 
-				.ds 1	; $EC unused
+				.ds 1	; $EC ~~unused~~  (ORANGE NOTE: Don't use this. It is used by PlayerFrame stuff)
 
 ; Player_Suit -- Player's active powerup (see also: Player_QueueSuit)
 PLAYERSUIT_SMALL	= 0
@@ -882,7 +883,10 @@ PLAYERSUIT_LAST		= PLAYERSUIT_HAMMER	; Marker for "last" suit (Debug cycler need
 	Player_WagCount:	.ds 1	; after wagging raccoon tail, until this hits zero, holding 'A' keeps your fall rate low
 	Player_IsDying:		.ds 1	; 0 = Not dying, 1 = Dying, 2 = Dropped off screen, 3 = Death due to TIME UP
 
-				.ds 1	; $F2 unused
+LEVEL_ON  = $00
+LEVEL_OFF = $04
+	Level_OnOff:		.ds 1	; [ORANGE] $F2 no longer unused
+								; holds 0 (level on) or 4 (level off)
 
 	Obj01_Flag:		.ds 1	; Not sure what Obj01 is!! This blocks its left/right handler logic.
 
@@ -3901,6 +3905,53 @@ TILE1_WGROUNDMR		= $F9	; Underwater ground middle-right
 ;;; [ORANGE] Custom Tiles!
 TILE1_ONEWAY_SL		= $BD
 TILE1_ONEWAY_SR		= $BE
+;;; [ORANGE] On/Off block defines
+; TS1 - Plains [15]: On=Bank 3 0x20-0x2F, Off=Bank 3 0x30-0x3F
+TILE1_ON			= $BF	; See prg015.asm - solid on block
+TILE1_ON_INACTIVE	= $82	; non-solid on block outline
+TILE1_OFF			= $FB	; solid off block
+TILE1_OFF_INACTIVE	= $D2	; non-solid off block outline
+; TS=2 - Fortress [21]: On=Bank 3 0xF0-0xFF, Off=Bank 4 0x10-0x1F
+TILE2_ON			= $19	; See prg021.asm - solid on block
+TILE2_ON_INACTIVE	= $05	; non-solid on block outline
+TILE2_OFF			= $7E	; solid off block
+TILE2_OFF_INACTIVE	= $4B	; non-solid off block outline
+; TS=3 - Hills [16]: On=Bank 5 0x40-0x4F, 0ff=Bank 5 0x50-0x5F
+TILE3_ON            = $7D   ; See prg016.asm - solid on block
+TILE3_ON_INACTIVE   = $5D   ; non-solid on block outline
+TILE3_OFF           = $FE   ; solid off block
+TILE3_OFF_INACTIVE  = $8F   ; non-solid off block outline
+; TS=4 - High Up [17]: On=Bank 3 0xB0-0xBF, 0ff=Bank 3 0xC0-0xCF
+; TS=12 - Ice [17]: On=Bank 3 0xB0-0xBF, 0ff=Bank 3 0xC0-0xCF
+TILE4_ON            = $FE   ; See prg017.asm - solid on block
+TILE4_ON_INACTIVE   = $D1   ; non-solid on block outline
+TILE4_OFF           = $3E   ; solid off block
+TILE4_OFF_INACTIVE  = $10   ; non-solid off block outline
+; TS=6 - Water [18]: In water: OnW=Bank 3 0xE0-0xEF, OffW=Bank 3 0xF0-0xFF
+; TS=6 - Water/Pipes [18]: In air: On=Bank 4, 0x10-0x1F, Off=Bank 4 0x20-0x2F
+TILE6_ON_WATER		= $7B	; See prg018.asm - solid on block in water
+TILE6_ON_W_INACTIVE	= $47	; non-solid on block (water physics)
+TILE6_OFF_WATER     = $EC	; solid off block in water
+TILE6_OFF_W_INACTIVE = $D6	; non-solid off block (water physics)
+TILE6_ON            = $A8   ; solid on block
+TILE6_ON_INACTIVE   = $81   ; non-solid on block outline
+TILE6_OFF           = $ED   ; solid off block
+TILE6_OFF_INACTIVE  = $C1   ; non-solid off block outline
+; TS=9 - Desert [20]: On=Bank 3 0xF0-0xFF, Off=Bank 4 0x10-0x1F
+TILE9_ON            = $FE   ; See prg020.asm - solid on block
+TILE9_ON_INACTIVE   = $D4   ; non-solid on block outline
+TILE9_OFF           = $3C   ; solid off block
+TILE9_OFF_INACTIVE  = $21   ; non-solid off block outline
+; TS=11/13 - Giant/Clouds [19]: On=Bank 3 0x80-0x8F, Off=Bank 3 0x90-0x9F
+TILE11_ON			= $FE   ; See prg019.asm - solid on block
+TILE11_ON_INACTIVE	= $C1   ; non-solid on block outline
+TILE11_OFF			= $9E   ; solid off block
+TILE11_OFF_INACTIVE	= $8E   ; non-solid off block outline
+; TS=14 - Underground(2) [13]: On=Bank 5 0x40-0x4F, 0ff=Bank 5 0x50-0x5F
+TILE14_ON           = $7D   ; See prg016.asm - solid on block
+TILE14_ON_INACTIVE  = $5D   ; non-solid on block outline
+TILE14_OFF          = $FE   ; solid off block
+TILE14_OFF_INACTIVE = $8F   ; non-solid off block outline
 
 ; Tileset 2 (Fortress style)
 TILE2_BLACK		= $02	; Solid black background
