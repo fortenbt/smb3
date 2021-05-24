@@ -24,17 +24,17 @@ Tile_Layout_TS6_TS7_TS8:
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $10 - $1F
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $B8, $B8 ; Tiles $20 - $2F
 	.byte $B8, $B8, $BC, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
-	.byte $DC, $05, $FC, $FC, $05, $05, $05, $05, $99, $FF, $FF, $99, $1A, $4A, $4C, $FE ; Tiles $40 - $4F
+	.byte $DC, $05, $FC, $FC, $05, $05, $05, $A0, $99, $FF, $FF, $99, $1A, $4A, $4C, $FE ; Tiles $40 - $4F
 	.byte $1E, $4A, $4C, $FE, $44, $46, $44, $79, $44, $21, $44, $5C, $31, $09, $4A, $D8 ; Tiles $50 - $5F
 	.byte $98, $98, $98, $98, $98, $98, $92, $B4, $B4, $B4, $B4, $B4, $B4, $B4, $B4, $B4 ; Tiles $60 - $6F
-	.byte $B4, $B8, $C0, $C0, $C0, $C0, $A4, $EC, $E4, $C0, $D5, $B2, $4A, $4C, $FE, $FE ; Tiles $70 - $7F
-	.byte $05, $40, $42, $48, $4A, $C4, $50, $52, $6C, $60, $FE, $84, $05, $F0, $F2, $80 ; Tiles $80 - $8F
+	.byte $B4, $B8, $C0, $C0, $C0, $C0, $A4, $EC, $E4, $C0, $D5, $94, $4A, $4C, $FE, $FE ; Tiles $70 - $7F
+	.byte $05, $A0, $42, $48, $4A, $C4, $50, $52, $6C, $60, $FE, $84, $05, $F0, $F2, $80 ; Tiles $80 - $8F
 	.byte $82, $8C, $8E, $4E, $04, $04, $48, $49, $49, $40, $50, $50, $50, $42, $52, $52 ; Tiles $90 - $9F
-	.byte $52, $3C, $AE, $60, $AE, $68, $6A, $38, $62, $AE, $42, $42, $42, $8C, $8E, $8C ; Tiles $A0 - $AF
+	.byte $52, $3C, $AE, $60, $AE, $68, $6A, $38, $94, $AE, $42, $42, $42, $8C, $8E, $8C ; Tiles $A0 - $AF
 	.byte $8E, $8C, $8E, $8C, $8E, $52, $52, $50, $40, $42, $AC, $AE, $B8, $8C, $8E, $52 ; Tiles $B0 - $BF
-	.byte $40, $05, $50, $42, $52, $8C, $8E, $AC, $AE, $4E, $04, $04, $48, $49, $49, $36 ; Tiles $C0 - $CF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $05, $B3, $CC, $FC, $C5, $C7, $D4, $FE, $FC ; Tiles $D0 - $DF
-	.byte $AA, $AB, $74, $0D, $0C, $FE, $68, $34, $35, $35, $5A, $36, $FF, $FF, $FF, $FF ; Tiles $E0 - $EF
+	.byte $40, $A0, $50, $42, $52, $8C, $8E, $AC, $AE, $4E, $04, $04, $48, $49, $49, $36 ; Tiles $C0 - $CF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $A0, $05, $B3, $CC, $FC, $C5, $C7, $D4, $FE, $FC ; Tiles $D0 - $DF
+	.byte $AA, $AB, $74, $0D, $0C, $FE, $68, $34, $35, $35, $5A, $36, $94, $94, $FF, $FF ; Tiles $E0 - $EF
 	.byte $02, $D7, $E0, $05, $F0, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $F0 - $FF
 
 	; Lower left 8x8 pattern per tile
@@ -42,17 +42,17 @@ Tile_Layout_TS6_TS7_TS8:
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $10 - $1F
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $B9, $B9 ; Tiles $20 - $2F
 	.byte $B9, $B9, $BD, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
-	.byte $DD, $06, $FC, $FC, $06, $06, $06, $06, $99, $99, $99, $99, $4C, $FE, $1B, $4B ; Tiles $40 - $4F
+	.byte $DD, $06, $FC, $FC, $06, $06, $06, $A1, $99, $99, $99, $99, $4C, $FE, $1B, $4B ; Tiles $40 - $4F
 	.byte $4C, $FE, $1F, $4B, $54, $56, $54, $7B, $54, $23, $54, $5D, $33, $4C, $FE, $D9 ; Tiles $50 - $5F
 	.byte $99, $99, $99, $99, $99, $99, $93, $B5, $B5, $B5, $B5, $B5, $B5, $B5, $B5, $B5 ; Tiles $60 - $6F
-	.byte $B5, $B9, $C1, $C1, $C1, $C1, $A5, $ED, $E4, $C1, $B2, $B2, $FE, $0B, $4B, $4B ; Tiles $70 - $7F
-	.byte $06, $44, $46, $4C, $4E, $C4, $54, $56, $6D, $6D, $FE, $06, $06, $F2, $F2, $90 ; Tiles $80 - $8F
+	.byte $B5, $B9, $C1, $C1, $C1, $C1, $A5, $ED, $E4, $C1, $B2, $95, $FE, $0B, $4B, $4B ; Tiles $70 - $7F
+	.byte $06, $A1, $46, $4C, $4E, $C4, $54, $56, $6D, $6D, $FE, $06, $06, $F2, $F2, $90 ; Tiles $80 - $8F
 	.byte $90, $9C, $9E, $04, $04, $4E, $58, $59, $59, $41, $51, $51, $51, $43, $53, $53 ; Tiles $90 - $9F
-	.byte $53, $3E, $AE, $61, $AE, $41, $41, $41, $63, $AE, $6C, $6E, $3A, $9C, $9E, $9C ; Tiles $A0 - $AF
+	.byte $53, $3E, $AE, $61, $AE, $41, $41, $41, $95, $AE, $6C, $6E, $3A, $9C, $9E, $9C ; Tiles $A0 - $AF
 	.byte $9E, $9C, $9E, $9C, $9E, $53, $53, $51, $41, $43, $AC, $AE, $B9, $9C, $9E, $53 ; Tiles $B0 - $BF
-	.byte $41, $06, $51, $43, $53, $9C, $9E, $AC, $AE, $04, $04, $4E, $58, $59, $59, $36 ; Tiles $C0 - $CF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $E6, $CD, $CD, $CD, $FE, $FE, $FE, $FE, $FE ; Tiles $D0 - $DF
-	.byte $AB, $AB, $75, $0A, $FE, $FE, $69, $5A, $36, $36, $5A, $36, $FF, $FF, $FF, $FF ; Tiles $E0 - $EF
+	.byte $41, $A1, $51, $43, $53, $9C, $9E, $AC, $AE, $04, $04, $4E, $58, $59, $59, $36 ; Tiles $C0 - $CF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $A1, $E6, $CD, $CD, $CD, $FE, $FE, $FE, $FE, $FE ; Tiles $D0 - $DF
+	.byte $AB, $AB, $75, $0A, $FE, $FE, $69, $5A, $36, $36, $5A, $36, $95, $95, $FF, $FF ; Tiles $E0 - $EF
 	.byte $12, $06, $E1, $06, $F2, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $F0 - $FF
 
 	; Upper right 8x8 pattern per tile	
@@ -60,17 +60,17 @@ Tile_Layout_TS6_TS7_TS8:
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $10 - $1F
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $BA, $BA ; Tiles $20 - $2F
 	.byte $BA, $BA, $BE, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
-	.byte $DE, $07, $FC, $FC, $07, $07, $07, $07, $99, $FF, $FF, $FF, $4A, $1C, $FE, $4D ; Tiles $40 - $4F
+	.byte $DE, $07, $FC, $FC, $07, $07, $07, $A2, $99, $FF, $FF, $FF, $4A, $1C, $FE, $4D ; Tiles $40 - $4F
 	.byte $4A, $2E, $FE, $4D, $45, $47, $78, $47, $20, $47, $30, $5E, $47, $4A, $4A, $DA ; Tiles $50 - $5F
 	.byte $9A, $9A, $9A, $9A, $9A, $9A, $CA, $B6, $B6, $B6, $B6, $B6, $B6, $B6, $B6, $B6 ; Tiles $60 - $6F
-	.byte $B6, $BA, $C2, $C2, $C2, $C2, $A6, $EE, $E5, $C2, $D5, $B2, $0A, $FE, $FE, $4D ; Tiles $70 - $7F
-	.byte $07, $41, $43, $49, $4B, $C6, $51, $53, $6E, $61, $FE, $85, $07, $F1, $F3, $81 ; Tiles $80 - $8F
+	.byte $B6, $BA, $C2, $C2, $C2, $C2, $A6, $EE, $E5, $C2, $D5, $96, $0A, $FE, $FE, $4D ; Tiles $70 - $7F
+	.byte $07, $A2, $43, $49, $4B, $C6, $51, $53, $6E, $61, $FE, $85, $07, $F1, $F3, $81 ; Tiles $80 - $8F
 	.byte $83, $8D, $8F, $4F, $0D, $0D, $49, $49, $48, $40, $70, $70, $70, $42, $72, $72 ; Tiles $90 - $9F
-	.byte $72, $AD, $3D, $AD, $64, $69, $69, $39, $AD, $66, $42, $42, $42, $8D, $8F, $8D ; Tiles $A0 - $AF
+	.byte $72, $AD, $3D, $AD, $64, $69, $69, $39, $96, $66, $42, $42, $42, $8D, $8F, $8D ; Tiles $A0 - $AF
 	.byte $8F, $8D, $8F, $8D, $8F, $72, $72, $70, $40, $42, $AD, $AF, $BA, $8D, $8F, $72 ; Tiles $B0 - $BF
-	.byte $40, $07, $70, $42, $72, $8D, $8F, $AD, $AF, $4F, $0D, $0D, $49, $49, $48, $36 ; Tiles $C0 - $CF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $07, $B3, $CE, $FC, $C5, $C7, $D4, $FE, $FC ; Tiles $D0 - $DF
-	.byte $AA, $AB, $76, $09, $0C, $FE, $6A, $35, $35, $37, $36, $5B, $FF, $FF, $FF, $FF ; Tiles $E0 - $EF
+	.byte $40, $A2, $70, $42, $72, $8D, $8F, $AD, $AF, $4F, $0D, $0D, $49, $49, $48, $36 ; Tiles $C0 - $CF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $A2, $07, $B3, $CE, $FC, $C5, $C7, $D4, $FE, $FC ; Tiles $D0 - $DF
+	.byte $AA, $AB, $76, $09, $0C, $FE, $6A, $35, $35, $37, $36, $5B, $96, $96, $FF, $FF ; Tiles $E0 - $EF
 	.byte $03, $D7, $E2, $07, $F1, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $F0 - $FF
 
 	; Lower right 8x8 pattern per tile
@@ -78,17 +78,17 @@ Tile_Layout_TS6_TS7_TS8:
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $10 - $1F
 	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $BB, $BB ; Tiles $20 - $2F
 	.byte $BB, $BB, $BF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $30 - $3F
-	.byte $DF, $08, $FC, $FC, $08, $08, $08, $08, $99, $99, $FF, $FF, $FE, $4D, $4B, $1D ; Tiles $40 - $4F
+	.byte $DF, $08, $FC, $FC, $08, $08, $08, $A3, $99, $99, $FF, $FF, $FE, $4D, $4B, $1D ; Tiles $40 - $4F
 	.byte $FE, $4D, $4B, $2F, $55, $57, $7A, $57, $22, $57, $32, $5F, $57, $FE, $FE, $DB ; Tiles $50 - $5F
 	.byte $9B, $9B, $9B, $9B, $9B, $9B, $CB, $B7, $B7, $B7, $B7, $B7, $B7, $B7, $B7, $B7 ; Tiles $60 - $6F
-	.byte $B7, $BB, $C3, $C3, $C3, $C3, $A7, $EF, $E5, $C3, $B2, $B2, $4D, $4B, $4B, $0C ; Tiles $70 - $7F
-	.byte $08, $45, $47, $4D, $4F, $C6, $55, $57, $6F, $6F, $FE, $08, $08, $F3, $F3, $91 ; Tiles $80 - $8F
+	.byte $B7, $BB, $C3, $C3, $C3, $C3, $A7, $EF, $E5, $C3, $B2, $97, $4D, $4B, $4B, $0C ; Tiles $70 - $7F
+	.byte $08, $A3, $47, $4D, $4F, $C6, $55, $57, $6F, $6F, $FE, $08, $08, $F3, $F3, $91 ; Tiles $80 - $8F
 	.byte $91, $9D, $9F, $0D, $0D, $4F, $59, $59, $58, $41, $71, $71, $71, $43, $73, $73 ; Tiles $90 - $9F
-	.byte $73, $AD, $3F, $AD, $65, $41, $41, $41, $AD, $67, $6D, $6F, $3B, $9D, $9F, $9D ; Tiles $A0 - $AF
+	.byte $73, $AD, $3F, $AD, $65, $41, $41, $41, $97, $67, $6D, $6F, $3B, $9D, $9F, $9D ; Tiles $A0 - $AF
 	.byte $9F, $9D, $9F, $9D, $9F, $73, $73, $71, $41, $43, $AD, $AF, $BB, $9D, $9F, $73 ; Tiles $B0 - $BF
-	.byte $41, $08, $71, $43, $73, $9D, $9F, $AD, $AF, $0D, $0D, $4F, $59, $59, $58, $36 ; Tiles $C0 - $CF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $E7, $CF, $CF, $CF, $FE, $FE, $FE, $FE, $FE ; Tiles $D0 - $DF
-	.byte $AB, $AB, $77, $0B, $FE, $FE, $6B, $36, $36, $5B, $36, $5B, $FF, $FF, $FF, $FF ; Tiles $E0 - $EF
+	.byte $41, $A3, $71, $43, $73, $9D, $9F, $AD, $AF, $0D, $0D, $4F, $59, $59, $58, $36 ; Tiles $C0 - $CF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $A3, $E7, $CF, $CF, $CF, $FE, $FE, $FE, $FE, $FE ; Tiles $D0 - $DF
+	.byte $AB, $AB, $77, $0B, $FE, $FE, $6B, $36, $36, $5B, $36, $5B, $97, $97, $FF, $FF ; Tiles $E0 - $EF
 	.byte $13, $08, $E3, $08, $F3, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF ; Tiles $F0 - $FF
 
 Tile_Attributes_TS6_TS7_TS8:
@@ -228,7 +228,7 @@ LoadLevel_Generator_TS678:
 	; PRG018_A483 provides values well in excess of 57, but only 57
 	; addresses are defined here; reserved for expansion...
 
-	JSR DynJump
+	JSR DynJump_LLGen_18
 
 	; THESE MUST FOLLOW DynJump FOR THE DYNAMIC JUMP TO WORK!!
 	.word LoadLevel_SceneryVPipe		;  0 - Vertical scenery pipe (with pipe-cross detection)
@@ -1804,3 +1804,22 @@ LoadLevel_18UNK_B:
 
 ; Rest of ROM bank was unused
 
+DynJump_LLGen_18:
+	CMP #58
+	BCC _j_DynJump18
+
+	; If we're generating our custom object, we need to JSR to DynJump with our new index
+	SUB #58				; starting Bank 3, Offset 0xE0
+	STA PageCallVars	; save A
+	PLA	; eat our current return address
+	PLA	; eat our current return address
+	;;; Fall into LoadLevel18_Generic
+
+LoadLevel18_Generic:
+	;;; Currently we only support On/Offs, so we can call that loader directly
+	PageCall 40, LoadLevel_OnOffs_40
+	RTS
+
+_j_DynJump18:
+	JMP DynJump
+___end18:
