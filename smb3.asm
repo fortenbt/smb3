@@ -4206,7 +4206,7 @@ TILE7_TOADHOUSEBG	= $48	; Toad house background
 TILE7_TOADHOUSEBGSHAD	= $49	; Toad house background, shadowed
 TILE7_TOADHOUSEBGSHADUR	= $4A	; Toad house background, shadow upper-right
 TILE7_TOADHOUSEBGSHADR	= $4B	; Toad house background, shadow right
-TILE7_CHEST_UL		= $81	; Toad house chest upper left
+TILE7_CHEST_UL		= $89	; Toad house chest upper left
 
 TILE7_CHEST_UR		= $82	; Toad house chest upper right
 TILE7_CHEST_LL		= $83	; Toad house chest lower left
