@@ -281,3 +281,185 @@ _load_onoff_loop:
     DEC <Temp_Var4				; Temp_Var4--
     BPL _load_onoff_loop		; While Temp_Var4 >= 0, loop!
     RTS
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Get the tile given xoffset and yoffset from object
+;;; position of object in SlotIndexBackup
+;;; PageCallVars = X-offset
+;;; PageCallVars+1 = Y-offset
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+Object_DetectTile_40:
+    LDX <SlotIndexBackup
+
+    LDA PageCallVars+1  ; Y-offset
+    BMI _objdet_offs_neg
+	ADD <Objects_Y,X
+	AND #$f0		; Align to grid
+	STA ObjTile_DetYLo 	; -> ObjTile_DetYLo (low)
+
+	LDA <Objects_YHi,X
+	ADC #$00	 	; Apply carry
+	STA ObjTile_DetYHi 	; -> ObjTile_DetYHi (high)
+
+	BEQ _post_objdet_y
+    BNE _objdet_bottom_det  ; always
+
+_objdet_offs_neg:
+    ADD <Objects_Y,X
+	AND #$f0		; Align to grid
+	STA ObjTile_DetYLo 	; -> ObjTile_DetYLo (low)
+
+    LDA <Objects_YHi,X
+    STA ObjTile_DetYHi
+
+_objdet_bottom_det:
+    ; Detect if we're at the bottom of the screen
+	; In a non-vertical level, a high value of 2 or greater is way beyond the bottom
+	CMP #$02
+	BGE _no_tile_detected	 ; If the Y Hi >= 2, jump to PRG000_C832
+
+	PHA		 ; Save high part
+
+	LDA ObjTile_DetYLo
+	CMP #$b0
+
+	PLA		 ; Restore high part
+
+	BGE _no_tile_detected	 ; If the Y lo part is greater than $B0 (the bottom of the screen), jump to PRG000_C832
+
+_post_objdet_y:
+	AND #$01
+	STA <Temp_Var3	 ; Temp_Var3 = 0 or 1, depending if Y lo is on odd line or not
+
+    LDA PageCallVars    ; X-offset
+	ADD <Objects_X,X
+	STA ObjTile_DetXLo 	; -> ObjTile_DetXLo (low)
+
+	LDA <Objects_XHi,X
+	ADC #$00	 	; Apply carry
+	STA ObjTile_DetXHi 	; -> ObjTile_DetXHi (high)
+
+	CMP #$10
+	BGE _no_tile_detected	 ; If the high part is more than $10 (biggest possible within other limits), jump to PRG000_C832
+
+	ASL A		 ; Change high part into 2 byte index to select the screen
+	TAY		 ; -> 'Y'
+
+	; Calculate Temp_Var2/1 (tile address)
+	LDA Tile_Mem_Addr,Y
+	STA <Temp_Var1
+	LDA Tile_Mem_Addr+1,Y
+	ADC <Temp_Var3
+	STA <Temp_Var2
+
+	; Calculate tile offset within screen
+	LDA ObjTile_DetXLo
+	LSR A
+	LSR A
+	LSR A
+	LSR A
+	ORA ObjTile_DetYLo
+
+	TAY		 	; -> 'Y'
+
+_get_tile_40:
+	LDA [Temp_Var1],Y	; Get tile
+    RTS
+
+_no_tile_detected:
+	LDA #$00	        ; No tile detected
+	STA <Level_Tile	    ; Store tile index detected
+	RTS		 ; Return
+
+IsPiranhaBlocked_40:
+    LDA <Level_Tile
+	LDX Level_TilesetIdx
+	CMP OnOffTileByTS,X
+	BEQ _piranha_solid  		; it's a solid ON block
+	CMP OnOffTileByTS+1,X
+	BEQ _piranha_non_solid      ; it's a non-solid OFF_INACTIVE block
+	CMP OnOffTileByTS+2,X
+	BEQ _piranha_non_solid      ; it's a non-solid ON_INACTIVE block
+	CMP OnOffTileByTS+3,X
+	BEQ _piranha_solid  		; it's a solid OFF block
+	BNE _piranha_not_blocked
+
+_piranha_non_solid:
+	; If this is a non-solid block, we'll check our state to see if we should
+    ; stay out or in
+    LDX <SlotIndexBackup
+    LDA Level_ObjectID,X
+    SUB #OBJ_VENUSFIRETRAP
+    BMI _piranha_not_blocked        ; Not a venus fire trap? We don't support this yet
+	ADD <Objects_Var4,X             ; If we're here, we know we're in 0 or 2 state
+    TAY
+    LDA Piranha_NonSolid_DoesBlock,Y
+    BEQ _piranha_not_blocked
+    BNE _piranha_is_blocked
+
+_piranha_not_blocked:
+    LDX <SlotIndexBackup
+	CLC
+	RTS
+
+_piranha_solid:
+	; If this is a solid block, we'll check our state to see if we should
+    ; stay out or in
+    LDX <SlotIndexBackup
+    LDA Level_ObjectID,X
+    SUB #OBJ_VENUSFIRETRAP
+    BMI _piranha_not_blocked        ; Not a venus fire trap? We don't support this yet
+	ADD <Objects_Var4,X             ; If we're here, we know we're in 0 or 2 state
+    TAY
+    LDA Piranha_NonSolid_DoesBlock,Y    ; for solid, the inverse of this table is what we want
+    BNE _piranha_not_blocked
+_piranha_is_blocked:
+	SEC
+	RTS
+
+Piranha_NonSolid_DoesBlock:
+    ;   hide in pipe,    attack
+    ;     norm,flip     norm,flip
+    .byte $00, $01,     $01, $00
+
+;;; These offsets are for detecting the tile that may be blocking the piranha.
+;;; The first two are for the norm, flipped venus fire traps in state "HideInPipe"
+;;; (state 0). However, "HideInPipe" is that for OBJ_VENUSFIRETRAP, but is "Attack" for
+;;; OBJ_VENUSFIRETRAP_CEIL...and then vice-versa for the "Attack" state (state 2).
+;;;      NORM HIDDEN     NORM ATTACKING
+;;;       norm,flip       norm,flip
+;Piranha_XOffsets:
+;    .byte $00, $00,       $00, $00
+Piranha_YOffsets:
+    .byte -$08, $10,       $18, $30
+
+DetectPiranhaTiles_40:
+	LDX <SlotIndexBackup
+    LDA Level_ObjectID,X
+    SUB #OBJ_VENUSFIRETRAP
+    BMI _piranha_detect_none        ; Not a venus fire trap? We don't support this yet
+    TAY
+
+    LDA <Objects_Var4,X             ; Venus fire trap state
+    AND #$03
+    STA <Objects_Var4,X
+    CMP #$00                        ; "HideInPipe"
+    BEQ _piranha_norm_hidden
+    CMP #$02                        ; "Attack"
+    BNE _piranha_detect_none        ; 1 and 3 are states during which we don't detect
+                                    ; so that we allow these states to complete
+_piranha_norm_attacking:
+    INY
+    INY                             ; Adjust offset to NORM ATTACKING
+_piranha_norm_hidden:
+    ;LDA Piranha_XOffsets,Y
+    LDA #$00
+    STA PageCallVars
+    LDA Piranha_YOffsets,Y
+    STA PageCallVars+1
+    JSR Object_DetectTile_40
+    RTS
+
+_piranha_detect_none:
+    LDA #$00
+    RTS

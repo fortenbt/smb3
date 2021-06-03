@@ -1214,13 +1214,13 @@ PRG005_A61D:
 
 
 ObjInit_RedPiranhaFlip:
-	LDY #$21	 ; Y = $21
+	LDY #33	; Y = 33
 
 	LDA #16		; Start at Y + 16
 	BNE PRG005_A628	 ; Jump (technically always) to PRG005_A628
 
 ObjInit_GreenPiranhaFlip:
-	LDY #$19	 ; Y = $19
+	LDY #25	; Y = 25
 
 	; X += 8
 	LDA #$08
@@ -1509,7 +1509,7 @@ PRG005_A794:
 	.word Piranha_Attack
 	.word Piranha_Retract
 
-Piranha_Emerge:
+Piranha_Emerge:	; (just "go up", so for ceil types, this is retreating into pipe)
 
 	; Var5 = original Y 
 	; Var7 = original Y Hi
@@ -1531,7 +1531,7 @@ Piranha_Emerge:
 	LDA #-$10	 ; A = -$10
 	BNE PRG005_A7DC	 ; Jump (technically always) to PRG005_A7DC
 
-Piranha_Retract:
+Piranha_Retract: ; (just "go down", so for ceil types, this is coming out)
 
 	LDA <Objects_Y,X
 	ADD #$01
@@ -1557,7 +1557,7 @@ PRG005_A7DC:
 	JMP Object_ApplyYVel_NoLimit	 ; Apply Y velocity and don't come back!!
 
 
-Piranha_Attack:
+Piranha_Attack: ; This is "what is done after going up" (ceil types do nothing)
 
 	; TIP: For Var2, see Piranha_Style
 	LDA Objects_Var2,X	 
@@ -1615,7 +1615,11 @@ PRG005_A808:
 	BLT PRG005_A833	 ; If Player is too close, jump to PRG005_A833
 
 PRG005_A824:
+	JSR IsPiranhaBlocked
+	BCS _skip_piranha_state
+
 	INC <Objects_Var4,X	 ; Var4++ (next internal state)
+_skip_piranha_state:
 
 	LDA #$30	; A = $30
 
@@ -1632,7 +1636,7 @@ PRG005_A833:
 	RTS		 ; Return
 
 
-Piranha_HideInPipe:
+Piranha_HideInPipe: ; this is "what is done after going down" (ceil types spit fire)
 	LDA Objects_Var2,X	 
 	BPL PRG005_A85B	 ; If this is not a fire spitting piranha, jump to PRG005_A85B
 
@@ -6469,3 +6473,24 @@ PRG005_BFA7:
 
 ; Rest of ROM bank was empty...
 
+IsPiranhaBlocked:
+	;;; Check Tile above piranha head or at piranha base.
+	;;; If the piranha is blocked, then return carry set.
+	;;; TODO: Support WATER tileset
+	;;; The goal here is to block piranhas from coming out of pipes
+	;;; if a solid on/off block is above the pipe. And then to force
+	;;; the piranha to stay out if a non-solid on/off block is at
+	;;; the base of the piranha when it is out.
+	PageCall 40, DetectPiranhaTiles_40
+	BEQ _piranha_norm_unblocked		; returning 0 means no tile detected
+	JSR DoSubstTileAndAttr	 		; Substitute tile if P-Switch is active (we have to call
+									; this from here because it's in prg000 and way too complicated
+									; to duplicate in prg040
+	STA <Level_Tile
+	PageCall 40, IsPiranhaBlocked_40
+	LDX <SlotIndexBackup
+	RTS
+_piranha_norm_unblocked:
+	LDX <SlotIndexBackup
+	CLC
+	RTS
