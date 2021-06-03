@@ -1574,15 +1574,15 @@ Piranha_Attack: ; This is "what is done after going up" (ceil types do nothing)
 
 	LDA Objects_Timer,X
 
-	LDY World_Num
-	BNE PRG005_A7FD	 ; If this is not World 1, jump to PRG005_A7FD
+	;LDY World_Num
+	;BNE PRG005_A7FD	 ; If this is not World 1, jump to PRG005_A7FD
 
 	; World 1 only...
 
-	CMP #$28
-	BEQ PRG005_A805	 ; If timer = $28, jump to PRG005_A805
+	;CMP #$28
+	;BEQ PRG005_A805	 ; If timer = $28, jump to PRG005_A805
 
-	TYA		 ; A = 0 (deliberately fails the following checks) 
+	;TYA		 ; A = 0 (deliberately fails the following checks)
 
 PRG005_A7FD:
 	CMP #$10
@@ -1649,16 +1649,16 @@ Piranha_HideInPipe: ; this is "what is done after going down" (ceil types spit f
 
 	LDA Objects_Timer,X
 
-	LDY World_Num
-	BNE PRG005_A850	 ; If this is not World 1, jump to PRG005_A850
+	;LDY World_Num
+	;BNE PRG005_A850	 ; If this is not World 1, jump to PRG005_A850
 
 	; World 1 only...
 
-	CMP #$28
-	BEQ PRG005_A858	 ; If timer = $28, jump to PRG005_A858
+	;CMP #$28
+	;BEQ PRG005_A858	 ; If timer = $28, jump to PRG005_A858
 
 
-	TYA		 ; A = 0 (deliberately fails the following checks) 
+	;TYA		 ; A = 0 (deliberately fails the following checks)
 
 PRG005_A850:
 	CMP #$10
