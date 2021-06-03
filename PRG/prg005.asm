@@ -1608,12 +1608,12 @@ PRG005_A808:
 
 	; Non-ceiling piranha only...
 
-	JSR Level_ObjCalcXDiffs
+	;JSR Level_ObjCalcXDiffs
 
-	LDA <Temp_Var16
-	ADD #$1b
-	CMP #$37
-	BLT PRG005_A833	 ; If Player is too close, jump to PRG005_A833
+	;LDA <Temp_Var16
+	;ADD #$1b
+	;CMP #$37
+	;BLT PRG005_A833	 ; If Player is too close, jump to PRG005_A833
 
 PRG005_A824:
 	JSR IsPiranhaBlocked
@@ -1685,12 +1685,13 @@ PRG005_A85B:
 
 	; Non-ceiling piranha only...
 
-	JSR Level_ObjCalcXDiffs
+	;JSR Level_ObjCalcXDiffs
 
-	LDA <Temp_Var16
-	ADD #$1b
-	CMP #$37
-	BGE PRG005_A824	 ; If Player is too far, jump to PRG005_A833
+	;LDA <Temp_Var16
+	;ADD #$1b
+	;CMP #$37
+	;BGE PRG005_A824	 ; If Player is too far, jump to PRG005_A833
+	JMP PRG005_A824
 
 PRG005_A877:
 	RTS		 ; Return
