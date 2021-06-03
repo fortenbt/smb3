@@ -1585,7 +1585,8 @@ Piranha_Attack: ; This is "what is done after going up" (ceil types do nothing)
 	;TYA		 ; A = 0 (deliberately fails the following checks)
 
 PRG005_A7FD:
-	CMP #$10
+	AND #$0f
+	;CMP #$10
 	BEQ PRG005_A805	 ; If timer = $10, jump to PRG005_A805
 
 	CMP #$40
@@ -1661,7 +1662,8 @@ Piranha_HideInPipe: ; this is "what is done after going down" (ceil types spit f
 	;TYA		 ; A = 0 (deliberately fails the following checks)
 
 PRG005_A850:
-	CMP #$10
+	;CMP #$10
+	AND #$0f
 	BEQ PRG005_A858	 ; If timer = $10, jump to PRG005_A805
 
 	CMP #$40
@@ -1707,8 +1709,9 @@ Piranha_SpitFire:
 PRG005_A885:
 	STY <Temp_Var1	 ; Temp_Var1 = 0 or 16
 
-	LDY #$03	 ; Y = 3
-	JSR SpecialObj_FindEmptyAbortY	 ; Find an empty slot from special object slot 0 to 3 or don't come back!
+	;LDY #$03	 ; Y = 3
+	;JSR SpecialObj_FindEmptyAbortY	 ; Find an empty slot from special object slot 0 to 3 or don't come back!
+	JSR SpecialObj_FindEmptyAbort	 ; Find an empty slot from special object slot 0 to 3 or don't come back!
 
 	; Set X offset
 	LDA <Objects_X,X
