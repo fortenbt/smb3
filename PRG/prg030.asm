@@ -5552,17 +5552,18 @@ SetKickedYVel:
 	BEQ _set_shell_down
 
 _throw_shell_upward:
-	CLC
-	LDA <Player_XVel	; Use CLC/SEC and BPL to do an arithmetic right shift
-	BPL _skyv_xvel_ror1	; BPL branch on N=0
-	SEC
+	;CLC
+	;LDA <Player_XVel	; Use CLC/SEC and BPL to do an arithmetic right shift
+	;BPL _skyv_xvel_ror1	; BPL branch on N=0
+	;SEC
 _skyv_xvel_ror1:
-	ROR A				; mod N,Z,C
-	CLC
-	BPL _skyv_xvel_ror2
-	SEC
+	;ROR A				; mod N,Z,C
+	;CLC
+	;BPL _skyv_xvel_ror2
+	;SEC
 _skyv_xvel_ror2:
-	ROR A
+	;ROR A
+	LDA #$00
 	STA <Objects_XVel,X
 	JMP _skyv_set_yvel
 
