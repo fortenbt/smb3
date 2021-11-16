@@ -4551,10 +4551,13 @@ PRG008_B52F:
 	DEY
 
 PRG008_B536:
-	TYA		
-	BNE PRG008_B53B	 ; If Y <> 0, jump to PRG008_B53B
+	;TYA
+	;;BNE PRG008_B53B	 ; If Y <> 0, jump to PRG008_B53B
 
-	STA <Player_XVel ; Otherwise, halt Player horizontally
+	;;STA <Player_XVel ; Otherwise, halt Player horizontally
+	JMP FixWallClip
+	NOP
+	NOP
 
 PRG008_B53B:
 	LDA <Player_YVel

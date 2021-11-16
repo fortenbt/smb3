@@ -1404,17 +1404,29 @@ __Music_RestH_LUT90:
 	; If you're creating a custom hack, delete these $FFs and use the following line instead:
 ; .AlignDMC04:	DMCAlign .AlignDMC04
 
-	.byte $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 
 	; END UNUSED SPACE
+FixWallClip:
+	TYA
+	BNE __jmp_PRG008_B53B			; If Y <> 0, jump to PRG008_B53B
+	STA <Player_XVel				; Otherwise, halt Player horizontally
+	;;; [ORANGE] Now that we've been "pushed out" of the tile in front of us, rerun the collision detection
+	;;; This allows for detecting a wall tile at our face and being pushed back out before we possibly
+	;;; detect a wall tile at our feet and flag that Mario is on the ground when he's not. Thus, this fixes
+	;;; wall clipping at the expense of extra logic for wall collision detection
+	JMP Player_DetectSolids
+__jmp_PRG008_B53B:
+	JMP PRG008_B53B
 
+.AlignDMC04:	DMCAlign .AlignDMC04
 DMC04:	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $B5, $82, $DC
 	.byte $7F, $00, $E0, $FF, $03, $E8, $FF, $03, $00, $F8, $FF, $00, $F0, $FF, $62, $0B
 	.byte $40, $DF, $8B, $EA, $27, $00, $FC, $BF, $00, $14, $FD, $FF, $03, $00, $F6, $FF
