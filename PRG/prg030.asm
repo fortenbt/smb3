@@ -2148,7 +2148,8 @@ PRG030_8E5D:
 
 	LDA Level_PauseFlag
 	EOR #$01	 
-	STA Level_PauseFlag	 ; Toggle pause flag
+	;;;STA Level_PauseFlag	 ; Toggle pause flag
+	JSR InitializePauseMenu
  
 	BNE PRG030_8E76	 ; If game is now paused, jump to PRG030_8E76
 
@@ -2162,6 +2163,14 @@ PRG030_8E79:
 	BEQ PRG030_8EAD	 	; If not paused, jump to PRG030_8EAD
 
 	; When game is paused...
+
+	;; Do the new pause menu state machine:
+	;; > continue	(unpause)
+	;;   restart	(restart level)
+	;;   quit	(return to map)
+
+	JSR RunPauseMenu13
+	JMP Level_MainLoop
 
 	LDA #$32
 	STA PatTable_BankSel+5	; Set patterns needed for P A U S E sprites
@@ -5772,4 +5781,21 @@ GetWakeupTimer:
 	STA Objects_Timer3,X			; Just put the ID into the wakeup timer, and it will never wake up
 _get_wakeup_timer_std:
 	LDA Objects_Timer3,X
+	RTS
+
+InitializePauseMenu:
+	STA Level_PauseFlag
+	STA PauseMenuSel
+	RTS
+
+RunPauseMenu13:
+	LDA PAGE_A000
+	PHA
+	LDA #13
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+	JSR RunPauseMenu
+	PLA
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
 	RTS
