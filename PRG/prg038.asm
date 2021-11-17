@@ -1384,13 +1384,13 @@ M2BSegHedr24:	MusSeg 60, Music_RestH_LUT40, M2BSegData1B, $19, M2BSegData1B_Tri,
 	; be played ($10, $20, $30, ... $C0), so that song $10 uses a start
 	; index of $00, an end index of $06, and a loop index of $01.
 Music_Set2B_Starts:
-	.byte $2D, $07, $08, $0C, $0F, $13, $15, $1B, $1E, $1B, $27, $2C
+	.byte $2D, $31, $08, $0C, $0F, $13, $15, $1B, $1E, $1B, $27, $2C
 
 Music_Set2B_Ends:
-	.byte $30, $07, $0B, $0E, $12, $14, $1A, $1D, $26, $1D, $2B, $2C
+	.byte $30, $45, $0B, $0E, $12, $14, $1A, $1D, $26, $1D, $2B, $2C
 
 Music_Set2B_Loops:
-	.byte $2D, $07, $09, $0C, $10, $13, $18, $1B, $1F, $1B, $28, $2C
+	.byte $2D, $31, $09, $0C, $10, $13, $18, $1B, $1F, $1B, $28, $2C
 
 
 	; These are Set 2B music segments.  Note that more exist on page 29.
@@ -1522,6 +1522,28 @@ Music_Set2B_HedrPtrs:
 	.word TGLA12CorrHedr3	; $2F
 	.word TGLA12CorrHedr4	; $30
 
+	.word BatmanHedr1	; $31
+	.word BatmanHedr1	; $
+	.word BatmanHedr1	; $
+	.word BatmanHedr1	; $
+	.word BatmanHedr1	; $
+	.word BatmanHedr1	; $
+	.word BatmanHedr1	; $
+	.word BatmanHedr2	; $
+	.word BatmanHedr3	; $
+	.word BatmanHedr4	; $
+	.word BatmanHedr5	; $
+	.word BatmanHedr3	; $
+	.word BatmanHedr4	; $
+	.word BatmanHedr5	; $
+	.word BatmanHedr6	; $
+	.word BatmanHedr7	; $
+	.word BatmanHedr8	; $
+	.word BatmanHedr9	; $
+	.word BatmanHedr7	; $
+	.word BatmanHedr8	; $
+	.word BatmanHedr10	; $45
+
 .set1_set2a_ptrs: Align100h .set1_set2a_ptrs
 Music_Set1_Set2A_Ptrs:
 	; Index 0 - 7 are Set 1 songs, accessed by bit weight
@@ -1588,4 +1610,6 @@ SFX_Counter3_Hook:
 TGLA12CorrHedr1:
 	MusSeg 55, TGLA12Corr_R, TGLA12Corr_1, $69, TGLA12Corr_Tri, TGLA12Corr_Nse, $0000
 
+BatmanHedr1:
+	MusSeg 55, Batman_R1, Batman_1, $03, Batman_Tri1, Batman_Nse1, Batman_Dpcm1
 _prg038_end:

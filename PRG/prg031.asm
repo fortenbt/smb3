@@ -241,12 +241,12 @@ DMC_MODLEN_LUT:
 	.byte MLEN(DMC02, DMC02_Bad)	; Sample  3 (DMC02 BAD SAMPLE LENGTH)
 	.byte MLEN(DMC04, DMC04_End)	; Sample  4 (DMC04)
 	.byte MLEN(DMC05, DMC05_End)	; Sample  5 (DMC05)
-	.byte MLEN(DMC05, DMC05_C)	; Sample  6 (DMC05 3/4 length)
+	.byte MLEN(DMC05, DMC05)	; Sample  6 (DMC05 3/4 length)
 	.byte MLEN(DMC06, DMC06_End)	; Sample  7 (DMC06)
 	.byte MLEN(DMC06, DMC06_End)	; Sample  8 (DMC06 slower)
 	.byte MLEN(DMC07, DMC07_End)	; Sample  9 (DMC07)
 	.byte MLEN(DMC07, DMC07_End)	; Sample 10 (DMC07 slower)
-	.byte MLEN(DMC05, DMC05_B)	; Sample 11 (DMC05 1/2 length)
+	.byte MLEN(DMC05, DMC05)	; Sample 11 (DMC05 1/2 length)
 	.byte MLEN(DMC08, DMC08_End)	; Sample 12 (DMC08)
 	.byte MLEN(DMC09, DMC09_End)	; Sample 13 (DMC09)
 	.byte MLEN(DMC09, DMC09_End)	; Sample 14 (DMC09 slower)
@@ -1577,38 +1577,24 @@ DMC09:	.byte $DA, $BB, $77, $7B, $B5, $6D, $AD, $5A, $B5, $D5, $54, $B5, $5B, $2
 	.byte $55, $55, $A9, $95, $AA, $AA, $AA, $5A, $55, $55, $AB, $AA, $AA, $AA, $54, $55
 DMC09_End
 
-DMC05:	.byte $00, $FE, $FF, $5F, $62, $00, $00, $00, $FF, $FF, $FF, $27, $00, $00, $E8, $FF
-	.byte $FF, $07, $00, $FC, $FF, $FF, $FF, $00, $00, $00, $F8, $FF, $03, $00, $80, $FD
-	.byte $FF, $7F, $00, $00, $B0, $FF, $FF, $01, $00, $00, $FF, $FF, $FF, $0F, $00, $00
-	.byte $FE, $FF, $05, $00, $00, $FA, $FF, $5F, $04, $80, $EE, $FF, $FF, $1F, $00, $00
-	.byte $00, $FA, $FF, $03, $00, $BA, $FF, $FF, $5F, $00, $00, $D0, $EF, $EF, $08, $00
-	.byte $40, $FF, $FF, $FF, $08, $00, $D8, $FF, $FF, $02, $00, $00, $F8, $FF, $6F, $13
-	.byte $01, $6A, $FB, $B6, $AA, $00, $40, $B6, $FF, $B7, $12, $24, $B5, $ED, $6B, $49
-	.byte $00, $64, $BB, $B7, $93, $44, $A9, $55, $F5, $ED, $AB, $44, $80, $94, $A6, $B7
-	.byte $9B, $54, $6A, $95, $56, $B5, $5A, $35, $95, $22, $A4, $B6, $6A, $DB, $6A, $25
-	.byte $A9, $AA, $6D, $BB, $15, $04, $A4, $6A, $6F, $AB, $12, $6A, $DB, $B6, $95, $54
-	.byte $92, $A2, $D4, $6A, $6F, $A5, $42, $55, $D5, $EA, $5B, $09, $49, $AD, $B6, $56
-	.byte $25, $28, $E2, $ED, $7E, $4C, $2B, $41, $92, $6D, $BF, $AB, $24, $00, $52, $6F
-	.byte $B7, $B5, $6A, $49, $55, $5B, $AB, $6A, $13, $08, $69, $DB, $5A, $95, $24, $BA
-	.byte $6F, $57, $45, $48, $55, $DB, $AD, $85, $24, $42, $D5, $F6, $BD, $AD, $24, $02
-	.byte $D5, $F6, $56, $93, $08, $51, $DB, $BE, $AD, $2A, $24, $49, $6F, $B7, $A9, $22
-	.byte $08, $B5, $DD, $AB, $A9, $44, $59, $6D, $6F, $25, $91, $94, $AA, $B6, $6D, $A9
-DMC05_B:.byte $92, $A8, $DA, $75, $AB, $24, $91, $6A, $BB, $5D, $25, $41, $94, $6D, $D7, $AA
-	.byte $52, $29, $55, $6D, $B5, $A9, $52, $49, $B5, $6D, $4B, $A2, $54, $D5, $B6, $5A
-	.byte $29, $92, $54, $DB, $6D, $2D, $29, $52, $A5, $B6, $6D, $93, $4A, $52, $6B, $D5
-	.byte $92, $AA, $AA, $55, $5B, $55, $91, $54, $59, $B5, $55, $55, $49, $A5, $DA, $B6
-DMC05_C:.byte $AB, $8A, $42, $A5, $F6, $B2, $25, $49, $56, $6D, $B5, $A9, $94, $CA, $AA, $6A
-	.byte $AB, $4A, $A5, $54, $69, $DB, $2B, $A9, $A4, $AA, $6A, $6D, $25, $49, $AD, $56
-	.byte $55, $65, $45, $95, $6B, $D5, $55, $85, $8A, $52, $EF, $B6, $B5, $24, $A0, $AA
-	.byte $D5, $55, $95, $52, $55, $B5, $5A, $AB, $A2, $AA, $AA, $B6, $55, $A5, $82, $54
-	.byte $DB, $6D, $55, $49, $48, $DB, $DE, $AA, $52, $09, $95, $6A, $5B, $55, $93, $2A
-	.byte $55, $6B, $CB, $96, $52, $C9, $EA, $D5, $54, $42, $52, $B5, $6D, $6B, $A9, $42
-	.byte $25, $BB, $76, $AD, $54, $88, $AA, $B6, $6D, $55, $09, $69, $6B, $AB, $55, $92
-	.byte $24, $55, $7F, $A5, $52, $A5, $54, $6A, $57, $55, $55, $95, $AA, $B5, $55, $51
-	.byte $49, $52, $BB, $B7, $25, $24, $A9, $D8, $F5, $55, $95, $48, $92, $DD, $B7, $53
-	.byte $22, $01, $69, $DF, $B7, $96, $22, $24, $69, $DF, $5E, $95, $12, $29, $69, $5B
-	.byte $AB, $A9, $20, $A9, $6D, $6F, $5B, $51, $2A, $55, $96, $AC, $4A, $B5, $2D, $4B
-	.byte $A9, $65, $55, $95, $AD, $2A, $95, $A5, $D4, $6A, $57, $25, $92, $AA, $DA, $6D
+;;; [ORANGE] Replaced for Batman music
+DMC05:
+	.byte $A5, $AA, $AA, $5A, $5F, $FF, $F5, $10, $00, $00, $00, $0F, $FF, $FF, $FF, $2F, $A0, $0F, $FF, $5F, $00, $0F, $50, $00, $00, $10, $F0, $00, $02, $DF, $FF, $FF
+	.byte $FD, $50, $A5, $0E, $EF, $A5, $EF, $FF, $FF, $FF, $00, $02, $A5, $00, $00, $00, $00, $50, $01, $AD, $FF, $FF, $FF, $FF, $FE, $25, $11, $05, $DA, $D5, $2D, $FD
+	.byte $52, $51, $00, $00, $00, $5A, $02, $E5, $EF, $25, $DA, $EF, $FF, $FF, $FD, $AA, $51, $AA, $20, $00, $5E, $FA, $05, $5D, $00, $10, $10, $EE, $50, $DE, $AA, $EE
+	.byte $AE, $FF, $EE, $EF, $F5, $2D, $55, $25, $22, $01, $12, $50, $55, $55, $50, $2D, $11, $15, $5A, $AD, $ED, $DF, $FE, $ED, $EE, $55, $D5, $15, $AA, $A1, $12, $22
+	.byte $11, $11, $52, $A5, $25, $5F, $A1, $EA, $52, $2A, $D5, $5A, $FF, $DF, $FF, $D5, $12, $ED, $51, $22, $50, $10, $10, $15, $12, $A5, $D5, $2A, $EF, $55, $DE, $D2
+	.byte $AD, $55, $A5, $2E, $FD, $EF, $D5, $55, $51, $22, $52, $22, $25, $01, $22, $25, $22, $DD, $DD, $2D, $AE, $ED, $DD, $AD, $DD, $A2, $AA, $AA, $5A, $DD, $D5, $55
+	.byte $11, $10, $02, $51, $25, $12, $AA, $D2, $AE, $AA, $AF, $DA, $DA, $FE, $DA, $DD, $AE, $50, $A5, $2A, $A5, $12, $EA, $DA, $A5, $00, $02, $12, $A2, $AA, $DA, $DA
+	.byte $EE, $DA, $ED, $AE, $FD, $55, $55, $AA, $DA, $52, $52, $2A, $D2, $51, $02, $AD, $55, $DA, $00, $05, $55, $AA, $AD, $DD, $AF, $DE, $ED, $AD, $DA, $D5, $25, $51
+	.byte $2A, $AA, $51, $15, $12, $2A, $52, $EA, $25, $55, $55, $A5, $12, $AA, $DA, $FD, $DD, $AF, $DD, $5A, $55, $55, $AA, $AA, $21, $22, $52, $22, $22, $AA, $55, $AD
+	.byte $2A, $AD, $5A, $DA, $D5, $52, $D5, $55, $AF, $EF, $D5, $AD, $52, $A2, $25, $55, $51, $22, $25, $12, $52, $AA, $52, $AA, $AD, $AD, $DA, $DA, $DA, $D2, $DA, $AA
+	.byte $AD, $55, $DE, $D5, $5A, $A5, $25, $11, $11, $12, $52, $25, $A5, $55, $5A, $AA, $D5, $55, $DD, $AD, $AE, $DA, $AA, $DA, $AA, $A5, $55, $55, $AA, $D5, $25, $12
+	.byte $25, $11, $11, $1A, $DA, $A5, $55, $5A, $DA, $DD, $AD, $AD, $5A, $ED, $AD, $55, $5A, $A5, $12, $52, $D5, $55, $52, $A5, $25, $11, $11, $25, $2A, $D5, $AE, $ED
+	.byte $AE, $D5, $AD, $5D, $AA, $AD, $5A, $EA, $AA, $55, $25, $25, $51, $25, $2A, $A5, $55, $25, $2A, $55, $22, $5A, $AD, $5D, $AF, $DD, $DD, $AA, $AD, $52, $D5, $AA
+	.byte $52, $A5, $25, $25, $25, $55, $25, $25, $52, $AA, $AA, $AA, $55, $55, $55, $55, $AE, $EE, $EE, $DA, $ED, $55, $2A, $55, $25, $52, $A5, $25, $25, $15, $25, $25
+	.byte $2A, $AA, $DA, $AD, $5A, $AD, $55, $52, $DA, $DA, $AD, $AD, $DD, $AD, $5A, $A5, $25, $25, $11, $22, $55, $2A, $A5, $52, $55, $55, $2A, $D5, $55, $AD, $DD, $AD
+	.byte $5A, $AD, $AA, $AA, $55, $AA, $DA, $D5, $52, $55, $52, $51, $12, $25, $25, $55, $52
 DMC05_End
 
 
