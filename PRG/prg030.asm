@@ -5940,6 +5940,16 @@ DoSoundEngineRestore13:
 	JSR PRGROM_Change_A000
 	RTS
 
+DeathRestartLevel:
+	PLA			; Remove Player_DrawAndDoActions29
+	PLA
+	PLA			; Remove Player_Update
+	PLA
+	PLA			; Remove Player_DoGameplay
+	PLA
+	LDA #$00	; This is the page that PRG008 death sequence would restore
+	PHA			; Fall into RestartLevelPRG030
+
 RestartLevelPRG030:
 	;;; This is jumped to from
 	;;;   Level_MainLoop->RunPauseMenu->DoMenuInput->PauseMenuRestartLevel
