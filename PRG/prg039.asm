@@ -1826,7 +1826,7 @@ Player_Die_Dying:
 
 	LDA <Player_SpriteY
 	AND #$f0
-	CMP #$b0
+	CMP #$a0
 	BEQ PRG029_D6E5	 ; If Player_SpriteY >= $B0 && Player_SpriteY <= $BF (Player is halfway below status bar), jump to PRG029_D6E5
 
 PRG029_D6DA:
@@ -1842,7 +1842,7 @@ PRG029_D6E5:
 	BNE PRG029_D6EF	; If Event_Countdown > 0 (time until drop to map), jump to PRG029_D6EF
 
 	; Reload Event_Countdown
-	LDA #64
+	LDA #20				; This happens after Mario has fallen behind the status bar
 	STA Event_Countdown	; Event_Countdown = 64
 
 PRG029_D6EF:
@@ -1859,10 +1859,7 @@ Player_Die_FellOff:
 	BNE PRG029_D702	 ; If Event_Countdown <> 0, jump to PRG029_D702 (RTS)
 
 PRG029_D6FB:
-	INC <Level_ExitToMap	; Level_ExitToMap = 1
-
-	LDA #$01
-	STA Map_ReturnStatus	 ; Map_ReturnStatus = 1 (Player died, level is not clear)
+	JMP DeathRestartLevel
 
 PRG029_D702:
 	RTS		 ; Return

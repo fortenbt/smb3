@@ -5808,10 +5808,10 @@ Player_Die:
 	LDA #$01
 	STA Player_QueueSuit	 ; Queue change to "small"
 
-	LDA #-64
+	LDA #-30
 	STA <Player_YVel ; Player_YVel = -64
 
-	LDA #$30	 
+	LDA #$00
 	STA Event_Countdown ; Event_Countdown = $30 (ticks until dropped back to map)
 
 	LDA #$01
