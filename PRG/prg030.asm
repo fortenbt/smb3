@@ -1135,7 +1135,8 @@ PRG030_881D:
 	STA Map_EntTran_Cnt	 ; Map_EntTran_Cnt = $30
 
 	LDA #SND_MAPENTERLEVEL
-	STA Sound_QMap	 ; Play "enter level" sound effect!
+	;;;STA Sound_QMap	 ; Play "enter level" sound effect!
+	JSR CheckPlayLevelEntrySound
 
 	; Loop until V-Blank is not occurring
 PRG030_883E:
@@ -4008,12 +4009,13 @@ PRG030_98C8:
 	CPX #MUS2A_INVINCIBILITY		
 	BEQ PRG030_98DE		; If playing the Invincibility music, don't queue this song right now
 
+	;;; [ORANGE] Allow an in-level restart to restore the sound engine
 	; Queue this music to play
-	STA Level_MusicQueue
-
+	;STA Level_MusicQueue
 PRG030_98DE:
 	; Set this as the music to "restore" to when P-Tab / Invincibility ends
-	STA Level_MusicQueueRestore
+	;STA Level_MusicQueueRestore
+	JSR CheckQueueLevelsMusic
 
 	; Level_LayPtr_AddrL/H += 9 (i.e. move pointer to after the header)
 	LDA <Level_LayPtr_AddrL
@@ -5798,4 +5800,109 @@ RunPauseMenu13:
 	PLA
 	STA PAGE_A000
 	JSR PRGROM_Change_A000
+	RTS
+
+DoSoundEngineSave13:
+	LDA PAGE_A000
+	PHA
+	LDA #13
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+	JSR DoSoundEngineSave
+	PLA
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+	RTS
+
+DoSoundEngineRestore13:
+	LDA PAGE_A000
+	PHA
+	LDA #13
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+	JSR DoSoundEngineRestore
+	PLA
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+	RTS
+
+RestartLevelPRG030:
+	;;; This is jumped to from
+	;;;   Level_MainLoop->RunPauseMenu->DoMenuInput->PauseMenuRestartLevel
+	PLA						; Restore the A000 page saved by RunPauseMenu13 before getting here
+	TAY
+	PLA
+	PLA						; Remove the Level_MainLoop return address
+	TYA
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+
+	LDA #PLAYERSUIT_SMALL	; PLAYERSUIT_SMALL = 0
+	STA World_Map_Power		; Ensure player doesn't retain world map suit on level restart
+	STA <Player_HaltGame	; We can also use it to ensure the game isn't halted
+
+	INC LevelRestarting		; Flag that we're restarting the level
+	LDA SoundEngineBackedUp
+	BNE _no_sound_engine_save	; We don't want to save if we already saved at the death song
+	JSR DoSoundEngineSave13
+_no_sound_engine_save:
+	; Switch bank A000 to page 26
+	LDA #26
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+	JSR Palette_FadeOut
+	JSR GraphicsBuf_Prep_And_WaitVSync
+
+	JSR Clear_500_300_RAM
+
+	JSR Sprite_RAM_Clear
+	JSR Scroll_PPU_Reset
+
+	LDA #$10
+	STA Map_Operation		; "Enter level"
+
+	LDA Map_Prev_XOff		; Reset all positions
+	STA <Horz_Scroll
+	LDA Map_Prev_XHi
+	STA <Horz_Scroll_Hi
+	LDA Map_Entered_Y
+	STA <World_Map_Y
+	LDA Map_Entered_XHi
+	STA <World_Map_XHi
+	LDA Map_Entered_X
+	STA <World_Map_X
+	LDA Map_Previous_UnusedPVal2
+	STA <Map_UnusedPlayerVal2
+
+	JSR Sprite_RAM_Clear
+	JMP PRG030_8732
+
+CheckPlayLevelEntrySound:
+	TAX
+	LDA LevelRestarting
+	BEQ _not_restarting
+	RTS				; We still have more to do before we're done restarting the level
+_not_restarting:
+	TXA
+	STA Sound_QMap	 ; Play "enter level" sound effect!
+	RTS
+
+CheckQueueLevelsMusic:
+	TAX
+	LDA LevelRestarting
+	BEQ _not_restarting2
+	LDA Level_MusicQueueRestore
+	CMP SndCur_Music2
+	BEQ _post_restore_music2
+	STA Sound_QMusic2
+_post_restore_music2:
+	LDA #0
+	STA Sound_IsPaused
+	STA SndCur_Pause	; Stop the pause sound hold
+	DEC LevelRestarting		; Restarting the level done
+	RTS
+_not_restarting2:
+	TXA
+	STA Level_MusicQueue
+	STA Level_MusicQueueRestore
 	RTS
