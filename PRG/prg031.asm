@@ -1126,9 +1126,36 @@ PRG031_E741:
 	; only 1.) The first note value is $01 (which shifted becomes zero),
 	; so basically $01, $02-$03, $04-$05, $06-$07 are the only valid "notes"
 	; $01 (first triple) is used as a "rest" / Note Off
-Music_NoiseLUTA:	.byte $10, $1E, $1F, $1F
-Music_NoiseLUTB:	.byte $00, $03, $0A, $02
-Music_NoiseLUTC:	.byte $00, $18, $18, $58
+Music_NoiseLUTA:	.byte $10, $17, $18, $19	; ctl
+Music_NoiseLUTB:	.byte $00, $03, $0A, $06	; freq1
+Music_NoiseLUTC:	.byte $00, $18, $18, $48	; freq2 ($18 = 3, $58 = 11, $48 = 9)
+
+	; ctl is $400C			--LC.VVVV	Noise channel volume/envelope (write)
+	; bit 5		--L- ----	APU Length Counter halt flag/envelope loop flag
+	; bit 4		---C ----	Constant volume flag (0: use volume from envelope; 1: use constant volume)
+	; bits 3-0	---- VVVV	Used as the volume in constant volume (C set) mode. Also used as the reload value for the envelope's divider (the period becomes V + 1 quarter frames).
+
+	; freq1 is $400E	M---.PPPP	Mode and period (write)
+	; Period setting	Sample rate	Fundamental	MIDI note	Pitch
+	; $0	447443.2 Hz	4811.2 Hz	110.41	d'''''
+	; $1	223721.6 Hz	2405.6 Hz	98.41	d''''
+	; $2	111860.8 Hz	1202.8 Hz	86.41	d'''
+	; $3	55930.4 Hz	601.4 Hz	74.41	d''
+	; $4	27965.2 Hz	300.7 Hz	62.41	d'
+	; $5	18643.5 Hz	200.5 Hz	55.39	g
+	; $6	13982.6 Hz	150.4 Hz	50.41	d
+	; $7	11186.1 Hz	120.3 Hz	46.55	a#,
+	; $8	8860.3 Hz	95.3 Hz	42.51	f#,
+	; $9	7046.3 Hz	75.8 Hz	38.55	d,
+	; $A	4709.9 Hz	50.6 Hz	31.57	g,,
+	; $B	3523.2 Hz	37.9 Hz	26.55	d,,
+	; $C	2348.8 Hz	25.3 Hz	19.53	g,,,
+	; $D	1761.6 Hz	18.9 Hz	14.55	d,,,
+	; $E	879.9 Hz	9.5 Hz	2.53	d,,,,
+	; $F	440.0 Hz	4.7 Hz	-9.47	d,,,,,
+
+	; freq2 is $400F	llll.l---	Length counter load and envelope restart (write)
+
 
 Music_CalcNoteLen:
 	; Just played a note which was not a rest
