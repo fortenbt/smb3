@@ -1384,13 +1384,13 @@ M2BSegHedr24:	MusSeg 60, Music_RestH_LUT40, M2BSegData1B, $19, M2BSegData1B_Tri,
 	; be played ($10, $20, $30, ... $C0), so that song $10 uses a start
 	; index of $00, an end index of $06, and a loop index of $01.
 Music_Set2B_Starts:
-	.byte $2D, $31, $46, $0C, $0F, $13, $15, $1B, $1E, $1B, $27, $2C
+	.byte $2D, $31, $46, $4E, $0F, $13, $15, $1B, $1E, $1B, $27, $2C
 
 Music_Set2B_Ends:
-	.byte $30, $45, $4D, $0E, $12, $14, $1A, $1D, $26, $1D, $2B, $2C
+	.byte $30, $45, $4D, $55, $12, $14, $1A, $1D, $26, $1D, $2B, $2C
 
 Music_Set2B_Loops:
-	.byte $2D, $31, $46, $0C, $10, $13, $18, $1B, $1F, $1B, $28, $2C
+	.byte $2D, $31, $46, $4E, $10, $13, $18, $1B, $1F, $1B, $28, $2C
 
 
 	; These are Set 2B music segments.  Note that more exist on page 29.
@@ -1554,6 +1554,15 @@ Music_Set2B_HedrPtrs:
 	.word CVampireHedr7
 	.word CVampireHedr8	; $4D
 
+	.word G2Hedr1		; $4E
+	.word G2Hedr2
+	.word G2Hedr1
+	.word G2Hedr2
+	.word G2Hedr3
+	.word G2Hedr4
+	.word G2Hedr3
+	.word G2Hedr5		; $55
+
 .set1_set2a_ptrs: Align100h .set1_set2a_ptrs
 Music_Set1_Set2A_Ptrs:
 	; Index 0 - 7 are Set 1 songs, accessed by bit weight
@@ -1625,5 +1634,8 @@ BatmanHedr1:
 
 CVampireHedr1:
 	MusSeg 56, CVampire_R1, CVampire1, $18, CVampire1_Tri, CVampire1_Nse, $0000
+
+G2Hedr1:
+	MusSeg 56, G2_R1, Gradius2_1, $37, Gradius2_Tri1, Gradius2_Nse1, Gradius2_PCM1
 
 _prg038_end:
