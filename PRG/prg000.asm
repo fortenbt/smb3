@@ -5831,6 +5831,9 @@ PRG000_DA7A:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Player_Die:
 	; Queue death song
+	LDA Sound_QLevel1
+	ORA #SND_LEVELSHOE
+	STA Sound_QLevel1
 
 	; Clear a bunch of stuff at time of death
 	LDA #$00

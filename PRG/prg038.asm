@@ -902,14 +902,15 @@ SndLev1_SuitLost_Cont2:
 
 	LDY SFX_Counter2	 ; Y = SFX_Counter2
 
-	LDA SndLev1_Data,Y	 ; Get data
+	LDA SndLev1_Data-1,Y	 ; Get data
 	BEQ PRG028_A553	 ; If data = 0, jump to PRG028_A553
 	BPL PRG028_A544	 ; If data > 0, jump to PRG028_A544
 
 	; data < 0...
 
 	; Store value -> SFX_Counter3
-	STA SFX_Counter3
+	;;;STA SFX_Counter3
+	JSR SFX_Counter3_Hook
 	BNE SndLev1_SuitLost_Cont2	 ; Jump (technically always) to SndLev1_SuitLost_Cont2
 
 PRG028_A544:
@@ -944,8 +945,11 @@ SndLev1_DataPoof:
 	.byte $30, $94, $38, $34, $32, $30, $00
 
 SndLev1_DataLostShoe:
-	.byte $9F, $42, $40, $7E, $7E, $9F, $46, $48, $7E ; $A5AB - $A5BA
-	.byte $7E, $9A, $4A, $4E, $50, $52, $96, $4E, $52, $54, $56, $00
+	;.byte $9F, $42, $40, $7E, $7E, $9F, $46, $48, $7E ; $A5AB - $A5BA
+	;.byte $7E, $9A, $4A, $4E, $50, $52, $96, $4E, $52, $54, $56, $00
+	.byte $9A, $44, $D9, $42, $D7, $40, $D6, $3E
+	.byte $9A, $46, $D9, $44, $D7, $42, $D6, $40
+	.byte $9A, $48, $D9, $46, $D7, $44, $D6, $42, $00
 
 SndLev1_DataLongWag:
 	.byte $90, $7E, $7E, $97 ; $A5BB - $A5CA
@@ -1608,5 +1612,10 @@ _orig_getrestticks:
 	TAY
 	LDA [Music_Rest_PtrL],Y
 	RTS		 	; Return
+
+SFX_Counter3_Hook:
+	AND #$7F
+	STA SFX_Counter3
+	RTS
 
 _prg038_end:
