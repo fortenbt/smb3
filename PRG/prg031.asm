@@ -673,7 +673,7 @@ Music_EndSegment:
 	BNE Music_StopAll	; If we NOT were playing the "time warning" song, jump to Music_StopAll
 
 	; If we were playing the "time warning" song, we need to restart the song which was playing...
-	LDA #$10
+	LDA #$00
 	STA Music_RestH_Off	; Set the rest lookup offset to $10 (should play song slightly faster!)
 	LDA Music2_Hold	 	; Get which song we ought to be playing right now
 
