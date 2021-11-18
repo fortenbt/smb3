@@ -173,6 +173,8 @@ Music_PlayDMC:
 Music_StopDMC:
 	LDA #$00	 
 	STA DMC_Current ; Stop any current DMC sound
+	LDA Sound_IsPaused
+	BNE PRG031_E2E0
 	LDA #$0f	 
 	STA PAPU_EN	 ; Disable DMC
 
@@ -196,10 +198,13 @@ PRG031_E2E1:
 	LDA #$a0	 
 	STA DMC_Time	 ; DMC_Time = $A0 (always apparently)
 
+	LDA Sound_IsPaused
+	BNE _prg031_rts1
 	LDA #$0f	 
 	STA PAPU_EN	 ; Disable DMC
 	LDA #$1f	 
 	STA PAPU_EN	 ; Enable DMC
+_prg031_rts1:
 	RTS		 ; Return
 
 	; The address are $C000 | (value << 6)
@@ -641,6 +646,8 @@ PRG031_E4BB:
 	LDA #$0b	 ; Both squares + noise only
 
 PRG031_E4BD:
+	LDA Sound_IsPaused
+	BNE Music_Sq2Track
 	STA PAPU_EN
 	LDA #$0f
 	STA PAPU_EN	 ; Enable all channels
@@ -3566,6 +3573,8 @@ VBlank_Wait_Loop:
 	STY MMC3_SRAM_EN ; Disable MMC3 SRAM (?)
 	STY MMC3_IRQDISABLE ; Disable MMC3 IRQ generation
 
+	LDA Sound_IsPaused
+	BNE _prg031_rts2
 	LDA #%00001111	 ; 
 	STA PAPU_EN	 ; Enable rectangle wave 1 & 2, triangle, and noise channels
 	LDA #$00	 ; 
@@ -3577,7 +3586,7 @@ VBlank_Wait_Loop:
 	; tied into the Reset code). The frame IRQ frequency is slightly smaller than 
 	; the PPU's vertical retrace frequency, so you can see why games would desire 
 	; this syncronization.
-
+_prg031_rts2:
 	LDA #$40	 ; 
 	STA FRAMECTR_CTL ; disable APU frame IRQ
 

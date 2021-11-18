@@ -12,15 +12,15 @@ Sound_Engine_Begin:
 
 	LDA Sound_QPause
 	BNE SndPause	 ; If a "pause/resume" was requested, jump to SndPause
-	LDA SndCur_Pause
-	BNE PRG028_A04F	 	; If playing the pause sound, jump to PRG028_A04F
-	LDA Sound_IsPaused
-	BNE PRG028_A08F	 	; If sound is currently paused, jump to PRG028_A08F (allows processing of pause sound)
+	;LDA SndCur_Pause
+	;BNE PRG028_A04F	 	; If playing the pause sound, jump to PRG028_A04F
+	;LDA Sound_IsPaused
+	;BNE PRG028_A08F	 	; If sound is currently paused, jump to PRG028_A08F (allows processing of pause sound)
 
 	JMP Sound_Process	; Otherwise, jump to normal sound processing routine!
 
 SndPause:	; $A017
-	STA SndCur_Pause	 ; Store it into the "hold" variable
+	;STA SndCur_Pause	 ; Store it into the "hold" variable
 	STA Sound_IsPaused	 ; Mark sound as paused
 	CMP #$02	 ; Is the request actually to RESUME sound?
 	BNE PRG028_A033	 ; If not, go to PRG028_A033
@@ -36,21 +36,23 @@ SndPause:	; $A017
 
 PRG028_A033:
 	; Want to PAUSE sound
-	LDA #$00
+	LDA #$04	; Only enable triangle channel
 	STA PAPU_EN	; Disable all sound channels
 
 	; Clear other sound counters
+	LDA #$00
 	STA SndCur_Player	; Kill player sound
 	STA SndCur_Level1	; Kill level 1 sound
 	STA SndCur_Level2	; Kill level 2 sound
-	LDA #$0f
-	STA PAPU_EN	; Enable all sound channels
-	LDA #$2a
-	STA SFX_Counter1 ; SFX_Counter1 = $2A
+	;LDA #$0f
+	;STA PAPU_EN	; Enable all sound channels
+	;LDA #$2a
+	;STA SFX_Counter1 ; SFX_Counter1 = $2A
 
 PRG028_A04B:
-	LDA #$68	 ; Play note 104 (high bing)
-	BNE PRG028_A060	 ; (Technically always) jump to PRG028_A060
+	;LDA #$68	 ; Play note 104 (high bing)
+	LDA #$0f
+	BNE Sound_Process	 ; (Technically always) jump to PRG028_A060
 
 PRG028_A04F:
 	LDA SFX_Counter1
