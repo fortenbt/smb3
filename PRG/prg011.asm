@@ -1658,6 +1658,12 @@ Map_NoLoseTurnTiles:
 Map_NoLoseTurnTiles_End
 
 MO_DoLevelClear:
+	;;; [ORANGE] No completions, no nothing, straight to normal map operation
+	; Map_Operation = D
+	LDA #$0D
+	STA Map_Operation
+	JMP MapObjects_UpdateDrawEnter	 ; Jump to MapObjects_UpdateDrawEnter
+
 
 	; Check if this one of the tiles that does not cause a Player to lose their turn
 	JSR Map_GetTile	 	; Get current tile Player is standing on
