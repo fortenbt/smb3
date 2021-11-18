@@ -582,8 +582,7 @@ PlayerSnd_Stop:
 	STX SndCur_Player	; Clear Player sound hold
 	LDX #$1e	 	;
 	STX PAPU_EN	 	; Disable square wave 1
-	LDX #$0f
-	;LDX #$1f	 	; [ORANGE] Don't let player sound kill DMC
+	LDX #$1f	 	; [ORANGE] Don't let player sound kill DMC
 	STX PAPU_EN	 	; Enable every channel
 
 PRG028_A363:
@@ -1607,7 +1606,7 @@ Music_Set2B_HedrPtrs:
 Music_Set1_Set2A_Ptrs:
 	; Index 0 - 7 are Set 1 songs, accessed by bit weight
 	.word MS1_01SegHedr, MS1_02SegHedr, MS1_04SegHedr, MS1_08SegHedr	; Index $00-$03
-	.word MS1_10SegHedr, MS1_20SegHedr, MS1_40SegHedr, MS1_80SegHedr	; Index $04-$07
+	.word MS1_10SegHedr, Metroid_Hedr1, MS1_40SegHedr, MS1_80SegHedr	; Index $04-$07
 
 	; 8+ are Set 2A
 	.word MS2ASegHedr09, MS2ASegHedr0C, MS2ASegHedr07, MS2ASegHedr0A	; Index $08-$0B
@@ -1683,5 +1682,8 @@ MGHedr1:
 
 MM3_Hedr1:
 	MusSeg 57, MM3_R1, MM3_1, $13, MM3_Tri1, $0000, $0000
+
+Metroid_Hedr1:
+	MusSeg 57, Metroid_R1, Metroid_1, $11, Metroid_Tri1, $0000, $0000
 
 _prg038_end:

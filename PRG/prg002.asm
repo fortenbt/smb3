@@ -6245,6 +6245,11 @@ PRG002_BF4B:
 	STA Level_TimerEn
 	STA EndCard_Flag	 ; Flag end level card as grabbed
 
+	LDA #$00	 	;
+	STA Sound_QPlayer
+	STA SndCur_Player	; Clear Player sound hold
+	STA Player_Power
+
 	; Card actually has a slight leftward velocity?
 	;;LDA #-$01
 	;;;STA <Objects_XVel,X
