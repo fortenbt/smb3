@@ -1634,13 +1634,13 @@ ObjHit_StarOrSuit:
 	LDA Objects_Frame,X
 	BNE PRG001_A818	 ; If frame <> 0, jump to PRG001_A818
 
-	LDA Level_PSwitchCnt
-	BNE PRG001_A810	 ; If P-Switch is active, jump to PRG001_A810
+	;LDA Level_PSwitchCnt
+	;BNE PRG001_A810	 ; If P-Switch is active, jump to PRG001_A810
 
 	; Otherwise, play invincibility theme!
-	LDA Sound_QMusic2
-	ORA #MUS2A_INVINCIBILITY
-	STA Sound_QMusic2
+	;LDA Sound_QMusic2
+	;ORA #MUS2A_INVINCIBILITY
+	;STA Sound_QMusic2
 
 PRG001_A810:
 

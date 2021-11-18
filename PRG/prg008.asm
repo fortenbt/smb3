@@ -312,8 +312,8 @@ PRG008_A14C:
 	LDA #$e0
 	STA Player_StarInv	 ; Player_StarInv = $E0 (224 ticks of invincible fun)
 
-	LDA #MUS2A_INVINCIBILITY
-	STA Sound_QMusic2	 ; Queue invincibility song!
+	;LDA #MUS2A_INVINCIBILITY
+	;STA Sound_QMusic2	 ; Queue invincibility song!
 
 PRG008_A17B:
 
@@ -394,11 +394,11 @@ PRG008_A1E6:
 	CMP #$01
 	BNE PRG008_A203	 ; If Level_PSwitchCnt <> 1, jump to PRG008_A203
 
-	LDY #$0A	 ; Y = $0A (Invincibility song)
+	;LDY #$0A	 ; Y = $0A (Invincibility song)
 
-	LDA Player_StarInv
-	CMP #$20
-	BGE PRG008_A1FE	 ; If Player_StarInv >= $20, jump to PRG008_A1FE
+	;LDA Player_StarInv
+	;CMP #$20
+	;BGE PRG008_A1FE	 ; If Player_StarInv >= $20, jump to PRG008_A1FE
 
 	LDY Level_MusicQueueRestore	 ; Y = regular BGM
 
@@ -4795,8 +4795,8 @@ PRG008_B623:
 	STA Level_PSwitchCnt	 ; Level_PSwitchCnt = $80 (duration of switch)
 
 	; Play P-Switch song
-	LDA #MUS2B_PSWITCH
-	STA Sound_QMusic2
+	;LDA #MUS2B_PSWITCH
+	;STA Sound_QMusic2
 
 	JMP PRG008_B652	 ; Jump to PRG008_B652
 

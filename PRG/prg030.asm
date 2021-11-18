@@ -4004,10 +4004,10 @@ PRG030_98C8:
 	LDA GamePlay_BGM,X	; A = target music
 	LDX SndCur_Music2	; X = currently playing music
 
-	CPX #MUS2B_PSWITCH
-	BEQ PRG030_98DE		; If playing the P-Tab music, don't queue this song right now
-	CPX #MUS2A_INVINCIBILITY		
-	BEQ PRG030_98DE		; If playing the Invincibility music, don't queue this song right now
+	;CPX #MUS2B_PSWITCH
+	;BEQ PRG030_98DE		; If playing the P-Tab music, don't queue this song right now
+	;CPX #MUS2A_INVINCIBILITY
+	;BEQ PRG030_98DE		; If playing the Invincibility music, don't queue this song right now
 
 	;;; [ORANGE] Allow an in-level restart to restore the sound engine
 	; Queue this music to play
