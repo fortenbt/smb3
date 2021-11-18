@@ -1384,13 +1384,13 @@ M2BSegHedr24:	MusSeg 60, Music_RestH_LUT40, M2BSegData1B, $19, M2BSegData1B_Tri,
 	; be played ($10, $20, $30, ... $C0), so that song $10 uses a start
 	; index of $00, an end index of $06, and a loop index of $01.
 Music_Set2B_Starts:
-	.byte $2D, $31, $46, $4E, $56, $13, $15, $1B, $1E, $1B, $27, $2C
+	.byte $2D, $31, $46, $4E, $56, $66, $15, $1B, $1E, $1B, $27, $2C
 
 Music_Set2B_Ends:
-	.byte $30, $45, $4D, $55, $65, $14, $1A, $1D, $26, $1D, $2B, $2C
+	.byte $30, $45, $4D, $55, $65, $77, $1A, $1D, $26, $1D, $2B, $2C
 
 Music_Set2B_Loops:
-	.byte $2D, $31, $46, $4E, $56, $13, $18, $1B, $1F, $1B, $28, $2C
+	.byte $2D, $31, $46, $4E, $56, $70, $18, $1B, $1F, $1B, $28, $2C
 
 
 	; These are Set 2B music segments.  Note that more exist on page 29.
@@ -1581,6 +1581,26 @@ Music_Set2B_HedrPtrs:
 	.word MGHedrD
 	.word MGHedrE		; $65
 
+	; Megaman 3
+	.word MM3_Hedr1		; $66
+	.word MM3_Hedr2		; $67
+	.word MM3_Hedr3		; $68
+	.word MM3_Hedr4		; $69
+	.word MM3_Hedr5		; $6A
+	.word MM3_Hedr6		; $6B
+	.word MM3_Hedr7		; $6C
+	.word MM3_Hedr8		; $6D
+	.word MM3_Hedr9		; $6E
+	.word MM3_Hedr10	; $6F
+	.word MM3_Hedr11	; $70
+	.word MM3_Hedr12	; $71
+	.word MM3_Hedr13	; $72
+	.word MM3_Hedr14	; $73
+	.word MM3_Hedr15	; $74
+	.word MM3_Hedr16	; $75
+	.word MM3_Hedr17	; $76
+	.word MM3_Hedr18	; $77
+
 .set1_set2a_ptrs: Align100h .set1_set2a_ptrs
 Music_Set1_Set2A_Ptrs:
 	; Index 0 - 7 are Set 1 songs, accessed by bit weight
@@ -1658,5 +1678,8 @@ G2Hedr1:
 
 MGHedr1:
 	MusSeg 56, MG_R1, MG_1, $12, MG_Tri1, MG_Nse1, MG_PCM1
+
+MM3_Hedr1:
+	MusSeg 57, MM3_R1, MM3_1, $13, MM3_Tri1, $0000, $0000
 
 _prg038_end:

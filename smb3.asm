@@ -4926,6 +4926,11 @@ TILE18_BOUNCEDBLOCK	= $C2	; Temporary tile for when block has been bounced
 	.org $C000
 	.include "PRG/prg056.asm"
 
+	; [ORANGE] bank 57 is used for our custom music
+	.bank 57
+	.org $C000
+	.include "PRG/prg057.asm"
+
 	.bank 60
 	.org $C000
 	.include "PRG/prg060.asm"
