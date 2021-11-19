@@ -1514,7 +1514,8 @@ PAUSE_RESUMEMUSIC	= $02	; Resume sound (resumes music)
 	Map_Object_Data:	.ds 15	; $052D-$053B For marching objects, 0/1 for their direction, could be anything though
 	Map_March_Count:	.ds 15	; $053C-$054A Simply counts and overflows, but used to determine position of marching map objects (PER ID, not object index ... Actually is seems they go back and forth on that??)
 
-				.ds 60	; $054B-$0586 unused
+	UpdateScoreTiles:	.ds 1
+				.ds 59	; $054B-$0586 unused
 
 	Map_Objects_Vis:	.ds 15	; $0587-$058E Set for map objects as visible, clear if it's not
 	Map_MarchInit:		.ds 1	; Set when marching data has been initialized (done once per marching cycle on the map)
@@ -2786,7 +2787,8 @@ CFIRE_LASER		= $15	; Laser fire
 
 	Map_GameOver_CursorY:	.ds 1	; Game Over popup cursor Y ($60/$68)
 
-				.ds 9	; $7DCC-$7DD4 unused
+	;			.ds 9	; $7DCC-$7DD4 unused
+	Num_Levels_Completed: .ds 1
 
 	Map_PrevMoveDir:	.ds 1	; Last SUCCESSFUL (allowed) movement direction on map R01 L02 D04 U08
 

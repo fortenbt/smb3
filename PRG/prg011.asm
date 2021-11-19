@@ -1656,14 +1656,156 @@ Map_PanelCompletePats:
 Map_NoLoseTurnTiles:
 	.byte TILE_TOADHOUSE, TILE_ALTTOADHOUSE, TILE_SPADEBONUS, TILE_PIPE, TILE_SPIRAL
 Map_NoLoseTurnTiles_End
-
+__Map_PanelCompletePats:
+	.byte $CF, $CF, $8F, $CF
+	.byte $CF, $CF, $a4, $CF
+	.byte $CF, $CF, $a5, $CF
+	.byte $CF, $CF, $a6, $CF
+	.byte $CF, $CF, $a7, $CF
+	.byte $CF, $CF, $c8, $CF
+	.byte $CF, $CF, $c9, $CF
+	.byte $CF, $CF, $ca, $CF
+	.byte $CF, $CF, $cb, $CF
 MO_DoLevelClear:
 	;;; [ORANGE] No completions, no nothing, straight to normal map operation
 	; Map_Operation = D
+	;INC Num_Levels_Completed
+	;LDA Map_Entered_X	; our map Xs are 38, 60, 80, and A0
+	;LSR A
+    ;LSR A
+    ;LSR A
+    ;LSR A
+    ;LSR A
+    ;TAX
+    ;DEX
+    ;DEX					; X is now an offset 0-3
+	;INC Map_Completions,X
+	; Map_ClearLevelFXCnt = 5 (begin panel flipover effect)
+_level_clear_fx_done:
+	; Play "flip over" sound
+	LDA #SND_MAPINVENTORYFLIP
+	STA Sound_QMap
+	INC Num_Levels_Completed
+
+	; Calculate a row/column offset
+	LDA <World_Map_X,X
+	LSR A
+	LSR A
+	LSR A
+	LSR A
+	ORA <World_Map_Y,X
+	CLC
+	ADC #$10	; tile memory offset
+	TAY		 ; -> 'Y'
+
+	LDA Map_Entered_X	; our map Xs are 40, 60, 80, and A0
+	LSR A
+    LSR A
+    LSR A
+    LSR A
+    LSR A
+    TAX
+    DEX
+    DEX					; X is now an offset 0-3
+	INC Map_Completions,X
+	LDA Map_Completions,X
+	CLC
+	ADC #$03			; tile ID
+	STA [Map_Tile_AddrL],Y	; Set it in memory
+	STA <World_Map_Tile	; ... as well as the tile detected
+
+	LDY Graphics_BufCnt	 ; X = Graphics_BufCnt
+	LDA Map_Completions,X
+	SEC
+	SBC #$01
+	ASL A
+	ASL A
+	TAX
+	CPX #$21
+	BCC _set_panels
+	LDA #$20
+	TAX
+_set_panels:
+	; Add in the four replacement patterns to cover over the completed level
+	LDA __Map_PanelCompletePats,X
+	STA Graphics_Buffer+$03,Y
+	LDA __Map_PanelCompletePats+1,X
+	STA Graphics_Buffer+$08,Y
+	LDA __Map_PanelCompletePats+2,X
+	STA Graphics_Buffer+$04,Y
+	LDA __Map_PanelCompletePats+3,X
+	STA Graphics_Buffer+$09,Y
+
+	; Terminator
+	LDA #$00
+	STA Graphics_Buffer+$0A,Y
+
+	LDX Map_Entered_X
+	LDA Map_Entered_Y
+	CLC
+	ADC #$10
+	TAY
+	JSR Map_Calc_NT2Addr_By_XY	 ; Nametable 2 Offset -> Temp_Var15
+
+	LDX Graphics_BufCnt	 ; X = Graphics_BufCnt
+
+	; Set high byte of video address
+	LDA <Temp_Var15
+	STA Graphics_Buffer+$00,X
+	STA Graphics_Buffer+$05,X
+
+	; Set low byte of video address for first row of level panel change
+	LDA <Temp_Var16
+	STA Graphics_Buffer+$01,X
+
+	; Set low byte of video address for second row of level panel change
+	ADD #32		; +32 for next row
+	STA Graphics_Buffer+$06,X
+
+	; Run length of 2 for both
+	LDA #$02
+	STA Graphics_Buffer+$02,X
+	STA Graphics_Buffer+$07,X
+
+	; Graphics_BufCnt += 10
+	LDA Graphics_BufCnt
+	ADD #10
+	STA Graphics_BufCnt
+
+	;;; Check for game completion
+	LDX #$03
+_check_win_loop:
+	LDA Map_Completions,X
+	BEQ _post_win
+	DEX
+	BPL _check_win_loop
+	; if 0-3 were all beaten, change the map to say WIN
+	LDX Graphics_BufCnt
+	LDA #$2A
+	STA Graphics_Buffer+$00,X
+	LDA #$CE
+	STA Graphics_Buffer+$01,X
+	LDA #$03
+	STA Graphics_Buffer+$02,X
+	LDA #$d8
+	STA Graphics_Buffer+$03,X
+	LDA #$fc
+	STA Graphics_Buffer+$04,X
+	LDA #$db
+	STA Graphics_Buffer+$05,X
+	; Terminator
+	LDA #$00
+	STA Graphics_Buffer+$06,X
+	LDA Graphics_BufCnt
+	CLC
+	ADC #$06
+	STA Graphics_BufCnt
+
+
+_post_win:
 	LDA #$0D
 	STA Map_Operation
 	JMP MapObjects_UpdateDrawEnter	 ; Jump to MapObjects_UpdateDrawEnter
-
 
 	; Check if this one of the tiles that does not cause a Player to lose their turn
 	JSR Map_GetTile	 	; Get current tile Player is standing on
@@ -1729,7 +1871,7 @@ PRG011_AA29:
 	BNE PRG011_AA39	 ; If tile is NOT quadrant 0 ($00-$3F), jump to PRG011_AA39
 
 	; Quadrant 0 tiles only...
-
+_quad_0_tiles:
 	; Map_ClearLevelFXCnt = 7 (begin panel flipover effect)
 	LDA #$07
 	STA <Map_ClearLevelFXCnt
@@ -1922,6 +2064,8 @@ PRG011_AB1B:
 
 	; Copy Player's Map Y/X -> Temp_Var1/2
 	LDA <World_Map_Y,X
+	CLC
+	ADC #$10
 	STA <Temp_Var1
 	LDA <World_Map_X,X
 	STA <Temp_Var2

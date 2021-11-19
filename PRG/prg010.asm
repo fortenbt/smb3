@@ -2581,8 +2581,11 @@ Map_PostJC_PUpPML:	.byte $16, $1A
 	; NOTE: This is a patch table, you'll want it to agree with PRG027's "InitPals_Per_MapPUp"
 Map_PostJC_PUpPP2:	.byte $0F, $0F, $16, $0F, $0F, $0F, $0F
 
-
 MO_NormalMoveEnter:
+	LDA UpdateScoreTiles
+	BNE _no_update
+	JSR DoScoreTiles
+_no_update:
 	LDA #$00
 	STA Map_NoLoseTurn	 ; Map_NoLoseTurn = 0
 	STA Map_WasInPipeway	 ; Map_WasInPipeway = 0
@@ -4051,4 +4054,65 @@ DMC08:
 DMC08_End
 
 ; Rest of ROM bank was empty
+
+ScoreTileData:
+	vaddr $29C9
+	.byte 13, $CF, $CF, $CF, $CF, $CF, $CF, $CF, $CF, $CF, $CF, $CF, $CF, $CF
+_END_ScoreTileData
+
+DoScoreTiles:
+	LDX Graphics_BufCnt
+	LDY #$00
+_gfx_loop:
+	LDA ScoreTileData,Y
+	STA Graphics_Buffer,X
+	INX
+	INY
+	CPY #(_END_ScoreTileData-ScoreTileData)
+	BNE _gfx_loop
+	LDX Graphics_BufCnt
+	; replace the tile data with our desired panels
+	LDA Map_Completions
+	BEQ _tile2
+	SUB #$01
+	ASL A
+	ASL A
+	TAY		; offset into __Map_PanelCompletePats
+	LDA __Map_PanelCompletePats+2,Y	; A = desired panel
+	STA Graphics_Buffer+3,X
+_tile2:
+	LDA Map_Completions+1
+	BEQ _tile3
+	SUB #$01
+	ASL A
+	ASL A
+	TAY		; offset into __Map_PanelCompletePats
+	LDA __Map_PanelCompletePats+2,Y	; A = desired panel
+	STA Graphics_Buffer+7,X
+_tile3:
+	LDA Map_Completions+2
+	BEQ _tile4
+	SUB #$01
+	ASL A
+	ASL A
+	TAY		; offset into __Map_PanelCompletePats
+	LDA __Map_PanelCompletePats+2,Y	; A = desired panel
+	STA Graphics_Buffer+$b,X
+_tile4:
+	LDA Map_Completions+3
+	BEQ _end_gfx_buf
+	SUB #$01
+	ASL A
+	ASL A
+	TAY		; offset into __Map_PanelCompletePats
+	LDA __Map_PanelCompletePats+2,Y	; A = desired panel
+	STA Graphics_Buffer+$f,X
+	LDA #$00
+	STA Graphics_Buffer+$10,X
+_end_gfx_buf:
+	LDA Graphics_BufCnt
+	ADD #16
+	STA Graphics_BufCnt
+	INC UpdateScoreTiles	; flag we've done this
+	RTS
 
