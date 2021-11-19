@@ -3573,8 +3573,6 @@ VBlank_Wait_Loop:
 	STY MMC3_SRAM_EN ; Disable MMC3 SRAM (?)
 	STY MMC3_IRQDISABLE ; Disable MMC3 IRQ generation
 
-	LDA Sound_IsPaused
-	BNE _prg031_rts2
 	LDA #%00001111	 ; 
 	STA PAPU_EN	 ; Enable rectangle wave 1 & 2, triangle, and noise channels
 	LDA #$00	 ; 
@@ -3586,7 +3584,6 @@ VBlank_Wait_Loop:
 	; tied into the Reset code). The frame IRQ frequency is slightly smaller than 
 	; the PPU's vertical retrace frequency, so you can see why games would desire 
 	; this syncronization.
-_prg031_rts2:
 	LDA #$40	 ; 
 	STA FRAMECTR_CTL ; disable APU frame IRQ
 
