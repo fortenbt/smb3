@@ -735,7 +735,7 @@ PRG008_A388:
 Event_Countdown_Init:
 	; 0 = Not used, 1 = Up, 2 = Down, 3 = Right, 4 = Left
 	; Ticks to initialize Event_Countdown
-	.byte $00, $0C, $04, $20, $20
+	.byte $00, $0C, $03, $20, $20
 
 PRG008_A38E:
 	; Common point for exiting and entering from pipe
