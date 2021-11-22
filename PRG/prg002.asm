@@ -6284,7 +6284,8 @@ PRG002_BF4B:
 
 	JSR Player_GetInventoryOffset
 
-	LDA Inventory_Cards+2,Y
+	JMP PRG002_BF9F
+	;;;LDA Inventory_Cards+2,Y
 	BEQ PRG002_BF9F	 ; If Player hasn't gotten their third card, jump to PRG002_BF9F (RTS)
 
 	CMP Inventory_Cards,Y
