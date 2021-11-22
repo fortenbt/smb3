@@ -2298,7 +2298,7 @@ Title_PrepForMenu:
 	RTS		 ; Return
 
 Title_Menu_1P2PCursorY:
-	.byte 151, 167	 ; Y position for the 1P/2P select cursor
+	.byte 167, 167	 ; Y position for the 1P/2P select cursor
 
 Title_Do1P2PMenu:
 	LDA <Controller2
@@ -2333,12 +2333,13 @@ PRG024_AC42:
 PRG024_AC52:
 	JSR Title_Menu_UpdateKoopas	 ; Update and draw koopas
 
-	LDA <Pad_Input		 
-	AND #PAD_SELECT
-	BEQ PRG024_AC6B	 	; If Player is not pressing SELECT, jump to PRG024_AC6B
+	JMP PRG024_AC6B
+	;LDA <Pad_Input
+	;AND #PAD_SELECT
+	;BEQ PRG024_AC6B	 	; If Player is not pressing SELECT, jump to PRG024_AC6B
 
-	LDA #SND_MAPPATHMOVE	 
-	STA Sound_QMap	 	; "Path move" sound (in this case, the "bleep" for the menu)
+	;LDA #SND_MAPPATHMOVE
+	;STA Sound_QMap	 	; "Path move" sound (in this case, the "bleep" for the menu)
 
 	; Basically makes sure that the value of Total_Players is 0 or 1 
 	INC Total_Players
