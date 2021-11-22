@@ -1254,13 +1254,13 @@ MS1_10SegHedr:	MusSeg 60, Music_RestH_LUT30, M12ASegData24, $4C, M12ASegData24_T
 	; index of $08, an end index of $09, and a loop index of $08.
 
 Music_Set2A_Starts:
-	.byte $08, $0A, $0B, $0D, $0E, $10, $11, $13, $14, $15, $16, $18, $1C, $1D, $1E
+	.byte $2C, $0A, $0B, $0D, $0E, $10, $11, $13, $14, $15, $16, $18, $1C, $1D, $1E
 
 Music_Set2A_Ends:
-	.byte $09, $0A, $0C, $0D, $0F, $10, $12, $13, $14, $15, $17, $1B, $1C, $1D, $2B
+	.byte $3B, $0A, $0C, $0D, $0F, $10, $12, $13, $14, $15, $17, $1B, $1C, $1D, $2B
 
 Music_Set2A_Loops:
-	.byte $08, $0A, $0B, $0D, $0F, $10, $11, $13, $14, $15, $17, $18, $1C, $1D, $23
+	.byte $2C, $0A, $0B, $0D, $0F, $10, $11, $13, $14, $15, $17, $18, $1C, $1D, $23
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1555,14 +1555,14 @@ Music_Set2B_HedrPtrs:
 	.word CVampireHedr7
 	.word CVampireHedr8	; $4D
 
-	.word G2Hedr1		; $4E
-	.word G2Hedr2
-	.word G2Hedr1
-	.word G2Hedr2
-	.word G2Hedr3
-	.word G2Hedr4
-	.word G2Hedr3
-	.word G2Hedr5		; $55
+	.word $0000		; $4E
+	.word $0000
+	.word $0000
+	.word $0000
+	.word $0000
+	.word $0000
+	.word $0000
+	.word $0000		; $55
 
 	; Metal Gear
 	.word MGHedr1		; $56
@@ -1619,6 +1619,24 @@ Music_Set1_Set2A_Ptrs:
 	.word MS2ASegHedr1E, MS2ASegHedr1F, MS2ASegHedr1F, MS2ASegHedr20	; Index $24-$27
 	.word MS2ASegHedr21, MS2ASegHedr22, MS2ASegHedr21, MS2ASegHedr23	; Index $28-$2B
 
+	.word Kraid_Hedr1		; $2C
+	.word Kraid_Hedr1
+	.word Kraid_Hedr1
+	.word Kraid_Hedr1		; $2F
+	.word Kraid_Hedr2		; $30
+	.word Kraid_Hedr2
+	.word Kraid_Hedr3		; $32
+	.word Kraid_Hedr3
+	.word Kraid_Hedr3
+	.word Kraid_Hedr3		; $35
+	.word Kraid_Hedr4		; $36
+	.word Kraid_Hedr5		; $37
+	.word Kraid_Hedr6		; $38
+	.word Kraid_Hedr6
+	.word Kraid_Hedr6
+	.word Kraid_Hedr6		; $3B
+
+
 .SET1_SET2A_PTRS_END: Align100h .SET1_SET2A_PTRS_END
 
 Music_GetRestTicks_Sq1:
@@ -1674,8 +1692,8 @@ BatmanHedr1:
 CVampireHedr1:
 	MusSeg 56, CVampire_R1, CVampire1, $18, CVampire1_Tri, CVampire1_Nse, $0000
 
-G2Hedr1:
-	MusSeg 56, G2_R1, Gradius2_1, $37, Gradius2_Tri1, Gradius2_Nse1, Gradius2_PCM1
+Kraid_Hedr1:
+	MusSeg 56, Kraid_R12, Kraid_1, $11, Kraid_Tri1, $0000, $0000
 
 MGHedr1:
 	MusSeg 56, MG_R1, MG_1, $12, MG_Tri1, MG_Nse1, MG_PCM1
