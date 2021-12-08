@@ -1,5 +1,5 @@
-	.inesprg 32  ; 16x 16KB PRG code (32 banks of 8KB)
-	.ineschr 32  ; 16x  8KB CHR data (128 banks of 1KB)
+	.inesprg 32  ; 32x 16KB PRG code (64 banks of 8KB)
+	.ineschr 32  ; 32x  8KB CHR data (256 banks of 1KB)
 	.inesmap 4   ; mapper 4 = MMC3, 8KB PRG, 1/2KB CHR bank swapping
 	.inesmir 0   ; background mirroring
 
@@ -2648,7 +2648,7 @@ CFIRE_LASER		= $15	; Laser fire
 
 	SoundEngineBackupArray:	.ds 30
 	SoundEngineBackedUp:	.ds 1
-				.ds 78	; $7A73-$7ADF unused
+							.ds 78	; $7A73-$7ADF unused
 
 	Music_Start:		.ds 1	; Music start index (beginning of this song)
 	Music_End:		.ds 1	; Music end index (inclusive last index to play before loop)
@@ -5097,3 +5097,4 @@ TILE18_BOUNCEDBLOCK	= $C2	; Temporary tile for when block has been bounced
 	.incchr "CHR/chr138.pcx"
 	.incchr "CHR/chr139.pcx"
 
+	.bank 95	; fill out the ROM
