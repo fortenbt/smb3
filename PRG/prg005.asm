@@ -5932,6 +5932,11 @@ LevelEvent_CheepCheep:
 	CPY #$03
 	BGE PRG005_BD53	 ; If there are already at least 3 Jumping Cheep Cheeps, jump to PRG005_BD53 (RT)S
 
+	;;; only allow 4 objects total
+	JSR Level_CountAllObjs
+	CMP #$04
+	BGE PRG005_BD53
+
 	JSR Level_SpawnObj	 ; Spawn new object (Note: If no slots free, does not return)
 
 	; Set the Cheep Cheep's object ID
@@ -6498,3 +6503,17 @@ _piranha_norm_unblocked:
 	LDX <SlotIndexBackup
 	CLC
 	RTS
+
+Level_CountAllObjs:
+	LDY #$00
+	LDX #$04
+_count_loop:
+	LDA Objects_State,X
+	BEQ _count_next	 ; If this object slot is "dead", jump to PRG005_BE20
+	INY
+_count_next:
+	DEX
+	BPL _count_loop
+	TYA						; return in A
+	LDX <SlotIndexBackup	; X = SlotIndexBackup
+	RTS		 ; Return
