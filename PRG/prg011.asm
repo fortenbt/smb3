@@ -1687,6 +1687,13 @@ _level_clear_fx_done:
 	STA Sound_QMap
 	INC Num_Levels_Completed
 
+	LDA <World_Map_Y,X
+	CMP #$80
+	BNE _post_secret
+	INC SecretLevelCompleted
+	INC DoSecretLevelComplete
+_post_secret:
+
 	; Calculate a row/column offset
 	LDA <World_Map_X,X
 	LSR A
@@ -1695,7 +1702,7 @@ _level_clear_fx_done:
 	LSR A
 	ORA <World_Map_Y,X
 	CLC
-	ADC #$10	; tile memory offset
+	ADC #$10	; tile memory offset (we add $10 to go below the tile)
 	TAY		 ; -> 'Y'
 
 	LDA Map_Entered_X	; our map Xs are 40, 60, 80, and A0
@@ -1707,6 +1714,13 @@ _level_clear_fx_done:
     TAX
     DEX
     DEX					; X is now an offset 0-3
+
+	LDA DoSecretLevelComplete
+	BEQ _do_completions
+	LDA #$04			; secret level, x = 4
+	TAX
+	DEC DoSecretLevelComplete
+_do_completions:
 	INC Map_Completions,X
 	LDA Map_Completions,X
 	CLC
@@ -1714,14 +1728,14 @@ _level_clear_fx_done:
 	STA [Map_Tile_AddrL],Y	; Set it in memory
 	STA <World_Map_Tile	; ... as well as the tile detected
 
-	LDY Graphics_BufCnt	 ; X = Graphics_BufCnt
+	LDY Graphics_BufCnt	 ; Y = Graphics_BufCnt
 	LDA Map_Completions,X
 	SEC
 	SBC #$01
 	ASL A
 	ASL A
 	TAX
-	CPX #$21
+	CPX #$21	 ; max out at 9 completions
 	BCC _set_panels
 	LDA #$20
 	TAX
@@ -1779,28 +1793,14 @@ _check_win_loop:
 	BEQ _post_win
 	DEX
 	BPL _check_win_loop
-	; if 0-3 were all beaten, change the map to say WIN
-	LDX Graphics_BufCnt
-	LDA #$2A
-	STA Graphics_Buffer+$00,X
-	LDA #$CE
-	STA Graphics_Buffer+$01,X
-	LDA #$03
-	STA Graphics_Buffer+$02,X
-	LDA #$d8
-	STA Graphics_Buffer+$03,X
-	LDA #$fc
-	STA Graphics_Buffer+$04,X
-	LDA #$db
-	STA Graphics_Buffer+$05,X
-	; Terminator
-	LDA #$00
-	STA Graphics_Buffer+$06,X
-	LDA Graphics_BufCnt
-	CLC
-	ADC #$06
-	STA Graphics_BufCnt
-
+	; if 0-3 were all beaten, check secret level
+	LDA Map_Completions+4
+	BEQ _draw_kill_fish
+_draw_win:
+	JSR DrawWin
+	BNE _post_win	; branch always
+_draw_kill_fish:
+	JSR DrawKill40Fish
 
 _post_win:
 	LDA #$0D
@@ -5127,4 +5127,50 @@ Map_NoAnimUpdate:
 	RTS		  ; Return!
 
 ; Rest of ROM bank was empty
+
+DrawWin:
+	LDX Graphics_BufCnt
+	LDA #$2A
+	STA Graphics_Buffer+$00,X
+	LDA #$CE
+	STA Graphics_Buffer+$01,X
+	LDA #$03
+	STA Graphics_Buffer+$02,X
+	LDA #$d8
+	STA Graphics_Buffer+$03,X
+	LDA #$fc
+	STA Graphics_Buffer+$04,X
+	LDA #$db
+	STA Graphics_Buffer+$05,X
+	; Terminator
+	LDA #$00
+	STA Graphics_Buffer+$06,X
+	LDA Graphics_BufCnt
+	CLC
+	ADC #$06
+	STA Graphics_BufCnt
+	RTS
+
+killfishmsg:
+	vaddr $2ACA
+	.byte 12, $b0, $fc, $ec, $ec, $fe, $f4, $f0, $fe, $b1, $fc, $b2, $b3
+_endfishmsg
+DrawKill40Fish:
+	; 2aca, 12, kill_40_fish
+	LDX Graphics_BufCnt
+	LDY #$00
+_fishmsgloop:
+	LDA killfishmsg,Y
+	STA Graphics_Buffer,X
+	INX
+	INY
+	CPY #(_endfishmsg-killfishmsg)
+	BNE _fishmsgloop
+	LDA #$00
+	STA Graphics_Buffer,X	; terminator
+	LDA Graphics_BufCnt
+	CLC
+	ADC #15
+	STA Graphics_BufCnt
+	RTS
 

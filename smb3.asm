@@ -2681,7 +2681,11 @@ CFIRE_LASER		= $15	; Laser fire
 ; The rest is a repeating series of 3 bytes -- ID, Column, Row (C/R of tile grid, multiply by 16 for pixel location), $FF for terminator
 	Level_Objects:		.ds 48*3	; $7B40-$7BCF
 
-				.ds 80	; $7BD0-$7C1F unused
+	SecretLevelCompleted:	.ds 1
+	DoSecretLevelComplete:	.ds 1
+	DoRevealSecretLevel:	.ds 1
+				;.ds 80	; $7BD0-$7C1F unused
+				.ds 77	; $7BD0-$7C1F unused
 
 ; For certain objects that require a buffer of X or Y values; only a couple are available.
 ; Each contains 32 bytes, intended for enemies that have "tails"; Buffer_Occupied determines
