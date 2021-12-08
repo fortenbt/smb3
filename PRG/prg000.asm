@@ -1599,8 +1599,8 @@ PRG000_C834:
 	; if it matches one of the ones in PrePSwitchTile is replaced
 	; with the attribute and tile from the other arrays...
 PrePSwitchTile:		.byte TILEA_COIN,	TILEA_BRICK, 	TILEA_MUNCHER,	TILEA_PSWITCHCOIN	; P-Switch inactive
-PostPSwitchTile:	.byte TILEA_BRICK,	TILEA_COIN, 	TILEA_COIN, 	TILEA_COIN			; P-Switch active
-PostPSwitchAttr:	.byte $03, 			$00, 			$00, 			$00
+PostPSwitchTile:	.byte TILEA_BRICK,	TILEA_COIN, 	TILEA_MUNCHER, 	TILEA_COIN			; P-Switch active
+PostPSwitchAttr:	.byte $03, 			$00, 			$03, 			$00
 
 PSwitch_SubstTileAndAttr:
 	LDY Level_PSwitchCnt	; Y = Level_PSwitchCnt
