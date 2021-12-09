@@ -1543,7 +1543,7 @@ PRG010_C7BA:
 	; Indexed by value from FortressFX_Wx
 	; 		        0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F   10
 FortressFX_VAddrH:	.byte $29, $2A, $2A, $29, $29, $29, $29, $29, $29, $28, $29, $29, $29, $29, $29, $29, $29
-FortressFX_VAddrL:	.byte $48, $50, $12, $4C, $06, $96, $86, $8E, $9A, $92, $8A, $1A, $CE, $10, $52, $98, $CA
+FortressFX_VAddrL:	.byte $CC, $50, $12, $4C, $06, $96, $86, $8E, $9A, $92, $8A, $1A, $CE, $10, $52, $98, $CA
 
 	; Indexed by value from FortressFX_Wx
 	; Stores the column index for Map_Completions followed by which
@@ -4058,6 +4058,8 @@ DMC08_End
 ScoreTileData:
 	vaddr $29C9
 	.byte 13, $CF, $CF, $CF, $CF, $CF, $CF, $CF, $CF, $CF, $CF, $CF, $CF, $CF
+	vaddr $2A4C
+	.byte 2, $CF, $CF
 _END_ScoreTileData
 
 DoScoreTiles:
@@ -4100,18 +4102,29 @@ _tile3:
 	STA Graphics_Buffer+$b,X
 _tile4:
 	LDA Map_Completions+3
-	BEQ _end_gfx_buf
+	BEQ _tile5
 	SUB #$01
 	ASL A
 	ASL A
 	TAY		; offset into __Map_PanelCompletePats
 	LDA __Map_PanelCompletePats+2,Y	; A = desired panel
 	STA Graphics_Buffer+$f,X
+_tile5:
+	LDA SecretLevelRevealed
+	BEQ _end_gfx_buf
+	LDA Map_Completions+4
+	BEQ _end_gfx_buf
+	SUB #$01
+	ASL A
+	ASL A
+	TAY		; offset into __Map_PanelCompletePats
+	LDA __Map_PanelCompletePats+2,Y	; A = desired panel
+	STA Graphics_Buffer+$14,X
 	LDA #$00
-	STA Graphics_Buffer+$10,X
+	STA Graphics_Buffer+$15,X
 _end_gfx_buf:
 	LDA Graphics_BufCnt
-	ADD #16
+	ADD #21
 	STA Graphics_BufCnt
 	INC UpdateScoreTiles	; flag we've done this
 	RTS

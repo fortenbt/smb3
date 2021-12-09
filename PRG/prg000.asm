@@ -3192,7 +3192,8 @@ PRG000_CFA8:
 ObjState_Killed:
 	JSR Object_FallAndDelete	; Have object fall and delete if it gets too low (at which point we don't return)
 
-	LDY ObjGroupRel_Idx	 ; Y = object's group relative index
+	;LDY ObjGroupRel_Idx	 ; Y = object's group relative index
+	JSR CheckCheepCheepKill
 
 	LDA ObjectGroup_KillAction,Y
 	AND #%00001111

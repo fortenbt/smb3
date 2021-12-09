@@ -720,6 +720,7 @@ PRG030_85A5:
 	JSR PRGROM_Change_A000
 
 	JSR Map_Reload_with_Completions	 	; Load map and set already completed levels
+	JSR DoSecretPath
 	JSR Fill_Tile_AttrTable_ByTileset	; Load tile attribute tiles by the tileset
 
 	LDA Inventory_Open	
@@ -5915,4 +5916,22 @@ _not_restarting2:
 	TXA
 	STA Level_MusicQueue
 	STA Level_MusicQueueRestore
+	RTS
+
+CheckCheepCheepKill:
+	LDA Level_ObjectID,X
+	CMP #OBJ_JUMPINGCHEEPCHEEP
+	BNE _cheephook_rts
+	LDA Objects_Var2,X
+	BNE _cheephook_rts
+	INC Objects_Var2,X
+	INC FishKilled
+	LDA FishKilled
+	CMP #20
+	BNE _cheephook_rts
+	LDA #SND_LEVELRISE
+	STA Sound_QLevel1
+	INC DoRevealSecretLevel
+_cheephook_rts:
+	LDY ObjGroupRel_Idx	 ; Y = object's group relative index
 	RTS

@@ -1550,7 +1550,8 @@ PAUSE_RESUMEMUSIC	= $02	; Resume sound (resumes music)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	.org $0500	; $0500-$05FF is available for this context-dependent situation
 
-				.ds 16	; $0500-$050F unused
+	FishKilled:				.ds 1
+				.ds 15	; $0500-$050F unused
 
 	; Event_Countdown is context dependent; without context, does nothing
 	; * When you come out of a pipe, this counter decrements until the pipe should be finished
@@ -2684,8 +2685,9 @@ CFIRE_LASER		= $15	; Laser fire
 	SecretLevelCompleted:	.ds 1
 	DoSecretLevelComplete:	.ds 1
 	DoRevealSecretLevel:	.ds 1
+	SecretLevelRevealed:	.ds 1
 				;.ds 80	; $7BD0-$7C1F unused
-				.ds 77	; $7BD0-$7C1F unused
+				.ds 76	; $7BD0-$7C1F unused
 
 ; For certain objects that require a buffer of X or Y values; only a couple are available.
 ; Each contains 32 bytes, intended for enemies that have "tails"; Buffer_Occupied determines

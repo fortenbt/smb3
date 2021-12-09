@@ -1682,6 +1682,14 @@ MO_DoLevelClear:
 	;INC Map_Completions,X
 	; Map_ClearLevelFXCnt = 5 (begin panel flipover effect)
 _level_clear_fx_done:
+	LDA DoRevealSecretLevel
+	BEQ _normal_clear
+	INC SecretLevelRevealed
+	;LDA #$06
+	;STA <Map_ClearLevelFXCnt	 ; Map_ClearLevelFXCnt++
+	JMP PRG011_AA19
+
+_normal_clear:
 	; Play "flip over" sound
 	LDA #SND_MAPINVENTORYFLIP
 	STA Sound_QMap
@@ -1725,7 +1733,7 @@ _do_completions:
 	LDA Map_Completions,X
 	CLC
 	ADC #$03			; tile ID
-	STA [Map_Tile_AddrL],Y	; Set it in memory
+	;STA [Map_Tile_AddrL],Y	; Set it in memory
 	STA <World_Map_Tile	; ... as well as the tile detected
 
 	LDY Graphics_BufCnt	 ; Y = Graphics_BufCnt
@@ -1743,16 +1751,16 @@ _set_panels:
 	; Add in the four replacement patterns to cover over the completed level
 	LDA __Map_PanelCompletePats,X
 	STA Graphics_Buffer+$03,Y
-	LDA __Map_PanelCompletePats+1,X
-	STA Graphics_Buffer+$08,Y
+	;LDA __Map_PanelCompletePats+1,X
+	;STA Graphics_Buffer+$08,Y
 	LDA __Map_PanelCompletePats+2,X
 	STA Graphics_Buffer+$04,Y
-	LDA __Map_PanelCompletePats+3,X
-	STA Graphics_Buffer+$09,Y
+	;LDA __Map_PanelCompletePats+3,X
+	;STA Graphics_Buffer+$09,Y
 
 	; Terminator
 	LDA #$00
-	STA Graphics_Buffer+$0A,Y
+	STA Graphics_Buffer+$05,Y
 
 	LDX Map_Entered_X
 	LDA Map_Entered_Y
@@ -1766,7 +1774,7 @@ _set_panels:
 	; Set high byte of video address
 	LDA <Temp_Var15
 	STA Graphics_Buffer+$00,X
-	STA Graphics_Buffer+$05,X
+	;STA Graphics_Buffer+$05,X
 
 	; Set low byte of video address for first row of level panel change
 	LDA <Temp_Var16
@@ -1774,16 +1782,16 @@ _set_panels:
 
 	; Set low byte of video address for second row of level panel change
 	ADD #32		; +32 for next row
-	STA Graphics_Buffer+$06,X
+	;STA Graphics_Buffer+$06,X
 
 	; Run length of 2 for both
 	LDA #$02
 	STA Graphics_Buffer+$02,X
-	STA Graphics_Buffer+$07,X
+	;STA Graphics_Buffer+$07,X
 
 	; Graphics_BufCnt += 10
 	LDA Graphics_BufCnt
-	ADD #10
+	ADD #5
 	STA Graphics_BufCnt
 
 	;;; Check for game completion
@@ -1795,10 +1803,13 @@ _check_win_loop:
 	BPL _check_win_loop
 	; if 0-3 were all beaten, check secret level
 	LDA Map_Completions+4
-	BEQ _draw_kill_fish
+	BEQ _check_draw_kill_fish
 _draw_win:
 	JSR DrawWin
 	BNE _post_win	; branch always
+_check_draw_kill_fish:
+	LDA SecretLevelRevealed
+	BNE _post_win
 _draw_kill_fish:
 	JSR DrawKill40Fish
 
@@ -1923,6 +1934,8 @@ PRG011_AA58:
 	; Map_ClearLevelFXCnt = 0 (effect over)
 	LDA #$00
 	STA <Map_ClearLevelFXCnt
+	STA DoRevealSecretLevel
+	JSR DrawSecretPath
 
 	LDX Player_Current	 ; X = Player_Current
 
@@ -1990,6 +2003,8 @@ PRG011_AA9C:
 	LDX #$09	 ; X = 9
 
 PRG011_AAA7:
+	JMP PRG011_AB1B
+
 	LDA Map_CompleteTile,X	; Get appropriate "complete" tile for this level
 	STA [Map_Tile_AddrL],Y	; Set it in memory
 	STA <World_Map_Tile	; ... as well as the tile detected
@@ -5149,11 +5164,12 @@ DrawWin:
 	CLC
 	ADC #$06
 	STA Graphics_BufCnt
+	JSR DrawSecretPath
 	RTS
 
 killfishmsg:
 	vaddr $2ACA
-	.byte 12, $b0, $fc, $ec, $ec, $fe, $f4, $f0, $fe, $b1, $fc, $b2, $b3
+	.byte 12, $b0, $fc, $ec, $ec, $fe, $b4, $f0, $fe, $b1, $fc, $b2, $b3
 _endfishmsg
 DrawKill40Fish:
 	; 2aca, 12, kill_40_fish
@@ -5172,5 +5188,44 @@ _fishmsgloop:
 	CLC
 	ADC #15
 	STA Graphics_BufCnt
+	RTS
+
+secretpath:
+	vaddr $29CC
+	.byte 2, $fe, $c0
+	vaddr $29ec
+	.byte 2, $fe, $c0
+	vaddr $2a0c
+	.byte 2, $04, $06
+	vaddr $2a2c
+	.byte 2, $05, $07
+_endsecretpath
+
+DrawSecretPath:
+	; 29cc fe c0
+	; 29ec fe c0
+	; 2a0c 04 06
+	; 2a2c 05 07
+	LDX Graphics_BufCnt
+	LDY #$00
+_pathloop:
+	LDA secretpath,Y
+	STA Graphics_Buffer,X
+	INX
+	INY
+	CPY #(_endsecretpath-secretpath)
+	BNE _pathloop
+	LDA #$00
+	STA Graphics_Buffer,X	; terminator
+	LDA Graphics_BufCnt
+	CLC
+	ADC #(_endsecretpath-secretpath)
+	STA Graphics_BufCnt
+
+	; 6166, 6176
+	LDA #$46
+	STA $6166
+	LDA #$68
+	STA $6176
 	RTS
 

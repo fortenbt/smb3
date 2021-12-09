@@ -3447,6 +3447,8 @@ Paragoomba_SpawnMicroGoomba:
 
 
 ObjNorm_JumpingCheepCheep:
+	LDA #$00
+	STA Objects_Var2,X
 	JSR Object_SetPaletteFromAttr	 ; Set palette for Cheep Cheep
 
 	LDA <Player_HaltGame

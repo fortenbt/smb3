@@ -1083,3 +1083,47 @@ Map_LevelLayouts:
 
 
 ; Rest of ROM bank was empty
+secretpath12:
+	vaddr $29CC
+	.byte 2, $fe, $c0
+	vaddr $29ec
+	.byte 2, $fe, $c0
+	vaddr $2a0c
+	.byte 2, $04, $06
+	vaddr $2a2c
+	.byte 2, $05, $07
+_endsecretpath12
+
+DrawSecretPath12:
+	; 29cc fe c0
+	; 29ec fe c0
+	; 2a0c 04 06
+	; 2a2c 05 07
+	LDX Graphics_BufCnt
+	LDY #$00
+_pathloop12:
+	LDA secretpath12,Y
+	STA Graphics_Buffer,X
+	INX
+	INY
+	CPY #(_endsecretpath12-secretpath12)
+	BNE _pathloop12
+	LDA #$00
+	STA Graphics_Buffer,X	; terminator
+	LDA Graphics_BufCnt
+	CLC
+	ADC #(_endsecretpath12-secretpath12)
+	STA Graphics_BufCnt
+
+	; 6166, 6176
+	LDA #$46
+	STA $6166
+	LDA #$68
+	STA $6176
+	RTS
+
+
+DoSecretPath:
+	LDA SecretLevelRevealed
+	BNE DrawSecretPath12
+	RTS
