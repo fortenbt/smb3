@@ -2233,9 +2233,9 @@ PRG007_AACF:
 	BNE PRG007_AB02	 ; If this is not 1-up level score, jump to PRG007_AB02
 
 	; Play 1-up sound!
-	LDA Sound_QLevel1
-	ORA #SND_LEVEL1UP
-	STA Sound_QLevel1
+	;LDA Sound_QLevel1
+	;ORA #SND_LEVEL1UP
+	;STA Sound_QLevel1
 
 	LDX Player_Current	 ; X = current Player
 
