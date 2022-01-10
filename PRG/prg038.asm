@@ -1385,13 +1385,13 @@ M2BSegHedr24:	MusSeg 60, Music_RestH_LUT40, M2BSegData1B, $19, M2BSegData1B_Tri,
 	; be played ($10, $20, $30, ... $C0), so that song $10 uses a start
 	; index of $00, an end index of $06, and a loop index of $01.
 Music_Set2B_Starts:
-	.byte $2D, $31, $46, $4E, $56, $66, $15, $1B, $1E, $1B, $27, $2C
+	.byte $2D, $31, $46, $4E, $56, $4E, $60, $1B, $1E, $1B, $27, $2C
 
 Music_Set2B_Ends:
-	.byte $30, $45, $4D, $55, $65, $77, $1A, $1D, $26, $1D, $2B, $2C
+	.byte $30, $45, $4D, $55, $65, $5F, $73, $1D, $26, $1D, $2B, $2C
 
 Music_Set2B_Loops:
-	.byte $2D, $31, $46, $4E, $56, $70, $18, $1B, $1F, $1B, $28, $2C
+	.byte $2D, $31, $46, $4E, $56, $59, $60, $1B, $1F, $1B, $28, $2C
 
 
 	; These are Set 2B music segments.  Note that more exist on page 29.
@@ -1555,52 +1555,46 @@ Music_Set2B_HedrPtrs:
 	.word CVampireHedr7
 	.word CVampireHedr8	; $4D
 
-	.word $0000		; $4E
-	.word $0000
-	.word $0000
-	.word $0000
-	.word $0000
-	.word $0000
-	.word $0000
-	.word $0000		; $55
-
-	; Metal Gear
-	.word MGHedr1		; $56
-	.word MGHedr2
-	.word MGHedr3
-	.word MGHedr4
-	.word MGHedr5
-	.word MGHedr6
-	.word MGHedr5
-	.word MGHedr7
-	.word MGHedr8
-	.word MGHedr9
-	.word MGHedr8
-	.word MGHedrA
-	.word MGHedrB
-	.word MGHedrC
-	.word MGHedrD
-	.word MGHedrE		; $65
-
 	; Megaman 3
-	.word MM3_Hedr1		; $66
-	.word MM3_Hedr2		; $67
-	.word MM3_Hedr3		; $68
-	.word MM3_Hedr4		; $69
-	.word MM3_Hedr5		; $6A
-	.word MM3_Hedr6		; $6B
-	.word MM3_Hedr7		; $6C
-	.word MM3_Hedr8		; $6D
-	.word MM3_Hedr9		; $6E
-	.word MM3_Hedr10	; $6F
-	.word MM3_Hedr11	; $70
-	.word MM3_Hedr12	; $71
-	.word MM3_Hedr13	; $72
-	.word MM3_Hedr14	; $73
-	.word MM3_Hedr15	; $74
-	.word MM3_Hedr16	; $75
-	.word MM3_Hedr17	; $76
-	.word MM3_Hedr18	; $77
+	.word MM3_Hedr1		; $4E
+	.word MM3_Hedr2
+	.word MM3_Hedr3
+	.word MM3_Hedr4
+	.word MM3_Hedr5
+	.word MM3_Hedr6
+	.word MM3_Hedr7
+	.word MM3_Hedr8
+	.word MM3_Hedr9
+	.word MM3_Hedr10
+	.word MM3_Hedr11
+	.word MM3_Hedr12
+	.word MM3_Hedr13
+	.word MM3_Hedr14
+	.word MM3_Hedr15
+	.word MM3_Hedr16
+	.word MM3_Hedr17
+	.word MM3_Hedr18	; $5F
+
+	.word Escape_Hedr1	; $60
+	.word Escape_Hedr1
+	.word Escape_Hedr1
+	.word Escape_Hedr1
+	.word Escape_Hedr2
+	.word Escape_Hedr3
+	.word Escape_Hedr4
+	.word Escape_Hedr5
+	.word Escape_Hedr2
+	.word Escape_Hedr3
+	.word Escape_Hedr4
+	.word Escape_Hedr5
+	.word Escape_Hedr6
+	.word Escape_Hedr7
+	.word Escape_Hedr8
+	.word Escape_Hedr9
+	.word Escape_Hedr6
+	.word Escape_Hedr7
+	.word Escape_Hedr8
+	.word Escape_Hedr9	; $73
 
 .set1_set2a_ptrs: Align100h .set1_set2a_ptrs
 Music_Set1_Set2A_Ptrs:
@@ -1703,5 +1697,8 @@ MM3_Hedr1:
 
 Metroid_Hedr1:
 	MusSeg 57, Metroid_R1, Metroid_1, $11, Metroid_Tri1, $0000, $0000
+
+Escape_Hedr1:
+	MusSeg 56, Escape_R1, Escape_1, $06, Escape_Tri1, Escape_Nse1, $0000
 
 _prg038_end:
