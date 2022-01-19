@@ -785,7 +785,7 @@ PAD_RIGHT	= $01
 	Player_XHi:		.ds 1	; Player X Hi 
 	Objects_XHi:		.ds 8	; $76-$7D Other object's X Hi positions
 
-				.ds 1	; $7E unused
+	SkipXAccelFrac:	.ds 1	; $7E unused [ORANGE] used to flag whether we're adding fractional accel or not
 
 	; Reuse of $7F
 CineKing_DialogState:	; Toad & King Cinematic: When 1, we're doing the text versus the dialog box itself
@@ -809,7 +809,9 @@ CineKing_DialogState:	; Toad & King Cinematic: When 1, we're doing the text vers
 	Player_X:		.ds 1	; Player X
 	Objects_X:		.ds 8	; $91-$98 Other object's X positions
 
-				.ds 1	; $99 unused
+	Player_XPosSpx:			.ds 1	; $99 unused [ORANGE] corresponds to fractional player X speed.
+									; Our beloved Player_XVelFrac is actually what SMW disassembly refers
+									; to as fractional player X position.
 	; Reuse of $9A
 	CineKing_Var:		; General variable
 
@@ -1627,7 +1629,6 @@ PAUSE_RESUMEMUSIC	= $02	; Resume sound (resumes music)
 	Counter_7to0:		.ds 1	; Counter that runs from 7 to 0 continuously while level is in progress
 
 				.ds 1	; $055E unused
-
 	LevelPartialInit:	.ds 1	; When set, performs a partial reinitialization of level data (notably does not perform the Level InitAction unless it is airship related)
 	Level_TilesetIdx:	.ds 1	; Holds Level_Tileset as an "index" value instead, relative to levels (i.e. Level_Tileset - 1)
 	Level_ChangeReset:	.ds 1	; When set to zero, a mass reset is performed (used when changing "scenes" in a single level)
@@ -3601,9 +3602,9 @@ PF_CLIMB_BIG		= $2C	; Otherwise
 
 
 ; Velocity affects for Player -- note they are in 4.4 fixed point, so divide them by 16 for pixels/frame
-PLAYER_TOPWALKSPEED	= $18	; Highest X velocity considered as Player "walking"
-PLAYER_TOPRUNSPEED	= $28	; Highest X velocity when Player runs
-PLAYER_TOPPOWERSPEED	= $38	; Highest X velocity hit when Player is at full "power"
+PLAYER_TOPWALKSPEED	= $14	; Highest X velocity considered as Player "walking"
+PLAYER_TOPRUNSPEED	= $24	; Highest X velocity when Player runs
+PLAYER_TOPPOWERSPEED	= $30	; Highest X velocity hit when Player is at full "power"
 PLAYER_MAXSPEED		= $40	; Player's maximum speed
 PLAYER_JUMP		= -$38	; Player's root Y velocity for jumping (further adjusted a bit by Player_SpeedJumpInc)
 PLAYER_TAILWAG_YVEL	= $10	; The Y velocity that the tail wag attempts to lock you at
