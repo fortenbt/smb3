@@ -1621,7 +1621,8 @@ PRG008_A7F1:
 	BNE PRG008_A827	 ; If Player is not pressing UP + A, jump to PRG008_A827
 
 	; Player wants to exit water!
-	LDA #-$34
+	;LDA #-$34
+	LDA #$AA			; [ORANGE] SMW exit water velocity is -$56
 	STA <Player_YVel ; Player_YVel = -$34 (exit velocity from water)
 
 PRG008_A80B:
