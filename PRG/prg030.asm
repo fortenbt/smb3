@@ -5757,3 +5757,14 @@ DoSubstTileAndAttr:
 _pswitch_subst:
 	LDA <TmpTile				; get tile
 	JMP PSwitch_SubstTileAndAttr
+
+;;; [ORANGE] See BoostMarioSpeed near Return01AA41
+SetStompYVel:
+	LDY #-$30	; $D0
+	LDA <Pad_Holding
+	AND #PAD_A
+	BEQ _set_stomp_yvel
+	LDY #-$58	; $A8
+_set_stomp_yvel:
+	STY <Player_YVel
+	RTS
