@@ -4146,7 +4146,8 @@ PRG000_D399:
 	STA Objects_FlipBits,X	 ; Update object flip bits as necessary
 
 PRG000_D39C:
-	JMP Player_GetHurt	; Hurt Player and don't come back!
+	;JMP Player_GetHurt	; Hurt Player and don't come back!
+	JMP Spinjump_Or_GetHurt
 
 PRG000_D39F:
 	RTS		 ; Return

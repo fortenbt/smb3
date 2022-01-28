@@ -493,6 +493,9 @@ PRG007_A251:
 	ORA <Player_HaltGame	; ... gameplay is halted ...
 	BNE PRG007_A268	 	; ... then jump to PRG007_A268
 
+	JSR DoSpinjumpFire
+	BCS	PRG007_A268		; if carry is set, we fired due to spinjump
+
 	BIT <Pad_Input
 	BVC PRG007_A268	 ; If Player is NOT pressing B, jump to PRG007_A268
 
