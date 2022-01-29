@@ -1137,19 +1137,28 @@ PRG008_A55E:
 	RTS		 ; Return
 
 
+;;; [ORANGE] Need this "moving left" table due to different pixel/subpixel
+;;; amounts when using positive/negative numbers
+Player_XAccelMainL:
+	; F = "Friction" (stopping rate), "N = "Normal" accel, S = "Skid" accel, X = unused
+	; Without B button	With B button
+	;      F   N   S   X     F   N   S   X
+	.byte -1,  2,  3,  0, 	-1,  2,  5,  0	; Small
+
 	; This is the main value of X acceleration applied
 Player_XAccelMain:
 
 	; F = "Friction" (stopping rate), "N = "Normal" accel, S = "Skid" accel, X = unused
 	; Without B button	With B button
 	;      F   N   S   X     F   N   S   X
-	.byte -1,  0,  2,  0, 	-1,  0,  2,  0	; Small
-	.byte -1,  0,  2,  0, 	-1,  0,  2,  0	; Big
-	.byte -1,  0,  2,  0, 	-1,  0,  2,  0	; Fire
-	.byte -1,  0,  2,  0, 	-1,  0,  2,  0	; Leaf
-	.byte -1,  2,  2,  0, 	-1,  2,  2,  0	; Frog
-	.byte -1,  0,  2,  0, 	-1,  0,  2,  0	; Tanooki
-	.byte -1,  0,  2,  0, 	-1,  0,  2,  0	; Hammer
+	.byte -1,  1,  2,  0, 	-1,  1,  5,  0	; Small
+	;;; [ORANGE] Remove speed based on powerup
+;	.byte -1,  0,  2,  0, 	-1,  0,  2,  0	; Big
+;	.byte -1,  0,  2,  0, 	-1,  0,  2,  0	; Fire
+;	.byte -1,  0,  2,  0, 	-1,  0,  2,  0	; Leaf
+;	.byte -1,  2,  2,  0, 	-1,  2,  2,  0	; Frog
+;	.byte -1,  0,  2,  0, 	-1,  0,  2,  0	; Tanooki
+;	.byte -1,  0,  2,  0, 	-1,  0,  2,  0	; Hammer
 
 Player_XAccelMain_UW:
 	; If on the ground	If swimming above the ground
@@ -1168,14 +1177,15 @@ Player_XAccelPseudoFrac:
 
 	; F = "Friction" (stopping rate), "N = "Normal" accel, S = "Skid" accel, X = unused
 	; Without B button		With B button
-	;       F    N    S    X          F    N    S    X
-	.byte $60, $E0, $00, $00, 	$60, $E0, $00, $00	; Small
-	.byte $20, $E0, $00, $00,	$20, $E0, $00, $00	; Big
-	.byte $20, $E0, $00, $00, 	$20, $E0, $00, $00	; Fire
-	.byte $20, $E0, $00, $00, 	$20, $E0, $00, $00	; Leaf
-	.byte $00, $00, $00, $00, 	$00, $00, $00, $00	; Frog
-	.byte $60, $E0, $00, $00, 	$60, $E0, $00, $00	; Tanooki
-	.byte $60, $E0, $00, $00, 	$60, $E0, $00, $00	; Hammer
+	;       F    N    S    X      F    N    S    X
+	.byte $00, $80, $00, $00, 	$00, $80, $00, $00	; Small
+	;;; [ORANGE] Remove speed based on powerup
+;	.byte $20, $E0, $00, $00,	$20, $E0, $00, $00	; Big
+;	.byte $20, $E0, $00, $00, 	$20, $E0, $00, $00	; Fire
+;	.byte $20, $E0, $00, $00, 	$20, $E0, $00, $00	; Leaf
+;	.byte $00, $00, $00, $00, 	$00, $00, $00, $00	; Frog
+;	.byte $60, $E0, $00, $00, 	$60, $E0, $00, $00	; Tanooki
+;	.byte $60, $E0, $00, $00, 	$60, $E0, $00, $00	; Hammer
 
 Player_XAccelPseudoFrac_UW:
 	; If on the ground		If swimming above the ground
@@ -2345,7 +2355,8 @@ PRG008_AB5B:
 	JMP PRG008_AB83	 ; Jump to PRG008_AB83
 
 PRG008_AB62:
-	LDY #Pad_Input
+	LDY #PLAYER_TOPWALKSPEED	; [ORANGE] This was always supposed to be TOPWALKSPEED,
+								; but was #Pad_Input due to a mistake.
 
 	BIT <Pad_Holding
 	BVC PRG008_AB83	; If Player is NOT holding 'B', jump to PRG008_AB83
@@ -2357,7 +2368,8 @@ PRG008_AB62:
 	BNE PRG008_AB78	 ; If Player is mid air or sliding, jump to PRG008_AB78
 
 	LDA <Temp_Var3
-	CMP #PLAYER_TOPRUNSPEED
+	CMP #PLAYER_TOPRUNSPEED-1	; [ORANGE] Due to SMW "oscillating speed" due to friction,
+								; our speed while running at TOPRUNSPEED might be 1 less
 	BMI PRG008_AB78	 ; If Player's X Velocity magnitude is less than PLAYER_TOPRUNSPEED, jump to PRG008_AB78
 
 	; Player is going fast enough while holding B on the ground; flag running!
@@ -2392,7 +2404,10 @@ PRG008_AB83:
 	BNE PRG008_AB9E	 ; And as long as that's not zero, jump to PRG008_AB9E
 
 PRG008_AB98:
-	LDA <Player_Suit
+	;;; [ORANGE] Don't determine player speed based on powerup anymore.
+	;;; This decision basically results in the frog suit being terrible...
+	;LDA <Player_Suit
+	LDA #$00
 	ASL A
 	ASL A
 	ASL A
@@ -2418,8 +2433,10 @@ PRG008_ABA6:
 	LDA <Player_InAir
 	BNE PRG008_AC01	 ; If Player is mid air, jump to PRG008_AC01 (RTS)
 
+	INC <SkipXAccelFrac ; flag that we're not adding the fractional component during friction
 	LDA <Player_XVel
-	BEQ PRG008_AC01	 ; If Player is not moving horizontally, jump to PRG008_AC01 (RTS)
+	;BEQ PRG008_AC01	 ; If Player is not moving horizontally, jump to PRG008_AC01 (RTS)
+	BEQ _undo_skipaccel
 	BMI PRG008_ABD3	 ; If Player is moving leftward, jump to PRG008_ABD3
 	BPL PRG008_ABEB	 ; If Player is moving rightward, jump to PRG008_ABEB
 
@@ -2430,20 +2447,22 @@ PRG008_ABB8:
 	INY
 	INY		 ; Y += 2 (offset 2 within Player_XAccel* tables, the "skid" rate)
 
-	AND Player_MoveLR
-	BNE PRG008_ABCD	  ; If Player suddenly reversed direction, jump to PRG008_ABCD
+	AND Player_MoveLR	 ; current XVel direction
+	BNE PRG008_ABCD	  ; If Player is reversing direction, jump to PRG008_ABCD
 
 	DEY		 ; Y-- (back one offset, the "normal" rate)
 
 	LDA <Temp_Var3	 
 	CMP <Temp_Var14	 
-	BEQ PRG008_AC01	 ; If Player's current X velocity magnitude is the same as the selected top speed, jump to PRG008_AC01 (RTS)
+	;BEQ PRG008_AC01	 ; If Player's current X velocity magnitude is the same as the selected top speed, jump to PRG008_AC01 (RTS)
 	BMI PRG008_ABCD	 ; If it's less, then jump to PRG008_AC01
 
+	;;; >= apply friction
 	LDA <Player_InAir
 	BNE PRG008_AC01	 ; If Player is mid air, jump to PRG008_AC01
 
 	DEY		 ; Y-- (back one offset, the "friction" stopping rate)
+	INC <SkipXAccelFrac ; flag that we're not adding the fractional component during friction
 
 PRG008_ABCD:
 
@@ -2462,34 +2481,41 @@ PRG008_ABD3:
 
 	; Player moving leftward
 
-	LDA #$00	 
-	SUB Player_XAccelPseudoFrac,Y ; Negate value from Player_XAccelPseudoFrac[Y]
-	STA <Temp_Var1	  ; -> Temp_Var1
+	;LDA #$00
+	;SUB Player_XAccelPseudoFrac,Y ; Negate value from Player_XAccelPseudoFrac[Y]
+	;STA <Temp_Var1	  ; -> Temp_Var1
 
-	LDA Player_XAccelMain,Y ; Get Player_XAccelMain[Y]
-	EOR #$ff	 ; Negate it (sort of)
+	LDA Player_XAccelMainL,Y ; Get Player_XAccelMain[Y]
+	;EOR #$ff	 ; Negate it (sort of)
+	JSR Negate
 	STA <Temp_Var2	 ; -> Temp_Var2
 
-	LDA <Temp_Var1
-	BNE PRG008_ABF5	 ; If Temp_Var1 <> 0, jump to PRG008_ABF5
+	;LDA <Temp_Var1
+	;BNE PRG008_ABF5	 ; If Temp_Var1 <> 0, jump to PRG008_ABF5
 
-	INC <Temp_Var2	 ; Otherwise, Temp_Var2++
+	;INC <Temp_Var2	 ; Otherwise, Temp_Var2++
 	JMP PRG008_ABF5	 ; Jump to PRG008_ABF5
 
 PRG008_ABEB:
 
 	; Player moving rightward
 
-	LDA Player_XAccelPseudoFrac,Y ; Get value from Player_XAccelPseudoFrac[Y]
-	STA <Temp_Var1	  ; -> Temp_Var1
+	;LDA Player_XAccelPseudoFrac,Y ; Get value from Player_XAccelPseudoFrac[Y]
+	;STA <Temp_Var1	  ; -> Temp_Var1
 
 	LDA Player_XAccelMain,Y ; Get value from Player_XAccelMain[Y]
 	STA <Temp_Var2	  ; -> Temp_Var2
 
 PRG008_ABF5: 
-	LDA <Temp_Var1
-	ADD Counter_Wiggly	; actual value not used, looking for a semi-random carry
+	;LDA <Temp_Var1
+	;ADD Counter_Wiggly
 
+	LDA <SkipXAccelFrac
+	BNE _skip_xfrac
+	LDA Player_XAccelPseudoFrac,Y
+	ADD Player_XPosSpx
+	STA Player_XPosSpx
+_add_xvel:
 	LDA <Player_XVel
 	ADC <Temp_Var2
 	STA <Player_XVel	; Player_XVel += Temp_Var2 (and sometimes carry)
@@ -2497,6 +2523,13 @@ PRG008_ABF5:
 PRG008_AC01:
 	RTS		 ; Return
 
+_skip_xfrac:
+	DEC <SkipXAccelFrac
+	CLC
+	BEQ _add_xvel	; always branch
+_undo_skipaccel:
+	DEC <SkipXAccelFrac
+	RTS
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Player_UnderwaterHControl
@@ -3124,7 +3157,8 @@ Player_SetSpecialFrames:
 	JSR Negate
 PRG008_AECA:
 
-	CMP #$37
+	CMP #PLAYER_TOPPOWERSPEED-2	; [ORANGE] should have been using this constant all along, although
+								; we change to -2 rather than -1 due to oscillation due to friction
 	BLT PRG008_AEF0	 ; If magnitude of Player's horizontal velocity is < $37, jump to PRG008_AEF0
 
 	LDA Player_FlyTime

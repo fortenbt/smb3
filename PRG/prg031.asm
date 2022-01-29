@@ -3405,7 +3405,7 @@ DynJump:	; $FE99
 ;
 ; This subroutine reads the status of both joypads 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+; DPAD bitmask table, to mask out L+R and U+D
 Read_Joypads_UnkTable:
 	.byte	$00, $01, $02, $00, $04, $05, $06, $04, $08, $09, $0A, $08, $00, $01, $02, $00
 
@@ -3426,7 +3426,7 @@ PRG031_FEC3:
 	CMP <Temp_Var1	 ; Check if same
 	BNE PRG031_FEC3	 ; If not, do it again
 
-	ORA <Temp_Var2	 ; 
+	ORA <Temp_Var2	 ; this is weird...Temp_Var2 is always 0 I believe
 	PHA		 ; Push A
 	AND #$0f	 ; A &= $0F
 	TAX		 ; A -> X
