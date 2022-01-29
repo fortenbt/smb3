@@ -2677,8 +2677,12 @@ PRG008_ACB3:
 
 	; Player is mid air...
 
-	LDY #$05	 ; Y = 5
-
+	LDY #$06	 ; Y = 5
+	LDA <Pad_Holding
+	AND #PAD_A
+	BEQ _no_mod_grav
+	LDY #$03
+_no_mod_grav:
 	LDA <Player_YVel
 	CMP #-$20
 	BGS PRG008_ACC8	 ; If Player's Y velocity >= -$20, jump to PRG008_ACC8
@@ -2689,7 +2693,7 @@ PRG008_ACB3:
 	LDA <Pad_Holding
 	BPL PRG008_ACC8	 ; If Player is NOT pressing 'A', jump to PRG008_ACC8
 
-	LDY #$01	 ; Y = 1
+	;LDY #$06	 ; Y = 1
 	BNE PRG008_ACCD	 ; Jump (technically always) to PRG008_ACCD
 
 PRG008_ACC8:
