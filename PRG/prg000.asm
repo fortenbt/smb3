@@ -3968,8 +3968,10 @@ PRG000_D2B4:
 	STA Objects_Timer2,X
 
 	; Set Player's Y velocity to -$40 (bounce!)
-	LDA #-$40
-	STA <Player_YVel
+	;;; [ORANGE] D0 or A8 based on A being held
+	;LDA #-$40
+	;STA <Player_YVel
+	JSR SetStompYVel
 
 	; Play squish sound
 	LDA Sound_QPlayer
