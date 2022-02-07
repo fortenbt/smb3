@@ -1393,6 +1393,7 @@ SND_LEVELAIRSHIP= $08	; Airship fly
 SND_LEVELMARCH	= $10 	; Hammer Bros. march around
 ; $20 - Unused
 ; $40 - Unused
+SND_LEVELSPINJUMP = $20
 SND_LEVELSKID	= $80 	; Skid
 	Sound_QLevel2:		.ds 1
 
@@ -1592,7 +1593,9 @@ PAUSE_RESUMEMUSIC	= $02	; Resume sound (resumes music)
 	Level_BlkBump_YHi:	.ds 3	; $0537-$0539 Block bump slot Y Hi
 	Level_BlkBump_YLo:	.ds 3	; $053A-$053C Block bump slot Y Lo
 
-				.ds 5	; $053D-$0541 unused
+	SpinjumpFlag:		.ds 1	; $053D unused [ORANGE]
+	SpinjumpCounter:	.ds 1	; $053E [ORANGE] spinjump fireball countdown
+				.ds 3	; $053F-$0541 unused
 
 	; The alternate vertical scrolls are used so that raster effects can be properly implemented!
 	Level_VertScrollH:	.ds 1	; Alternate VertScroll_Hi used by engine, adjusted before being sent to Vert_Scroll_Hi

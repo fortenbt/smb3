@@ -5758,6 +5758,57 @@ _pswitch_subst:
 	LDA <TmpTile				; get tile
 	JMP PSwitch_SubstTileAndAttr
 
+SetSpinjumpFrames:
+	LDA SpinjumpFlag
+	BEQ _sj_rts
+
+	; We're spinjumping, so we need to force "walk" frames
+	; rather than pspeed frames if that was set
+	LDA <Player_Suit
+	ASL A
+	ASL A
+	ORA <Player_WalkFrame
+	TAY
+	LDA Player_WalkFramesByPUp,Y
+	STA <Player_Frame
+
+	LDA SpinjumpFlag
+	ADD #$01
+	STA SpinjumpFlag
+	BEQ _reset_spinjump
+	CMP #$0A
+	BNE _do_spinjump
+_reset_spinjump:
+	LDA #$02
+	STA SpinjumpFlag
+_do_spinjump:
+	; A is 2-3, 4-5, 6-7, 8-9
+	LSR A	; A becomes 1,1, 2,2, 3,3, 4,4
+	JSR DynJump
+	.word $0000					; 0 Unused
+	.word Spinjump_FaceScreen	; 1
+	.word Spinjump_FaceLeft		; 2
+	.word Spinjump_FaceAway		; 3
+	.word Spinjump_FaceRight	; 4
+
+Spinjump_FaceScreen:
+	LDA #$01
+	STA Player_PipeFace			; face the screen for 1 frame
+Spinjump_FaceLeft:
+	LDA #$00
+	STA <Player_FlipBits		; face "left"
+_sj_rts:
+	RTS
+
+Spinjump_FaceAway:
+	LDY <Player_Suit
+	LDA Player_ClimbFrame,Y		; Get appropriate climbing frame
+	STA <Player_Frame
+Spinjump_FaceRight:
+	LDA #SPR_HFLIP				; face "right"
+	STA <Player_FlipBits
+	RTS
+
 ;;; [ORANGE] See BoostMarioSpeed near Return01AA41
 SetStompYVel:
 	LDY #-$30	; $D0
@@ -5767,4 +5818,63 @@ SetStompYVel:
 	LDY #-$58	; $A8
 _set_stomp_yvel:
 	STY <Player_YVel
+	RTS
+
+Spinjump_Or_GetHurt:
+	LDA SpinjumpFlag
+	BEQ _j_Player_GetHurt
+	LDA Sound_QPlayer
+	ORA #SND_PLAYERKICK
+	STA Sound_QPlayer
+
+	; Set ShellKillFlash vars
+	LDA <Player_X
+	STA ShellKillFlash_X
+	LDA <Player_Y
+	ADD #$10
+	STA ShellKillFlash_Y
+	LDA #$0a
+	STA ShellKillFlash_Cnt
+
+	JMP SetStompYVel
+_j_Player_GetHurt:
+	JMP Player_GetHurt
+
+InitiateJump:
+	LDA Player_IsHolding	; can't spinjump while holding an item
+	BNE _normal_jump
+	LDA <Pad_Holding		; UP+A spinjumps
+	AND #PAD_UP
+	BEQ _normal_jump
+_spin_jump:
+	LDA #SND_LEVELSPINJUMP
+	STA Sound_QLevel2
+	INC SpinjumpFlag
+	RTS
+_normal_jump:
+	; Play jump sound
+	LDA Sound_QPlayer
+	ORA #SND_PLAYERJUMP
+	STA Sound_QPlayer
+	RTS
+
+DoSpinjumpFire:
+	LDA SpinjumpFlag
+	BEQ _nofire_rts
+	INC SpinjumpCounter
+	LDA SpinjumpCounter
+	AND #$0F
+	BNE _nofire_rts
+	TAY	; Y = 0
+	LDA SpinjumpCounter
+	AND #$10
+	BEQ _fire_it
+	LDY #SPR_HFLIP
+_fire_it:
+	STY <Player_FlipBits
+	JSR PlayerProj_ThrowWeapon	 ; Player throws weapon, whatever's appropriate
+	SEC
+	RTS
+_nofire_rts:
+	CLC
 	RTS

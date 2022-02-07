@@ -965,6 +965,32 @@ SndLev2_SkidNFreq:
 SndLev2_SkidTFreq:
 	.byte $0C, $47, $49, $42, $4A, $43, $4B
 
+;;; [ORANGE] These "notes" are played in reverse due to the code
+SndLev2_SpinTFreq:
+	.byte 66, 0, 70, 0, 75, 0, 79, 0
+	.byte 66, 0, 70, 0, 75, 0, 79, 0
+	.byte 66, 0, 70, 0, 75, 0, 79, 0
+	.byte 89, 89, 89, 89, 0, 94
+_spinsnd_end
+
+SndLev2_Spinjump:
+	STY SndCur_Level2	; Mark what "level 2" sound we're playing
+	LDA #(_spinsnd_end-SndLev2_SpinTFreq-1)	; total size of sound
+	STA SFX_Counter4
+
+SndLev2_SpinCont:
+	LDA SFX_Counter4
+	TAY		 			; Y = SFX_Counter4
+
+	LDA SndLev2_SpinTFreq,Y
+	STA PAPU_TFREQ1
+
+	LDA #$08			; sets a counter value of 1 (1 frame of audio)
+	STA PAPU_TCR1
+	STA PAPU_TFREQ2
+	BNE PRG028_A64C
+
+
 SndLev2_Skid:
 	STY SndCur_Level2	 ; Mark what "level 2" sound we're playing
 
@@ -1031,6 +1057,12 @@ Sound_PlayLevel2:
 	BNE PRG028_A66B	 ; If this is not the airship sound, jump to PRG028_A66B
 
 	JMP SndLev2_AirshipCont	 ; Jump to SndLev2_AirshipCont
+_j_SndLev2_SpinCont:
+	JMP SndLev2_SpinCont
+_j_SndLev2_Spinjump:
+	JMP SndLev2_Spinjump
+_j_PRG028_A641:
+	JMP PRG028_A641
 
 PRG028_A66B:
 
@@ -1038,11 +1070,14 @@ PRG028_A66B:
 	; if they were to be defined, this could sit down below...
 	LDA SndCur_Level2
 	BMI SndLev2_SkidCont	 ; If sound $80 (SND_LEVELSKID) is currently playing, jump to SndLev2_SkidCont (overrides queue)
+	CMP #SND_LEVELSPINJUMP	; if $20, jump to SndLev2_SpinCont
+	BEQ _j_SndLev2_SpinCont
 
 	LDY Sound_QLevel2
 	BEQ PRG028_A690	 ; If no level 2 sound is queued, jump to PRG028_A690
 
-	BMI SndLev2_Skid	 ; If sound $80 (SND_LEVELSKID), jump to SndLev2_Skid
+	CPY #SND_LEVELSKID
+	BEQ SndLev2_Skid	 ; If sound $80 (SND_LEVELSKID), jump to SndLev2_Skid
 
 	; Since the input is a bit value ($01, $02, $04, ...), this will
 	; decode it by continuously shifting to the right until we hit
@@ -1058,6 +1093,8 @@ PRG028_A66B:
 	BCS SndLev2_Airship	 ; If sound $08 (SND_LEVELAIRSHIP), jump to SndLev2_Airship
 	LSR Sound_QLevel2
 	BCS SndLev2_March	 ; If sound $10 (SND_LEVELMARCH), jump to SndLev2_March
+	LSR Sound_QLevel2
+	BCS _j_SndLev2_Spinjump
 
 	; NOTE: Level 2 set sounds $20 and $40 are undefined!
 
@@ -1098,7 +1135,7 @@ SndLev2_FlameCont:
 	LDA PRG028_A709-1,Y
 
 PRG028_A6B7:
-	BNE PRG028_A641	 ; If data <> 0, jump to PRG028_A641
+	BNE _j_PRG028_A641	 ; If data <> 0, jump to PRG028_A641
 
 SndLev2_March:
 	STY SndCur_Level2	 ; Mark what "level 2" sound we're playing

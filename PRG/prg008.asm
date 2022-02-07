@@ -985,9 +985,9 @@ Player_PowerUpdate:
 	CPY #$ff
 	BEQ Sound_FullPowerRing	 ; If Player_FlyTime = $FF (P-Wing active), jump to Sound_FullPowerRing
 
-	LDA <Counter_1
-	AND #$01
-	BEQ PRG008_A4D5	 ; Every other tick, jump to PRG008_A4D5
+	;LDA <Counter_1
+	;AND #$01
+	;BEQ PRG008_A4D5	 ; Every other tick, jump to PRG008_A4D5
 
 	DEY			 
 	STY Player_FlyTime ; Player_FlyTime--
@@ -1206,12 +1206,13 @@ Player_WalkAnimTickMax:
 
 
 	; Root jump velocity
-Player_RootJumpVel:	.byte PLAYER_JUMP
+;Player_RootJumpVel:	.byte PLAYER_JUMP
+Player_RootJumpVel:	.byte $B0,$B6,$AE,$B4,$AB,$B2,$A9,$B0,$A6,$AE,$A4,$AB,$A1,$A9,$9F,$A6
 
 	; Based on how fast Player is running, the jump is
 	; increased just a little (this is subtracted, thus
 	; for the negative Y velocity, it's "more negative")
-Player_SpeedJumpInc:	.byte $00, $02, $04, $08
+;Player_SpeedJumpInc:	.byte $00, $02, $04, $08
 
 ; FIXME: Anybody want to claim this?
 	.byte $00, $03, $06, $08, $08, $08, $08, $06, $03, $00, $04, $08, $12, $16, $16, $12
@@ -2597,11 +2598,8 @@ PRG008_AC30:
 	BNE PRG008_AC9E	 ; If Player is mid air, jump to PRG008_AC9E
 
 PRG008_AC41:
-
-	; Play jump sound
-	LDA Sound_QPlayer
-	ORA #SND_PLAYERJUMP	 
-	STA Sound_QPlayer
+	; allowed to jump here...spinjump or normal?
+	JSR InitiateJump
 
 	LDA Player_StarInv
 	BEQ PRG008_AC6C	 ; If Player is not invincible by star, jump to PRG008_AC6C
@@ -2635,12 +2633,19 @@ PRG008_AC73:
 
 	LSR A
 	LSR A
-	LSR A
-	LSR A
+	AND #$FE
+	;LSR A
+	;LSR A ; [ORANGE] only shift 3 to select jump vel
 	TAX	 ; X = Magnitude of Player's X Velocity >> 4 (the "whole" part)
 
-	LDA Player_RootJumpVel	 	; Get initial jump velocity
-	SUB Player_SpeedJumpInc,X	; Subtract a tiny bit of boost at certain X Velocity speed levels
+	LDA SpinjumpFlag
+	BEQ _get_jump_vel
+	INX					; offset to spinjump
+
+	;LDA Player_RootJumpVel	 	; Get initial jump velocity
+	;SUB Player_SpeedJumpInc,X	; Subtract a tiny bit of boost at certain X Velocity speed levels
+_get_jump_vel:
+	LDA Player_RootJumpVel,X
 	STA <Player_YVel		; -> Y velocity
 
 	LDA #$01
@@ -2649,6 +2654,7 @@ PRG008_AC73:
 	LDA #$00	
 	STA Player_WagCount	 ; Player_WagCount = 0
 	STA Player_AllowAirJump	 ; Player_AllowAirJump = 0
+	;STA SpinjumpFlag
 
 	LDA Player_Power
 	CMP #$7f
@@ -2684,7 +2690,7 @@ PRG008_ACB3:
 	LDY #$03
 _no_mod_grav:
 	LDA <Player_YVel
-	CMP #-$20
+	CMP #-$20			; this is where the player can stop "jumping higher" by holding A
 	BGS PRG008_ACC8	 ; If Player's Y velocity >= -$20, jump to PRG008_ACC8
 
 	LDA Player_mGoomba
@@ -3244,6 +3250,9 @@ PRG008_AF2A:
 	STA <Player_Frame	 ; Update Player frame!
 
 PRG008_AF2F:
+	;;; [ORANGE] added for spinjump
+	JSR SetSpinjumpFrames
+
 	LDA Player_PipeFace
 	BNE PRG008_AF45	 ; If Player is facing forward, jump to PRG008_AF45
 
@@ -4700,6 +4709,7 @@ PRG008_B5B2:
 	STA <Player_InAir ; Player NOT mid air
 	STA <Player_YVel  ; Halt Player vertically
 	STA Kill_Tally	  ; Reset Kill_Tally
+	STA SpinjumpFlag
 
 PRG008_B5BB:
 	RTS		 ; Return
@@ -6001,6 +6011,7 @@ PRG008_BB7E:
 	STA <Player_InAir ; Player is no longer mid air!
 	STA <Player_YVel  ; Player hit solid!
 	STA Kill_Tally	  ; Reset Kill_Tally
+	STA SpinjumpFlag
 
 	; Ground slope impact
 
