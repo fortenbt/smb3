@@ -2584,9 +2584,9 @@ PRG000_CCAE:
 PRG000_CCE2:
 
 	; Play bump sound
-	LDA Sound_QPlayer 
-	ORA #SND_PLAYERBUMP 
-	STA Sound_QPlayer
+	;LDA Sound_QPlayer
+	;ORA #SND_PLAYERBUMP
+	;STA Sound_QPlayer
  
 	LDA Level_ObjectID,X 
 	CMP #OBJ_ICEBLOCK 
