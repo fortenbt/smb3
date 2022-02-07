@@ -3940,7 +3940,11 @@ PRG000_D29B:
 
 	; Player NOT a statue and NOT in a Kuribo's shoe stomp code
 
-	LDA Objects_State,X
+	;;; [ORANGE] If we're stomping something that cares about being stomped
+	;;; while spinjumping, we need to poof this object and bounce the player slightly
+	;;;LDA Objects_State,X
+	JSR CheckSpinjumpStomp	; returns here if not spinjumping, otherwise poofs the enemy and returns directly
+
 	CMP #OBJSTATE_SHELLED
 	BNE PRG000_D2B4	 ; If object state is not shelled, jump to PRG000_D2B4 (typical stomp)
 

@@ -5878,3 +5878,23 @@ _fire_it:
 _nofire_rts:
 	CLC
 	RTS
+
+SpinjumpPoofEnemy:
+	LDA #-$08
+	STA <Player_YVel
+	LDA Sound_QLevel1
+	ORA #SND_LEVELBABOOM
+	STA Sound_QLevel1
+	JSR Object_PoofDie
+	RTS
+
+CheckSpinjumpStomp:
+	LDA SpinjumpFlag
+	BEQ _no_spinjump_poof
+	PLA
+	PLA					; remove the caller return address
+	JSR SpinjumpPoofEnemy
+	RTS
+_no_spinjump_poof:
+	LDA Objects_State,X	; do the instruction we hooked
+	RTS
