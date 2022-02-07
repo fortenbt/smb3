@@ -5927,4 +5927,19 @@ _check_flipbits:
 	BEQ _set_player_dir	; 0 is facing left
 	BNE _player_dir_right
 
+;;;
+;;; GetWakeupTimer
+;;;
+;;; This is called from prg000::PRG000_D120 within Object_ShellDoWakeUp.
+;;; We must preserve X (SlotIndexBackup).
+;;; A register when called is Level_ObjectID,X
+;;; Standard GetWakeupTimer is simply LDA Objects_Timer3,X
+GetWakeupTimer:
+	CMP #OBJ_SHELLEDTROOPA
+	BNE _get_wakeup_timer_std
+	STA Objects_Timer3,X			; Just put the ID into the wakeup timer, and it will never wake up
+_get_wakeup_timer_std:
+	LDA Objects_Timer3,X
+	RTS
+
 _end_30
