@@ -3701,6 +3701,14 @@ PRG008_B118:
 PRG008_B11E:
 	RTS		 ; Return
 
+ScrollLRMask: .byte $00, $FF
+CameraStopBounds: .byte CAMERA_STOP_RIGHT, CAMERA_STOP_LEFT
+	.byte $00
+CameraScrollSpeeds: .byte $FE, $02, $FE, $02
+CameraScrollSpeeds_Hi: .byte $FF, $00
+CatchupScrollAmts: .byte $01, $FF
+CameraBackAmts: .byte $00, $00, $20, $D0
+CatchupBackAmts: .byte $00, $00, $FE, $02
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Player_DoScrolling
@@ -3747,90 +3755,206 @@ PRG008_B12F:
 PRG008_B150:
 
 	; No raster effects or horizontal auto scroll not desired
+	LDA CameraMoveTrigger
+	SEC
+	SBC #$0C
+	STA CameraLeftBuffer
+	CLC
+	ADC #$18
+	STA CameraRightBuffer
 
+	LDY #$01					; assume right side of CameraMoveTrigger
+	LDA #$00					; Scroll_LastDir = 0 for right
+	STA <Scroll_LastDir
+
+	;LDA <Player_XHi
+	LDA <Horz_Scroll_Hi
+	STA <Temp_Var2
 	LDA <Player_X
-	SUB <Horz_Scroll
-	BPL PRG008_B195	 ; If Player_X >= Horz_Scroll, jump to PRG008_B195
+	SUB <Horz_Scroll			; relative screen position
+	CMP CameraMoveTrigger		; If < CameraMoveTrigger, we'll check CameraLeftBuffer (Y = 0)
+	BPL _check_buffer_side
+	DEY							; we're on the left side of CameraMoveTrigger
+	INC <Scroll_LastDir			; Scroll_LastDir = 1 for left
+_check_buffer_side:
+	SEC
+	SBC CameraLeftBuffer,Y		; how far outside of the buffer are we?
+								; if moving left, <0 means we're outside the buffer
+								; if moving right, >= 0 means we're outside the buffer
+	STA <Temp_Var1				; Temp_Var1 = how far out of or in the buffer we are
+	PHA
+	LDA <Temp_Var2
+	SBC #$00
+	STA <Temp_Var2
+	PLA
+	EOR ScrollLRMask,Y			; result >= 0 if we're inside the buffer, so no scroll needed
+	BPL _scroll_update_done
 
-	LDA <Horz_Scroll_Hi
-	STA <Temp_Var1		; Temp_Var1 = Horz_Scroll_Hi
-
-	LDA #$80
-	ADD <Horz_Scroll
-	STA <Temp_Var2	 ; Temp_Var2 = $80 + Horz_Scroll
-	BCC PRG008_B166	 ; If no carry, jump to PRG008_B166
-
-	INC <Temp_Var1	 ; Apply carry
-
-PRG008_B166:
-	LDA <Player_XHi
-	CMP <Temp_Var1
-	BLS PRG008_B1CE	 ; If Player_XHi < Temp_Var1 (Horizontal scroll as appropriate when adding $80), jump to PRG008_B1CE
-
-	LDA <Player_X
-	SUB <Temp_Var2
-	BEQ PRG008_B1CE	 ; If Player_X = Temp_Var2 ($80 + Horz_SCroll), jump to PRG008_B1CE
-	BMI PRG008_B1CE	 ; If Player_X < Temp_Var2 ($80 + Horz_SCroll), jump to PRG008_B1CE
-
-	STA Level_ScrollDiffH	 ; Result stored into Level_ScrollDiffH
-
-	ADD <Horz_Scroll
-	STA <Horz_Scroll	 ; Horz_Scroll += Level_ScrollDiffH
-	BCC PRG008_B181	 	; If no carry, jump to PRG008_B181
-	INC <Horz_Scroll_Hi	 ; Otherwise, apply carry
-
-PRG008_B181:
-	LDA #$00	 
-	STA <Scroll_LastDir	 ; Scroll_LastDir = 0 (screen last moved right)
-
-	LDA <Horz_Scroll_Hi
-	CMP <Level_Width
-	BLS PRG008_B1CE	 	; If Horz_Scroll_Hi < Level_Width, jump to PRG008_B1CE
-
-	; Otherwise...
-	LDA #$00
-	STA <Horz_Scroll	 ; Horz_Scroll = 0
-	STA Level_ScrollDiffH	 ; Level_ScrollDiffH = 0
-	JMP PRG008_B1CE	 	; Jump to PRG008_B1CE
-
-PRG008_B195:
-	LDA <Horz_Scroll_Hi
-	STA <Temp_Var1		; Temp_Var1 = Horz_Scroll_Hi
-
-	LDA #$70
-	ADD <Horz_Scroll
-	STA <Temp_Var2		; Temp_Var2 = $70 + Horz_Scroll
-	BCC PRG008_B1A4	 	; If no carry, jump to PRG008_B1A4
-	INC <Temp_Var1		 ; Otherwise, apply carry
-
-PRG008_B1A4:
+	;;; UpdateCatchupBounds
+	LDX PlayerDirection
+	LDY #$02
+	LDA CameraMoveTrigger
+	CMP CameraStopBounds,X		; Have we reached $90, $60?
+	BPL _post_set_proper_offs	; Y = 2 if we need to move the camera left
+	INY							; Y = 3 if we need to move the camera right
+_post_set_proper_offs:
+	; if moving left, Temp_Var1 < 0 means we're outside the buffer
+	; if moving right, Temp_Var1 >=0 means we're outside the buffer
+	; So this one's interesting:
+	; If:
+	; 1. Mario moving left, trigger >= $90, mario outside zone
+	;    - we're at the edge, so no "catchup" needed
+	; 2. Mario moving left, trigger >= $90, mario inside zone
+	;    - FFFE xor 0+ < 0, so do next xor.
+	;    - 0000 xor 0+ >= 0, so return
+	; Trigger >= $90 means we're done catching up, and we only have
+	; to scroll extra if trigger < $90 and mario moving left
+	; Same for the right side.
+	LDA CameraScrollSpeeds,Y
+	EOR <Temp_Var1
+	BPL _catchup_bounds_done
+	LDA CameraScrollSpeeds-1,X
+	EOR <Temp_Var1
+	BPL _catchup_bounds_done
 	LDA <Temp_Var1
-	CMP <Player_XHi
-	BLS PRG008_B1CE	 	; If Temp_Var1 < Player_XHi, jump to PRG008_B1CE
+	CLC
+	; Y is 2 or 3 at this point
+	ADC CatchupScrollAmts-2,Y
+	BEQ _catchup_bounds_done
+	STA <Temp_Var1
+	STY CameraProperOffs
+	;;; End UpdateCatchupBounds
 
-	LDA <Player_X
-	SUB <Temp_Var2
-	BPL PRG008_B1CE	 	; If Player_X >= Temp_Var2, jump to PRG008_B1CE
 
-	STA Level_ScrollDiffH	; Store difference into Level_ScrollDiffH
+_catchup_bounds_done:
 
-	ADD <Horz_Scroll
-	STA <Horz_Scroll	; Horz_Scroll += Level_ScrollDiffH
-	BCS PRG008_B1BD	 	; If carry set, jump to PRG008_B1BD
-	DEC <Horz_Scroll_Hi	; Otherwise, remove carry
-
-PRG008_B1BD:
-	LDA #$01
-	STA <Scroll_LastDir	; Scroll_LastDir = 1 (last moved left)
-
-	LDA <Horz_Scroll_Hi
-	BPL PRG008_B1CE	 	; If Horz_Scroll_Hi >= 0, jump to PRG008_B1CE
-
-	; Clear a bunch
-	LDA #$00	 
+	LDA <Temp_Var1			; how much we're going to scroll
+	STA Level_ScrollDiffH
+	CLC
+	ADC <Horz_Scroll
+	PHA
+	LDA <Temp_Var2
+	ADC #$00
+	STA <Temp_Var2
+	BPL _store_horz_scroll
+	PLA
+	LDA #$00
+	STA Level_ScrollDiffH
 	STA <Horz_Scroll_Hi
 	STA <Horz_Scroll
-	STA Level_ScrollDiffH
+	BEQ _scroll_update_done		; branch always
+
+_store_horz_scroll:
+	PLA
+	STA <Horz_Scroll
+	LDA <Temp_Var2
+	STA <Horz_Scroll_Hi
+
+	CMP <Level_Width
+	BMI _scroll_update_done
+	LDA <Level_Width
+	STA <Horz_Scroll_Hi
+	LDA #$00
+	STA Horz_Scroll
+
+_scroll_update_done:
+
+
+	;LDA <Horz_Scroll_Hi
+	;ADC #$00
+	;STA <Horz_Scroll_Hi
+	;BPL PRG008_B195	 ; If Player_X >= Horz_Scroll, jump to PRG008_B195
+
+	;LDA <Horz_Scroll_Hi
+	;STA <Temp_Var1		; Temp_Var1 = Horz_Scroll_Hi
+
+	;LDA #$80
+	;ADD <Horz_Scroll
+	;STA <Temp_Var2	 ; Temp_Var2 = $80 + Horz_Scroll
+	;BCC PRG008_B166	 ; If no carry, jump to PRG008_B166
+
+	;INC <Temp_Var1	 ; Apply carry
+PRG008_B166:
+	;LDA <Player_XHi
+	;CMP <Temp_Var1
+	;BLS PRG008_B1CE	 ; If Player_XHi < Temp_Var1 (Horizontal scroll as appropriate when adding $80), jump to PRG008_B1CE
+
+	;LDA <Player_X
+	;SUB <Temp_Var2
+	;BEQ PRG008_B1CE	 ; If Player_X = Temp_Var2 ($80 + Horz_SCroll), jump to PRG008_B1CE
+	;BMI PRG008_B1CE	 ; If Player_X < Temp_Var2 ($80 + Horz_SCroll), jump to PRG008_B1CE
+
+	;STA Level_ScrollDiffH	 ; Result stored into Level_ScrollDiffH
+
+	;ADD <Horz_Scroll
+	;STA <Horz_Scroll	 ; Horz_Scroll += Level_ScrollDiffH
+	;BCC PRG008_B181	 	; If no carry, jump to PRG008_B181
+	;INC <Horz_Scroll_Hi	 ; Otherwise, apply carry
+
+PRG008_B181:
+	;LDA #$00
+	;STA <Scroll_LastDir	 ; Scroll_LastDir = 0 (screen last moved right)
+
+	;LDA <Horz_Scroll_Hi
+	;CMP <Level_Width
+	;BLS PRG008_B1CE	 	; If Horz_Scroll_Hi < Level_Width, jump to PRG008_B1CE
+
+	; Otherwise...
+	;LDA #$00
+	;STA <Horz_Scroll	 ; Horz_Scroll = 0
+	;STA Level_ScrollDiffH	 ; Level_ScrollDiffH = 0
+	;JMP PRG008_B1CE	 	; Jump to PRG008_B1CE
+
+PRG008_B195:
+	;LDA <Horz_Scroll_Hi
+	;STA <Temp_Var1		; Temp_Var1 = Horz_Scroll_Hi
+
+	;LDA #$70
+	;ADD <Horz_Scroll
+	;STA <Temp_Var2		; Temp_Var2 = $70 + Horz_Scroll
+	;BCC PRG008_B1A4	 	; If no carry, jump to PRG008_B1A4
+	;INC <Temp_Var1		 ; Otherwise, apply carry
+
+PRG008_B1A4:
+	;LDA <Temp_Var1
+	;CMP <Player_XHi
+	;BLS PRG008_B1CE	 	; If Temp_Var1 < Player_XHi, jump to PRG008_B1CE
+
+	;LDA <Player_X
+	;SUB <Temp_Var2
+	;BPL PRG008_B1CE	 	; If Player_X >= Temp_Var2, jump to PRG008_B1CE
+
+	;STA Level_ScrollDiffH	; Store difference into Level_ScrollDiffH
+
+	;ADD <Horz_Scroll
+	;STA <Horz_Scroll	; Horz_Scroll += Level_ScrollDiffH
+	;BCS PRG008_B1BD	 	; If carry set, jump to PRG008_B1BD
+	;DEC <Horz_Scroll_Hi	; Otherwise, remove carry
+
+PRG008_B1BD:
+	;LDA #$01
+	;STA <Scroll_LastDir	; Scroll_LastDir = 1 (last moved left)
+
+	;LDA <Horz_Scroll_Hi
+	;BPL PRG008_B1CE	 	; If Horz_Scroll_Hi >= 0, jump to PRG008_B1CE
+
+	; Clear a bunch
+	;LDA #$00
+	;STA <Horz_Scroll_Hi
+	;STA <Horz_Scroll
+	;STA Level_ScrollDiffH
+
+
+	LDY CameraProperOffs
+	LDX #$00
+	LDA CameraMoveTrigger
+	CMP CameraBackAmts,Y
+	BEQ _hscroll_end
+	CLC
+	ADC CatchupBackAmts,Y
+_hscroll_end:
+	STA CameraMoveTrigger
+	STX CameraProperOffs
 
 PRG008_B1CE:
 	LDA <Player_SpriteX
@@ -6953,7 +7077,8 @@ Player_ApplyVelocity:
 	BNE PRG008_BFBE	 	; If we're not doing the X velocity, jump to PRG008_BFBE
 
 	; X Velocity only:
-	ADD Player_XVelAdj	; Add Player_XVelAdj
+	;ADD Player_XVelAdj	; Add Player_XVelAdj
+	JSR Calc_Player_Direction
 
 PRG008_BFBE:
 	PHA		 ; Save result
@@ -7032,3 +7157,4 @@ PRG008_BFF9:
 ; Rest of ROM bank was empty
 
 
+_end_8

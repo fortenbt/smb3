@@ -5085,3 +5085,13 @@ Video_NSpadeBG:
 
 ; Rest of ROM bank was empty
 
+Initialize_Level_Scroll:
+	LDA #$00
+	STA Vert_Scroll_Off
+	STA CameraLeftBuffer
+	STA CameraRightBuffer
+	STA CameraProperOffs
+	LDA #$80
+	STA CameraMoveTrigger
+	RTS
+_end22

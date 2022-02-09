@@ -1551,7 +1551,8 @@ PAUSE_RESUMEMUSIC	= $02	; Resume sound (resumes music)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	.org $0500	; $0500-$05FF is available for this context-dependent situation
 
-				.ds 16	; $0500-$050F unused
+	PlayerDirection:	.ds 1
+				.ds 15	; $0500-$050F unused
 
 	; Event_Countdown is context dependent; without context, does nothing
 	; * When you come out of a pipe, this counter decrements until the pipe should be finished
@@ -2807,7 +2808,20 @@ CARD_1UP	= 3
 CARD_10COIN	= 4
 CARD_20COIN	= 5
 CARD_WILD	= 8	; UNUSED Wild card (can match any other!)
-	Card_ActiveSet:		.ds 18	; $7E82-$7E93 Active set of N-Spade game cards
+	;Card_ActiveSet:		.ds 18	; $7E82-$7E93 Active set of N-Spade game cards
+	Card_ActiveSet:				; [ORANGE] Since this is unused and immediately
+								; follows Level_BlockGrabHitMem which is initialized
+								; by the level loading logic, we'll take it over
+								; and put level-load-initialized stuff here.
+; [ORANGE] These also look pretty good at $A0, $50 as well
+; but stock SMW sets them to $90 and $60
+CAMERA_STOP_RIGHT = $90
+CAMERA_STOP_LEFT  = $60
+	CameraMoveTrigger:	.ds 1	; Initialized to $80
+	CameraLeftBuffer:	.ds 1	; every frame, set to CameraMoveTrigger-0xC
+	CameraRightBuffer:	.ds 1	; every frame, set to CameraMoveTrigger+0xC
+	CameraProperOffs:	.ds 1
+						.ds 14
 
 	; Tile_AttrTable:
 	; On the world map, it's always the following:

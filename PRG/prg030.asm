@@ -1388,8 +1388,13 @@ PRG030_8975:
 PRG030_897B:
 	; Level junctions enter here, to continue with preparation to display!
 
-	LDA #$00	
-	STA Vert_Scroll_Off	; Vert_Scroll_Off = 0
+	;;LDA #$00
+	;;;STA Vert_Scroll_Off	; Vert_Scroll_Off = 0
+	;;; [ORANGE] Page 22@C000 and Page 12@A000 at this point
+	;;;          Page 22 has a lot of space, so we'll put our stuff there.
+	JSR Initialize_Level_Scroll
+	NOP
+	NOP
 
 	; If Level_Tileset = 16 (Spade game sliding cards) or 17 (N-Spade), jump to PRG030_89AB
 	LDA Level_Tileset
@@ -5898,3 +5903,28 @@ CheckSpinjumpStomp:
 _no_spinjump_poof:
 	LDA Objects_State,X	; do the instruction we hooked
 	RTS
+
+;;;
+;;; Calc_Player_Direction
+;;;
+;;; This sets PlayerDirection, which holds which direction
+;;; the player is _moving_. If the player is not moving,
+;;; then it uses the direction the player is facing. This
+;;; was added for the SMW "lookahead" scrolling.
+Calc_Player_Direction:
+	ADD Player_XVelAdj	; Add Player_XVelAdj (hooked instruction)
+	LDY #$00			; Assume Left
+	BIT <Player_XVel
+	BMI _set_player_dir	; If negative, we are moving left
+	BEQ _check_flipbits	; If 0, we'll look at mario's facing direction
+_player_dir_right:
+	LDY #$01			; Otherwise, Right (1)
+_set_player_dir:
+	STY PlayerDirection	; Left = 0, Right = 1
+	RTS
+_check_flipbits:
+	LDY <Player_FlipBits
+	BEQ _set_player_dir	; 0 is facing left
+	BNE _player_dir_right
+
+_end_30
