@@ -3873,8 +3873,8 @@ PRG004_B29F:
 PRG004_B2A2:
 	JMP PRG004_AF1A	 ; (Indirectly) Handle getting bumped underneath and don't come back
 
-ParaTroopaFly_Accel:	.byte $01, $FF
-ParaTroopaFly_Limit:	.byte $10, $F0
+ParaTroopaFly_Accel:	.byte $FF, $01
+ParaTroopaFly_Limit:	.byte $F0, $10
 
 ObjNorm_FlyingGreenPara:
 	JSR Object_DeleteOffScreen_N2	 ; Delete if object falls off screen
