@@ -4551,10 +4551,15 @@ PRG008_B52F:
 	DEY
 
 PRG008_B536:
-	TYA		
+	TYA
 	BNE PRG008_B53B	 ; If Y <> 0, jump to PRG008_B53B
 
 	STA <Player_XVel ; Otherwise, halt Player horizontally
+	;;; [ORANGE] Now that we've been "pushed out" of the tile in front of us, rerun the collision detection
+	;;; This allows for detecting a wall tile at our face and being pushed back out before we possibly
+	;;; detect a wall tile at our feet and flag that Mario is on the ground when he's not. Thus, this fixes
+	;;; wall clipping at the expense of extra logic for wall collision detection
+	JMP Player_DetectSolids
 
 PRG008_B53B:
 	LDA <Player_YVel
