@@ -2184,6 +2184,7 @@ Player_StandOnPlatform:
 	; Flag Player as NOT mid-air
 	LDY #$00
 	STY <Player_InAir
+	STY SpinjumpFlag
 
 	LDA Object_VelCarry
 	BPL PRG002_AA7B	
