@@ -3706,331 +3706,331 @@ PRG002_B20F:
 	RTS		 ; Return
 
 ObjInit_Toad:
-	LDY <Objects_YHi,X
-	BEQ PRG002_B21A	 ; If Toad is high up, jump to PRG002_B21A
+	;LDY <Objects_YHi,X
+	;BEQ PRG002_B21A	 ; If Toad is high up, jump to PRG002_B21A
 
 	; If you came via a Map Entry override, we assume it's a white toad house!
-	LDA Map_EnterViaID
-	BEQ PRG002_B21A		; If not an override, jump to PRG002_B21A
+	;LDA Map_EnterViaID
+	;BEQ PRG002_B21A		; If not an override, jump to PRG002_B21A
 
-	INY		 ; Otherwise, Y = 1 
+	;INY		 ; Otherwise, Y = 1
 
 PRG002_B21A:
-	STY <Objects_Var5,X	 ; -> Objects_Var5 (which message Toad gives)
+	;STY <Objects_Var5,X	 ; -> Objects_Var5 (which message Toad gives)
 
 	; Toad is always on the lower screen space
-	LDA #$01
-	STA <Objects_YHi,X
+	;LDA #$01
+	;STA <Objects_YHi,X
 
 	; Stop the timer
-	STA Level_TimerEn
+	;STA Level_TimerEn
 
 	; Halt the Player
-	LDA #$ff
-	STA Player_HaltTick
+	;LDA #$ff
+	;STA Player_HaltTick
 
-	LDA #$00
-	STA <Map_UseItem	; Clear item usage flag
-	STA Player_Behind	; Player is not behind anything
-	STA ToadTalk_CPos	; Clear the Toad character position counter
+	;LDA #$00
+	;STA <Map_UseItem	; Clear item usage flag
+	;STA Player_Behind	; Player is not behind anything
+	;STA ToadTalk_CPos	; Clear the Toad character position counter
 
 	; Set the starting VRAM addresses
-	LDA #$28
-	STA ToadTalk_VH
-	LDA #$c8
-	STA ToadTalk_VL
+	;LDA #$28
+	;STA ToadTalk_VH
+	;LDA #$c8
+	;STA ToadTalk_VL
 
-	RTS		 ; Return
+	;RTS		 ; Return
 
 PRG002_B23D:
-	.byte $08, $04, $02, $01
+	;.byte $08, $04, $02, $01
 
 ObjNorm_Toad:
 
 	; Always turn to face Player
-	JSR Object_CalcCoarseXDiff
-	STA Objects_FlipBits,X
+	;JSR Object_CalcCoarseXDiff
+	;STA Objects_FlipBits,X
 
 	; Do Toad's dialog message
-	JSR Toad_Speak
+	;JSR Toad_Speak
 
-	LDA Player_HaltTick
-	ORA InvFlip_Counter
-	BNE PRG002_B261	 ; If Player is still halted or inventory is open, jump to PRG002_B261
+	;LDA Player_HaltTick
+	;ORA InvFlip_Counter
+	;BNE PRG002_B261	 ; If Player is still halted or inventory is open, jump to PRG002_B261
 
-	LDA <Pad_Input
-	AND #$10
-	BEQ PRG002_B261	 ; If Player is NOT pressing START, jump to PRG002_B261
+	;LDA <Pad_Input
+	;AND #$10
+	;BEQ PRG002_B261	 ; If Player is NOT pressing START, jump to PRG002_B261
 
 	; Flip open inventory
-	LDA #$01
-	STA Inventory_Open
+	;LDA #$01
+	;STA Inventory_Open
 
 	; Start on first inventory item
-	LSR A	; A = 0
-	STA InvStart_Item
+	;LSR A	; A = 0
+	;STA InvStart_Item
 
 PRG002_B261:
-	LDA InvFlip_Counter
-	CMP #$04
-	BNE PRG002_B272	 ; If Inventory is fully open, jump to PRG002_B272
+	;LDA InvFlip_Counter
+	;CMP #$04
+	;BNE PRG002_B272	 ; If Inventory is fully open, jump to PRG002_B272
 
-	LDA <Pad_Input
-	AND #%11110011
-	BEQ PRG002_B272	 ; If Player is not pressing anything (besides up/down), jump to PRG002_B272
+	;LDA <Pad_Input
+	;AND #%11110011
+	;BEQ PRG002_B272	 ; If Player is not pressing anything (besides up/down), jump to PRG002_B272
 
 	; Force like Player pressed 'B' (close inventory)
-	LDA #$40
-	STA <Pad_Input
+	;LDA #$40
+	;STA <Pad_Input
 
 PRG002_B272:
-	JMP Object_Draw16x32Sprite	 ; Draw Toad's sprite and don't come back!
+	;JMP Object_Draw16x32Sprite	 ; Draw Toad's sprite and don't come back!
 
 
 Toad_Speak:
-	LDA <Objects_Var4,X	 ; Get current dialog state
-	JSR DynJump
+	;LDA <Objects_Var4,X	 ; Get current dialog state
+	;JSR DynJump
 
 	; THESE MUST FOLLOW DynJump FOR THE DYNAMIC JUMP TO WORK!!
-	.word Toad_DrawDiagBox
-	.word Toad_DoToadText
-	.word PRG002_B4B1	; Does nothing
+	;.word Toad_DrawDiagBox
+	;.word Toad_DoToadText
+	;.word PRG002_B4B1	; Does nothing
 
-TDiagBox_R1:	.byte $94, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $96
-TDiagBox_R2:	.byte $92, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $93
-TDiagBox_R3:	.byte $95, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $97
+TDiagBox_R1:	;.byte $94, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $90, $96
+TDiagBox_R2:	;.byte $92, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $93
+TDiagBox_R3:	;.byte $95, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $91, $97
 
 TDiagBox_RowOffs:
-	.byte (TDiagBox_R1 - TDiagBox_R1), (TDiagBox_R2 - TDiagBox_R1), (TDiagBox_R2 - TDiagBox_R1), (TDiagBox_R2 - TDiagBox_R1)
-	.byte (TDiagBox_R2 - TDiagBox_R1), (TDiagBox_R2 - TDiagBox_R1), (TDiagBox_R2 - TDiagBox_R1), (TDiagBox_R3 - TDiagBox_R1)
+	;.byte (TDiagBox_R1 - TDiagBox_R1), (TDiagBox_R2 - TDiagBox_R1), (TDiagBox_R2 - TDiagBox_R1), (TDiagBox_R2 - TDiagBox_R1)
+	;.byte (TDiagBox_R2 - TDiagBox_R1), (TDiagBox_R2 - TDiagBox_R1), (TDiagBox_R2 - TDiagBox_R1), (TDiagBox_R3 - TDiagBox_R1)
 TDiagBox_RowOffs_End
 
 Toad_DrawDiagBox:
-	LDX Graphics_BufCnt	 ; X = current graphics buffer counter
+	;LDX Graphics_BufCnt	 ; X = current graphics buffer counter
 
 	; Store the current VRAM address into the buffer
-	LDA ToadTalk_VH
-	STA Graphics_Buffer,X
-	LDA ToadTalk_VL
-	STA Graphics_Buffer+1,X
+	;LDA ToadTalk_VH
+	;STA Graphics_Buffer,X
+	;LDA ToadTalk_VL
+	;STA Graphics_Buffer+1,X
 
 	; Store the next row address (+32 bytes to next row)
-	ADD #$20	; 32 bytes to next row
-	STA ToadTalk_VL
-	BCC PRG002_B2D5
-	INC ToadTalk_VH	 ; Apply carry
+	;ADD #$20	; 32 bytes to next row
+	;STA ToadTalk_VL
+	;BCC PRG002_B2D5
+	;INC ToadTalk_VH	 ; Apply carry
 PRG002_B2D5:
 
-	LDA #(TDiagBox_R2 - TDiagBox_R1)	; run count per row
-	STA Graphics_Buffer+2,X
-	STA <Temp_Var1		 ; -> Temp_Var1
+	;LDA #(TDiagBox_R2 - TDiagBox_R1)	; run count per row
+	;STA Graphics_Buffer+2,X
+	;STA <Temp_Var1		 ; -> Temp_Var1
 
-	LDY ToadTalk_CPos	 ; Y = current dialog box row
-	LDA TDiagBox_RowOffs,Y
-	TAY		 	; Y = offset to this row index
+	;LDY ToadTalk_CPos	 ; Y = current dialog box row
+	;LDA TDiagBox_RowOffs,Y
+	;TAY		 	; Y = offset to this row index
 
 PRG002_B2E3:
 	; Store next pattern in dialog box
-	LDA TDiagBox_R1,Y
-	STA Graphics_Buffer+3,X
+	;LDA TDiagBox_R1,Y
+	;STA Graphics_Buffer+3,X
 
-	INY		 ; Y++ (next pattern for dialog box)
-	INX		 ; X++ (next index in graphics buffer)
+	;INY		 ; Y++ (next pattern for dialog box)
+	;INX		 ; X++ (next index in graphics buffer)
 
-	DEC <Temp_Var1	 ; Temp_Var1--
-	BNE PRG002_B2E3	 ; While Temp_Var1 > 0, loop!
+	;DEC <Temp_Var1	 ; Temp_Var1--
+	;BNE PRG002_B2E3	 ; While Temp_Var1 > 0, loop!
 
 	; Insert terminator
-	LDA #$00
-	STA Graphics_Buffer+3,X
+	;LDA #$00
+	;STA Graphics_Buffer+3,X
 
 	; X += 3
-	INX
-	INX
-	INX
-	STX Graphics_BufCnt
+	;INX
+	;INX
+	;INX
+	;STX Graphics_BufCnt
 
-	LDX <SlotIndexBackup	 ; X = object slot index
+	;LDX <SlotIndexBackup	 ; X = object slot index
 
-	INC ToadTalk_CPos	 ; Next row
+	;INC ToadTalk_CPos	 ; Next row
 
-	LDA ToadTalk_CPos
-	CMP #(TDiagBox_RowOffs_End - TDiagBox_RowOffs)
-	BLT PRG002_B325	 ; If row count < 8, jump to PRG002_B325 (RTS)
+	;LDA ToadTalk_CPos
+	;CMP #(TDiagBox_RowOffs_End - TDiagBox_RowOffs)
+	;BLT PRG002_B325	 ; If row count < 8, jump to PRG002_B325 (RTS)
 
 	; Dialog box is complete
 
-	LDY <Objects_Var5,X	 ; Y = Objects_Var5
+	;LDY <Objects_Var5,X	 ; Y = Objects_Var5
 
 	; Toad's Var1 and Var2 store the current pointer to the text he's reciting
-	LDA ToadMsg_Low,Y
-	STA Objects_Var1,X
-	LDA ToadMsg_High,Y
-	STA Objects_Var2,X
+	;LDA ToadMsg_Low,Y
+	;STA Objects_Var1,X
+	;LDA ToadMsg_High,Y
+	;STA Objects_Var2,X
 
 	; Reset the VRAM address for the dialog text
-	LDA #$28
-	STA ToadTalk_VH
-	LDA #$e9
-	STA ToadTalk_VL
+	;LDA #$28
+	;STA ToadTalk_VH
+	;LDA #$e9
+	;STA ToadTalk_VL
 
 	; Toad's timer = $10
-	LDA #$10
-	STA Objects_Timer,X
+	;LDA #$10
+	;STA Objects_Timer,X
 
-	INC <Objects_Var4,X	 ; Objects_Var4 = 1 (next dialog state)
+	;INC <Objects_Var4,X	 ; Objects_Var4 = 1 (next dialog state)
 
 PRG002_B325:
-	RTS		 ; Return
+	;RTS		 ; Return
 
 	; English: "Pick a box." / "Its contents" / "will help you" / "on your way"
 ToadMsg_Standard:
 	;            P    i    c    k         a         b    o    x    .
-	.byte $FE, $BF, $D8, $D2, $DA, $FE, $D0, $FE, $D1, $DE, $88, $E9, $FE, $FE, $FE
+	;.byte $FE, $BF, $D8, $D2, $DA, $FE, $D0, $FE, $D1, $DE, $88, $E9, $FE, $FE, $FE
 
 	;            I    t    s         c    o    n    t    e    n    t    s
-	.byte $FE, $B8, $CD, $CC, $FE, $D2, $DE, $DD, $CD, $D4, $DD, $CD, $CC, $FE, $FE
+	;.byte $FE, $B8, $CD, $CC, $FE, $D2, $DE, $DD, $CD, $D4, $DD, $CD, $CC, $FE, $FE
 
 	;            w    i    l    l         h    e    l    p         y    o    u
-	.byte $FE, $81, $D8, $DB, $DB, $FE, $D7, $D4, $DB, $DF, $FE, $8C, $DE, $CE, $FE
+	;.byte $FE, $81, $D8, $DB, $DB, $FE, $D7, $D4, $DB, $DF, $FE, $8C, $DE, $CE, $FE
 
 	;            o    n         y    o    u    r         w    a    y    .
-	.byte $FE, $DE, $DD, $FE, $8C, $DE, $CE, $CB, $FE, $81, $D0, $8C, $E9, $FE, $FE
+	;.byte $FE, $DE, $DD, $FE, $8C, $DE, $CE, $CB, $FE, $81, $D0, $8C, $E9, $FE, $FE
 
 	;
-	.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	;.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
 
 	;
-	.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	;.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
 
 	; English: "One toot on" / "this whistle" / "will send you" / "to a far away" / "land!"
 ToadMsg_WarpWhistle:
 	;       O    n    e         t    o    o    t         o    n
-	.byte $BE, $DD, $D4, $FE, $CD, $DE, $DE, $CD, $FE, $DE, $DD, $FE, $FE, $FE, $FE
+	;.byte $BE, $DD, $D4, $FE, $CD, $DE, $DE, $CD, $FE, $DE, $DD, $FE, $FE, $FE, $FE
 
 	;       t    h    i    s         w    h    i    s    t    l    e
-	.byte $CD, $D7, $D8, $CC, $FE, $81, $D7, $D8, $CC, $CD, $DB, $D4, $FE, $FE, $FE
+	;.byte $CD, $D7, $D8, $CC, $FE, $81, $D7, $D8, $CC, $CD, $DB, $D4, $FE, $FE, $FE
 
 	;       w    i    l    l         s    e    n    d         y    o    u
-	.byte $81, $D8, $DB, $DB, $FE, $CC, $D4, $DD, $D3, $FE, $8C, $DE, $CE, $FE, $FE
+	;.byte $81, $D8, $DB, $DB, $FE, $CC, $D4, $DD, $D3, $FE, $8C, $DE, $CE, $FE, $FE
 
 	;       t    o         a         f    a    r         a    w    a    y
-	.byte $CD, $DE, $FE, $D0, $FE, $D5, $D0, $CB, $E5, $D0, $81, $D0, $8C, $FE, $FE
+	;.byte $CD, $DE, $FE, $D0, $FE, $D5, $D0, $CB, $E5, $D0, $81, $D0, $8C, $FE, $FE
 
 	;       l    a    n    d    !
-	.byte $DB, $D0, $DD, $D3, $EA, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	;.byte $DB, $D0, $DD, $D3, $EA, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
 
 	;
-	.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	;.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
 
 	; English: "Hello! You" / "found my shop" / "of strange and" / "wonderful" / "things!"
 ToadMsg_AnchorPWing:
 	;            H    e    l    l    o    !         Y    o    u
-	.byte $FE, $B7, $D4, $DB, $DB, $DE, $EA, $FE, $C8, $DE, $CE, $FE, $FE, $FE, $FE
+	;.byte $FE, $B7, $D4, $DB, $DB, $DE, $EA, $FE, $C8, $DE, $CE, $FE, $FE, $FE, $FE
 
 	;            f    o    u    n    d         m    y         s    h    o    p
-	.byte $FE, $D5, $DE, $CE, $DD, $D3, $FE, $DC, $8C, $FE, $CC, $D7, $DE, $DF, $FE
+	;.byte $FE, $D5, $DE, $CE, $DD, $D3, $FE, $DC, $8C, $FE, $CC, $D7, $DE, $DF, $FE
 
 	;            o    f         s    t    r    a    n    g    e         a    n    d
-	.byte $FE, $DE, $D5, $FE, $CC, $CD, $CB, $D0, $DD, $D6, $D4, $FE, $D0, $DD, $D3
+	;.byte $FE, $DE, $D5, $FE, $CC, $CD, $CB, $D0, $DD, $D6, $D4, $FE, $D0, $DD, $D3
 
 	;            w    o    n    d    e    r    f    u    l
-	.byte $FE, $81, $DE, $DD, $D3, $D4, $CB, $D5, $CE, $DB, $FE, $FE, $FE, $FE, $FE
+	;.byte $FE, $81, $DE, $DD, $D3, $D4, $CB, $D5, $CE, $DB, $FE, $FE, $FE, $FE, $FE
 
 	;            t    h    i    n    g    s    !
-	.byte $FE, $CD, $D7, $D8, $DD, $D6, $CC, $EA, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	;.byte $FE, $CD, $D7, $D8, $DD, $D6, $CC, $EA, $FE, $FE, $FE, $FE, $FE, $FE, $FE
 
 	;
-	.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
+	;.byte $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE, $FE
 
 	; Pointer table to Toad's three messages
 	; Warp Whistle
 	; Standard
 	; Anchor/P-Wing
-ToadMsg_Low:	.byte LOW(ToadMsg_WarpWhistle), LOW(ToadMsg_Standard), LOW(ToadMsg_AnchorPWing)
-ToadMsg_High:	.byte HIGH(ToadMsg_WarpWhistle), HIGH(ToadMsg_Standard), HIGH(ToadMsg_AnchorPWing)
+ToadMsg_Low:	;.byte LOW(ToadMsg_WarpWhistle), LOW(ToadMsg_Standard), LOW(ToadMsg_AnchorPWing)
+ToadMsg_High:	;.byte HIGH(ToadMsg_WarpWhistle), HIGH(ToadMsg_Standard), HIGH(ToadMsg_AnchorPWing)
 
 
 Toad_DoToadText:
-	LDA Objects_Timer,X
-	BNE PRG002_B4B1	 ; If timer not expired, jump to PRG002_B4B1
+	;LDA Objects_Timer,X
+	;BNE PRG002_B4B1	 ; If timer not expired, jump to PRG002_B4B1
 
 	; Store address of text -> Temp_Var1/2
-	LDA Objects_Var1,X
-	STA <Temp_Var1
-	LDA Objects_Var2,X
-	STA <Temp_Var2
+	;LDA Objects_Var1,X
+	;STA <Temp_Var1
+	;LDA Objects_Var2,X
+	;STA <Temp_Var2
 
-	INC Objects_Var1,X	; Next character
-	BNE PRG002_B451
-	INC Objects_Var2,X	; Apply carry
+	;INC Objects_Var1,X	; Next character
+	;BNE PRG002_B451
+	;INC Objects_Var2,X	; Apply carry
 PRG002_B451:
 
-	LDY #$00	 	; Y = 0
-	LDA [Temp_Var1],Y	; Get character here
-	TAY		 	; -> 'Y'
-	CPY #$FE
-	BEQ PRG002_B468	 	; If this is a "space", jump to PRG002_B468
+	;LDY #$00	 	; Y = 0
+	;LDA [Temp_Var1],Y	; Get character here
+	;TAY		 	; -> 'Y'
+	;CPY #$FE
+	;BEQ PRG002_B468	 	; If this is a "space", jump to PRG002_B468
 
 	; Play "blip" sound every other letter
-	LDA ToadTalk_VL
-	LSR A
-	BCC PRG002_B468
+	;LDA ToadTalk_VL
+	;LSR A
+	;BCC PRG002_B468
 
 	; Play text "blip" sound
-	LDA Sound_QLevel1
-	ORA #SND_LEVELBLIP
-	STA Sound_QLevel1
+	;LDA Sound_QLevel1
+	;ORA #SND_LEVELBLIP
+	;STA Sound_QLevel1
 
 PRG002_B468:
-	TYA
+	;TYA
 
-	LDY Graphics_BufCnt	 ; Y = graphics buffer counter
-	STA Graphics_Buffer+3,Y	 ; Store into buffer
+	;LDY Graphics_BufCnt	 ; Y = graphics buffer counter
+	;STA Graphics_Buffer+3,Y	 ; Store into buffer
 
 	; Insert one character into graphics buffer
-	LDA ToadTalk_VH
-	STA Graphics_Buffer,Y	; address high
-	LDA #$01	 
-	STA Graphics_Buffer+2,Y	; run length
-	LSR A
-	STA Graphics_Buffer+4,Y	; terminator
-	TYA
-	ADD #$04
-	STA Graphics_BufCnt	; count
-	LDA ToadTalk_VL
-	STA Graphics_Buffer+1,Y	; address low
+	;LDA ToadTalk_VH
+	;STA Graphics_Buffer,Y	; address high
+	;LDA #$01
+	;STA Graphics_Buffer+2,Y	; run length
+	;LSR A
+	;STA Graphics_Buffer+4,Y	; terminator
+	;TYA
+	;ADD #$04
+	;STA Graphics_BufCnt	; count
+	;LDA ToadTalk_VL
+	;STA Graphics_Buffer+1,Y	; address low
 
-	INC ToadTalk_VL	 ; Next VRAM byte
-	AND #$1f	 	; Get current column
-	CMP #$17
-	BNE PRG002_B4AC	 	; If we're not in column 23, jump to PRG024_A25B
+	;INC ToadTalk_VL	 ; Next VRAM byte
+	;AND #$1f	 	; Get current column
+	;CMP #$17
+	;BNE PRG002_B4AC	 	; If we're not in column 23, jump to PRG024_A25B
 
 	; Line break!
 
-	LDA ToadTalk_VL
-	ADC #$10		; Add enough bytes to get to next row
-	STA ToadTalk_VL
-	BCC PRG002_B4A1
-	INC ToadTalk_VH	; Apply carry
+	;LDA ToadTalk_VL
+	;ADC #$10		; Add enough bytes to get to next row
+	;STA ToadTalk_VL
+	;BCC PRG002_B4A1
+	;INC ToadTalk_VH	; Apply carry
 PRG002_B4A1:
 
-	CMP #$a9
-	BNE PRG002_B4AC	 ; If we haven't reached the last character, jump to PRG002_B4AC
+	;CMP #$a9
+	;BNE PRG002_B4AC	 ; If we haven't reached the last character, jump to PRG002_B4AC
 
-	INC <Objects_Var4,X	 ; Objects_Var4 = 2 (next dialog state)
+	;INC <Objects_Var4,X	 ; Objects_Var4 = 2 (next dialog state)
 
-	LDA #$00
-	STA ToadTalk_CPos
+	;LDA #$00
+	;STA ToadTalk_CPos
 
 PRG002_B4AC:
 
 	; Set timer to $04
-	LDA #$04
-	STA Objects_Timer,X
+	;LDA #$04
+	;STA Objects_Timer,X
 
 PRG002_B4B1:
-	RTS		 ; Return
+	;RTS		 ; Return
 
 	; Pattern for left half of sprite for Toad House item
 ToadItem_PatternLeft:
