@@ -56,7 +56,8 @@ ObjectGroup01_InitJumpTable:
 	.word ObjInit_DoNothing		; Object $41 - OBJ_ENDLEVELCARD
 	.word ObjInit_CheepCheepP2P	; Object $42 - OBJ_CHEEPCHEEPPOOL2POOL
 	.word ObjInit_CheepCheepP2P2	; Object $43 - OBJ_CHEEPCHEEPPOOL2POOL2
-	.word ObjInit_FallingPlatform	; Object $44 - OBJ_WOODENPLATUNSTABLE
+	;.word ObjInit_FallingPlatform	; Object $44 - OBJ_WOODENPLATUNSTABLE
+	.word ObjInit_DoNothing
 	.word ObjInit_HotFoot		; Object $45 - OBJ_HOTFOOT
 	.word ObjInit_PiranhaSpikeBall	; Object $46 - OBJ_PIRANHASPIKEBALL
 	.word ObjInit_DoNothing		; Object $47 - OBJ_GIANTBLOCKCTL
@@ -408,16 +409,22 @@ ObjP45:
 ObjP31:
 ObjP32:
 	.byte $A1, $A3, $A5, $A7, $A9, $AB, $AD, $AF, $71, $71
-ObjP26:
+;;; [ORANGE] ObjP27 is the horizontal platform
+;;; We changed it to be 2x1 rather than 3x1
 ObjP27:
+	.byte $71, $B9, $BB, $B9, $BB, $71
+ObjP26:
 ObjP28:
 ObjP36:
 ObjP37:
 ObjP38:
 ObjP3C:
 ObjP3E:
-ObjP44:
 	.byte $8F, $9D, $9D, $9D, $9D, $9F
+;;; [ORANGE] ObjP44 is the fall platform
+;;; We changed it to be 4x1 instead of 3x1
+ObjP44:
+	.byte $BD, $BF, $BF, $BF, $BF, $BF, $BD, $BF
 ObjP2B:
 	.byte $A9, $AB, $A9, $AD
 ObjP33:
@@ -2266,14 +2273,17 @@ Object_HitFloorAlign:
 	JMP Object_HitGround	 ; Otherwise, align to ground and don't come back!
 
 	; Oscillating platform velocity and limits by direction
-OscXVelLimit:	.byte -$10, $10
-OscXVel:	.byte -$01, $01
+OscXVelLimit:	.byte $18, -$18
+OscYVelLimit:	.byte $20, -$20
+OscXVel:	.byte $02, -$02
+OscYVel:	.byte $04, -$04
 
 ObjNorm_OscillatingH:
 	LDA <Player_HaltGame
-	BNE DeleteIfOffAndDrawWide	 ; Delete if off-screen, otherwise draw wide 48x16 sprite
+	BNE _j_DeleteIfOffAndDraw2Tile	 ; Delete if off-screen, otherwise draw wide 48x16 sprite
 
 	JSR Platform_Oscillate	 ; Do platform oscillation
+	JSR Object_ApplyYVel_NoLimit
 	JSR Object_ApplyXVel	 ; Apply X velocity
 	JMP PlayerPlatform_Collide	 ; Do platform-player collision tests and don't come back!
 
@@ -2281,22 +2291,41 @@ ObjNorm_OscillatingH:
 OscTimerSets:	.byte $41, $23	; longer timer means longer travel
 
 Platform_Oscillate:
-	LDA Objects_Timer,X	 
-	BNE DeleteIfOffAndDrawWide	 ; If timer not expired, Delete if off-screen, otherwise draw wide 48x16 sprite
-
 	LDA Level_NoStopCnt
 	LSR A
-	BCS DeleteIfOffAndDrawWide	 ; Every other tick, Delete if off-screen, otherwise draw wide 48x16 sprite
+	BCS _j_DeleteIfOffAndDraw2Tile	; Every other tick, Delete if off-screen, otherwise draw wide 48x16 sprite
+
+	LDA Objects_Timer2,X		; Objects_Timer2 controls distance vertically
+	BNE _do_osc_xvel_limit
+
+	LDY Objects_Var2,X			; Y = direction of Y oscillation
+
+	LDA <Objects_YVel,X
+	ADD OscYVel,Y
+	STA <Objects_YVel,X
+	CMP OscYVelLimit,Y
+	BNE _do_osc_xvel_limit
+	; once we're at the yvel limit, set the timer and change direction
+	TYA
+	EOR #$01
+	STA Objects_Var2,X
+	LDA #$19
+	STA Objects_Timer2,X
+
+_do_osc_xvel_limit:
+
+	LDA Objects_Timer,X			; Objects_Timer controls distance horizontally
+	BNE _j_DeleteIfOffAndDraw2Tile	; If timer not expired, Delete if off-screen, otherwise draw wide 48x16 sprite
 
 	LDY <Objects_Var5,X	 ; Y = Objects_Var5 (direction of oscillation)
 
 	; 
 	LDA <Objects_XVel,X
-	ADC OscXVel,Y
+	ADD OscXVel,Y
 	STA <Objects_XVel,X
 
 	CMP OscXVelLimit,Y
-	BNE DeleteIfOffAndDrawWide	 ; If platform not hit the velocity limit, Delete if off-screen, otherwise draw wide 48x16 sprite
+	BNE _j_DeleteIfOffAndDraw2Tile	 ; If platform not hit the velocity limit, Delete if off-screen, otherwise draw wide 48x16 sprite
 
 	; Change direction!
 	TYA
@@ -2308,6 +2337,9 @@ Platform_Oscillate:
 	; Reset timer
 	LDA OscTimerSets,Y
 	STA Objects_Timer,X
+
+_j_DeleteIfOffAndDraw2Tile:
+	JMP DeleteIfOffAndDraw2Tile
 
 DeleteIfOffAndDrawWide:
 	JSR Object_DeleteOffScreen	 ; Delete object if it falls off-screen
@@ -2515,14 +2547,36 @@ WoodenPlat_XVel:
 	.byte -$10, -$10, -$08, -$08
 	.byte  $00	; Stop
 
-
+;;; [ORANGE]
+;;; Objects that call ObjNorm_PathFollowPlat are
+;;; $3A - OBJ_FALLINGPLATFORM
+;;; $3C - OBJ_WOODENPLATFORMFALL
+;;; $44 - OBJ_WOODENPLATUNSTABLE
+DrawCustomPlatOffs:
+	.byte $00	; LogPlat_Draw
+	.byte $00	; unused
+	.byte $01	; Draw4Wide
 ObjNorm_PathFollowPlat:
-	JSR DeleteIfOffAndDrawWide	 ; Delete if off-screen, otherwise draw wide 48x16 sprite
+	;JSR DeleteIfOffAndDrawWide	 ; Delete if off-screen, otherwise draw wide 48x16 sprite
+	;;; [ORANGE]
+	;;; All DeleteIfOffAndDrawWide does is call Object_DeleteOffScreen and LogPlat_Draw
+	;;; So I do a little custom one here where we call the draw method based on the ObjectID
+	JSR Object_DeleteOffScreen	 ; Delete object if it falls off-screen
+
+	LDA Level_ObjectID,X
+	SEC
+	SBC #OBJ_FALLINGPLATFORM
+	LSR A
+	LSR A						; 3A and 3C -> 0
+								; 44 -> 2
+	TAY
+	LDA DrawCustomPlatOffs,Y
+	JSR DeleteIfOffAndDrawCustom
 
 	LDA <Player_HaltGame
 	BNE PRG002_ABB9	 ; If gameplay is halted, jump to PRG002_ABB9 (RTS)
 
-	LDA <Objects_Var4,X
+	LDA <Objects_Var4,X	; whether or not player is marked as standing on the object
 	BEQ PRG002_AC29	 ; If Var4 = 0, jump to PRG002_AC29
 
 	LSR A
@@ -2531,6 +2585,13 @@ ObjNorm_PathFollowPlat:
 	; Var4 >= 2...
 
 	INC <Objects_YVel,X	 ; Increase platform's fall rate
+	LDA <Objects_YVel,X
+	CMP #$01
+	BEQ PRG002_AC29
+	LDA <Counter_1
+	AND #$01
+	BNE PRG002_AC29
+	DEC <Objects_YVel,X
 
 PRG002_AC29:
 	JMP PRG002_ACAB	 ; Jump to PRG002_ACAB
@@ -2556,7 +2617,7 @@ PRG002_AC3A:
 
 	LDA <Objects_X,X
 	AND #$0f	 ; Consider platform horizontal relative to current grid column only
-	CMP #$08	 
+	CMP #$00
 	BNE PRG002_ACAB	 ; If platform is NOT about halfway across current grid row, jump to PRG002_ACAB
 
 PRG002_AC42:
@@ -6334,3 +6395,86 @@ PRG002_BFD4:
 	;.byte $FC, $A9, $22, $33, $04, $A9, $FC, $FC, $A9, $22, $4A, $04, $A9, $A9, $FC, $A9
 	;.byte $22, $52, $04, $A9, $FC, $A9, $A9, $22, $6C, $48, $A9, $00
 
+DeleteIfOffAndDraw2Tile:
+	; TODO: delete if far offscreen
+	; "offscreen" for these is going to be an extra screen away
+	;JSR Object_DeleteOffScreen	 ; Delete object if it falls off-screen
+	JMP LogPlat_Draw
+
+DeleteIfOffAndDrawCustom:
+	JSR DynJump
+	.word LogPlat_Draw		; A=0
+	.word Draw_4Wide		; A=1
+
+;;; Mostly copied from LogPlat_Draw
+Draw_4Wide:
+	JSR Object_ShakeAndCalcSprite
+
+	; Do not preserve the H/V flip bits
+	LDA <Temp_Var3
+	AND #%00111111
+	STA <Temp_Var3
+
+	LDA <Counter_1
+	LSR A
+	PHP		 ; Save CPU state (most importantly the carry flag)
+	BCC _PRG002_B5BD	 ; Every other tick, jump to PRG002_B5BD
+
+	; Y += (11 + Carry = 12) -- Every other tick, offset Sprite_RAM
+	TYA
+	ADC #$0b
+	TAY
+
+_PRG002_B5BD:
+	JSR Object_Draw24x16Sprite	 ; Draw wide sprite
+
+	LDA <Temp_Var7	 ; Get Sprite_RAM offset (as determined by Object_ShakeAndCalcSprite)
+	PLP		 ; Restore CPU state
+	PHP
+	BCS _PRG002_B5C7	 ; Every other opposite tick, jump to PRG002_B5C7
+
+	; Otherwise, add +12 to Sprite_RAM offset
+	ADC #12
+
+_PRG002_B5C7:
+	TAY		 ; Sprite_RAM offset -> 'Y'
+	INX
+	INX
+	INX	; X += 3 (starting tiles index)
+
+	; Temp_Var2 (Sprite X) += 24
+	LDA #24
+	ADD <Temp_Var2
+	STA <Temp_Var2
+
+	JSR Object_Draw24x16Sprite	 ; Draw wide sprite
+
+	LDA <Temp_Var7
+	PLP
+	BCS _post_second_set_offs
+	ADD #12						; Offset to second set of 3
+_post_second_set_offs:
+	TAY
+	LDA <Temp_Var3
+	ORA #SPR_HFLIP
+	STA <Temp_Var3				; The last 16x16 is completely flipped,
+								; and we're flipping the required ones in the second set
+	ORA <Temp_Var4				; Get the base attributes
+	STA Sprite_RAM+2,Y			; Flip the first sprite
+	;STA Sprite_RAM+6,Y			; Don't flip the second sprite
+	STA Sprite_RAM+10,Y			; Flip the third sprite
+	LDA <Temp_Var7
+	ADD #24						; Offset to third block
+	TAY
+	INX
+	INX
+	INX
+	; Temp_Var2 (Sprite X) += 24 more
+	LDA #24
+	ADD <Temp_Var2
+	STA <Temp_Var2
+	JSR Object_Draw16x16Sprite
+
+	LDX <SlotIndexBackup		 ; X = object slot index
+	RTS		 ; Return
+_end_2

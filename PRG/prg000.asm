@@ -279,12 +279,12 @@ Object_BoundBox:
 	.byte  2,   4,   2,   8	; 0
 	.byte  1,  13,   2,   8	; 1
 	.byte  2,  12,   2,  24	; 2
-	.byte 10,  27,  -2,  18	; 3
+	.byte 10,  27,  -2,  18	; 3		2 wide, 1 tall (drawn in middle of 3 wide 1 tall)
 	.byte  1,  14,   2,  26	; 4 (UNUSED)
-	.byte  5,  14,  10,  18	; 5 (UNUSED)
-	.byte  2,  27,  -2,  34	; 6
+	.byte  2,  59,  -2,  18	; 5 (UNUSED) [ORANGE] now used for 4 wide, 1 tall
+	.byte  2,  27,  -2,  34	; 6		2 wide, 2 tall
 	.byte  2,  20,   2,  12	; 7
-	.byte  2,  43,  -2,  18	; 8
+	.byte  2,  43,  -2,  18	; 8		3 wide, 1 tall
 	.byte  2,  20,   2,  28	; 9
 	.byte  2,  12,   2,  20	; A
 	.byte  0,  31,  -1,  14	; B
@@ -334,7 +334,10 @@ Object_AttrFlags:
 	.byte OAT_BOUNDBOX08 | OAT_WEAPONIMMUNITY | OAT_HITNOTKILL	; Object $24 - OBJ_CLOUDPLATFORM_FAST
 	.byte OAT_BOUNDBOX00 | OAT_WEAPONIMMUNITY | OAT_FIREIMMUNITY | OAT_HITNOTKILL	; Object $25
 	.byte OAT_BOUNDBOX08 | OAT_WEAPONIMMUNITY | OAT_HITNOTKILL	; Object $26 - OBJ_WOODENPLAT_RIDER
-	.byte OAT_BOUNDBOX08 | OAT_WEAPONIMMUNITY | OAT_HITNOTKILL	; Object $27 - OBJ_OSCILLATING_H
+	;;; [ORANGE] Change the horizontal back/forth platforms to
+	;;; 2x1 rather than 3x1 bounding box.
+	;;; We changed these platforms to oscillate both horizontally and vertically
+	.byte OAT_BOUNDBOX03 | OAT_WEAPONIMMUNITY | OAT_HITNOTKILL	; Object $27 - OBJ_OSCILLATING_H
 	.byte OAT_BOUNDBOX08 | OAT_WEAPONIMMUNITY | OAT_HITNOTKILL	; Object $28 - OBJ_OSCILLATING_V
 	.byte OAT_BOUNDBOX01	; Object $29 - OBJ_SPIKE
 	.byte OAT_BOUNDBOX02	; Object $2A - OBJ_PATOOIE
@@ -363,7 +366,8 @@ Object_AttrFlags:
 	.byte OAT_BOUNDBOX01 | OAT_FIREIMMUNITY | OAT_HITNOTKILL	; Object $41 - OBJ_ENDLEVELCARD
 	.byte OAT_BOUNDBOX01	; Object $42 - OBJ_CHEEPCHEEPPOOL2POOL
 	.byte OAT_BOUNDBOX01	; Object $43 - OBJ_CHEEPCHEEPPOOL2POOL2
-	.byte OAT_BOUNDBOX08 | OAT_WEAPONIMMUNITY | OAT_HITNOTKILL	; Object $44 - OBJ_WOODENPLATUNSTABLE
+	;;; [ORANGE] Change the fall platforms to 4x1 (OAT_BOUNDBOX05)
+	.byte OAT_BOUNDBOX05 | OAT_WEAPONIMMUNITY | OAT_HITNOTKILL	; Object $44 - OBJ_WOODENPLATUNSTABLE
 	.byte OAT_BOUNDBOX00 | OAT_FIREIMMUNITY	; Object $45 - OBJ_HOTFOOT
 	.byte OAT_BOUNDBOX02	; Object $46 - OBJ_PIRANHASPIKEBALL
 	.byte OAT_BOUNDBOX06 | OAT_WEAPONIMMUNITY | OAT_HITNOTKILL	; Object $47 - OBJ_GIANTBLOCKCTL
