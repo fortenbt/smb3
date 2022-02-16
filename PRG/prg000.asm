@@ -539,11 +539,30 @@ ConveyorEnable:
 	; Although TILEA_MUNCHER is always considered anyway for Kuribo's shoe... 
 	; (see after PRG008_BD96) which is probably a bug/mistake!  (Although to their
 	; credit, you can never normally have Kuribo's shoe in a Jelectro level)
+MuncherTilesetOffs:
+	.byte 0	; plains offset is 0
+	.byte 1	; fortress
+	.byte 2	; hills
+	.byte 3	; high (1-6 style)
+			; note there are two munchers in this tileset, so the offset
+			; for plant is 2 more than 3
+	.byte 5	; plant infest
+	.byte 6	; water
+	.byte 7	; toad
+	.byte 8	; pipe
+	.byte 9	; desert
+	.byte 10	; airship
+	.byte 11	; giant
+	.byte 12	; ice
+	.byte 13	; sky
+	.byte 14	; underground
+	.byte 14	; end
+
 MuncherJelectroSet:
 	.byte TILEA_MUNCHER	;  0 Plains style
 	.byte TILEA_MUNCHER	;  1 Mini Fortress style
 	.byte TILEA_MUNCHER	;  2 Hills style
-	.byte TILEA_MUNCHER	;  3 High-Up style
+	.byte TILEA_MUNCHER, TILE4_CEILINGMUNCH	;  3 High-Up style
 	.byte TILEA_MUNCHER	;  4 pipe world plant infestation
 	.byte TILE4_JELECTRO	;  5 water world
 	.byte TILEA_MUNCHER	;  6 Toad House
@@ -1603,8 +1622,8 @@ PRG000_C834:
 	; if it matches one of the ones in PrePSwitchTile is replaced
 	; with the attribute and tile from the other arrays...
 PrePSwitchTile:		.byte TILEA_COIN,	TILEA_BRICK, 	TILEA_MUNCHER,	TILEA_PSWITCHCOIN	; P-Switch inactive
-PostPSwitchTile:	.byte TILEA_BRICK,	TILEA_COIN, 	TILEA_COIN, 	TILEA_COIN			; P-Switch active
-PostPSwitchAttr:	.byte $03, 			$00, 			$00, 			$00
+PostPSwitchTile:	.byte TILEA_BRICK,	TILEA_COIN, 	TILEA_MUNCHER, 	TILEA_COIN			; P-Switch active
+PostPSwitchAttr:	.byte $03, 			$00, 			$03, 			$00
 
 PSwitch_SubstTileAndAttr:
 	LDY Level_PSwitchCnt	; Y = Level_PSwitchCnt
@@ -7057,3 +7076,4 @@ _not_shelled:			; For non-shells, do normal stomp comparison
     CMP <Player_Y
     RTS
 
+_end_0

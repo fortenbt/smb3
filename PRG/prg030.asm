@@ -5942,4 +5942,34 @@ _get_wakeup_timer_std:
 	LDA Objects_Timer3,X
 	RTS
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; CheckIfBadTile
+;
+; Returns 0 if tile should hurt the player
+; A = Detected Tile ID
+; X = offset from Level_Tile_GndL
+; Y = Level_TilesetIdx
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+CheckIfBadTile:
+	PHA
+	INY
+	LDA MuncherTilesetOffs,Y	; A = next tileset's offset
+	DEY
+	SUB MuncherTilesetOffs,Y	; A = number of bad tiles in this tileset
+	STA <Temp_Var1
+	LDA MuncherTilesetOffs,Y
+	TAY
+	PLA
+_bad_tile_loop:
+	CMP MuncherJelectroSet,Y
+	BEQ _restore_y_and_rts
+	INY
+	DEC <Temp_Var1
+	BPL _bad_tile_loop
+_restore_y_and_rts:
+	PHP						; save processor status
+	LDY Level_TilesetIdx	; restore this
+	PLP						; restore processor status
+	RTS
+
 _end_30

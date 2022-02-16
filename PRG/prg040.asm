@@ -281,3 +281,30 @@ _load_onoff_loop:
     DEC <Temp_Var4				; Temp_Var4--
     BPL _load_onoff_loop		; While Temp_Var4 >= 0, loop!
     RTS
+
+LoadLevel_CeilingMunchers:
+    LDA LL_ShapeDef
+    AND #$0f
+    STA <Temp_Var4			; Temp_Var4 = lower 4 bits of LL_ShapeDef (width of run)
+    LDY TileAddr_Off		; Y = TileAddr_Off
+_load_cmunch_loop:
+    LDA #TILE4_CEILINGMUNCH
+    STA [Map_Tile_AddrL],Y		; Store into tile mem
+    JSR LoadLevel_NextColumn_40	; Next column
+    DEC <Temp_Var4				; Temp_Var4--
+    BPL _load_cmunch_loop		; While Temp_Var4 >= 0, loop!
+    RTS
+
+
+LoadLevel17_Generic_40:
+    ;;; [ORANGE] This function handles loading the following custom
+    ;;; tiles in TileSet 4 based on the value in PageCallVars:
+    ;;; 0 = On block
+    ;;; 1 = Off block
+    ;;; 2 = Upside-down munchers
+    LDA PageCallVars
+    JSR DynJump
+    .word LoadLevel_OnOffs_40
+    .word LoadLevel_OnOffs_40
+    .word LoadLevel_CeilingMunchers
+
