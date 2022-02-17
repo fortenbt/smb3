@@ -282,29 +282,54 @@ _load_onoff_loop:
     BPL _load_onoff_loop		; While Temp_Var4 >= 0, loop!
     RTS
 
-LoadLevel_CeilingMunchers:
+NextRowColumn:
+    JMP [Temp_Var1]
+
+LoadLevel_CustomTile17Col:
+    LDA #LOW(LoadLevel_TileMemNextRow_40)
+    STA <Temp_Var1
+    LDA #HIGH(LoadLevel_TileMemNextRow_40)
+    STA <Temp_Var2
+    JMP LoadLevel_CustomTile17
+LoadLevel_CustomTile17Row:
+    LDA #LOW(LoadLevel_NextColumn_40)
+    STA <Temp_Var1
+    LDA #HIGH(LoadLevel_NextColumn_40)
+    STA <Temp_Var2
+LoadLevel_CustomTile17:
     LDA LL_ShapeDef
     AND #$0f
-    STA <Temp_Var4			; Temp_Var4 = lower 4 bits of LL_ShapeDef (width of run)
+    STA <Temp_Var4			; Temp_Var4 = lower 4 bits of LL_ShapeDef (width/height of run)
+    TXA                     ; A = Custom tile
+    PHA
     LDY TileAddr_Off		; Y = TileAddr_Off
-_load_cmunch_loop:
-    LDA #TILE4_CEILINGMUNCH
+_load_custom17_loop:
+    PLA
+    PHA
     STA [Map_Tile_AddrL],Y		; Store into tile mem
-    JSR LoadLevel_NextColumn_40	; Next column
+    JSR NextRowColumn
     DEC <Temp_Var4				; Temp_Var4--
-    BPL _load_cmunch_loop		; While Temp_Var4 >= 0, loop!
+    BPL _load_custom17_loop		; While Temp_Var4 >= 0, loop!
+    PLA
     RTS
 
+CustomTiles17:
+    .byte TILE4_ON, TILE4_OFF_INACTIVE, TILE4_CEILINGMUNCH, TILE4_PILLAR_TOP_UD
+    .byte TILE4_PILLAR_TOP, TILE4_PILLAR_MID, TILE4_HORZ_PILLAR, TILE4_RARCH_UD
+    .byte TILE4_LARCH_UD
 
 LoadLevel17_Generic_40:
-    ;;; [ORANGE] This function handles loading the following custom
-    ;;; tiles in TileSet 4 based on the value in PageCallVars:
-    ;;; 0 = On block
-    ;;; 1 = Off block
-    ;;; 2 = Upside-down munchers
     LDA PageCallVars
-    JSR DynJump
+    TAY
+    LDX CustomTiles17,Y
+    JSR DynJump                     ; DynJump messes with Y, but not with X
     .word LoadLevel_OnOffs_40
     .word LoadLevel_OnOffs_40
-    .word LoadLevel_CeilingMunchers
+    .word LoadLevel_CustomTile17Row   ; ceiling munchers
+    .word LoadLevel_CustomTile17Row   ; upside down pillar top
+    .word LoadLevel_CustomTile17Row   ; pillar top
+    .word LoadLevel_CustomTile17Col   ; pillar mid
+    .word LoadLevel_CustomTile17Row   ; pillar horizontal
+    .word LoadLevel_CustomTile17Row   ; upside down pillar arch right
+    .word LoadLevel_CustomTile17Row   ; upside down pillar arch left
 
