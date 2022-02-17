@@ -3746,7 +3746,7 @@ Level_BG_Pages2:
 GamePlay_YHiStart:	.byte $01, $00, $00, $01, $00, $00, $00, $01
 
 	; Defines Player's Y start
-GamePlay_YStart:	.byte $70, $40, $00, $40, $70, $B0, $F0, $80
+GamePlay_YStart:	.byte $60, $40, $00, $40, $70, $B0, $F0, $80
 
 	; Defines screen vertical position starts
 	; NOTE: If the "box out" effect were to be used, needs to sync with BoxOut_ByVStart
