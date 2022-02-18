@@ -465,7 +465,7 @@ PChg_C000_To_0:
 ; simply exits and does nothing...
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Level_XStarts:
-	.byte $18, $70, $D8, $80
+	.byte $10, $70, $D8, $80
 
 Level_Initialize:
 	LDA <Player_XStart	
