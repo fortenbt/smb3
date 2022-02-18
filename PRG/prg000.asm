@@ -280,7 +280,7 @@ Object_BoundBox:
 	.byte  1,  13,   2,   8	; 1
 	.byte  2,  12,   2,  24	; 2
 	.byte 10,  27,  -2,  18	; 3		2 wide, 1 tall (drawn in middle of 3 wide 1 tall)
-	.byte  1,  14,   2,  26	; 4 (UNUSED)
+	.byte  2,  27,  -2,  18	; 4 (UNUSED) [ORANGE] now used for 2 wide, 1 tall
 	.byte  2,  59,  -2,  18	; 5 (UNUSED) [ORANGE] now used for 4 wide, 1 tall
 	.byte  2,  27,  -2,  34	; 6		2 wide, 2 tall
 	.byte  2,  20,   2,  12	; 7
@@ -337,7 +337,7 @@ Object_AttrFlags:
 	;;; [ORANGE] Change the horizontal back/forth platforms to
 	;;; 2x1 rather than 3x1 bounding box.
 	;;; We changed these platforms to oscillate both horizontally and vertically
-	.byte OAT_BOUNDBOX03 | OAT_WEAPONIMMUNITY | OAT_HITNOTKILL	; Object $27 - OBJ_OSCILLATING_H
+	.byte OAT_BOUNDBOX04 | OAT_WEAPONIMMUNITY | OAT_HITNOTKILL	; Object $27 - OBJ_OSCILLATING_H
 	.byte OAT_BOUNDBOX08 | OAT_WEAPONIMMUNITY | OAT_HITNOTKILL	; Object $28 - OBJ_OSCILLATING_V
 	.byte OAT_BOUNDBOX01	; Object $29 - OBJ_SPIKE
 	.byte OAT_BOUNDBOX02	; Object $2A - OBJ_PATOOIE

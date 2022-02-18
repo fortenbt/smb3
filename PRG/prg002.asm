@@ -412,7 +412,7 @@ ObjP32:
 ;;; [ORANGE] ObjP27 is the horizontal platform
 ;;; We changed it to be 2x1 rather than 3x1
 ObjP27:
-	.byte $71, $B9, $BB, $B9, $BB, $71
+	.byte $B9, $BB, $B9, $BB, $71, $71
 ObjP26:
 ObjP28:
 ObjP36:
@@ -2273,10 +2273,10 @@ Object_HitFloorAlign:
 	JMP Object_HitGround	 ; Otherwise, align to ground and don't come back!
 
 	; Oscillating platform velocity and limits by direction
-OscXVelLimit:	.byte $18, -$18
-OscYVelLimit:	.byte $20, -$20
-OscXVel:	.byte $02, -$02
-OscYVel:	.byte $04, -$04
+OscXVelLimit:	.byte $1a, -$1a
+OscYVelLimit:	.byte $1b, -$1b
+OscXVel:	.byte $01, -$01
+OscYVel:	.byte $03, -$03
 
 ObjNorm_OscillatingH:
 	LDA <Player_HaltGame
@@ -2288,7 +2288,7 @@ ObjNorm_OscillatingH:
 	JMP PlayerPlatform_Collide	 ; Do platform-player collision tests and don't come back!
 
 	; Timers set per direction (long and short, respectively)
-OscTimerSets:	.byte $41, $23	; longer timer means longer travel
+OscTimerSets:	.byte $1e, $23	; longer timer means longer travel
 
 Platform_Oscillate:
 	LDA Level_NoStopCnt
@@ -2309,7 +2309,7 @@ Platform_Oscillate:
 	TYA
 	EOR #$01
 	STA Objects_Var2,X
-	LDA #$19
+	LDA #$20
 	STA Objects_Timer2,X
 
 _do_osc_xvel_limit:
