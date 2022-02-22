@@ -26,9 +26,9 @@
 ObjectGroup01_InitJumpTable:
 	.word ObjInit_CloudPlatFast	; Object $24 - OBJ_CLOUDPLATFORM_FAST
 	.word ObjInit_PipewayCtlr	; Object $25 - OBJ_PIPEWAYCONTROLLER
-	.word ObjInit_WoodenPlat	; Object $26 - OBJ_WOODENPLAT_RIDER
+	.word ObjInit_WoodenPlat_rider	; Object $26 - OBJ_WOODENPLAT_RIDER
 	.word ObjInit_WoodenPlat	; Object $27 - OBJ_OSCILLATING_H
-	.word ObjInit_WoodenPlat	; Object $28 - OBJ_OSCILLATING_V
+	.word ObjInit_WoodenPlat_timed	; Object $28 - OBJ_OSCILLATING_V
 	.word ObjInit_TowardsPlayer	; Object $29 - OBJ_SPIKE
 	.word ObjInit_Patooie		; Object $2A - OBJ_PATOOIE
 	.word ObjInit_DoNothing		; Object $2B - OBJ_GOOMBAINSHOE
@@ -114,7 +114,7 @@ ObjectGroup01_CollideJumpTable:
 	.word ObjHit_DoNothing		; Object $25 - OBJ_PIPEWAYCONTROLLER
 	.word ObjHit_DoNothing		; Object $26 - OBJ_WOODENPLAT_RIDER
 	.word ObjHit_DoNothing		; Object $27 - OBJ_OSCILLATING_H
-	.word ObjHit_DoNothing		; Object $28 - OBJ_OSCILLATING_V
+	.word ObjHit_CloudPlat		; Object $28 - OBJ_OSCILLATING_V
 	.word ObjHit_DoNothing		; Object $29 - OBJ_SPIKE
 	.word Player_GetHurt		; Object $2A - OBJ_PATOOIE
 	.word ObjHit_GoombaInShoe	; Object $2B - OBJ_GOOMBAINSHOE
@@ -154,9 +154,9 @@ ObjectGroup01_CollideJumpTable:
 ObjectGroup01_Attributes:
 	.byte OA1_PAL1 | OA1_HEIGHT16 | OA1_WIDTH48	; Object $24 - OBJ_CLOUDPLATFORM_FAST
 	.byte OA1_PAL0 | OA1_HEIGHT16 | OA1_WIDTH8	; Object $25
-	.byte OA1_PAL3 | OA1_HEIGHT16 | OA1_WIDTH48	; Object $26 - OBJ_WOODENPLAT_RIDER
-	.byte OA1_PAL3 | OA1_HEIGHT16 | OA1_WIDTH48	; Object $27 - OBJ_OSCILLATING_H
-	.byte OA1_PAL3 | OA1_HEIGHT16 | OA1_WIDTH48	; Object $28 - OBJ_OSCILLATING_V
+	.byte OA1_PAL2 | OA1_HEIGHT16 | OA1_WIDTH48	; Object $26 - OBJ_WOODENPLAT_RIDER
+	.byte OA1_PAL3 | OA1_HEIGHT16 | OA1_WIDTH40	; Object $27 - OBJ_OSCILLATING_H
+	.byte OA1_PAL2 | OA1_HEIGHT16 | OA1_WIDTH32	; Object $28 - OBJ_OSCILLATING_V
 	.byte OA1_PAL2 | OA1_HEIGHT16 | OA1_WIDTH16	; Object $29 - OBJ_SPIKE
 	.byte OA1_PAL2 | OA1_HEIGHT32 | OA1_WIDTH16	; Object $2A - OBJ_PATOOIE
 	.byte OA1_PAL2 | OA1_HEIGHT16 | OA1_WIDTH16	; Object $2B - OBJ_GOOMBAINSHOE
@@ -409,12 +409,21 @@ ObjP45:
 ObjP31:
 ObjP32:
 	.byte $A1, $A3, $A5, $A7, $A9, $AB, $AD, $AF, $71, $71
-;;; [ORANGE] ObjP27 is the horizontal platform
-;;; We changed it to be 2x1 rather than 3x1
-ObjP27:
-	.byte $B9, $BB, $B9, $BB, $71, $71
+;;; [ORANGE] ObjP26 is the rider platform that falls diagonally down/right
+;;; very quickly when stepped on.
+;;; We changed it to be 3x1, drawn as specified in LogPlat_Draw_Mirrored.
 ObjP26:
+	.byte $BD, $BF, $BF
+;;; [ORANGE] ObjP27 is the horizontal oscillating platform
+;;; We changed it to be 2x1 rather than 3x1. Just two repeated blocks.
+ObjP27:
+	.byte $B9, $BB
+;;; [ORANGE] ObjP28 is the vertical oscillating platform
+;;; that we modified to be a time platform.
+;;; We changed it to be 2x1 rather than 3x1. It is drawn as specified
+;;; in Draw_TimedPlat.
 ObjP28:
+	.byte $A9, $AB, $A5, $A7
 ObjP36:
 ObjP37:
 ObjP38:
@@ -2135,6 +2144,18 @@ ObjInit_CloudPlatFast:
 PRG002_AA37:
 	STA <Objects_XVel,X
 
+ObjInit_WoodenPlat_timed:
+	LDA #60
+	STA Objects_Var5,x
+	BNE ObjInit_WoodenPlat	; branch always
+
+ObjInit_WoodenPlat_rider:
+	LDA <Objects_X,X
+	ADD #$08
+	STA <Objects_X,X
+	BCC ObjInit_WoodenPlat
+	INC <Objects_XHi,X
+
 ObjInit_WoodenPlat:
 
 	; Platform starts one pixel higher than its placement
@@ -2211,15 +2232,17 @@ PRG002_AA85:
 
 ObjNorm_WoodenPlatRider:
 
-	JSR DeleteIfOffAndDrawWide	 ; Delete if off-screen, otherwise draw wide 48x16 sprite
+	JSR DeleteIfOffAndDrawMirrored	 ; Delete if off-screen, otherwise draw wide 48x16 sprite
 
 	LDA <Player_HaltGame
 	BNE PRG002_AAA6	 ; If gameplay is halted, jump to PRG002_AAA6 (RTS)
 
+	;JSR Object_ApplyYVel_NoLimit
+	JSR Object_ApplyYVel
 	JSR Object_ApplyXVel	 ; Apply X velocity
 	JSR PlayerPlatform_Collide	 ; Collide and ride
 
-	LDA <Objects_XVel,X
+	LDA <Objects_YVel,X
 	BNE PRG002_AA9A	 ; If platform is moving horizontally, jump to PRG002_AA9A
 
 	; Platform not moving horizontally...
@@ -2232,19 +2255,30 @@ PRG002_AA9A:
 
 	; Platform rider picks up speed until X Vel = $10
 
-	CMP #$10
-	BEQ PRG002_AAA6	 ; If Platform's X velocity = $10, jump to PRG002_AAA6 (RTS)
+	CMP #$70
+	BPL PRG002_AAA6	 ; If Platform's X velocity = $10, jump to PRG002_AAA6 (RTS)
 
 	LDA Level_NoStopCnt
 	LSR A	
 	BCS PRG002_AAA6	 ; Every other tick, jump to PRG002_AAA6 (RTS)
 
 PRG002_AAA4:
-	INC <Objects_XVel,X	 ; Increase platform's speed to the right
+	LDA <Objects_YVel,X
+	ADD #$1c
+	STA <Objects_YVel,X
+
+	LDA <Objects_XVel,X
+	CMP #$40
+	BPL _back_off_x
+	ADD #$08
+	STA <Objects_XVel,X
 
 PRG002_AAA6:
 	RTS		 ; Return
-
+_back_off_x:
+	LDA #$10
+	STA <Objects_XVel,X
+	RTS
 
 Enemy_CollideWithWorld:
 	JSR Object_Move	 ; Do standard object movements
@@ -2340,34 +2374,53 @@ _do_osc_xvel_limit:
 
 _j_DeleteIfOffAndDraw2Tile:
 	JMP DeleteIfOffAndDraw2Tile
+_j_DeleteIfOffAndDrawCustom:
+	JMP DeleteIfOffAndDrawCustom
+
+DeleteIfOffAndDrawMirrored:
+	JSR Object_DeleteOffScreen	 ; Delete object if it falls off-screen
+	JMP LogPlat_Draw_Mirrored	 ; Jump to LogPlat_Draw
 
 DeleteIfOffAndDrawWide:
 	JSR Object_DeleteOffScreen	 ; Delete object if it falls off-screen
 	JMP LogPlat_Draw	 ; Jump to LogPlat_Draw
 
 ObjNorm_OscillatingV:
-	LDA <Player_HaltGame
-	BNE DeleteIfOffAndDrawWide	 ; If gameplay halted, Delete if off-screen, otherwise draw wide 48x16 sprite
-
-	; Vertical oscillating platform reuses the horizontal's code,
-	; so the YVel is set equal to the XVel
-	LDA <Objects_YVel,X
-	STA <Objects_XVel,X
-
-	JSR Platform_Oscillate	 ; Do platform oscillation
-
-	; Same deal, Platform_Oscillate is working with the XVel, 
-	; so transfer is into the YVel..
-	LDA <Objects_XVel,X
-	STA <Objects_YVel,X
+	LDA #$02						; offset to DrawCustom's Draw_TimedPlat
+	LDY <Player_HaltGame
+	BNE _j_DeleteIfOffAndDrawCustom	 ; If gameplay halted, Delete if off-screen, otherwise draw timed plat
 
 	JSR Object_ApplyYVel	 ; Apply Y Velocity
+	JSR Object_ApplyXVel	 ; Apply X velocity
+	JSR Object_HitTestRespond
+	;;JSR PlayerPlatform_Collide	 ; Player collision with platform
 
-	; Clear X velocity remainders
+	LDA <Objects_XVel,X
+	BNE	_cont_timedplat		; If Platform is moving horizontally, continue movement
+	BCS	_start_timedplat	; If player hit the platform (and it wasn't moving), start moving
+_do_draw_timedplat:
+	LDA #$02
+	BNE _j_DeleteIfOffAndDrawCustom	; otherwise, just draw it
+
+_start_timedplat:
+	LDA #$10
+	STA <Objects_XVel,X
+	LDA #60
+	STA Objects_Timer3,X
+
+_cont_timedplat:
+	LDA Objects_Timer3,X
+	BNE _do_draw_timedplat
+	; At zero, set YVel and kill "1" sprite on platform
+	LDA <Objects_YVel,X
+	CMP #$60
+	BPL _post_timedplat_yvel_inc
+	INC <Objects_YVel,X
+	INC <Objects_YVel,X
+_post_timedplat_yvel_inc:
 	LDA #$00
-	STA Object_VelCarry
-
-	JMP PlayerPlatform_Collide	; Do Player-platform collision and don't come back!
+	STA <Objects_Var5,X
+	BEQ _do_draw_timedplat		; branch always
 
 ObjInit_FloatWoodenPlat:
 	LDA Level_AScrlConfig
@@ -2584,14 +2637,17 @@ ObjNorm_PathFollowPlat:
 
 	; Var4 >= 2...
 
-	INC <Objects_YVel,X	 ; Increase platform's fall rate
-	LDA <Objects_YVel,X
-	CMP #$01
-	BEQ PRG002_AC29
 	LDA <Counter_1
 	AND #$01
+	BEQ PRG002_AC29
+	INC <Objects_YVel,X	 ; Increase platform's fall rate
+	LDA <Counter_1
+	AND #$03
 	BNE PRG002_AC29
-	DEC <Objects_YVel,X
+	LDA <Objects_YVel,X
+	CMP #$03
+	BMI PRG002_AC29
+	INC <Objects_YVel,X	 ; Increase platform's fall rate
 
 PRG002_AC29:
 	JMP PRG002_ACAB	 ; Jump to PRG002_ACAB
@@ -6398,22 +6454,22 @@ PRG002_BFD4:
 DeleteIfOffAndDraw2Tile:
 	; TODO: delete if far offscreen
 	; "offscreen" for these is going to be an extra screen away
-	;JSR Object_DeleteOffScreen	 ; Delete object if it falls off-screen
-	JMP LogPlat_Draw
+	JSR Object_DeleteOffScreen	 ; Delete object if it falls off-screen
+	LDA #$03
+	; fall into DrawCustom
 
 DeleteIfOffAndDrawCustom:
 	JSR DynJump
 	.word LogPlat_Draw		; A=0
 	.word Draw_4Wide		; A=1
+	.word Draw_TimedPlat	; A=2
+	.word Draw_2Tile		; A=3
 
 ;;; Mostly copied from LogPlat_Draw
 Draw_4Wide:
-	JSR Object_ShakeAndCalcSprite
-
-	; Do not preserve the H/V flip bits
-	LDA <Temp_Var3
-	AND #%00111111
-	STA <Temp_Var3
+	LDA #$D0				; Always use D0 sprite slot for the large objects
+	STA Object_SprRAM,X
+	JSR DoSprite_NoHV
 
 	LDA <Counter_1
 	LSR A
@@ -6447,6 +6503,9 @@ _PRG002_B5C7:
 	ADD <Temp_Var2
 	STA <Temp_Var2
 
+	ASL <Temp_Var8
+	ASL <Temp_Var8
+	ASL <Temp_Var8
 	JSR Object_Draw24x16Sprite	 ; Draw wide sprite
 
 	LDA <Temp_Var7
@@ -6473,8 +6532,233 @@ _post_second_set_offs:
 	LDA #24
 	ADD <Temp_Var2
 	STA <Temp_Var2
+	ASL <Temp_Var8
 	JSR Object_Draw16x16Sprite
 
 	LDX <SlotIndexBackup		 ; X = object slot index
 	RTS		 ; Return
+
+LogPlat_Draw_Mirrored:
+	JSR DoSprite_NoHV
+	LDA <Counter_1
+	LSR A
+	PHP		 ; Save CPU state (most importantly the carry flag)
+	BCC __PRG002_B5BD	 ; Every other tick, jump to PRG002_B5BD
+	; Y += (11 + C = 12) -- Every other tick, offset Sprite_RAM
+	TYA
+	ADC #$0b
+	TAY
+__PRG002_B5BD:
+	JSR Object_Draw24x16Sprite	 ; Draw wide sprite
+	LDA <Temp_Var7	 ; Get Sprite_RAM offset (as determined by Object_ShakeAndCalcSprite)
+	PLP		 ; Restore CPU state
+	BCS __PRG002_B5C7	 ; Every other opposite tick, jump to PRG002_B5C7
+	; Otherwise, add +12 to Sprite_RAM offset
+	ADC #$0c
+__PRG002_B5C7:
+	TAY		 ; Sprite_RAM offset -> 'Y'
+	LDA #24
+	ADD <Temp_Var2
+	STA <Temp_Var2
+	ASL <Temp_Var8
+	ASL <Temp_Var8
+	ASL <Temp_Var8
+	LDA <Temp_Var3
+	ORA #SPR_HFLIP
+	STA <Temp_Var3
+	JSR Object_Draw24x16Sprite	 ; Draw wide sprite
+
+	LDX <SlotIndexBackup		 ; X = object slot index
+	RTS		 ; Return
+
+Draw_TimedPlat:
+	LDA #$D0				; Always use D0 sprite slot for the large objects
+	STA Object_SprRAM,X
+	JSR DoSprite_NoHV
+	LDA <Counter_1
+	LSR A
+	PHP					; Save CPU state (most importantly the carry flag)
+	BCC _swap_timedplat_spr
+	TYA
+	ADC #$0F			; every other tick, offset sprite ram
+	TAY
+_swap_timedplat_spr:
+	LDA <Temp_Var1
+	SUB #$08
+	STA <Temp_Var1
+	JSR Object_Draw16x16Sprite
+	TYA
+	ADD #$08
+	TAY
+	INX
+	INX
+	LDA <Temp_Var1
+	ADD #$10
+	STA <Temp_Var1
+	INC <Temp_Var4				; change to orange palette
+	JSR Object_Draw16x16Sprite
+	LDA <Temp_Var7
+	PLP
+	BCS _noswap_timedplat_spr
+	ADC #$10
+_noswap_timedplat_spr:
+	TAY
+	DEX
+	DEX
+	LDA <Temp_Var1
+	SUB #$10
+	STA <Temp_Var1
+	LDA <Temp_Var2
+	ADD #$10
+	STA <Temp_Var2
+	LDA <Temp_Var3
+	ORA #SPR_HFLIP				; flip the other side
+	STA <Temp_Var3
+	DEC <Temp_Var4				; change to green palette
+	ASL <Temp_Var8
+	ASL <Temp_Var8
+	JSR Object_Draw16x16Sprite
+	TYA
+	ADD #$08
+	TAY
+	INX
+	INX
+	LDA <Temp_Var1
+	ADD #$10
+	STA <Temp_Var1
+	INC <Temp_Var4				; change to orange palette
+	JSR Object_Draw16x16Sprite
+	;; Now, should we draw a number? (Currently only support "1")
+	LDX <SlotIndexBackup		 ; X = object slot index
+	LDA Objects_Var5,X
+	BEQ _draw_timedplat_rts
+
+	LDA <Temp_Var7
+	ADD #$20
+	TAY
+	LDA <Temp_Var1	; Get sprite Y
+	SUB #$0C
+	BIT <Temp_Var8	; Testing bit 7 of horizontal sprite visibility
+	BMI _draw_timedplat_rts	; If bit 7 is set (this sprite is horizontally off-screen), return
+	STA Sprite_RAM+$00,Y	 	; Otherwise, OK to set sprite Y
+	LDA #$02					; not flipped, green palette
+	STA Sprite_RAM+$02,Y	 	; Store into sprite's attributes
+	LDA #$AD					; sprite for "1"
+	STA Sprite_RAM+$01,Y
+	LDA <Temp_Var2				; sprite X
+	SUB #$04
+	STA Sprite_RAM+$03,Y
+_draw_timedplat_rts:
+	RTS
+
+DoSprite_NoHV:
+	JSR Object_ShakeAndCalcSprite
+	; Do not preserve the H/V flip bits
+	LDA <Temp_Var3
+	AND #%00111111
+	STA <Temp_Var3
+	RTS
+
+Draw_2Tile:
+	JSR DoSprite_NoHV
+	LDA <Counter_1
+	LSR A
+	PHP		 ; Save CPU state (most importantly the carry flag)
+	BCC _no_2tile_offs
+	; Y += (7 + Carry = 8) -- Every other tick, offset Sprite_RAM
+	TYA
+	ADC #$07
+	TAY
+_no_2tile_offs:
+	JSR Object_Draw16x16Sprite
+	LDA <Temp_Var7	 ; Get Sprite_RAM offset (as determined by Object_ShakeAndCalcSprite)
+	PLP		 ; Restore CPU state
+	BCS _2tile_offs
+	; Otherwise, add +12 to Sprite_RAM offset
+	ADC #$08
+_2tile_offs:
+	TAY		 ; Sprite_RAM offset -> 'Y'
+	; Temp_Var2 (Sprite X) += 16
+	LDA #$10
+	ADD <Temp_Var2
+	STA <Temp_Var2
+	; Alters horizontal visibility ??
+	LDA <Temp_Var8
+	PHA							; save off orig Temp_Var8
+	ASL <Temp_Var8
+	ASL <Temp_Var8
+	JSR Object_Draw16x16Sprite	 ; Draw wide sprite
+	;;; Now on to drawing the wings
+	LDA <Temp_Var7
+	ADD #$10
+	TAY
+	LDA <Temp_Var2
+	SUB #23
+	STA <Temp_Var2
+	LDA <Temp_Var1
+	SUB #10
+	STA <Temp_Var1
+	LDA #SPR_HFLIP
+	STA <Temp_Var3
+	LDA #$01
+	STA <Temp_Var4
+	LDX #$CD					; sprite for open wing
+	LDA <Counter_1
+	AND #$08
+	BEQ _no_change_wing
+	LDX #$CF					; sprite for closed wing
+_no_change_wing:
+	PLA							; restore orig Temp_Var8
+	STA <Temp_Var8
+	TXA
+	PHA
+
+	JSR Draw_Sprite
+	ASL <Temp_Var8
+	ASL <Temp_Var8
+	ASL <Temp_Var8
+	ASL <Temp_Var8
+	TYA
+	ADD #$04
+	TAY
+	LDA <Temp_Var2
+	ADD #38
+	STA <Temp_Var2
+	LDA #$00
+	STA <Temp_Var3			; no flip
+	PLA
+	JSR Draw_Sprite
+
+	LDX <SlotIndexBackup		 ; X = object slot index
+	RTS		 ; Return
+
+;;;
+;;; Draw_Sprite
+;;; - Routine to draw a single sprite.
+;;;
+;;; A = Sprite ID
+;;; Y = Sprite_RAM offs
+;;; Temp_Var1 = sprite Y
+;;; Temp_Var2 = sprite X
+;;; Temp_Var3 = flip
+;;; Temp_Var4 = attrs other than flip (palette)
+;;; Temp_Var8 = sprite visibility in bit 7
+;;;
+Draw_Sprite:
+	PHA
+	BIT <Temp_Var8	; Testing bit 7 of horizontal sprite visibility
+	BMI _post_set_spr_y	; If bit 7 is set (this sprite is horizontally off-screen), don't set Y
+	LDA <Temp_Var1
+	STA Sprite_RAM+$00,Y	; Otherwise, OK to set sprite Y
+_post_set_spr_y:
+	LDA <Temp_Var2
+	STA Sprite_RAM+$03,Y	; sprite X
+	LDA <Temp_Var3
+	ORA <Temp_Var4
+	STA Sprite_RAM+$02,Y	; attrs, palette, flip
+	PLA
+	STA Sprite_RAM+$01,Y	; sprite ID
+	RTS
+
+
 _end_2

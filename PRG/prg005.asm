@@ -4915,7 +4915,7 @@ PRG005_B831:
 	; This defines the values used as "look ahead" when screen is moving
 	; Basically the values are $110 (one screen over + 16)
 	; and -$20 (32 pixels to the left)
-LOSBS_LookAhead:	.byte 16, -32
+LOSBS_LookAhead:	.byte $20, -$30
 LOSBS_LookAheadHi:	.byte $01, $FF	; sign extensions
 
 Level_ObjectsSpawnByScroll:

@@ -338,7 +338,10 @@ Object_AttrFlags:
 	;;; 2x1 rather than 3x1 bounding box.
 	;;; We changed these platforms to oscillate both horizontally and vertically
 	.byte OAT_BOUNDBOX04 | OAT_WEAPONIMMUNITY | OAT_HITNOTKILL	; Object $27 - OBJ_OSCILLATING_H
-	.byte OAT_BOUNDBOX08 | OAT_WEAPONIMMUNITY | OAT_HITNOTKILL	; Object $28 - OBJ_OSCILLATING_V
+	;;; [ORANGE] The vertical back/forth platforms were changed into
+	;;; the timed platforms that fall after a set number of seconds
+	;;; after stepping on them. They're 2x1
+	.byte OAT_BOUNDBOX04 | OAT_WEAPONIMMUNITY | OAT_HITNOTKILL	; Object $28 - OBJ_OSCILLATING_V
 	.byte OAT_BOUNDBOX01	; Object $29 - OBJ_SPIKE
 	.byte OAT_BOUNDBOX02	; Object $2A - OBJ_PATOOIE
 	.byte OAT_BOUNDBOX01 | OAT_FIREIMMUNITY	; Object $2B - OBJ_GOOMBAINSHOE
@@ -620,7 +623,10 @@ SprRamOffsets:
 	; Basically, on different frames, different objects will have 
 	; different sprite priority, so while there may be flicker, at 
 	; least everything is somewhat visible
-	.byte $40, $E8, $58, $D0, $70, $B8, $88, $A0, $40, $E8, $58, $D0, $70, $B8, $88
+	;.byte $40, $E8, $58, $D0, $70, $B8, $88, $A0, $40, $E8, $58, $D0, $70, $B8, $88
+	;;; [ORANGE] We took out $D0 so that our objects with >6 sprites could use that
+	;;; slot without overwriting other objects.
+	.byte $40, $B8, $58, $A0, $70, $B8, $88, $A0, $40, $B8, $58, $A0, $70, $B8, $88
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -4229,8 +4235,9 @@ Object_SetPaletteFromAttr:
 PRG000_D3C8:	.byte $40, $B0	; Lo
 PRG000_D3CA:	.byte $01, $FF	; Hi
 
+	;;; [ORANGE] Allow objects to go further offscreen before they're deleted
 	; Non-vertical level -- selectable remove sizes
-PRG000_D3CC:	.byte $20, $D0, 	$80, $80, 	$40, $B0	; Lo
+PRG000_D3CC:	.byte $80, $70, 	$80, $80, 	$40, $B0	; Lo
 PRG000_D3D2:	.byte $01, $FF, 	$01, $FF, 	$01, $FF	; Hi
 
 	; The different "N" varieties specify how wide before the deletion occurs
@@ -4262,7 +4269,7 @@ PRG000_D3EF:
 	STA <Temp_Var1	 ; Temp_Var1 = 0, 2, or 4 
 
 	JSR Object_AnySprOffscreen
-	BEQ PRG000_D463	 ; If any sprites are off-screen, jump to PRG000_D463
+	BEQ PRG000_D463	 ; If no sprites are off-screen, jump to PRG000_D463
 
 	LDA Level_7Vertical
 	BNE PRG000_D464	 ; If level is vertical, jump to PRG000_D464
