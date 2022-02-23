@@ -2307,8 +2307,8 @@ Object_HitFloorAlign:
 	JMP Object_HitGround	 ; Otherwise, align to ground and don't come back!
 
 	; Oscillating platform velocity and limits by direction
-OscXVelLimit:	.byte $1a, -$1a
-OscYVelLimit:	.byte $1b, -$1b
+OscXVelLimit:	.byte $1b, -$1b
+OscYVelLimit:	.byte $18, -$18
 OscXVel:	.byte $01, -$01
 OscYVel:	.byte $03, -$03
 
@@ -2322,7 +2322,7 @@ ObjNorm_OscillatingH:
 	JMP PlayerPlatform_Collide	 ; Do platform-player collision tests and don't come back!
 
 	; Timers set per direction (long and short, respectively)
-OscTimerSets:	.byte $1e, $23	; longer timer means longer travel
+OscTimerSets:	.byte $18, $23	; longer timer means longer travel
 
 Platform_Oscillate:
 	LDA Level_NoStopCnt
@@ -2343,7 +2343,7 @@ Platform_Oscillate:
 	TYA
 	EOR #$01
 	STA Objects_Var2,X
-	LDA #$20
+	LDA #$21
 	STA Objects_Timer2,X
 
 _do_osc_xvel_limit:
@@ -6693,7 +6693,7 @@ _2tile_offs:
 	ADD #$10
 	TAY
 	LDA <Temp_Var2
-	SUB #23
+	SUB #22
 	STA <Temp_Var2
 	LDA <Temp_Var1
 	SUB #10
@@ -6722,7 +6722,7 @@ _no_change_wing:
 	ADD #$04
 	TAY
 	LDA <Temp_Var2
-	ADD #38
+	ADD #36
 	STA <Temp_Var2
 	LDA #$00
 	STA <Temp_Var3			; no flip
