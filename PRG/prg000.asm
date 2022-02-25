@@ -7071,6 +7071,9 @@ DoStompComparison:
     LDA Objects_State,X
     CMP #OBJSTATE_SHELLED
     BNE _not_shelled
+	; If we're spinjumping, we have to allow us to stomp on top of shelled shells
+	LDA SpinjumpFlag
+	BNE _not_shelled
     ; We're shelled and we collided, remove this return address and jmp to Object_HoldKickOrHurtPlayer
     ; This allows us to grab shelled objects if we're holding B no matter what
     PLA
