@@ -1310,9 +1310,9 @@ _post_pir_frame:
 	BPL _no_pir_yvel
 	CMP #-$10
 	BPL _slower_decel
-	ADD #$02
+	ADD #$04
 _slower_decel:
-	ADD #$02
+	ADD #$01
 	STA <Objects_YVel,X
 _no_pir_yvel:
 	JSR Object_ApplyYVel
