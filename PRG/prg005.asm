@@ -418,6 +418,10 @@ ObjPB2:
 ObjPA0:
 ObjPA1:
 ObjPA2:
+	.byte $E5, $E5, $E1, $E1
+	.byte $E5, $E5, $E3, $E3
+	.byte $E7, $E7, $E1, $E1
+	.byte $E7, $E7, $E3, $E3
 ObjPA3:
 	.byte $E1, $E1, $E3, $E3, $E5, $E5, $E3, $E3, $E1, $E1, $71, $71, $E5, $E5, $71, $71
 ObjPA4:
@@ -1236,6 +1240,8 @@ PRG005_A628:
 	BNE PRG005_A63A	 ; Jump (technically always) to PRG005_A63A
 
 ObjInit_RedPiranha:
+	LDA #-$60
+	STA <Objects_YVel,X
 	LDY #33	; Y = 33	
 	BNE PRG005_A63A	; Jump (technically always) to PRG005_A63A
 
@@ -1265,512 +1271,57 @@ PRG005_A63A:
 
 	RTS		 ; Return
 
-Piranha_Style:
-
-	; Bit 0: Set for "ceiling" (vertically flipped) version of Piranha
-	; Bit 7: Set for fire spitting type
-
-	.byte $00	; OBJ_GREENPIRANHA
-	.byte $01	; OBJ_GREENPIRANHA_FLIPPED
-	.byte $00	; OBJ_REDPIRANHA
-	.byte $01	; OBJ_REDPIRANHA_FLIPPED
-	.byte $80	; OBJ_GREENPIRANHA_FIRE
-	.byte $81	; OBJ_GREENPIRANHA_FIREC
-	.byte $80	; OBJ_VENUSFIRETRAP
-	.byte $81	; OBJ_VENUSFIRETRAP_CEIL
-
-Piranha_FacePlayerFlip:	.byte SPR_HFLIP, $00
-Piranha_VFlip:	.byte $00, SPR_VFLIP
 
 ObjNorm_Piranha:
 	JSR Object_DeleteOffScreen	 ; Delete object if it falls off-screen
 
-	LDA <Objects_Var4,X
-
-	LDY Objects_FlipBits,X
-	BPL PRG005_A66E	 ; If not vertically flipped, jump to PRG005_A66E
-
-	ADD #$02	 ; A = Var4 + 2
-
-PRG005_A66E:
-	AND #$03
-	BNE PRG005_A67D
-
 	JSR Object_CalcSpriteXY_NoHi
 
-	; Objects_SprHVis = 1 (?)
-	LDA #$01
-	STA Objects_SprHVis,X
+	;;; Draw piranha
+	;;; After drawing the 16x32 sprite:
+	;;; 1. The 2nd sprite needs to be flipped,
+	;;; 2. The 3rd sprite's palette changed to green
+	;;; 3. The 4th sprite flipped and greened
+	JSR Object_Draw16x32Sprite	; Draw Piranha
+	LDY Object_SprRAM,X	 ; Y = Sprite_RAM offset
+	LDA #(SPR_HFLIP|SPR_PAL1)
+	STA Sprite_RAM+$06,Y	; flip second sprite
+	LDA #(SPR_PAL2)			; green palette
+	STA Sprite_RAM+$0A,Y
+	LDA #(SPR_HFLIP|SPR_PAL2)
+	STA Sprite_RAM+$0E,Y
 
-	JMP PRG005_A78F	 ; Jump to PRG005_A78F
+	LDA <Player_HaltGame
+	BNE _pir_rts
 
-PRG005_A67D:
-	JSR Level_ObjCalcXDiffs
-
-	; Face Player
-	LDA Objects_FlipBits,X
-	AND #~SPR_HFLIP
-	ORA Piranha_FacePlayerFlip,Y
-	STA Objects_FlipBits,X
-
-	; Sprite RAM += 8 (two sprites over)
-	LDA Object_SprRAM,X
-	ADD #$08
-	STA Object_SprRAM,X
-
-	; Toggle frame 0/1
-	LDA Objects_Var3,X
-	LSR A
-	LSR A
-	LSR A
-	AND #$01
+	LDA <Counter_1
+	AND #$03
+	BNE _post_pir_frame
+	LDA Objects_Frame,X
+	ADD #$01
+	AND #$03
 	STA Objects_Frame,X
 
-	LDA Level_ObjectID,X
-	SUB #OBJ_GREENPIRANHA
-	TAY		 ; Y = relative Piranha index
+_post_pir_frame:
 
-	; Load Var2 with appropriate value
-	LDA Piranha_Style,Y
-	STA Objects_Var2,X
-	AND #$01	; Only concerned with bit 0 (set for "ceiling" type) here
-	STA <Temp_Var2
+	; increment YVel
+	LDA <Objects_YVel,X
+	CMP #$08
+	BPL _no_pir_yvel
+	CMP #-$10
+	BPL _slower_decel
+	ADD #$02
+_slower_decel:
+	ADD #$02
+	STA <Objects_YVel,X
+_no_pir_yvel:
+	JSR Object_ApplyYVel
 
-	LDA <Objects_Var5,X	; Original Y
-	SUB <Objects_Y,X	; - Current Y
-
-	LDY <Temp_Var2
-	BEQ PRG005_A6C0	 ; If Temp_Var2 = 0, jump to PRG005_A6C0
-
-	CMP Objects_Var1,X
-	BLT PRG005_A6CA	 ; If the Y difference < low Y difference, jump to PRG005_A6C4
-	BGE PRG005_A6C4	 ; Otherwise, jump to PRG005_A6C4
-
-PRG005_A6C0:
-	CMP #$11
-	BGE PRG005_A6CA	 ; If the Y difference >= $11, jump to PRG005_A6CA
-
-PRG005_A6C4:
-
-	; Frame += 2
-	INC Objects_Frame,X
-	INC Objects_Frame,X
-
-PRG005_A6CA:
-	JSR Object_Draw16x32Sprite	; Draw Piranha
-
-	JSR Level_ObjCalcYDiffs
-	STY <Temp_Var1		 ; Store Player's relative position value -> Temp_Var1
-
-	LDY Object_SprRAM,X	 ; Y = Sprite_RAM offset
-
-	LDA Objects_Var2,X
-	BMI PRG005_A6FD	 ; If Var2 is negative, jump to PRG005_A6FD
-
-	LDA Objects_FlipBits,X
-	BMI PRG005_A6EE	 ; If Piranha is vertically flipped, jump to PRG005_A6EE
-
-	LDA Sprite_RAM+$02,Y
-	AND #~SPR_HFLIP
-	STA Sprite_RAM+$02,Y
-	ORA #SPR_HFLIP
-	STA Sprite_RAM+$06,Y
-
-	BNE PRG005_A712	 ; Jump (technically always) to PRG005_A712
-
-PRG005_A6EE:
-	LDA Sprite_RAM+$0A,Y
-	AND #~SPR_HFLIP
-	STA Sprite_RAM+$0A,Y
-	ORA #SPR_HFLIP
-	STA Sprite_RAM+$0E,Y
-
-	BNE PRG005_A72E	 ; Jump (technically always) to PRG005_A72E
-
-PRG005_A6FD:
-	LDA Objects_FlipBits,X
-	BMI PRG005_A71E	 ; If vertically flipped, jump to PRG005_A71E
-
-	LDX <Temp_Var1		; X = Temp_Var1
-
-	LDA Sprite_RAM+$02,Y
-	AND #~SPR_VFLIP
-	ORA Piranha_VFlip,X
-	STA Sprite_RAM+$02,Y
-	STA Sprite_RAM+$06,Y
-
-PRG005_A712:
-
-	LDA #SPR_PAL2	; Palette select 2
-	STA Sprite_RAM+$0A,Y
-
-	LDA #(SPR_HFLIP | SPR_PAL2)	; Horizontal flip and Palette select 2
-	STA Sprite_RAM+$0E,Y
-
-	BNE PRG005_A738	 ; Jump (technically always) to PRG005_A738
-
-PRG005_A71E:
-	LDX <Temp_Var1		; X = Temp_Var1
-
-	LDA Sprite_RAM+$0A,Y
-	AND #~SPR_VFLIP
-	ORA Piranha_VFlip,X
-	STA Sprite_RAM+$0A,Y
-	STA Sprite_RAM+$0E,Y
-
-PRG005_A72E:
-	LDA #(SPR_VFLIP | SPR_PAL2)	; Vertical flip and Palette select 2 
-	STA Sprite_RAM+$02,Y
-
-	LDA #(SPR_HFLIP | SPR_VFLIP | SPR_PAL2)	; Horizontal and vertical flip and palette select 2
-	STA Sprite_RAM+$06,Y
-
-PRG005_A738:
-	LDX <SlotIndexBackup		 ; X = object slot index
-
-
-	; The following adds the masking sprite over the bottom of the Piranha,
-	; the trick used to make it appear as if it is emerging from the pipe..
-
-	LDA Objects_SprVVis,X
-	BNE PRG005_A78F	 ; If any sprite is vertically off-screen, jump to PRG005_A78F
-
-	; Temp_Var1 = 1
-	LDA #$01
-	STA <Temp_Var1
-
-	LDA Objects_Var2,X
-	AND #$01
-	BEQ PRG005_A74F	 ; If Var2 bit 0 not set, jump to PRG005_A74F
-
-	; Otherwise, load Temp_Var1 = Var1
-	LDA Objects_Var1,X
-	STA <Temp_Var1
-
-PRG005_A74F:
-	LDA Objects_SprHVis,X
-	BMI PRG005_A760	 ; If leftmost sprite is horizontally off-screen, jump to PRG005_A760
-
-	; Set Sprite Y at Origin Y - Temp_Var1, made relative to scroll
-	LDA <Objects_Var5,X
-	SUB <Temp_Var1	
-	SUB Level_VertScroll
-	STA Sprite_RAM-$08,Y
-
-PRG005_A760:
-	LDA Objects_SprHVis,X	
-	AND #$40
-	BNE PRG005_A773	 ; If the second from left sprite is horizontally off-screen, jump to PRG005_A773
-
-	; Set Sprite Y at Origin Y - Temp_Var1, made relative to scroll
-	LDA <Objects_Var5,X
-	SUB <Temp_Var1
-	SUB Level_VertScroll
-	STA Sprite_RAM-$04,Y
-
-PRG005_A773:
-	
-	; Mask sprite pattern
-	LDA #$77
-	STA Sprite_RAM-$07,Y
-	STA Sprite_RAM-$03,Y
-
-	; Mask sprite attribute
-	LDA #$22
-	STA Sprite_RAM-$06,Y
-	STA Sprite_RAM-$02,Y
-
-	; Copy Sprite X
-	LDA Sprite_RAM+$03,Y
-	STA Sprite_RAM-$05,Y
-
-	; Copy Sprite X
-	LDA Sprite_RAM+$07,Y
-	STA Sprite_RAM-$01,Y
-
-PRG005_A78F:
-	LDA <Player_HaltGame
-	BEQ PRG005_A794	 ; If gameplay is not halted, jump to PRG005_A794
-
-	RTS		 ; Return
-
-PRG005_A794:
 	JSR Player_HitEnemy	 ; Do Player to Piranha collision
+_pir_rts:
+	RTS
 
-	INC Objects_Var3,X	 ; Var3++
 
-	LDA <Objects_Var4,X
-	AND #$03	; Keep internal state counter 0-3
-
-	JSR DynJump
-
-	.word Piranha_HideInPipe
-	.word Piranha_Emerge
-	.word Piranha_Attack
-	.word Piranha_Retract
-
-Piranha_Emerge:
-
-	; Var5 = original Y 
-	; Var7 = original Y Hi
-
-	LDA <Objects_Var5,X		; Original Y
-	SUB Objects_TargetingYVal,X	; subtract TargetingYVal
-	PHA				; Save it
-
-	LDA Objects_Var7,X
-	SBC #$00
-	STA <Temp_Var1			; Temp_Var1 = Original Y Hi, carry applied
-
-	PLA		 ; Restore the Original Y difference
-	CMP <Objects_Y,X
-	LDA <Temp_Var1
-	SBC <Objects_YHi,X
-	BCS PRG005_A824	 ; Basically if Piranha is at his Y and Y Hi highest point, jump to PRG004_B7F0
-
-	LDA #-$10	 ; A = -$10
-	BNE PRG005_A7DC	 ; Jump (technically always) to PRG005_A7DC
-
-Piranha_Retract:
-
-	LDA <Objects_Y,X
-	ADD #$01
-	PHA		 ; Save Y + 1
-
-	LDA <Objects_YHi,X
-	ADC #$00
-	STA <Temp_Var1	 ; Temp_Var1 = carry applied to Y Hi
-
-	PLA		 ; Restore Y + 1
-
-	CMP <Objects_Var5,X
-	LDA <Temp_Var1	
-	SBC Objects_Var7,X
-	BCS PRG005_A824	 ; Basically if Piranha is at his Y and Y Hi origin, jump to PRG005_A824
-
-	LDA #$10	 ; A = $10
-
-PRG005_A7DC:
-	; Piranha is not fully extended/retracted...
-
-	STA <Objects_YVel,X	 ; Set Y velocity as appropriate
-	JMP Object_ApplyYVel_NoLimit	 ; Apply Y velocity and don't come back!!
-
-
-Piranha_Attack:
-
-	; TIP: For Var2, see Piranha_Style
-	LDA Objects_Var2,X	 
-	BPL PRG005_A808	 ; If this is not a fire spitting type of Piranha, jump to PRG005_A808
-
-	; Fire spitting piranha...
-
-	LDA Objects_FlipBits,X
-	BMI PRG005_A808	 ; If Piranha is vertically flipped, jump to PRG005_A808
-
-	; Var3 = 0
-	LDA #$00
-	STA Objects_Var3,X
-
-	LDA Objects_Timer,X
-
-	LDY World_Num
-	BNE PRG005_A7FD	 ; If this is not World 1, jump to PRG005_A7FD
-
-	; World 1 only...
-
-	CMP #$28
-	BEQ PRG005_A805	 ; If timer = $28, jump to PRG005_A805
-
-	TYA		 ; A = 0 (deliberately fails the following checks) 
-
-PRG005_A7FD:
-	CMP #$10
-	BEQ PRG005_A805	 ; If timer = $10, jump to PRG005_A805
-
-	CMP #$40
-	BNE PRG005_A808	 ; If timer <> $40, jump to PRG005_A808
-
-PRG005_A805:
-	JSR Piranha_SpitFire	 ; Spit fireball at Player
-
-PRG005_A808:
-	LDA Objects_Timer,X
-	BNE PRG005_A877	 ; If timer not expired, jump to PRG005_A877 (RTS)
-
-	LDA Objects_FlipBits,X
-	BPL PRG005_A824	 ; If piranha is not vertically flipped, jump to PRG005_A824
-
-	LDA Objects_Var2,X
-	LSR A
-	BCS PRG005_A824	 ; If this is a ceiling piranha, jump to PRG005_A824
-
-	; Non-ceiling piranha only...
-
-	JSR Level_ObjCalcXDiffs
-
-	LDA <Temp_Var16
-	ADD #$1b
-	CMP #$37
-	BLT PRG005_A833	 ; If Player is too close, jump to PRG005_A833
-
-PRG005_A824:
-	INC <Objects_Var4,X	 ; Var4++ (next internal state)
-
-	LDA #$30	; A = $30
-
-	LDY Level_ObjectID,X
-	CPY #OBJ_GREENPIRANHA_FIRE
-	BLT PRG005_A830	 ; If this is a red piranha, jump to PRG005_A830
-
-	ASL A		; A = $60
-
-PRG005_A830:
-	STA Objects_Timer,X	 ; Set timer
-
-PRG005_A833:
-	RTS		 ; Return
-
-
-Piranha_HideInPipe:
-	LDA Objects_Var2,X	 
-	BPL PRG005_A85B	 ; If this is not a fire spitting piranha, jump to PRG005_A85B
-
-	LDA Objects_FlipBits,X
-	BPL PRG005_A85B	 ; If piranha is not vertically flipped, jump to PRG005_A85B
-
-	; Var3 = 0
-	LDA #$00
-	STA Objects_Var3,X
-
-	LDA Objects_Timer,X
-
-	LDY World_Num
-	BNE PRG005_A850	 ; If this is not World 1, jump to PRG005_A850
-
-	; World 1 only...
-
-	CMP #$28
-	BEQ PRG005_A858	 ; If timer = $28, jump to PRG005_A858
-
-
-	TYA		 ; A = 0 (deliberately fails the following checks) 
-
-PRG005_A850:
-	CMP #$10
-	BEQ PRG005_A858	 ; If timer = $10, jump to PRG005_A805
-
-	CMP #$40
-	BNE PRG005_A85B	 ; If timer <> $40, jump to PRG005_A808
-
-PRG005_A858:
-	JSR Piranha_SpitFire	 ; Spit fireball at Player
-
-PRG005_A85B:
-	LDA Objects_Timer,X
-	BNE PRG005_A877	 ; If timer not expired, jump to PRG005_A877
-
-	LDA Objects_FlipBits,X
-	BMI PRG005_A824	 ; If piranha is vertically flipped, jump to PRG005_A824
-
-	LDA Objects_Var2,X
-	LSR A
-	BCS PRG005_A824	 ; If this is a ceiling piranha, jump to PRG005_A824
-
-	; Non-ceiling piranha only...
-
-	JSR Level_ObjCalcXDiffs
-
-	LDA <Temp_Var16
-	ADD #$1b
-	CMP #$37
-	BGE PRG005_A824	 ; If Player is too far, jump to PRG005_A833
-
-PRG005_A877:
-	RTS		 ; Return
-
-PiranhaFireball_YVel:	.byte $0B, $05
-PiranhaFireball_XVel:	.byte $0B, $0E
-
-Piranha_SpitFire:
-	LDY #$00	 ; Y = 0
-
-	LDA Objects_FlipBits,X
-	BPL PRG005_A885	 ; If piranha is not vertically flipped, jump to PRG005_A885
-
-	LDY #16		 ; Y = 16
-
-PRG005_A885:
-	STY <Temp_Var1	 ; Temp_Var1 = 0 or 16
-
-	LDY #$03	 ; Y = 3
-	JSR SpecialObj_FindEmptyAbortY	 ; Find an empty slot from special object slot 0 to 3 or don't come back!
-
-	; Set X offset
-	LDA <Objects_X,X
-	ADD #$03
-	STA SpecialObj_XLo,Y
-
-	; Set Y offset
-	LDA <Objects_Y,X
-	ADD <Temp_Var1
-	STA SpecialObj_YLo,Y
-	LDA <Objects_YHi,X
-	ADC #$00
-	STA SpecialObj_YHi,Y
-
-	; Piranha fireball
-	LDA #SOBJ_PIRANHAFIREBALL
-	STA SpecialObj_ID,Y
-
-	STY <Temp_Var1		 ; Special object slot index -> Temp_Var1
-
-	; Y difference -> Temp_Var6
-	JSR Level_ObjCalcYDiffs
-	STY <Temp_Var6	
-
-	; X difference -> Temp_Var7
-	JSR Level_ObjCalcXDiffs
-	STY <Temp_Var7	
-
-	LDX #$00	 ; X = 0 (Player is close)
-
-	LDA <Temp_Var16
-	ADD #$50
-	CMP #$a0
-	BLT PRG005_A8C0	 ; If Player is close, jump to PRG005_A8C0
-
-	INX		 ; X = 1 (Player is far)
-
-PRG005_A8C0:
-	LDY <Temp_Var1		 ; Y = special object slot index
-
-	LDA PiranhaFireball_YVel,X
-
-	LSR <Temp_Var6
-	BCC PRG005_A8CC	 ; If Y differance is not negative, jump to PRG005_A8CC
-
-	JSR Negate	 ; Otherwise, negate the loaded Y velocity
-
-PRG005_A8CC:
-	STA SpecialObj_YVel,Y	 ; Set fireball Y velocity
-
-	LDA PiranhaFireball_XVel,X
-
-	LSR <Temp_Var7
-	BCC PRG005_A8D9	 ; If X difference is not negative, jump to PRG005_A8D9
-
-	JSR Negate	 ; Otherwise negate the loaded X velocity
-
-PRG005_A8D9:
-	STA SpecialObj_XVel,Y	 ; Set fireball X velocity
-
-	LDA #$00
-	STA SpecialObj_XVelFrac,Y
-	STA SpecialObj_YVelFrac,Y
-
-	LDX <SlotIndexBackup		 ; X = object slot index
-	RTS		 ; Return
 
 ObjInit_AirshipProp:
 
