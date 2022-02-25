@@ -2138,6 +2138,11 @@ PRG030_8E4F:
 	;;;LDA PT2_Anim,X
 	LDA LevelAnimPages,X
 	STA PatTable_BankSel+1 ; Set pattern for this tick
+	;;; [ORANGE] Add palette animation here
+	LDA AnimatedPalette,X
+	STA Palette_Buffer+$0B
+	LDA #$06
+	STA <Graphics_Queue
 
 PRG030_8E5D:
 	; End of animations...
@@ -5972,4 +5977,7 @@ _restore_y_and_rts:
 	PLP						; restore processor status
 	RTS
 
+AnimatedPalette:
+	.byte $06, $16, $06, $0F
+	.byte $06, $16, $06, $0F
 _end_30

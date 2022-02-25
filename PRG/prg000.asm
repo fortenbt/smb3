@@ -547,25 +547,25 @@ MuncherTilesetOffs:
 	.byte 1	; fortress
 	.byte 2	; hills
 	.byte 3	; high (1-6 style)
-			; note there are two munchers in this tileset, so the offset
-			; for plant is 2 more than 3
-	.byte 5	; plant infest
-	.byte 6	; water
-	.byte 7	; toad
-	.byte 8	; pipe
-	.byte 9	; desert
-	.byte 10	; airship
-	.byte 11	; giant
-	.byte 12	; ice
-	.byte 13	; sky
-	.byte 14	; underground
-	.byte 14	; end
+			; note there are two muncher-style (e.g. death) blocks in
+			; this tileset, so the offset for plant is 3 more than 3
+	.byte 6	; plant infest
+	.byte 7	; water
+	.byte 8	; toad
+	.byte 9	; pipe
+	.byte 10	; desert
+	.byte 11	; airship
+	.byte 12	; giant
+	.byte 13	; ice
+	.byte 14	; sky
+	.byte 15	; underground
+	.byte 15	; end
 
 MuncherJelectroSet:
 	.byte TILEA_MUNCHER	;  0 Plains style
 	.byte TILEA_MUNCHER	;  1 Mini Fortress style
 	.byte TILEA_MUNCHER	;  2 Hills style
-	.byte TILEA_MUNCHER, TILE4_CEILINGMUNCH	;  3 High-Up style
+	.byte TILEA_MUNCHER, TILE4_CEILINGMUNCH, TILE4_DEATH	;  3 High-Up style
 	.byte TILEA_MUNCHER	;  4 pipe world plant infestation
 	.byte TILE4_JELECTRO	;  5 water world
 	.byte TILEA_MUNCHER	;  6 Toad House

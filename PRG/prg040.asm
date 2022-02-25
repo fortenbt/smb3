@@ -316,7 +316,7 @@ _load_custom17_loop:
 CustomTiles17:
     .byte TILE4_ON, TILE4_OFF_INACTIVE, TILE4_CEILINGMUNCH, TILE4_PILLAR_TOP_UD
     .byte TILE4_PILLAR_TOP, TILE4_PILLAR_MID, TILE4_HORZ_PILLAR_UD, TILE4_RARCH_UD
-    .byte TILE4_LARCH_UD, TILE4_RARCH, TILE4_LARCH, TILE4_HORZ_PILLAR
+    .byte TILE4_LARCH_UD, TILE4_RARCH, TILE4_LARCH, TILE4_HORZ_PILLAR, TILE4_DEATH
 
 LoadLevel17_Generic_40:
     LDA PageCallVars
@@ -335,4 +335,5 @@ LoadLevel17_Generic_40:
     .word LoadLevel_CustomTile17Row
     .word LoadLevel_CustomTile17Row
     .word LoadLevel_CustomTile17Row
+    .word LoadLevel_CustomTile17Row   ; death block
 

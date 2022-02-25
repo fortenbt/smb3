@@ -3956,6 +3956,7 @@ TILE4_LARCH_UD		= $F8
 TILE4_RARCH         = $D3
 TILE4_LARCH         = $D2
 TILE4_HORZ_PILLAR   = $F7
+TILE4_DEATH			= $BF
 ; TS=6 - Water [18]: In water: OnW=Bank 3 0xE0-0xEF, OffW=Bank 3 0xF0-0xFF
 ; TS=6 - Water/Pipes [18]: In air: On=Bank 4, 0x10-0x1F, Off=Bank 4 0x20-0x2F
 TILE6_ON_WATER		= $7B	; See prg018.asm - solid on block in water
