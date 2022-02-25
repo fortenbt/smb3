@@ -623,10 +623,10 @@ SprRamOffsets:
 	; Basically, on different frames, different objects will have 
 	; different sprite priority, so while there may be flicker, at 
 	; least everything is somewhat visible
-	;.byte $40, $E8, $58, $D0, $70, $B8, $88, $A0, $40, $E8, $58, $D0, $70, $B8, $88
+	.byte $40, $E8, $58, $D0, $70, $B8, $88, $A0, $40, $E8, $58, $D0, $70, $B8, $88
 	;;; [ORANGE] We took out $D0 so that our objects with >6 sprites could use that
 	;;; slot without overwriting other objects.
-	.byte $40, $B8, $58, $A0, $70, $B8, $88, $A0, $40, $B8, $58, $A0, $70, $B8, $88
+	;.byte $40, $B8, $58, $A0, $70, $B8, $88, $A0, $40, $B8, $58, $A0, $70, $B8, $88
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

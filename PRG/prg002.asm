@@ -6467,8 +6467,6 @@ DeleteIfOffAndDrawCustom:
 
 ;;; Mostly copied from LogPlat_Draw
 Draw_4Wide:
-	LDA #$D0				; Always use D0 sprite slot for the large objects
-	STA Object_SprRAM,X
 	JSR DoSprite_NoHV
 
 	LDA <Counter_1
@@ -6503,9 +6501,11 @@ _PRG002_B5C7:
 	ADD <Temp_Var2
 	STA <Temp_Var2
 
-	ASL <Temp_Var8
-	ASL <Temp_Var8
-	ASL <Temp_Var8
+	LDA <Temp_Var8
+	ASL A
+	ASL A
+	ASL A
+	STA <Temp_Var8
 	JSR Object_Draw24x16Sprite	 ; Draw wide sprite
 
 	LDA <Temp_Var7
@@ -6522,18 +6522,29 @@ _post_second_set_offs:
 	STA Sprite_RAM+2,Y			; Flip the first sprite
 	;STA Sprite_RAM+6,Y			; Don't flip the second sprite
 	STA Sprite_RAM+10,Y			; Flip the third sprite
-	LDA <Temp_Var7
-	ADD #24						; Offset to third block
-	TAY
-	INX
-	INX
-	INX
+	LDA <Temp_Var8
+	ASL A
+	ASL A
+	PHA							; save off the last sprite horz visibility bit
+	JSR Object_GetRandNearUnusedSpr	; trashes Temp_Var8
 	; Temp_Var2 (Sprite X) += 24 more
 	LDA #24
 	ADD <Temp_Var2
 	STA <Temp_Var2
-	ASL <Temp_Var8
-	JSR Object_Draw16x16Sprite
+	PLA							; Restore sprite horz visibility
+	PHA
+	STA <Temp_Var8
+	;JSR Object_Draw16x16Sprite
+	LDA #$BF
+	JSR Draw_Sprite
+	JSR Object_GetRandNearUnusedSpr
+	LDA #8
+	ADD <Temp_Var2
+	STA <Temp_Var2
+	PLA							; Restore sprite horz visibility
+	STA <Temp_Var8
+	LDA #$BD
+	JSR Draw_Sprite
 
 	LDX <SlotIndexBackup		 ; X = object slot index
 	RTS		 ; Return
@@ -6572,8 +6583,6 @@ __PRG002_B5C7:
 	RTS		 ; Return
 
 Draw_TimedPlat:
-	LDA #$D0				; Always use D0 sprite slot for the large objects
-	STA Object_SprRAM,X
 	JSR DoSprite_NoHV
 	LDA <Counter_1
 	LSR A
@@ -6611,43 +6620,51 @@ _noswap_timedplat_spr:
 	LDA <Temp_Var2
 	ADD #$10
 	STA <Temp_Var2
-	LDA <Temp_Var3
-	ORA #SPR_HFLIP				; flip the other side
+	LDA #SPR_HFLIP				; flip the other side
 	STA <Temp_Var3
 	DEC <Temp_Var4				; change to green palette
 	ASL <Temp_Var8
 	ASL <Temp_Var8
-	JSR Object_Draw16x16Sprite
-	TYA
-	ADD #$08
-	TAY
-	INX
-	INX
+	JSR Object_Draw16x16Sprite	; a9,ab flipped
+	LDA <Temp_Var8
+	PHA
+	JSR Object_GetRandNearUnusedSpr
 	LDA <Temp_Var1
 	ADD #$10
 	STA <Temp_Var1
 	INC <Temp_Var4				; change to orange palette
-	JSR Object_Draw16x16Sprite
+	PLA
+	PHA
+	STA <Temp_Var8
+	LDA #$A7
+	JSR Draw_Sprite
+	JSR Object_GetRandNearUnusedSpr
+	LDA <Temp_Var2
+	ADD #$08
+	STA <Temp_Var2
+	PLA
+	STA <Temp_Var8
+	LDA #$A5
+	JSR Draw_Sprite
+
 	;; Now, should we draw a number? (Currently only support "1")
 	LDX <SlotIndexBackup		 ; X = object slot index
 	LDA Objects_Var5,X
 	BEQ _draw_timedplat_rts
-
-	LDA <Temp_Var7
-	ADD #$20
-	TAY
-	LDA <Temp_Var1	; Get sprite Y
-	SUB #$0C
-	BIT <Temp_Var8	; Testing bit 7 of horizontal sprite visibility
+	BIT Temp_Var8
 	BMI _draw_timedplat_rts	; If bit 7 is set (this sprite is horizontally off-screen), return
-	STA Sprite_RAM+$00,Y	 	; Otherwise, OK to set sprite Y
-	LDA #$02					; not flipped, green palette
-	STA Sprite_RAM+$02,Y	 	; Store into sprite's attributes
-	LDA #$AD					; sprite for "1"
-	STA Sprite_RAM+$01,Y
+
+	JSR Object_GetRandNearUnusedSpr
+	LDA #$00					; no flip
+	STA <Temp_Var3
 	LDA <Temp_Var2				; sprite X
-	SUB #$04
-	STA Sprite_RAM+$03,Y
+	SUB #$0C
+	STA <Temp_Var2
+	LDA <Temp_Var1				; sprite Y
+	SUB #$0C
+	STA <Temp_Var1
+	LDA #$AD					; "1" sprite ID
+	JSR Draw_Sprite
 _draw_timedplat_rts:
 	RTS
 
