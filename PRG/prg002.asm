@@ -6452,13 +6452,13 @@ PRG002_BFD4:
 	;.byte $22, $52, $04, $A9, $FC, $A9, $A9, $22, $6C, $48, $A9, $00
 
 DeleteIfOffAndDraw2Tile:
-	; TODO: delete if far offscreen
-	; "offscreen" for these is going to be an extra screen away
-	JSR Object_DeleteOffScreen	 ; Delete object if it falls off-screen
 	LDA #$03
 	; fall into DrawCustom
 
 DeleteIfOffAndDrawCustom:
+	PHA
+	JSR Object_DeleteOffScreen	 ; Delete object if it falls off-screen
+	PLA
 	JSR DynJump
 	.word LogPlat_Draw		; A=0
 	.word Draw_4Wide		; A=1
