@@ -6742,10 +6742,14 @@ _no_change_wing:
 ;;; Temp_Var2 = sprite X
 ;;; Temp_Var3 = flip
 ;;; Temp_Var4 = attrs other than flip (palette)
-;;; Temp_Var8 = sprite visibility in bit 7
+;;; Temp_Var5 = sprite vert visibility
+;;; Temp_Var8 = sprite horz visibility in bit 7
 ;;;
 Draw_Sprite:
 	PHA
+	LDA <Temp_Var5	; Check sprite vertical visibility
+	LSR A		; Shift right (checking lowest bit)
+	BCS _post_set_spr_y	; If this bit is set, this sprite piece is invisible, don't set Y
 	BIT <Temp_Var8	; Testing bit 7 of horizontal sprite visibility
 	BMI _post_set_spr_y	; If bit 7 is set (this sprite is horizontally off-screen), don't set Y
 	LDA <Temp_Var1
