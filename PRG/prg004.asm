@@ -421,6 +421,7 @@ ObjP7E:
 ObjP7C:
 	.byte $81, $83, $87, $89, $81, $83, $87, $89, $81, $83, $87, $89, $71, $71, $BD, $BF
 ObjP6C:
+	.byte $CB, $C5, $C3, $C5, $D1, $D1
 ObjP6D:
 ObjP6E:
 ObjP6F:
