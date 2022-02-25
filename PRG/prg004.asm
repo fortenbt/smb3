@@ -190,7 +190,7 @@ ObjectGroup03_Attributes:
 	.byte OA1_PAL2 | OA1_HEIGHT32 | OA1_WIDTH48	; Object $8D - OBJ_THWOMPUPDOWN
 	.byte OA1_PAL2 | OA1_HEIGHT32 | OA1_WIDTH48	; Object $8E - OBJ_THWOMPDIAGONALUL
 	;.byte OA1_PAL2 | OA1_HEIGHT32 | OA1_WIDTH48	; Object $8F - OBJ_THWOMPDIAGONALDL
-	.byte OA1_PAL3 | OA1_HEIGHT32 | OA1_WIDTH16	; Object $8F - OBJ_SHELLEDTROOPA
+	.byte OA1_PAL1 | OA1_HEIGHT16 | OA1_WIDTH16	; Object $8F - OBJ_SHELLEDTROOPA
 
 	; Object group $03 (i.e. objects starting at ID $6C) second set attribute bits
 
