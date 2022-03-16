@@ -1894,7 +1894,7 @@ PRG000_C983:
 
 PRG000_C98B:
 
-	CPX #$05
+	CPX #$08
 	BGE PRG000_C9B6	 ; If object slot index >= 5, jump to PRG000_C9B6
 
 	; Non-special objects in slots 0 to 4...
@@ -4451,7 +4451,7 @@ Level_PrepareNewObject:
 	STA Objects_InWater,X
 
 PRG000_D4C8:
-	CPX #$05
+	CPX #$08
 	BGE PRG000_D506	 ; If using slot index >= 5, jump to PRG000_D506 (skip variables available only to slots 0 to 4)
 
 	; Clear even more variables (object slots 0 to 4 [major objects] ONLY!!)

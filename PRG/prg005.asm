@@ -4658,7 +4658,7 @@ PRG005_B909:
 	BNE PRG005_B91E	 ; Jump (technically always) to PRG005_B91E (skip looking for empty slot, force 6)
 
 PRG005_B911:
-	LDX #$04	 ; X = 4
+	LDX #$07	 ; X = 4
 PRG005_B913:
 	LDA Objects_State,X	
 	BEQ PRG005_B91E	 ; If this object slot is "dead/empty", jump to PRG005_B91E

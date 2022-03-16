@@ -785,21 +785,13 @@ PAD_RIGHT	= $01
 	Player_XHi:		.ds 1	; Player X Hi 
 	Objects_XHi:		.ds 8	; $76-$7D Other object's X Hi positions
 
-	SkipXAccelFrac:	.ds 1	; $7E unused [ORANGE] used to flag whether we're adding fractional accel or not
+	;SkipXAccelFrac:	.ds 1	; $7E unused [ORANGE] used to flag whether we're adding fractional accel or not
 
 	; Reuse of $7F
-CineKing_DialogState:	; Toad & King Cinematic: When 1, we're doing the text versus the dialog box itself
+	CineKing_DialogState:	; Toad & King Cinematic: When 1, we're doing the text versus the dialog box itself
 
 ; NOTE!! This object var is OBJECT SLOT 0 - 4 ONLY!
-	Objects_Var4:		.ds 5	; $7F-$83 Generic variable 4 for objects SLOT 0 - 4 ONLY
-
-	; Pipe_PlayerX/Y variables in use when traveling through pipes
-	Pipe_PlayerX:		.ds 1	; Stores Player's X when they went into pipe (non-transit)
-	Pipe_PlayerY:		.ds 1	; Stores Player's Y when they went into pipe (non-transit, aligned to nearest 16, minus 1)
-
-	.org $84	; NOTE, the following two are also $84/$85
-	; Otherwise, they are replaced with a lookup address
-	Level_GndLUT_Addr:	.ds 2
+	Objects_Var4:		.ds 8	; $7E-$85 Generic variable 4 for objects SLOT 0 - 4 ONLY
 
 	Objects_YVelBackup:	.ds 1	; $86 [ORANGE] No longer unused. Set in Objects_Move, used
 								; to store each object's YVel prior to collisions modifying it.
@@ -817,7 +809,16 @@ CineKing_DialogState:	; Toad & King Cinematic: When 1, we're doing the text vers
 
 	Objects_Var5:		.ds 8	; $9A-$A1 Generic variable 5 for objects
 	Player_Y:		.ds 1	; Player Y
-	Objects_Y:		.ds 8	; $A3-$A9 Other object's Y positions
+	Objects_Y:		.ds 8	; $A3-$AA Other object's Y positions
+
+
+	; Pipe_PlayerX/Y variables in use when traveling through pipes
+	Pipe_PlayerX:		.ds 1	; Stores Player's X when they went into pipe (non-transit)
+	Pipe_PlayerY:		.ds 1	; Stores Player's Y when they went into pipe (non-transit, aligned to nearest 16, minus 1)
+
+	.org $ab	; NOTE, the following two are also $84/$85
+	; Otherwise, they are replaced with a lookup address
+	Level_GndLUT_Addr:	.ds 2
 
 	Player_SpriteX:		.ds 1	; Player's sprite X
 	Objects_SpriteX:	.ds 8	; $AC-$B3 Other object's sprite X positions
@@ -860,8 +861,8 @@ CineKing_DialogState:	; Toad & King Cinematic: When 1, we're doing the text vers
 	Player_Slopes:		.ds 3	; for sloped levels only (3 bytes allocated, but only one actually used)
 				; *NOTE: Code at PRG030_9EDB clears Player_Slopes+1 and Player_Slopes+2, but these are never used!
 
-				.ds 1	; $E9 unused
-				.ds 1	; $EA unused
+				;.ds 1	; $E9 unused
+				;.ds 1	; $EA unused
 
 	Player_XStart:		.ds 1	; Set to Player's original starting X position (also used to check if level has initialized)
 
@@ -890,8 +891,9 @@ LEVEL_OFF = $04
 	Level_OnOff:		.ds 1	; [ORANGE] $F2 no longer unused
 								; holds 0 (level on) or 4 (level off)
 
-	Obj01_Flag:		.ds 1	; Not sure what Obj01 is!! This blocks its left/right handler logic.
+	Obj01_Flag:		;.ds 1	; Not sure what Obj01 is!! This blocks its left/right handler logic.
 
+	SkipXAccelFrac:	.ds 1	; $7E unused [ORANGE] used to flag whether we're adding fractional accel or not
 	; ASSEMBLER BOUNDARY CHECK, END OF CONTEXT @ $F4
 .BoundZP_Game:	BoundCheck .BoundZP_Game, $F4, Zero Page Gameplay Context
 
@@ -1928,10 +1930,10 @@ OBJSTATE_POOFDEATH	= 8	; "Poof" Death (e.g. Piranha death)
 ;	If object is in state 2, timer decrements normally
 ;	If object is in state 4 (being held), timer only decrements every 4 ticks
 ;	In all other states, timer decrements every 2 ticks
-	Objects_Timer3:		.ds 5	; $06A6-$06AA Used as the "wake up" out of shell timer
-	Objects_Timer4:		.ds 5	; $06AB-$06AF "Timer" values; automatically decrements to zero (used in "shakin' awake" effect)
+	Objects_Timer3:		.ds 8	; $06A6-$06AA Used as the "wake up" out of shell timer
+	Objects_Timer4:		.ds 8	; $06AB-$06AF "Timer" values; automatically decrements to zero (used in "shakin' awake" effect)
 
-				.ds 3	; $06B0-$06B2 unused
+				;.ds 3	; $06B0-$06B2 unused
 
 	Object_SlopeHeight:	.ds 1	; Object calculated slope height
 	Buffer_Occupied:	.ds 2	; $06B4-$06B5 Set if respective Object_BufferX/Y buffer is already taken by an object
@@ -2120,11 +2122,11 @@ OBJSTATE_POOFDEATH	= 8	; "Poof" Death (e.g. Piranha death)
 	; OBJ_FIRECHOMP, OBJ_CHAINCHOMPFREE, OBJ_BLOOPERCHILDSHOOT, 
 	; OBJ_BLOOPERWITHKIDS, or OBJ_FIRESNAKE
 	; ... as the X/Y buffer slot they occupy (see Object_Delete)
-	Objects_Var6:		.ds 5	; $0770-$0774 General purpose variable 6 (except as noted above)
-	Objects_TargetingXVal:	.ds 5	; $0775-$0779 X velocity result of Object_CalcHomingVels for this object OR some other X pixel target
+	Objects_Var6:		.ds 8	; $0770-$0774 General purpose variable 6 (except as noted above)
+	Objects_TargetingXVal:	.ds 8	; $0775-$0779 X velocity result of Object_CalcHomingVels for this object OR some other X pixel target
 
 	King_Y:				; Y position (NOTE: shared with Objects_TargetingYVal)
-	Objects_TargetingYVal:	.ds 5	; $077A-$077E Y velocity result of Object_CalcHomingVels for this object OR some other Y pixel target
+	Objects_TargetingYVal:	.ds 8	; $077A-$077E Y velocity result of Object_CalcHomingVels for this object OR some other Y pixel target
 
 	Pipe_TransYDelta:		; In-level transit pipe Y delta value (WARNING: Shared with Level_ScrollDiffV)
 	Level_ScrollDiffV:	.ds 1	; Difference between desired vertical and the current Vert_Scroll (WARNING: Shared with Pipe_TransYDelta)
@@ -2135,11 +2137,11 @@ RandomN = Random_Pool+1			; Pull a random number from the sequence (NOTE: Random
 
 	Map_PlayerLost2PVs:	.ds 1	; When > 0, (1=Mario, 2=Luigi) doesn't lose a life for "death" exiting to map, but does lose their turn
 
-				.ds 1	; $078C unused
+				;.ds 1	; $078C unused
 
 	Player_RescuePrincess:	.ds 1	; Player will jump to the princess rescue when Level_ExitToMap is nonzero (instead of map)
 
-				.ds 8	; $078E-$0795 unused
+				;.ds 8	; $078E-$0795 unused
 
 	; Objects_PlayerHitStat:
 	;	Bit 0 - Set if Player's bbox bottom is HIGHER than object's bbox bottom
@@ -2158,9 +2160,9 @@ RandomN = Random_Pool+1			; Pull a random number from the sequence (NOTE: Random
 	LRBounce_Vel:		.ds 1	; Left/right bouncer absolute value of X velocity
 
 	; NOTE!! These object vars are OBJECT SLOT 0 - 4 ONLY!
-	Objects_Slope:		.ds 5	; $07B5-$07B9 Absolute slope calc value
+	Objects_Slope:		.ds 8	; $07B5-$07B9 Absolute slope calc value
 
-				.ds 1	; $07BA unused
+				;.ds 1	; $07BA unused
 
 	World3_Bridge:		.ds 1	; 0 - Bridges are down, 1 - Bridges are up
 
@@ -2188,7 +2190,7 @@ RandomN = Random_Pool+1			; Pull a random number from the sequence (NOTE: Random
 ;	are not re-enterable, but still seems a bit extreme...
 	BigQBlock_GotIt:	.ds 1
 
-				.ds 13	; $07E3-$07EF unused
+				;.ds 13	; $07E3-$07EF unused
 
 	DMC_Queue:		.ds 1	; Stores value to play on DMC
 	DMC_Current:		.ds 1	; Currently playing DMC sound
@@ -2730,7 +2732,7 @@ CFIRE_LASER		= $15	; Laser fire
 	Player_TwisterSpin:	.ds 1	; While greater than zero, Player is twirling from sand twister
 
 ; NOTE!! This object var is OBJECT SLOT 0 - 4 ONLY!
-	Objects_HitCount:	.ds 5	; $7CF6-$7CFA Somewhat uncommon "HP" used generally for bosses only (e.g. they take so many fireballs)
+	Objects_HitCount:	.ds 8	; $7CF6-$7CFA Somewhat uncommon "HP" used generally for bosses only (e.g. they take so many fireballs)
 
 
 	RotatingColor_Cnt:	.ds 1	; When non-zero, causes rainbow palettes in the background; $80 bit is used by Koopaling wand grab
@@ -2971,7 +2973,7 @@ MAPOBJ_TOTAL		= $0E	; Total POSSIBLE map objects
 	BrickBust_YLwr:		.ds 3	; $7FA9-$7FAB Brick bust lower chunks Y
 	BrickBust_HEn:		.ds 3	; $7FAC-$7FAE Bits to hide chunks (Bit 0 = Right, 1 = Left, 2 = Lower, 3 = Upper) OR poof counter
 
-				.ds 3	; $7FAF-$7FB1 unused
+				;.ds 3	; $7FAF-$7FB1 unused
 
 	CoinPUp_State:		.ds 4	; $7FB2-$7FB5 State of up to 4 "Power Up" coins (i.e. coins that come out of ? blocks and bricks)
 	CoinPUp_Y:		.ds 4	; $7FB6-$7FB9 Y of "Power Up" coins
@@ -3004,13 +3006,13 @@ SOBJ_LASER		= $15 	; Laser
 SOBJ_POOF		= $16 	; Poof
 	SpecialObj_ID:		.ds 8	; $7FC6-$7FCD Special object spawn event IDs
 
-				.ds 2	; $7FCE-$7FCF unused
+				;.ds 2	; $7FCE-$7FCF unused
 
-	Objects_Var3:		.ds 5	; $7FD0-$7FD4 Generic variable 3 for objects SLOT 0 - 4 ONLY
+	Objects_Var3:		.ds 8	; $7FD0-$7FD4 Generic variable 3 for objects SLOT 0 - 4 ONLY
 
 	SpecialObj_YHi:		.ds 8	; $7FD5-$7FDC Special object Y high coordinate
 
-				.ds 2	; $7FDD-$7FDE unused
+				;.ds 2	; $7FDD-$7FDE unused
 
 	Objects_LastTile:	.ds 8	; $7FDF-$7FE6 Last tile this object detected
 
