@@ -142,7 +142,7 @@ ObjectGroup01_CollideJumpTable:
 	.word ObjHit_EndLevelCard	; Object $41 - OBJ_ENDLEVELCARD
 	.word Player_GetHurt		; Object $42 - OBJ_CHEEPCHEEPPOOL2POOL
 	.word Player_GetHurt		; Object $43 - OBJ_CHEEPCHEEPPOOL2POOL2
-	.word ObjHit_DoNothing		; Object $44 - OBJ_WOODENPLATUNSTABLE
+	.word ObjHit_CloudPlat		; Object $44 - OBJ_WOODENPLATUNSTABLE
 	.word Player_GetHurt		; Object $45 - OBJ_HOTFOOT
 	.word Player_GetHurt		; Object $46 - OBJ_PIRANHASPIKEBALL
 	.word ObjHit_DoNothing		; Object $47 - OBJ_GIANTBLOCKCTL
@@ -2397,11 +2397,14 @@ ObjNorm_OscillatingV:
 
 	LDA <Objects_XVel,X
 	BNE	_cont_timedplat		; If Platform is moving horizontally, continue movement
-	BCS	_start_timedplat	; If player hit the platform (and it wasn't moving), start moving
+	BCS	_timedplat_check_step	; If player hit the platform moving downward (and it wasn't moving), start moving
 _do_draw_timedplat:
 	LDA #$02
-	BNE _j_DeleteIfOffAndDrawCustom	; otherwise, just draw it
+	BNE _j_DeleteIfOffAndDrawCustom	; (branch always) otherwise, just draw it
 
+_timedplat_check_step:
+	LDA <Player_YVel
+	BMI _do_draw_timedplat		; moving upward doesn't start the platform
 _start_timedplat:
 	LDA #$10
 	STA <Objects_XVel,X
@@ -2777,8 +2780,11 @@ PRG002_AC9C:
 PRG002_ACAB:
 	JSR Object_ApplyYVel	 ; Apply Y Velocity
 	JSR Object_ApplyXVel	 ; Apply X velocity
-	JSR PlayerPlatform_Collide	 ; Do Player-to-platform collision
+	;JSR PlayerPlatform_Collide	 ; Do Player-to-platform collision
+	JSR Object_HitTestRespond
 	BCC PRG002_ACBC	 ; If Player did not collide with platform, jump to PRG002_ACBC (RTS)
+	LDA <Player_YVel
+	BMI PRG002_ACBC		; moving upward doesn't start the platform falling
 
 	; Mark Player standing on platform
 	LDA <Objects_Var4,X
