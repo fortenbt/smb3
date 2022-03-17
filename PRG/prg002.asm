@@ -2264,11 +2264,11 @@ PRG002_AA9A:
 
 PRG002_AAA4:
 	LDA <Objects_YVel,X
-	ADD #$1c
+	ADD #$28
 	STA <Objects_YVel,X
 
 	LDA <Objects_XVel,X
-	CMP #$40
+	CMP #36
 	BPL _back_off_x
 	ADD #$08
 	STA <Objects_XVel,X
