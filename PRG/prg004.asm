@@ -4071,13 +4071,16 @@ PRG004_B384:
 
 PRG004_B3A5:
 	JSR GroundTroop_Draw	 ; Draw the enemy
+	LDA Level_ObjectID,X
+	CMP #OBJ_SHELLEDTROOPA
+	BEQ _post_troop_move
 	JSR Object_Move		 ; Standard object movements
-
+_post_troop_move:
 	; If this enemy is in contact with a left/right bouncing block, set Objects_TargetingXVal
 	LDA LRBounce_Vel
 	STA Objects_TargetingXVal,X
 
-	JSR GroundTroop_BumpOffOthers	 ; Bounce off other enemies
+	;JSR GroundTroop_BumpOffOthers	 ; Bounce off other enemies
 
 	LDY LRBounce_Vel
 	INY

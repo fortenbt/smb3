@@ -2208,7 +2208,7 @@ PRG000_CB10:
 	BNE PRG000_CB5B	 ; If gameplay is halted, jump to PRG000_CB5B
  
 	JSR Object_ShellDoWakeUp	 ; Handle waking up (MAY not return here, if object "wakes up"!) 
-	JSR Object_Move_Hook		; Perform standard object movements and store YVel backup
+	;JSR Object_Move_Hook		; Perform standard object movements and store YVel backup
  
 	LDA <Objects_DetStat,X 
 	AND #$04 
@@ -2286,7 +2286,7 @@ PRG000_CB58:
 	JSR Object_VerticalBumps
 
 PRG000_CB5B:
-	JSR Object_BumpOffOthers	 ; Bump off and turn away from other objects 
+	;JSR Object_BumpOffOthers	 ; Bump off and turn away from other objects 
 
 PRG000_CB5E:
 	JSR Object_DeleteOffScreen	 ; Delete object if it goes off-screen 
@@ -2628,15 +2628,16 @@ PRG000_CCF4:
 	JSR Object_AboutFace	 ; Bounced off block, turn around
 
 PRG000_CCF7: 
-	JSR Object_HandleBumpUnderneath	 ; Handle the kicked shelled object getting hit from underneath
+	;JSR Object_HandleBumpUnderneath	 ; Handle the kicked shelled object getting hit from underneath
  
-	TXA 
-	ADD <Counter_1 
-	LSR A 
-	BCC PRG000_CD46	 ; Semi-randomly jump to PRG000_CD46
+	JMP PRG000_CD46	 ; jump to PRG000_CD46
+	;TXA 
+	;ADD <Counter_1 
+	;LSR A 
+	;BCC PRG000_CD46	 ; Semi-randomly jump to PRG000_CD46
  
-	JSR ObjectToObject_HitTest 
-	BCC PRG000_CD46	 ; If object has not hit another object, jump to PRG000_CD46
+	;JSR ObjectToObject_HitTest 
+	;BCC PRG000_CD46	 ; If object has not hit another object, jump to PRG000_CD46
 
 	; Play object-to-object collision sound 
 	LDA Sound_QPlayer 
@@ -3828,7 +3829,7 @@ PRG000_D218:
 	; OR Player is sliding...
 
 	; Remember, this is after the bounding boxes have already been used
-	; to determine there's some kind of collision; we're just find tuning
+	; to determine there's some kind of collision; we're just fine tuning
 	; if this is a successful "stomp" or not...
 	;
 	; 'Y' represents the "height" of the object for collision detection
