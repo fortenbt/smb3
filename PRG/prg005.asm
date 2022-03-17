@@ -1240,7 +1240,7 @@ PRG005_A628:
 	BNE PRG005_A63A	 ; Jump (technically always) to PRG005_A63A
 
 ObjInit_RedPiranha:
-	LDA #-$60
+	LDA #RED_PIRANHA_INIT_UPWARD_VEL
 	STA <Objects_YVel,X
 	LDY #33	; Y = 33	
 	BNE PRG005_A63A	; Jump (technically always) to PRG005_A63A
@@ -1272,6 +1272,13 @@ PRG005_A63A:
 	RTS		 ; Return
 
 
+RED_PIRANHA_INIT_UPWARD_VEL = -$01
+RED_PIRANHA_MAX_UPWARD_VEL = -$08
+RED_PIRANHA_MAX_DOWNWARD_VEL = $08
+RED_PIRANHA_UPWARD_FRAMES = $40
+RED_PIRANHA_STATE_UP = 0
+RED_PIRANHA_STATE_DOWN = 1
+RedPirVelAmtByState: .byte -$02, $01
 ObjNorm_Piranha:
 	JSR Object_DeleteOffScreen	 ; Delete object if it falls off-screen
 
@@ -1304,16 +1311,48 @@ ObjNorm_Piranha:
 
 _post_pir_frame:
 
-	; increment YVel
-	LDA <Objects_YVel,X
-	CMP #$08
-	BPL _no_pir_yvel
-	CMP #-$10
-	BPL _slower_decel
-	ADD #$04
-_slower_decel:
-	ADD #$01
+	LDA Objects_Timer3,X				; The piranha is allowed to travel upward at a constant
+	BNE _no_pir_yvel					; rate for some number of frames
+
+	LDY Objects_Var2,X					; Var2 holds our state (0 for upward, 1 for downward)
+	LDA RedPirVelAmtByState,Y
+	ADD <Objects_YVel,X
+
+	CPY #RED_PIRANHA_STATE_UP
+	BEQ _redpir_upward
+_repir_downward:
+	; red piranha current accelerating downward
+	CMP #RED_PIRANHA_MAX_DOWNWARD_VEL
+	BPL _no_pir_yvel					; if new vel is >= max downward vel, don't set it
+	LDY <Counter_1
+	STY <Temp_Var1
+	LSR <Temp_Var1
+	BCC _no_pir_yvel					; only set yvel every other frame for downward
+	BCS _redpir_set_yvel				; otherwise, just set it
+_redpir_upward:
+	; red piranha currently accelerating upward
+	CMP #RED_PIRANHA_MAX_UPWARD_VEL
+	BPL _redpir_set_yvel				; if new vel is less negative (>=) than max upward vel, just set it
+_redpir_next_state:						; Otherwise, change the state to start moving downward
+	PHA
+	INC Objects_Var2,X
+	LDA #RED_PIRANHA_UPWARD_FRAMES
+	STA Objects_Timer3,X
+	PLA
+ _redpir_set_yvel:
 	STA <Objects_YVel,X
+
+	;LDA <Objects_YVel,X
+	;BPL _positive_pir_vel
+	; yvel is negative, so speed it up
+	;CMP #$08
+	;BPL _no_pir_yvel
+	;CMP #-$10
+	;BPL _slower_decel
+	;ADD #$04
+;_slower_decel:
+	;ADD #$01
+	;STA <Objects_YVel,X
 _no_pir_yvel:
 	JSR Object_ApplyYVel
 
