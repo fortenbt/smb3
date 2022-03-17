@@ -3042,12 +3042,12 @@ PRG005_B0E7:
 
 	RTS		 ; Return
 
-ParaBeetle_XVelTowardsPlayer:	.byte $08, -$08
+ParaBeetle_XVelTowardsPlayer:	.byte $08, -$0c
 
 ObjInit_ParaBeetle:
-	JSR Level_ObjCalcXDiffs
-
-	; Start out flying towards Player
+	;;; [ORANGE] only fly leftward
+	;JSR Level_ObjCalcXDiffs
+	LDY #$01
 	LDA ParaBeetle_XVelTowardsPlayer,Y
 	STA <Objects_XVel,X
 
@@ -3185,6 +3185,7 @@ PRG005_B175:
 	LDA #$00
 	STA <Player_YVel
 	STA <Player_InAir
+	STA SpinjumpFlag
 
 	LDA <Pad_Holding
 	AND #(PAD_LEFT | PAD_RIGHT)
@@ -6059,3 +6060,4 @@ PRG005_BFA7:
 
 ; Rest of ROM bank was empty...
 
+_end_5
