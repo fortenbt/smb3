@@ -2423,6 +2423,7 @@ VSOBJID_KICKEDBLOCK	= 11	; Kicked block (from [?] block match)
 	;	Vertical level max size is 	15 rows * 16 columns * 16 screens = 3840 ($0F00) bytes
 	;	Non-vertical level max size is 	27 rows * 16 columns * 15 screens = 6480 ($1950) bytes
 Tile_Mem:	.ds 6480	; $6000-$794F Space used to store the 16x16 "tiles" that make up the World Map or Level
+			.ds 329
 
 	Map_MoveRepeat:		.ds 2	; $7950-$7951 (Mario/Luigi) counts up to $18 and then you keep moving without pause
 	AScrlURDiag_OffsetX:	.ds 1	; When diagonal autoscroller is wrapping, this holds an X offset for Player/Objects to temporarily correct
@@ -2488,7 +2489,7 @@ Tile_Mem:	.ds 6480	; $6000-$794F Space used to store the 16x16 "tiles" that make
 
 	;			.ds 2	; $7990-7991 unused
 	ThrowDirection:		.ds 1	; $7990 boolean flag whether or not Player_Kick should kick upward
-				.ds 1	; $7991 unused
+				;.ds 1	; $7991 unused
 
 	Map_Unused7992:			; Value used in some dead code in PRG011; cleared elsewhere (NOT SURE if maybe it sometimes meant Bonus_DiePos?)
 	Bonus_DiePos:		.ds 1	; UNUSED Die in the lost bonus games, counts 0-5
@@ -2530,7 +2531,7 @@ TRACK_SQ2 = 8
 	Music_ExRest_Ptr_Sq1Hi:
 	Music_ExRest_Ptr_Sq2Lo:
 	Music_ExRest_Ptr_Sq2Hi:
-				.ds 84	; $79AC-$79FF unused
+				;.ds 84	; $79AC-$79FF unused
 	; Auto scroll effect variables -- everything to do with screens that aren't scrolling in the normal way
 	; NOTE: Post-airship cinematic scene with Toad and King ONLY uses $7A01-$7A11 MMC3 SRAM (from Level_AScrlSelect to Level_AScrlHVelCarry)
 
@@ -2654,7 +2655,7 @@ CFIRE_LASER		= $15	; Laser fire
 
 	SoundEngineBackupArray:	.ds 30
 	SoundEngineBackedUp:	.ds 1
-				.ds 78	; $7A73-$7ADF unused
+				;.ds 78	; $7A73-$7ADF unused
 
 	Music_Start:		.ds 1	; Music start index (beginning of this song)
 	Music_End:		.ds 1	; Music end index (inclusive last index to play before loop)
@@ -2662,7 +2663,7 @@ CFIRE_LASER		= $15	; Laser fire
 
 	Sound_Octave:		.ds 1	; Used for calculating octave
 
-				.ds 12	; $7AE4-$7AEF unused
+				;.ds 12	; $7AE4-$7AEF unused
 
 	Music_Sq1Bend:		.ds 1	; Alters PAPU_FT1 for bend effects
 
@@ -2670,11 +2671,11 @@ CFIRE_LASER		= $15	; Laser fire
 
 	Music_Sq2Bend:		.ds 1	; Alters PAPU_FT2 for bend effects
 
-				.ds 2	; $7AF5-$7AF6 unused
+				;.ds 2	; $7AF5-$7AF6 unused
 
 	Music_RestH_Off:	.ds 1	; Offset added to Music_RestH_Base; typically $00 or $10 (for low time warning on compatible songs)
 
-				.ds 7	; $7AF8-$7AFE unused
+				;.ds 7	; $7AF8-$7AFE unused
 
 	PAPU_MODCTL_Copy:	.ds 1	; Current PAPU_MODCTL register
 
@@ -2687,7 +2688,7 @@ CFIRE_LASER		= $15	; Laser fire
 ; The rest is a repeating series of 3 bytes -- ID, Column, Row (C/R of tile grid, multiply by 16 for pixel location), $FF for terminator
 	Level_Objects:		.ds 48*3	; $7B40-$7BCF
 
-				.ds 80	; $7BD0-$7C1F unused
+				;.ds 80	; $7BD0-$7C1F unused
 
 ; For certain objects that require a buffer of X or Y values; only a couple are available.
 ; Each contains 32 bytes, intended for enemies that have "tails"; Buffer_Occupied determines
@@ -2793,11 +2794,11 @@ CFIRE_LASER		= $15	; Laser fire
 
 	Map_GameOver_CursorY:	.ds 1	; Game Over popup cursor Y ($60/$68)
 
-				.ds 9	; $7DCC-$7DD4 unused
+				;.ds 9	; $7DCC-$7DD4 unused
 
 	Map_PrevMoveDir:	.ds 1	; Last SUCCESSFUL (allowed) movement direction on map R01 L02 D04 U08
 
-				.ds 8	; $7DD6-$7DDD unused
+				;.ds 8	; $7DD6-$7DDD unused
 
 	Pal_Data:		.ds 32	; $7DDE-$7DFD Holds an entire bg/sprite palette (this is the MASTER palette, what fades target, and others may source for "original" colors!)
 
@@ -2826,7 +2827,7 @@ CAMERA_STOP_LEFT  = $60
 	CameraLeftBuffer:	.ds 1	; every frame, set to CameraMoveTrigger-0xC
 	CameraRightBuffer:	.ds 1	; every frame, set to CameraMoveTrigger+0xC
 	CameraProperOffs:	.ds 1
-						.ds 14
+	;					.ds 14
 
 	; Tile_AttrTable:
 	; On the world map, it's always the following:
@@ -2854,7 +2855,7 @@ CAMERA_STOP_LEFT  = $60
 	Level_UnusedSlopesTS5:	.ds 1	; UNUSED; If set to 2, forces slopes to be enabled for Level_Tileset = 5 (plant infestation)
 	PlantInfest_ACnt_Max:	.ds 1	; Always set to $1A in plant infestation levels, sets max value for animation counter
 
-				.ds 24	; $7E9E-$7EB5 unused
+				;.ds 24	; $7E9E-$7EB5 unused
 
 	LevelJctBQ_Flag:	.ds 1	; Set to '1' while in a Big Question block area, locks horizontal scrolling
 	Level_JctBackupTileset:	.ds 1	; Level Junction tileset backup
@@ -2916,7 +2917,7 @@ MAPOBJ_TOTAL		= $0E	; Total POSSIBLE map objects
 	; 11: Ladder and [?] blocks
 	Map_2PVsGame:		.ds 1
 
-				.ds 8	; $7F25-$7F2C unused
+				;.ds 8	; $7F25-$7F2C unused
 
 	Map_Airship_Dest:	.ds 1	; Airship travel destination; 6 X/Y map coordinates defined per world, after that it just sits still
 	THouse_OpenByID:	.ds 16	; $7F2E-$7F3D UNUSED would keep track of chests opened for a given Toad House ID (THouse_ID)

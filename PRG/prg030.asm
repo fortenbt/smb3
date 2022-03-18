@@ -13,7 +13,7 @@
 ;---------------------------------------------------------------------------
 	; STANDARD HORIZONTAL SCREEN
 
-Tile_Mem_Addr:	
+Tile_Mem_Addr_OLD:	
 	; This breaks up the overall "tile" layout memory into screen-based chunks
 	; With a screen width of 256 pixels, that makes 16 blocks across every "screen",
 	; NTSC res of 224, two screens tall, is 448 / 16px-per-tile = 28 POTENTIAL rows per screen
@@ -6005,5 +6005,15 @@ CheckQueueLevelsMusic:
 	STA PageCallVars
 	Page_C_Call 40, CheckQueueLevelsMusic_40
 	RTS
+
+Tile_Mem_Addr:	
+	; This breaks up the overall "tile" layout memory into screen-based chunks
+	; With a screen width of 256 pixels, that makes 16 blocks across every "screen",
+	; NTSC res of 224, two screens tall, is 448 / 16px-per-tile = 28 POTENTIAL rows per screen
+	; but the status bar occludes one, so only 27 rows are stored... 
+	; Up to 15 screens!
+	.word Tile_Mem,       Tile_Mem+$01B0, Tile_Mem+$0360, Tile_Mem+$0510, Tile_Mem+$06C0, Tile_Mem+$0870, Tile_Mem+$0A20, Tile_Mem+$0BD0
+	.word Tile_Mem+$0D80, Tile_Mem+$0F30, Tile_Mem+$10E0, Tile_Mem+$1290, Tile_Mem+$1440, Tile_Mem+$15F0, Tile_Mem+$17A0, Tile_Mem
+
 
 _end_30
