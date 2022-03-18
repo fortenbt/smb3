@@ -4773,7 +4773,7 @@ PRG008_B55B:
 	;;BGE PRG008_B57E	 	 ; If the tile is >= the attr value, jump to PRG008_B57E
 	LDA #$00
 	STA PageCallVars	; First arg is offset from Level_Tile_GndL/R
-	PageCall 40, Level_CheckGndLR_TileGTAttr_40
+	Page_C_Call 40, Level_CheckGndLR_TileGTAttr_40
 	BGE PRG008_B57E	 	 ; If the tile is >= the attr value, jump to PRG008_B57E
 	NOP
 	NOP
@@ -4847,7 +4847,7 @@ Level_CheckGndLR_TileGTAttr:
 	TYA
 	PHA
 	STA PageCallVars	; First arg is offset from Level_Tile_GndL/R
-	PageCall 40, Level_CheckGndLR_TileGTAttr_40
+	Page_C_Call 40, Level_CheckGndLR_TileGTAttr_40
 	PLA
 	TAY
 	RTS

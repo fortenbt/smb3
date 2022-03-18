@@ -1135,7 +1135,8 @@ PRG030_881D:
 	STA Map_EntTran_Cnt	 ; Map_EntTran_Cnt = $30
 
 	LDA #SND_MAPENTERLEVEL
-	STA Sound_QMap	 ; Play "enter level" sound effect!
+	;;;STA Sound_QMap	 ; Play "enter level" sound effect!
+	JSR CheckPlayLevelEntrySound
 
 	; Loop until V-Blank is not occurring
 PRG030_883E:
@@ -4018,12 +4019,13 @@ PRG030_98C8:
 	CPX #MUS2A_INVINCIBILITY		
 	BEQ PRG030_98DE		; If playing the Invincibility music, don't queue this song right now
 
+	;;; [ORANGE] Allow an in-level restart to restore the sound engine
 	; Queue this music to play
-	STA Level_MusicQueue
-
+	;STA Level_MusicQueue
 PRG030_98DE:
 	; Set this as the music to "restore" to when P-Tab / Invincibility ends
-	STA Level_MusicQueueRestore
+	;STA Level_MusicQueueRestore
+	JSR CheckQueueLevelsMusic
 
 	; Level_LayPtr_AddrL/H += 9 (i.e. move pointer to after the header)
 	LDA <Level_LayPtr_AddrL
@@ -5542,7 +5544,7 @@ CheckTileSolidnessObj:
 	STA PageCallVars+2
 	TXA
 	PHA		; save off X
-	PageCall 40, CheckTileSolidness_SecondHalf_40
+	Page_C_Call 40, CheckTileSolidness_SecondHalf_40
 	PLA		; doesn't mess with the carry
 	TAX		; restore X
 	RTS
@@ -5551,60 +5553,13 @@ CheckTileSolidnessMario:
 	STY PageCallVars+1
 	LDA #$00
 	STA PageCallVars+2
-	PageCall 40, CheckTileSolidness_SecondHalf_40
+	Page_C_Call 40, CheckTileSolidness_SecondHalf_40
 	RTS
 
-ThrownYVels:
-	;     n/a  DOWN  UP
-	.byte $00, $04, -$78
 SetKickedYVel:
-	LDA #$00
-	STA <Objects_YVel,X
-	LDY ThrowDirection
-	BEQ _post_skyv		; (RTS)
-	STA ThrowDirection	; Zero this back out
-
-	TYA					; Get throw direction
-	PHA					; Setting a shell down uses Mario's xvel+-8
-						; Throwing a shell up uses Mario's xvel/4
-    AND #PAD_UP
-	BEQ _set_shell_down
-
-_throw_shell_upward:
-	CLC
-	LDA <Player_XVel	; Use CLC/SEC and BPL to do an arithmetic right shift
-	BPL _skyv_xvel_ror1	; BPL branch on N=0
-	SEC
-_skyv_xvel_ror1:
-	ROR A				; mod N,Z,C
-	CLC
-	BPL _skyv_xvel_ror2
-	SEC
-_skyv_xvel_ror2:
-	ROR A
-	STA <Objects_XVel,X
-	JMP _skyv_set_yvel
-
-_set_shell_down:
-	;; Override XVel if setting down
-	LDA #-$08
-	LDY <Player_FlipBits
-	BEQ _skyv_shell_down_xvel
-	NEG
-_skyv_shell_down_xvel:
-	ADD <Player_XVel
-	STA <Objects_XVel,X
-
-_skyv_set_yvel:
-	PLA					; Restore shell throw direction
-	LSR A
-	LSR A
-	TAY
-	LDA ThrownYVels,Y
-	STA <Objects_YVel,X
-	LDA #OBJSTATE_SHELLED
-	STA Objects_State,X
-_post_skyv:
+	STX PageCallVars
+	Page_C_Call 40, SetKickedYVel_40
+	LDX PageCallVars
 	RTS
 
 Object_VerticalBumps:
@@ -5778,54 +5733,7 @@ _pswitch_subst:
 	JMP PSwitch_SubstTileAndAttr
 
 SetSpinjumpFrames:
-	LDA SpinjumpFlag
-	BEQ _sj_rts
-
-	; We're spinjumping, so we need to force "walk" frames
-	; rather than pspeed frames if that was set
-	LDA <Player_Suit
-	ASL A
-	ASL A
-	ORA <Player_WalkFrame
-	TAY
-	LDA Player_WalkFramesByPUp,Y
-	STA <Player_Frame
-
-	LDA SpinjumpFlag
-	ADD #$01
-	STA SpinjumpFlag
-	BEQ _reset_spinjump
-	CMP #$0A
-	BNE _do_spinjump
-_reset_spinjump:
-	LDA #$02
-	STA SpinjumpFlag
-_do_spinjump:
-	; A is 2-3, 4-5, 6-7, 8-9
-	LSR A	; A becomes 1,1, 2,2, 3,3, 4,4
-	JSR DynJump
-	.word $0000					; 0 Unused
-	.word Spinjump_FaceScreen	; 1
-	.word Spinjump_FaceLeft		; 2
-	.word Spinjump_FaceAway		; 3
-	.word Spinjump_FaceRight	; 4
-
-Spinjump_FaceScreen:
-	LDA #$01
-	STA Player_PipeFace			; face the screen for 1 frame
-Spinjump_FaceLeft:
-	LDA #$00
-	STA <Player_FlipBits		; face "left"
-_sj_rts:
-	RTS
-
-Spinjump_FaceAway:
-	LDY <Player_Suit
-	LDA Player_ClimbFrame,Y		; Get appropriate climbing frame
-	STA <Player_Frame
-Spinjump_FaceRight:
-	LDA #SPR_HFLIP				; face "right"
-	STA <Player_FlipBits
+	Page_C_Call 40, SetSpinjumpFrames_40
 	RTS
 
 ;;; [ORANGE] See BoostMarioSpeed near Return01AA41
@@ -6006,6 +5914,96 @@ RunPauseMenu13:
 	PLA
 	STA PAGE_A000
 	JSR PRGROM_Change_A000
+	RTS
+
+DoSoundEngineSave13:
+	LDA PAGE_A000
+	PHA
+	LDA #13
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+	JSR DoSoundEngineSave
+	PLA
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+	RTS
+
+DoSoundEngineRestore13:
+	LDA PAGE_A000
+	PHA
+	LDA #13
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+	JSR DoSoundEngineRestore
+	PLA
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+	RTS
+
+RestartLevelPRG030:
+	;;; This is jumped to from
+	;;;   Level_MainLoop->RunPauseMenu->DoMenuInput->PauseMenuRestartLevel
+	PLA						; Restore the A000 page saved by RunPauseMenu13 before getting here
+	TAY
+	PLA
+	PLA						; Remove the Level_MainLoop return address
+	TYA
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+
+	LDA #PLAYERSUIT_SMALL	; PLAYERSUIT_SMALL = 0
+	STA World_Map_Power		; Ensure player doesn't retain world map suit on level restart
+	STA <Player_HaltGame	; We can also use it to ensure the game isn't halted
+
+	INC LevelRestarting		; Flag that we're restarting the level
+	LDA SoundEngineBackedUp
+	BNE _no_sound_engine_save	; We don't want to save if we already saved at the death song
+	JSR DoSoundEngineSave13
+_no_sound_engine_save:
+	; Switch bank A000 to page 26
+	LDA #26
+	STA PAGE_A000
+	JSR PRGROM_Change_A000
+	JSR Palette_FadeOut
+	JSR GraphicsBuf_Prep_And_WaitVSync
+
+	JSR Clear_500_300_RAM
+
+	JSR Sprite_RAM_Clear
+	JSR Scroll_PPU_Reset
+
+	LDA #$10
+	STA Map_Operation		; "Enter level"
+
+	LDA Map_Prev_XOff		; Reset all positions
+	STA <Horz_Scroll
+	LDA Map_Prev_XHi
+	STA <Horz_Scroll_Hi
+	LDA Map_Entered_Y
+	STA <World_Map_Y
+	LDA Map_Entered_XHi
+	STA <World_Map_XHi
+	LDA Map_Entered_X
+	STA <World_Map_X
+	LDA Map_Previous_UnusedPVal2
+	STA <Map_UnusedPlayerVal2
+
+	JSR Sprite_RAM_Clear
+	JMP PRG030_8732
+
+CheckPlayLevelEntrySound:
+	TAX
+	LDA LevelRestarting
+	BEQ _not_restarting
+	RTS				; We still have more to do before we're done restarting the level
+_not_restarting:
+	TXA
+	STA Sound_QMap	 ; Play "enter level" sound effect!
+	RTS
+
+CheckQueueLevelsMusic:
+	STA PageCallVars
+	Page_C_Call 40, CheckQueueLevelsMusic_40
 	RTS
 
 _end_30

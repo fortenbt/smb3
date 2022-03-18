@@ -933,7 +933,7 @@ DynJump_LLGen_17:
 	;;; Fall into LoadLevel17_Generic
 
 LoadLevel17_Generic:
-	PageCall 40, LoadLevel17_Generic_40
+	Page_C_Call 40, LoadLevel17_Generic_40
 	RTS
 
 _j_DynJump17:

@@ -970,7 +970,7 @@ DynJump_LLGen_21:
 
 LoadLevel21_Generic:
 	;;; Currently we only support On/Offs, so we can call that loader directly
-	PageCall 40, LoadLevel_OnOffs_40
+	Page_C_Call 40, LoadLevel_OnOffs_40
 	RTS
 
 _j_DynJump21:

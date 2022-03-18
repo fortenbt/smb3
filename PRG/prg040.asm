@@ -337,3 +337,130 @@ LoadLevel17_Generic_40:
     .word LoadLevel_CustomTile17Row
     .word LoadLevel_CustomTile17Row   ; death block
 
+ThrownYVels:
+	;     n/a  DOWN  UP
+	.byte $00, $04, -$78
+SetKickedYVel_40:
+    LDX PageCallVars
+	LDA #$00
+	STA <Objects_YVel,X
+	LDY ThrowDirection
+	BEQ _post_skyv		; (RTS)
+	STA ThrowDirection	; Zero this back out
+
+	TYA					; Get throw direction
+	PHA					; Setting a shell down uses Mario's xvel+-8
+						; Throwing a shell up uses Mario's xvel/4
+    AND #PAD_UP
+	BEQ _set_shell_down
+
+_throw_shell_upward:
+	CLC
+	LDA <Player_XVel	; Use CLC/SEC and BPL to do an arithmetic right shift
+	BPL _skyv_xvel_ror1	; BPL branch on N=0
+	SEC
+_skyv_xvel_ror1:
+	ROR A				; mod N,Z,C
+	CLC
+	BPL _skyv_xvel_ror2
+	SEC
+_skyv_xvel_ror2:
+	ROR A
+	STA <Objects_XVel,X
+	JMP _skyv_set_yvel
+
+_set_shell_down:
+	;; Override XVel if setting down
+	LDA #-$08
+	LDY <Player_FlipBits
+	BEQ _skyv_shell_down_xvel
+	NEG
+_skyv_shell_down_xvel:
+	ADD <Player_XVel
+	STA <Objects_XVel,X
+
+_skyv_set_yvel:
+	PLA					; Restore shell throw direction
+	LSR A
+	LSR A
+	TAY
+	LDA ThrownYVels,Y
+	STA <Objects_YVel,X
+	LDA #OBJSTATE_SHELLED
+	STA Objects_State,X
+_post_skyv:
+	RTS
+
+SetSpinjumpFrames_40:
+	LDA SpinjumpFlag
+	BEQ _sj_rts
+
+	; We're spinjumping, so we need to force "walk" frames
+	; rather than pspeed frames if that was set
+	LDA <Player_Suit
+	ASL A
+	ASL A
+	ORA <Player_WalkFrame
+	TAY
+	LDA Player_WalkFramesByPUp,Y
+	STA <Player_Frame
+
+	LDA SpinjumpFlag
+	ADD #$01
+	STA SpinjumpFlag
+	BEQ _reset_spinjump
+	CMP #$0A
+	BNE _do_spinjump
+_reset_spinjump:
+	LDA #$02
+	STA SpinjumpFlag
+_do_spinjump:
+	; A is 2-3, 4-5, 6-7, 8-9
+	LSR A	; A becomes 1,1, 2,2, 3,3, 4,4
+	JSR DynJump
+	.word $0000					; 0 Unused
+	.word Spinjump_FaceScreen	; 1
+	.word Spinjump_FaceLeft		; 2
+	.word Spinjump_FaceAway		; 3
+	.word Spinjump_FaceRight	; 4
+
+Spinjump_FaceScreen:
+	LDA #$01
+	STA Player_PipeFace			; face the screen for 1 frame
+Spinjump_FaceLeft:
+	LDA #$00
+	STA <Player_FlipBits		; face "left"
+_sj_rts:
+	RTS
+
+Spinjump_FaceAway:
+	LDY <Player_Suit
+	LDA Player_ClimbFrame,Y		; Get appropriate climbing frame
+	STA <Player_Frame
+Spinjump_FaceRight:
+	LDA #SPR_HFLIP				; face "right"
+	STA <Player_FlipBits
+	RTS
+
+CheckQueueLevelsMusic_40:
+	LDX PageCallVars
+	LDA LevelRestarting
+	BEQ _not_restarting2
+	LDA Level_MusicQueueRestore
+	CMP SndCur_Music2
+	BEQ _post_restore_music2
+	STA Sound_QMusic2
+_post_restore_music2:
+	LDA #0
+	STA Sound_IsPaused
+	STA SndCur_Pause	; Stop the pause sound hold
+	DEC LevelRestarting		; Restarting the level done
+	RTS
+_not_restarting2:
+	TXA
+	STA Level_MusicQueue
+	STA Level_MusicQueueRestore
+	RTS
+
+
+__end_40
