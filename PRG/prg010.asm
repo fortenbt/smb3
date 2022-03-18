@@ -679,9 +679,11 @@ Map_ConfigWorldIntro:
 	STA Graphics_Buffer+6
 
 	; Takes the lives from the status bar!
-	LDA StatusBar_LivesH
+	;LDA StatusBar_LivesH
+	LDA #$D4
 	STA Graphics_Buffer+7
-	LDA StatusBar_LivesL
+	;LDA StatusBar_LivesL
+	LDA #$D5
 	STA Graphics_Buffer+8
 
 	LDA #$00	
