@@ -35,7 +35,7 @@ ObjectGroup04_InitJumpTable:
 	.word ObjInit_BigQBlock		; Object $98 - OBJ_BIGQBLOCK_TANOOKI
 	.word ObjInit_BigQBlock		; Object $99 - OBJ_BIGQBLOCK_FROG
 	.word ObjInit_BigQBlock		; Object $9A - OBJ_BIGQBLOCK_HAMMER
-	.word ObjInit_DoNothing		; Object $9B
+	.word ObjInit_SMWCheckpoint	; Object $9B
 	.word ObjInit_DoNothing		; Object $9C
 	.word ObjInit_FireJetUpward	; Object $9D - OBJ_FIREJET_UPWARD
 	.word ObjInit_Podoboo		; Object $9E - OBJ_PODOBOO
@@ -77,7 +77,7 @@ ObjectGroup04_NormalJumpTable:
 	.word ObjNorm_BigQBlock		; Object $98 - OBJ_BIGQBLOCK_TANOOKI
 	.word ObjNorm_BigQBlock		; Object $99 - OBJ_BIGQBLOCK_FROG
 	.word ObjNorm_BigQBlock		; Object $9A - OBJ_BIGQBLOCK_HAMMER
-	.word ObjNorm_DoNothing		; Object $9B
+	.word ObjNorm_SMWCheckpoint	; Object $9B
 	.word ObjNorm_DoNothing		; Object $9C
 	.word ObjNorm_FireJet		; Object $9D - OBJ_FIREJET_UPWARD
 	.word ObjNorm_Podoboo		; Object $9E - OBJ_PODOBOO
@@ -162,7 +162,7 @@ ObjectGroup04_Attributes:
 	.byte OA1_PAL0 | OA1_HEIGHT32 | OA1_WIDTH32	; Object $98 - OBJ_BIGQBLOCK_TANOOKI
 	.byte OA1_PAL0 | OA1_HEIGHT32 | OA1_WIDTH32	; Object $99 - OBJ_BIGQBLOCK_FROG
 	.byte OA1_PAL0 | OA1_HEIGHT32 | OA1_WIDTH32	; Object $9A - OBJ_BIGQBLOCK_HAMMER
-	.byte OA1_PAL0 | OA1_HEIGHT16 | OA1_WIDTH8	; Object $9B
+	.byte OA1_PAL0 | OA1_HEIGHT48 | OA1_WIDTH32	; Object $9B
 	.byte OA1_PAL0 | OA1_HEIGHT16 | OA1_WIDTH8	; Object $9C
 	.byte OA1_PAL1 | OA1_HEIGHT48 | OA1_WIDTH16	; Object $9D - OBJ_FIREJET_UPWARD
 	.byte OA1_PAL1 | OA1_HEIGHT32 | OA1_WIDTH16	; Object $9E - OBJ_PODOBOO
@@ -6056,8 +6056,105 @@ PRG005_BFA7:
 	PLA
 	PLA
 
+ObjInit_SMWCheckpoint:
 	RTS		 ; Return
 
 ; Rest of ROM bank was empty...
+
+ObjNorm_SMWCheckpoint:
+	JSR Object_DeleteOffScreen
+	JSR SMWCheckPoint_Draw
+
+	LDA <Player_HaltGame
+	BNE norm_smwcp_rts
+
+	JSR Object_HitTest
+	BCC norm_smwcp_rts				; if no collision, return
+
+	; Custom collision logic to retrieve checkpoint
+			;LDA <Player_SpriteY
+			;ADD #24
+			;CMP <Objects_SpriteY,X
+	; collided, set as retrieved
+	INC <Objects_Var5,X
+
+norm_smwcp_rts:
+	RTS		 ; Return
+
+SMWCP_UpperPats:	.byte $87, $9B, $85, $99, $83, $99, $81, $97
+SMWCP_LowerPats:	.byte $8F, $8F, $8D, $9D, $8B, $9D, $89, $89
+
+SMWCheckPoint_Draw:
+	JSR Object_ShakeAndCalcSprite	 
+	STY <Temp_Var14		 ; Sprite RAM offset -> Temp_Var14
+
+	LDA <Temp_Var8
+	STA <Temp_Var15		; Horizontal visibility -> Temp_Var15
+
+	LDX <SlotIndexBackup		 ; X = object slot index
+
+_PRG005_B76E:
+	ASL <Temp_Var15
+	BCS _PRG005_B788	 ; If this sprite is horizontally off-screen, jump to PRG005_B788
+
+	LDA <Temp_Var5
+	STA <Temp_Var16		; Vertical visibility -> Temp_Var16
+
+	LDA <Temp_Var1
+	LSR <Temp_Var16
+	BCS _PRG005_B77F	 ; If this sprite is vertically off-screen, jump to PRG005_B77F
+
+	STA Sprite_RAM+$00,Y	 ; Set upper sprite Y
+
+_PRG005_B77F:
+	LSR <Temp_Var16
+	BCS _PRG005_B788	 ; If this sprite is vertically off-screen, jump to PRG005_B788
+
+	ADC #16		; +16 for lower sprite
+	STA Sprite_RAM+$04,Y	 ; Set lower sprite Y
+
+_PRG005_B788:
+
+	; Set pattern of upper sprite
+	LDA SMWCP_UpperPats,X
+	STA Sprite_RAM+$01,Y
+
+	; Set pattern of lower sprite
+	LDA SMWCP_LowerPats,X
+	STA Sprite_RAM+$05,Y
+
+	; Palette select 3
+	LDA #SPR_PAL3
+	STA Sprite_RAM+$02,Y
+	STA Sprite_RAM+$06,Y
+
+	; Sprite X
+	LDA <Temp_Var2	
+	STA Sprite_RAM+$03,Y
+	STA Sprite_RAM+$07,Y
+
+	ADD #$08	
+	STA <Temp_Var2	; +8 to next sprite to the right
+
+	; Sprite Offset += 8 (next two sprites)
+	TYA
+	ADD #$08
+	TAY
+
+	; X -= 2 (next appropriate pattern)
+	DEX
+	DEX
+	BMI _PRG005_B7BC	 ; If this was the last cycle, jump to PRG005_B7BC
+
+	CPX #$02
+	BGE _PRG005_B76E	 ; If this wasn't the second-to-last, jump to PRG005_B76E
+
+	JSR Object_GetRandNearUnusedSpr	 ; Mixes up the sprite index a little
+	JMP _PRG005_B76E	 ; Loop!
+
+_PRG005_B7BC:
+	LDX <SlotIndexBackup		 ; X = object slot index
+	RTS		 ; Return
+
 
 _end_5

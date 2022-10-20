@@ -3477,6 +3477,7 @@ OBJ_BIGQBLOCK_SUPERLEAF	= $97	; Big ? block (-green??- leaf)
 OBJ_BIGQBLOCK_TANOOKI	= $98	; Big ? block (tanooki)
 OBJ_BIGQBLOCK_FROG	= $99	; Big ? block (frog suit)
 OBJ_BIGQBLOCK_HAMMER	= $9A	; Big ? block (hammer suit)
+OBJ_SMWCHECKPOINT		= $9B
 OBJ_FIREJET_UPWARD	= $9D	; upward fire jet
 OBJ_PODOBOO		= $9E	; Podoboo
 OBJ_PARABEETLE		= $9F	; Parabeetle
