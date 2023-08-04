@@ -55,6 +55,58 @@ DMC02:	.byte $55, $60, $6B, $79, $EA, $F8, $FF, $43, $82, $24, $00, $20, $8E, $E
 DMC02_End
 
 	;
+Clear_Page5_Gameplay:
+	STA <Temp_Var1	; Temp_Var1 = 0
+
+	LDX #$05
+	STX <Temp_Var2	; Temp_Var2 = 5
+
+	; Going to clear memory from $9D to $01
+	LDY #$9d	; Y = $9D
+_PRG030_88E9:
+	STA [Temp_Var1],Y	; Clear this byte
+	DEY		 	; Y--
+	BNE _PRG030_88E9	 	; While Y <> 0, loop!
+
+	STA [Temp_Var1],Y	; And address $00 is cleared too (though this is technically unnecessary)
+	RTS
+
+Clear_LoMem_Gameplay:
+	; Clears $80 bytes starting at Player_XHi ($75, gameplay context)
+	LDY #$80	 ; Y = $80
+	LDA #$00	 ; A = 0
+	STA LevelJctBQ_Flag	 ; LevelJctBQ_Flag = 0
+_PRG030_8975:
+	STA Player_XHi,Y
+	DEY		 ; Y--
+	BNE _PRG030_8975	 ; While Y >= 0, loop!
+	RTS
+
+SetCheckpointVars:
+	LDA Chkpnt_JctXLHStart
+	STA Level_JctXLHStart
+	LDA Chkpnt_JctYLHStart
+	STA Level_JctYLHStart
+	STA Player_XStart		; force the game to think we've initialized mario's position
+	LDA Chkpnt_Layout		; our checkpoint set up the following juntion pointers for the level it's in
+	STA Level_AltLayout
+	LDA Chkpnt_Layout+1
+	STA Level_AltLayout+1
+	LDA Chkpnt_Obj
+	STA Level_AltObjects
+	LDA Chkpnt_Obj+1
+	STA Level_AltObjects+1
+	LDA Chkpnt_Tileset
+	STA Level_AltTileset
+	LDA Chkpnt_FlipBits
+	STA <Player_FlipBits
+	LDA #$00
+	STA <Scroll_LastDir
+	LDA #$03				; tell the level we're junctioning
+	STA Level_JctCtl
+	LDA #$04				; timer value restart
+	STA Level_TimerMSD
+	RTS
 
 	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
@@ -1404,14 +1456,14 @@ __Music_RestH_LUT90:
 	; If you're creating a custom hack, delete these $FFs and use the following line instead:
 ; .AlignDMC04:	DMCAlign .AlignDMC04
 
-	.byte $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 
 	; END UNUSED SPACE
 

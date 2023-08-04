@@ -58,6 +58,26 @@ Page_C_Call .macro
 	JSR LoadCallAndRestoreC000
 	.endm
 
+Checkpoint .macro
+    INC <GotCheckpoint
+	LDA #LOW(\1)
+	STA Chkpnt_Layout
+	LDA #HIGH(\1)
+	STA Chkpnt_Layout+1
+	LDA #LOW(\2)
+	STA Chkpnt_Obj
+	LDA #HIGH(\2)
+	STA Chkpnt_Obj+1
+	LDA #SPR_HFLIP
+	STA Chkpnt_FlipBits
+	LDA #\3
+	STA Chkpnt_Tileset
+	LDA #\4
+	STA Chkpnt_JctXLHStart
+	LDA #\5
+	STA Chkpnt_JctYLHStart
+	.endm
+
 ; This is used in video update streams; since the video address register
 ; takes the address high-then-low (contrary to 6502's normal low-then-high),
 ; this allows a 16-bit value but "corrects" it to the proper endianness.
@@ -415,7 +435,7 @@ PAD_RIGHT	= $01
 	Map_ClearLevelFXCnt:		; Counter for "clear level" FX occurring (1-6: Poof, 7-9: Flip) ("poof"/"panel flip") NOTE: Overlap/reuse
 	Map_ScrollOddEven:	.ds 1	; Toggles odd/even column as it scrolls
 
-				.ds 1	; $21 unused
+	GotCheckpoint:      .ds 1	; $21 unused; [ORANGE] now used for indicating when a checkpoint was touched
 
 	Level_Width:		.ds 1	; Width of current level, in screens (0 = don't move at all, max is 15H/16V)
 
@@ -2423,7 +2443,13 @@ VSOBJID_KICKEDBLOCK	= 11	; Kicked block (from [?] block match)
 	;	Vertical level max size is 	15 rows * 16 columns * 16 screens = 3840 ($0F00) bytes
 	;	Non-vertical level max size is 	27 rows * 16 columns * 15 screens = 6480 ($1950) bytes
 Tile_Mem:	.ds 6480	; $6000-$794F Space used to store the 16x16 "tiles" that make up the World Map or Level
-			.ds 329
+			.ds 321
+	Chkpnt_Layout:		.ds 2
+	Chkpnt_Obj:			.ds 2
+	Chkpnt_Tileset:		.ds 1
+	Chkpnt_FlipBits:	.ds 1
+	Chkpnt_JctXLHStart:	.ds 1
+	Chkpnt_JctYLHStart:	.ds 1
 
 	Map_MoveRepeat:		.ds 2	; $7950-$7951 (Mario/Luigi) counts up to $18 and then you keep moving without pause
 	AScrlURDiag_OffsetX:	.ds 1	; When diagonal autoscroller is wrapping, this holds an X offset for Player/Objects to temporarily correct

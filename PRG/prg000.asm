@@ -458,7 +458,7 @@ Object_AttrFlags:
 	.byte OAT_BOUNDBOX06 | OAT_FIREIMMUNITY | OAT_HITNOTKILL	; Object $98 - OBJ_BIGQBLOCK_TANOOKI
 	.byte OAT_BOUNDBOX06 | OAT_FIREIMMUNITY | OAT_HITNOTKILL	; Object $99 - OBJ_BIGQBLOCK_FROG
 	.byte OAT_BOUNDBOX06 | OAT_FIREIMMUNITY | OAT_HITNOTKILL	; Object $9A - OBJ_BIGQBLOCK_HAMMER
-	.byte OAT_BOUNDBOX00	; Object $9B
+	.byte OAT_BOUNDBOX08	; Object $9B - OBJ_SMWCHECKPOINT
 	.byte OAT_BOUNDBOX00	; Object $9C
 	.byte OAT_BOUNDBOX14 | OAT_WEAPONIMMUNITY | OAT_HITNOTKILL	; Object $9D - OBJ_FIREJET_UPWARD
 	.byte OAT_BOUNDBOX01 | OAT_FIREIMMUNITY	; Object $9E - OBJ_PODOBOO
@@ -3146,7 +3146,7 @@ PRG000_CF49:
 
 	JSR Object_WorldDetectN1	; Detect against world
 	JSR Object_CalcSpriteXY_NoHi	; Calculate low parts of sprite X/Y (never off-screen when held by Player!)
-	JSR ObjectToObject_HitTest	; Test if this object has collided with another object
+	;JSR ObjectToObject_HitTest	; Test if this object has collided with another object
 	BCC PRG000_CF98		 ; If this object did not collide with any other objects, jump to PRG000_CF98
 
 	LDA Objects_Timer2,X

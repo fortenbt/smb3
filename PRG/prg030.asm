@@ -13,7 +13,7 @@
 ;---------------------------------------------------------------------------
 	; STANDARD HORIZONTAL SCREEN
 
-Tile_Mem_Addr_OLD:	
+Tile_Mem_Addr:
 	; This breaks up the overall "tile" layout memory into screen-based chunks
 	; With a screen width of 256 pixels, that makes 16 blocks across every "screen",
 	; NTSC res of 224, two screens tall, is 448 / 16px-per-tile = 28 POTENTIAL rows per screen
@@ -1235,6 +1235,23 @@ PRG030_88AD:
 
 	JSR GraphicsBuf_Prep_And_WaitVSync	 ; Waiting for vertical sync
 
+ _do_checkpoint:
+	LDA <GotCheckpoint
+	BEQ _post_checkpoint
+	LDA #$00
+	;STA <GotCheckpoint
+	STA <Player_XVel
+	STA <Player_YVel
+	STA <Player_XHi
+	STA <Player_Suit
+
+	JSR Clear_Page5_Gameplay
+	JSR Clear_LoMem_Gameplay
+	JSR SetCheckpointVars
+
+	JMP Level_MainLoop
+
+_post_checkpoint:
 	; Stop Update_Select activity temporarily
 	INC UpdSel_Disable
 
@@ -1264,19 +1281,7 @@ PRG030_88C8:
 	STA Map_BonusCoinsReqd	 ; Clear the "coins required for bonus"
 	STA Map_BonusType	 ; Clear the "bonus type"
 
-	STA <Temp_Var1	; Temp_Var1 = 0
-
-	LDX #$05	
-	STX <Temp_Var2	; Temp_Var2 = 5
-
-	; Going to clear memory from $9D to $01
-	LDY #$9d	; Y = $9D
-PRG030_88E9:
-	STA [Temp_Var1],Y	; Clear this byte
-	DEY		 	; Y--
-	BNE PRG030_88E9	 	; While Y <> 0, loop!
-
-	STA [Temp_Var1],Y	; And address $00 is cleared too (though this is technically unnecessary)
+	JSR Clear_Page5_Gameplay
 
 	LDA <Map_Enter2PFlag
 	BEQ PRG030_891A	 	; If not entering 2P Vs mode, jump to PRG030_891A
@@ -1377,14 +1382,7 @@ PRG030_8968:
 	DEY		 ; Y--
 	BPL PRG030_8968	 ; While Y >= 0, loop!
 
-	; Clears $80 bytes starting at Player_XHi ($75, gameplay context)
-	LDY #$80	 ; Y = $80
-	LDA #$00	 ; A = 0
-	STA LevelJctBQ_Flag	 ; LevelJctBQ_Flag = 0 
-PRG030_8975: 
-	STA Player_XHi,Y
-	DEY		 ; Y--
-	BNE PRG030_8975	 ; While Y >= 0, loop!
+	JSR Clear_LoMem_Gameplay
 
 PRG030_897B:
 	; Level junctions enter here, to continue with preparation to display!
@@ -1393,6 +1391,10 @@ PRG030_897B:
 	;;;STA Vert_Scroll_Off	; Vert_Scroll_Off = 0
 	;;; [ORANGE] Page 22@C000 and Page 12@A000 at this point
 	;;;          Page 22 has a lot of space, so we'll put our stuff there.
+	;;; [ORANGE] This isn't correct for our checkpoint...A000 was set to
+	;;;          27 and then 26 by the Level_Jct stuff at line 2249 in
+	;;;          this bank. And in marathon it looks like the sound bank
+	;;;          prg039 is always in C000 at this point.
 	JSR Initialize_Level_Scroll
 	NOP
 	NOP
@@ -6016,14 +6018,14 @@ CheckQueueLevelsMusic:
 	Page_C_Call 40, CheckQueueLevelsMusic_40
 	RTS
 
-Tile_Mem_Addr:	
-	; This breaks up the overall "tile" layout memory into screen-based chunks
-	; With a screen width of 256 pixels, that makes 16 blocks across every "screen",
-	; NTSC res of 224, two screens tall, is 448 / 16px-per-tile = 28 POTENTIAL rows per screen
-	; but the status bar occludes one, so only 27 rows are stored... 
-	; Up to 15 screens!
-	.word Tile_Mem,       Tile_Mem+$01B0, Tile_Mem+$0360, Tile_Mem+$0510, Tile_Mem+$06C0, Tile_Mem+$0870, Tile_Mem+$0A20, Tile_Mem+$0BD0
-	.word Tile_Mem+$0D80, Tile_Mem+$0F30, Tile_Mem+$10E0, Tile_Mem+$1290, Tile_Mem+$1440, Tile_Mem+$15F0, Tile_Mem+$17A0, Tile_Mem
-
+Initialize_Level_Scroll:
+	LDA #$00
+	STA Vert_Scroll_Off
+	STA CameraLeftBuffer
+	STA CameraRightBuffer
+	STA CameraProperOffs
+	LDA #$80
+	STA CameraMoveTrigger
+	RTS
 
 _end_30
