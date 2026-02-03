@@ -2777,6 +2777,270 @@ PRG029_DFD0:
 PRG029_DFEB:
 	RTS		 ; Return
 
+Music_Set1_Set2A_Ptrs:
+	; Index 0 - 7 are Set 1 songs, accessed by bit weight
+	.word MS1_01SegHedr, MS1_02SegHedr, MS1_04SegHedr, MS1_08SegHedr	; Index $00-$03
+	.word MS1_10SegHedr, MS1_20SegHedr, MS1_40SegHedr, MS1_80SegHedr	; Index $04-$07
+
+	; 8+ are Set 2A
+	.word MS2ASegHedr09, MS2ASegHedr0C, MS2ASegHedr07, MS2ASegHedr0A	; Index $08-$0B
+	.word MS2ASegHedr0B, MS2ASegHedr05, MS2ASegHedr08, MS2ASegHedr06	; Index $0C-$0F
+	.word MS2ASegHedr0F, MS2ASegHedr10, MS2ASegHedr11, MS2ASegHedr0E	; Index $10-$13
+	.word MS2ASegHedr04, MS2ASegHedr12, MS2ASegHedr03, MS2ASegHedr04	; Index $14-$17
+	.word MS2ASegHedr00, MS2ASegHedr01, MS2ASegHedr00, MS2ASegHedr02	; Index $18-$1B
+	.word MS2ASegHedr1A, MS2ASegHedr0D, MS2ASegHedr1B, MS2ASegHedr1B	; Index $1C-$1F
+	.word MS2ASegHedr1C, MS2ASegHedr1B, MS2ASegHedr1D, MS2ASegHedr1E	; Index $20-$23
+	.word MS2ASegHedr1E, MS2ASegHedr1F, MS2ASegHedr1F, MS2ASegHedr20	; Index $24-$27
+	.word MS2ASegHedr21, MS2ASegHedr22, MS2ASegHedr21, MS2ASegHedr23	; Index $28-$2B
+
+	.word BatmanHedr1	; $2C
+	.word BatmanHedr1	; $2D
+	.word BatmanHedr1	; $2E
+	.word BatmanHedr1	; $2F
+	.word BatmanHedr1	; $30
+	.word BatmanHedr1	; $31
+	.word BatmanHedr1	; $32
+	.word BatmanHedr2	; $33
+	.word BatmanHedr3	; $34
+	.word BatmanHedr4	; $35
+	.word BatmanHedr5	; $36
+	.word BatmanHedr3	; $37
+	.word BatmanHedr4	; $38
+	.word BatmanHedr5	; $39
+	.word BatmanHedr6	; $3A
+	.word BatmanHedr7	; $3B
+	.word BatmanHedr8	; $3C
+	.word BatmanHedr9	; $3D
+	.word BatmanHedr7	; $3E
+	.word BatmanHedr8	; $3F
+	.word BatmanHedr10	; $40
+
+
+BatmanHedr1:	MusSeg Batman_R1, Batman_1, $03, Batman_Tri1, Batman_Nse1, Batman_Dpcm1
+BatmanHedr2:	MusSeg Batman_R1, Batman_1, $03, Batman_Tri1, Batman_Nse2, Batman_Dpcm2
+BatmanHedr3:	MusSeg Batman_R3, Batman_3, $24, Batman_Tri3, Batman_Nse3, Batman_Dpcm3
+BatmanHedr4:	MusSeg Batman_R4, Batman_4, $29, Batman_Tri4, Batman_Nse4, Batman_Dpcm4
+BatmanHedr5:	MusSeg Batman_R5, Batman_5, $0f, Batman_Tri5, Batman_Nse5, Batman_Dpcm5
+BatmanHedr6:	MusSeg Batman_R6, Batman_6, $5a, Batman_Tri6, Batman_Nse6, Batman_Dpcm6
+BatmanHedr7:	MusSeg Batman_R78, Batman_7, $15, Batman_Tri7, Batman_Nse7, Batman_Dpcm7
+BatmanHedr8:	MusSeg Batman_R78, Batman_8, $14, Batman_Tri8, Batman_Nse8, Batman_Dpcm8
+BatmanHedr9:	MusSeg Batman_R9, Batman_9, $27, Batman_Tri9, Batman_Nse9, Batman_Dpcm9
+BatmanHedr10:	MusSeg Batman_R10, Batman_10, $26, Batman_Tri10, Batman_Nse10, Batman_Dpcm10
+
+Batman_R1:
+	.byte $37, $04, $03, $02, $05, $06, $07
+Batman_R3:
+	.byte $07, $08, $76, $0D, $06, $91, $10, $88, $04, $03, $02, $05, $01, $0E
+Batman_R4:
+	.byte $08, $0D, $06, $7D, $07, $68, $04, $03, $02, $05, $0E, $09
+Batman_R5:
+	.byte $08, $1C, $0D, $07, $06, $16, $04, $03, $02, $05, $37
+Batman_R6:
+	.byte $08, $0D, $06, $07, $04, $03, $02, $05, $09, $37, $0E
+Batman_R78:
+	.byte $07, $08, $13, $0A, $04, $03, $02, $05, $09, $0E, $06
+Batman_R9:
+	.byte $07, $08, $0D, $06, $05, $1D, $04, $03, $02, $09, $38, $37, $0E
+Batman_R10:
+	.byte $07, $08, $0D, $06, $D7, $09, $05, $15, $04, $03, $02, $38, $0B, $0E
+
+Batman_1:
+    .byte $A0, $7E, $00
+    .byte $A0, $7E
+Batman_Tri1:
+	.byte $A1, $2E, $A2, $7E, $A1, $2E, $A2, $7E, $A1, $34, $A2, $7E, $A1, $2E, $A2, $7E
+	.byte $A1, $38, $A2, $7E, $A1, $2A, $A2, $7E, $A1, $34, $A2, $7E, $A1, $2E, $A3, $7E
+Batman_Nse1:
+	.byte $A4, $02, $A3, $01, $A1, $02, $A2, $01, $A4, $02, $A3, $01, $A1, $02, $A2, $01
+	.byte $A4, $02, $A3, $01, $A1, $02, $A2, $01, $A4, $02, $A3, $01, $A1, $02, $A3, $01
+	.byte $00
+Batman_Dpcm1:
+Batman_Nse2:
+	.byte $A0, $01, $00
+Batman_Dpcm2:
+	.byte $A6, $01, $02, $02, $02, $02, $01, $02, $A5, $01
+
+Batman_3:
+	.byte $C6, $7E, $C0, $2E, $3C, $34, $3E, $3C, $34, $C1, $2E, $C2, $2E, $C1, $2C, $C3
+	.byte $2C, $C1, $2E, $C4, $2E, $C1, $32, $C4, $32, $C1, $34, $C4, $34, $C0, $38, $C1
+	.byte $3C, $C7, $3C, $00
+	.byte $C0, $7E, $2E, $3C, $34, $3E, $3C, $34, $C1, $2E, $C2, $2E, $C1, $2C, $C3, $2C
+	.byte $C1, $2E, $C4, $2E, $C1, $32, $C4, $32, $C1, $34, $C4, $34, $C0, $38, $C1, $3C
+	.byte $C5, $3C
+Batman_Tri3:
+	.byte $A8, $2E, $A9, $7E, $A8, $2E, $A9, $7E, $A8, $34, $A9, $7E, $A8, $2E, $A9, $7E
+	.byte $A8, $38, $A9, $7E, $A8, $2A, $A9, $7E, $A8, $34, $A9, $7E, $A8, $2E, $A9, $7E
+	.byte $A8, $2E, $A9, $7E, $A8, $2E, $A9, $7E, $A8, $34, $A9, $7E, $A8, $2E, $A9, $7E
+	.byte $A8, $38, $A9, $7E, $A8, $2A, $A9, $7E, $A8, $34, $A9, $7E, $A8, $2E, $A9, $7E
+	.byte $A8, $2E, $A9, $7E, $A8, $2E, $A9, $7E, $A8, $34, $A9, $7E, $A8, $2E, $A9, $7E
+	.byte $A8, $38, $A9, $7E, $A8, $2A, $A9, $7E, $A8, $34, $A9, $7E, $A8, $2E, $A9, $7E
+	.byte $A8, $2E, $A9, $7E, $A8, $2E, $A9, $7E, $A8, $34, $A9, $7E, $A8, $2E, $A9, $7E
+	.byte $A8, $38, $A9, $7E, $A8, $2A, $A9, $7E, $A8, $34, $A9, $7E, $A8, $2E, $A9, $7E
+	.byte $A8, $2E, $A9, $7E, $A8, $2E, $A9, $7E, $A8, $34, $A9, $7E, $A8, $2E, $A9, $7E
+	.byte $A8, $38, $A9, $7E, $A8, $2A, $A9, $7E, $A8, $34, $A9, $7E, $A8, $2E, $A9, $7E
+	.byte $A8, $2E, $A9, $7E, $A8, $2E, $A9, $7E, $A8, $34, $A9, $7E, $A8, $2E, $A9, $7E
+	.byte $A8, $38, $A9, $7E, $A8, $2A, $A9, $7E, $A8, $34, $A9, $7E, $A8, $2E, $A9, $7E
+	.byte $A8, $2E, $A9, $7E, $A8, $2E, $A9, $7E, $A8, $34, $A9, $7E, $A8, $2E, $A9, $7E
+	.byte $A8, $38, $A9, $7E, $A8, $2A, $A9, $7E, $A8, $34, $A9, $7E, $A8, $2E, $A9, $7E
+	.byte $A8, $2E, $AA, $7E
+Batman_Nse3:
+	.byte $AB, $02, $AA, $01, $A8, $02, $A9, $01, $AB, $02, $AA, $01, $A8, $02, $A9, $01
+	.byte $00
+Batman_Dpcm3:
+	.byte $AD, $01, $03, $A0, $01, $01, $AD, $03, $A0, $01, $01, $03, $AD, $01, $A0, $01
+	.byte $AD, $03, $01, $03, $A0, $01, $01, $AD, $03, $A0, $01, $01, $03, $AD, $01, $A0
+	.byte $01, $AD, $03, $01, $03, $A0, $01, $01, $AD, $03, $A0, $01, $01, $03, $AD, $01
+	.byte $A0, $01, $AD, $03, $01, $03, $A0, $01, $01, $AD, $03, $A4, $01
+
+Batman_4:
+	.byte $CB, $7E, $C0, $42, $C1, $42, $C0, $3E, $C2, $3E, $C0, $3C, $C2, $3C, $C0, $38
+	.byte $C1, $38, $C0, $30, $C1, $30, $C0, $26, $C3, $26, $C4, $30, $34, $38, $3C, $3E
+	.byte $42, $3E, $C0, $3C, $C5, $3C, $C6, $7E, $00
+	.byte $C0, $42, $C1, $42, $C0, $3E, $C2, $3E, $C0, $3C, $C2, $3C, $C0, $38, $C1, $38
+	.byte $C0, $30, $C1, $30, $C0, $26, $C3, $26, $C4, $30, $34, $38, $3C, $3E, $42, $3E
+	.byte $C0, $3C, $C5, $3C, $C1, $7E
+Batman_Tri4:
+	.byte $A6, $2E, $A7, $7E, $A6, $34, $A7, $7E, $A6, $2E, $A7, $7E, $A6, $38, $A7, $7E
+	.byte $A6, $2A, $A7, $7E, $A6, $34, $A7, $7E, $A6, $2E, $A7, $7E, $A6, $30, $A7, $7E
+	.byte $A6, $30, $A7, $7E, $A6, $38, $A7, $7E, $A6, $30, $A7, $7E, $A6, $3E, $A7, $7E
+	.byte $A6, $30, $A7, $7E, $A6, $34, $A7, $7E, $A6, $30, $A7, $7E, $A6, $30, $A7, $7E
+	.byte $A6, $30, $A7, $7E, $A6, $38, $A7, $7E, $A6, $30, $A7, $7E, $A6, $3E, $A7, $7E
+	.byte $A6, $30, $A7, $7E, $A6, $34, $A7, $7E, $A6, $30, $A7, $7E, $A6, $30, $A7, $7E
+	.byte $A6, $30, $A7, $7E, $A6, $38, $A7, $7E, $A6, $30, $A7, $7E, $A6, $3E, $A7, $7E
+	.byte $A6, $30, $A7, $7E, $A6, $34, $A7, $7E, $A6, $30, $A7, $7E, $A6, $30, $A7, $7E
+	.byte $A6, $30, $A7, $7E, $A6, $38, $A7, $7E, $A6, $30, $A7, $7E, $A6, $3E, $A7, $7E
+	.byte $A6, $30, $A7, $7E, $A6, $34, $A7, $7E, $A6, $30, $A7, $7E, $A6, $24, $A7, $7E
+	.byte $A6, $24, $A7, $7E, $A6, $32, $A7, $7E, $A6, $24, $A7, $7E, $A6, $38, $A7, $7E
+	.byte $A6, $24, $A7, $7E, $A6, $3C, $A7, $7E, $A6, $24, $A7, $7E, $A6, $24, $A7, $7E
+	.byte $A6, $24, $A7, $7E, $A6, $32, $A7, $7E, $A6, $24, $A7, $7E, $A6, $38, $A7, $7E
+	.byte $A6, $24, $A7, $7E, $A6, $3C, $A7, $7E, $A6, $24, $A7, $7E, $A6, $24, $A7, $7E
+	.byte $A6, $24, $A8, $7E
+Batman_Nse4:
+	.byte $A6, $02, $A7, $01, $A9, $02, $A8, $01, $00
+Batman_Dpcm4:
+	.byte $A4, $01, $03, $AA, $01, $A4, $01, $AA, $03, $01, $03, $A4, $01, $01, $AA, $03
+	.byte $A4, $01, $01, $03, $AA, $01, $A4, $01, $AA, $03, $01, $03, $A4, $01, $01, $AA
+	.byte $03, $A4, $01, $01, $03, $AA, $01, $A4, $01, $AA, $03, $01, $03, $A4, $01, $01
+	.byte $AA, $03, $A4, $01, $01, $03, $AA, $01, $A4, $01, $AA, $03, $A1, $01
+
+Batman_5:
+	.byte $C0, $38, $C1, $38, $C5, $38, $C3, $3E, $3C, $38, $3C, $38, $C6, $34, $00
+	.byte $C0, $42, $C1, $42, $C2, $42, $C3, $3E, $3C, $38, $3C, $38, $34, $C4, $32
+Batman_Tri5:
+	.byte $A6, $32, $A7, $7E, $A6, $24, $A7, $7E, $A6, $38, $A7, $7E, $A6, $24, $A7, $7E
+	.byte $A6, $3C, $A7, $7E, $A6, $24, $A7, $7E, $A6, $24, $A7, $7E, $A6, $3E, $A7, $7E
+	.byte $A6, $3C, $A7, $7E, $A6, $38, $A7, $7E, $A6, $3C, $A7, $7E, $A6, $38, $A7, $7E
+	.byte $A6, $34, $A7, $7E, $A6, $32, $A8, $7E
+Batman_Nse5:
+	.byte $A9, $02, $A8, $01, $A6, $02, $A7, $01, $A9, $02, $A8, $01, $A6, $02, $A7, $01
+	.byte $A9, $02, $A8, $01, $A6, $02, $A7, $01, $AA, $01, $00
+Batman_Dpcm5:
+	.byte $A3, $03, $01, $01, $01, $03, $01, $A6, $01, $A9, $03, $03, $A3, $03, $03, $04
+	.byte $04, $05, $A4, $05
+
+Batman_6:
+	.byte $C6, $7E, $C3, $34, $C0, $2E, $C1, $2E, $C0, $3C, $C1, $3C, $C0, $46, $C2, $46
+	.byte $C0, $4A, $C2, $4A, $C3, $4C, $C0, $46, $C1, $46, $C0, $4C, $C2, $4C, $C0, $4A
+	.byte $C1, $4A, $C0, $4C, $C1, $4C, $C0, $50, $C2, $50, $C3, $42, $C0, $42, $C2, $42
+	.byte $C0, $46, $C1, $46, $C0, $4A, $C2, $4A, $C3, $4C, $46, $3E, $46, $3E, $34, $3E
+	.byte $34, $2E, $34, $2E, $26, $3E, $26, $2A, $26, $24, $32, $3C, $4A, $54, $50, $4C
+	.byte $50, $4C, $4A, $46, $4A, $46, $44, $C4, $40, $00
+	.byte $C0, $2E, $C1, $2E, $C0, $3C, $C1, $3C, $C0, $46, $C2, $46, $C0, $4A, $C2, $4A
+	.byte $C3, $4C, $C0, $46, $C1, $46, $C0, $4C, $C2, $4C, $C0, $4A, $C1, $4A, $C0, $4C
+	.byte $C1, $4C, $C0, $50, $C2, $50, $C3, $42, $C0, $42, $C2, $42, $C0, $46, $C1, $46
+	.byte $C0, $4A, $C2, $4A, $C3, $4C, $46, $3E, $46, $3E, $34, $3E, $34, $2E, $34, $2E
+	.byte $26, $3E, $26, $2A, $26, $24, $32, $3C, $4A, $54, $50, $4C, $50, $4C, $4A, $46
+	.byte $4A, $46, $44, $40, $C2, $44
+Batman_Tri6:
+	.byte $A4, $2E, $A5, $7E, $A4, $2E, $A5, $7E, $A4, $3C, $A5, $7E, $A4, $2E, $A5, $7E
+	.byte $A4, $3E, $A5, $7E, $A4, $3C, $A5, $7E, $A4, $34, $A5, $7E, $A4, $24, $A5, $7E
+	.byte $A4, $2E, $A5, $7E, $A4, $2E, $A5, $7E, $A4, $3C, $A5, $7E, $A4, $2E, $A5, $7E
+	.byte $A4, $3E, $A5, $7E, $A4, $3C, $A5, $7E, $A4, $34, $A5, $7E, $A4, $24, $A5, $7E
+	.byte $A4, $2A, $A5, $7E, $A4, $2A, $A5, $7E, $A4, $38, $A5, $7E, $A4, $2A, $A5, $7E
+	.byte $A4, $3C, $A5, $7E, $A4, $38, $A5, $7E, $A4, $32, $A5, $7E, $A4, $20, $A5, $7E
+	.byte $A4, $2A, $A5, $7E, $A4, $2A, $A5, $7E, $A4, $38, $A5, $7E, $A4, $2A, $A5, $7E
+	.byte $A4, $3C, $A5, $7E, $A4, $38, $A5, $7E, $A4, $32, $A5, $7E, $A4, $20, $A5, $7E
+	.byte $A4, $26, $A5, $7E, $A4, $26, $A5, $7E, $A4, $34, $A5, $7E, $A4, $26, $A5, $7E
+	.byte $A4, $38, $A5, $7E, $A4, $34, $A5, $7E, $A4, $2E, $A5, $7E, $A4, $1C, $A5, $7E
+	.byte $A4, $26, $A5, $7E, $A4, $26, $A5, $7E, $A4, $34, $A5, $7E, $A4, $26, $A5, $7E
+	.byte $A4, $38, $A5, $7E, $A4, $34, $A5, $7E, $A4, $2E, $A5, $7E, $A4, $1C, $A5, $7E
+	.byte $A4, $24, $A5, $7E, $A4, $24, $A5, $7E, $A4, $32, $A5, $7E, $A4, $24, $A5, $7E
+	.byte $A4, $38, $A5, $7E, $A4, $24, $A5, $7E, $A4, $3C, $A5, $7E, $A4, $24, $A5, $7E
+	.byte $A4, $24, $A5, $7E, $A4, $3C, $A5, $7E, $A4, $24, $A5, $7E, $A4, $24, $A5, $7E
+	.byte $A4, $3C, $A5, $7E, $A4, $24, $A5, $7E, $A4, $3C, $A5, $7E, $A4, $24, $A6, $7E
+Batman_Nse6:
+	.byte $A7, $02, $A6, $01, $A4, $02, $A5, $01, $A7, $02, $A8, $01, $A7, $02, $A6, $01
+	.byte $A4, $02, $A5, $01, $A7, $02, $A8, $01, $A7, $02, $A6, $01, $A4, $02, $A5, $01
+	.byte $A7, $02, $A8, $01, $A7, $02, $A6, $01, $A4, $02, $A5, $01, $A7, $02, $A8, $01
+	.byte $00
+Batman_Dpcm6:
+	.byte $A3, $01, $01, $AA, $03, $A3, $01, $01, $03, $AA, $01, $A3, $01, $03, $01, $01
+	.byte $01, $AA, $03, $A3, $01, $01, $AA, $03, $A3, $01, $01, $03, $AA, $01, $A3, $01
+	.byte $03, $01, $01, $01, $AA, $03, $A3, $01, $01, $AA, $03, $A3, $01, $01, $03, $AA
+	.byte $01, $A3, $01, $03, $01, $01, $01, $AA, $03, $A3, $01, $01, $AA, $03, $A3, $01
+	.byte $01, $03, $01, $03, $01, $01, $03, $01, $01, $03, $A2, $01
+
+Batman_7:
+	.byte $C6, $7E, $C0, $44, $46, $46, $3C, $4A, $4A, $3C, $4C, $4C, $3C, $50, $4C, $50
+	.byte $C1, $54, $C3, $54, $00
+	.byte $C0, $46, $46, $3C, $4A, $4A, $3C, $4C, $4C, $3C, $50, $4C, $50, $C1, $54, $C2
+	.byte $54
+Batman_Tri7:
+	.byte $A4, $2E, $A5, $7E, $A4, $2E, $A5, $7E, $A4, $34, $A5, $7E, $A4, $2E, $A5, $7E
+	.byte $A4, $38, $A5, $7E, $A4, $2E, $A5, $7E, $A4, $3C, $A5, $7E, $A4, $2E, $A5, $7E
+	.byte $A4, $2E, $A5, $7E, $A4, $2E, $A5, $7E, $A4, $34, $A5, $7E, $A4, $2E, $A5, $7E
+	.byte $A4, $38, $A5, $7E, $A4, $2E, $A5, $7E, $A4, $3C, $A5, $7E, $A4, $2E, $A6, $7E
+Batman_Nse7:
+	.byte $A7, $02, $A6, $01, $A4, $02, $A5, $01, $A7, $02, $A8, $01, $A7, $02, $A6, $01
+	.byte $A4, $02, $A5, $01, $A7, $02, $A8, $01, $A7, $02, $A6, $01, $A4, $02, $A5, $01
+	.byte $A7, $02, $A8, $01, $A7, $02, $A6, $01, $A4, $02, $A5, $01, $A7, $02, $A1, $01
+	.byte $00
+Batman_Dpcm7:
+	.byte $A0, $01, $01, $A9, $03, $A0, $01, $01, $03, $A9, $01, $A0, $01, $03, $01, $01
+	.byte $03, $03, $AA, $01
+
+Batman_8:
+	.byte $C8, $7E, $C0, $46, $46, $3E, $4A, $4A, $3E, $4C, $4C, $3E, $50, $4C, $50, $C1
+	.byte $54, $C3, $54, $00
+	.byte $C0, $46, $46, $3E, $4A, $4A, $3E, $4C, $4C, $3E, $50, $4C, $50, $C1, $54, $C2
+	.byte $54
+Batman_Tri8:
+	.byte $A4, $26, $A5, $7E, $A4, $26, $A5, $7E, $A4, $2E, $A5, $7E, $A4, $26, $A5, $7E
+	.byte $A4, $32, $A5, $7E, $A4, $26, $A5, $7E, $A4, $34, $A5, $7E, $A4, $26, $A5, $7E
+	.byte $A4, $26, $A5, $7E, $A4, $26, $A5, $7E, $A4, $2E, $A5, $7E, $A4, $26, $A5, $7E
+	.byte $A4, $32, $A5, $7E, $A4, $26, $A5, $7E, $A4, $34, $A5, $7E, $A4, $26, $A6, $7E
+Batman_Nse8:
+	.byte $A7, $02, $A6, $01, $A4, $02, $A5, $01, $A7, $02, $A8, $01, $00
+Batman_Dpcm8:
+	.byte $A0, $01, $01, $A9, $03, $A0, $01, $01, $03, $A9, $01, $A0, $01, $03, $01, $01
+	.byte $03, $03, $AA, $01
+
+Batman_9:
+	.byte $C9, $7E, $C0, $4A, $4A, $42, $4C, $4C, $42, $50, $50, $42, $54, $50, $54, $56
+	.byte $54, $C4, $50, $C1, $4A, $C2, $4A, $C1, $4C, $C2, $4C, $C1, $4A, $C5, $4A, $C0
+	.byte $4C, $50, $54, $50, $C6, $4C, $00
+	.byte $C0, $4A, $4A, $42, $4C, $4C, $42, $50, $50, $42, $54, $50, $54, $56, $54, $50
+	.byte $56, $C1, $54, $C2, $54, $C1, $56, $C2, $56, $C1, $54, $C2, $54, $C0, $4A, $4C
+	.byte $50, $54, $50, $4C, $C3, $4A
+Batman_Tri9:
+	.byte $A6, $2A, $A7, $7E, $A6, $2A, $A7, $7E, $A6, $32, $A7, $7E, $A6, $2A, $A7, $7E
+	.byte $A6, $34, $A7, $7E, $A6, $2A, $A7, $7E, $A6, $38, $A7, $7E, $A6, $2A, $A7, $7E
+	.byte $A6, $2A, $A7, $7E, $A6, $2A, $A7, $7E, $A6, $32, $A7, $7E, $A6, $2A, $A7, $7E
+	.byte $A6, $34, $A7, $7E, $A6, $2A, $A7, $7E, $A6, $38, $A7, $7E, $A6, $2A, $A7, $7E
+	.byte $A6, $3C, $A7, $7E, $A6, $32, $A7, $7E, $A6, $24, $A7, $7E, $A6, $3C, $A7, $7E
+	.byte $A6, $32, $A7, $7E, $A6, $24, $A7, $7E, $A6, $3C, $A7, $7E, $A6, $24, $A7, $7E
+	.byte $A6, $24, $A7, $7E, $A6, $32, $A7, $7E, $A6, $34, $A7, $7E, $A6, $38, $A7, $7E
+	.byte $A6, $3C, $A7, $7E, $A6, $38, $A7, $7E, $A6, $34, $A7, $7E, $A6, $32, $A8, $7E
+Batman_Nse9:
+	.byte $A4, $02, $A8, $01, $A6, $02, $A7, $01, $A4, $02, $A9, $01, $A4, $02, $A8, $01
+	.byte $A6, $02, $A7, $01, $A4, $02, $A9, $01, $A4, $02, $A8, $01, $A6, $02, $A7, $01
+	.byte $A4, $02, $A9, $01, $A4, $02, $A8, $01, $A6, $02, $A7, $01, $A4, $02, $A9, $01
+	.byte $AA, $02, $AB, $01, $00
+Batman_Dpcm9:
+	.byte $A0, $01, $01, $AC, $03, $A0, $01, $01, $03, $AC, $01, $A0, $01, $03, $01, $01
+	.byte $03, $03, $01, $03, $04, $05, $03, $04, $05, $03, $05, $A6, $03, $A4, $03, $03
+	.byte $A0, $03, $03, $04, $04, $05, $A3, $05
+
 PRG039_FREE_SPACE:
 
 ; Rest of ROM bank was empty
