@@ -14,6 +14,7 @@
 .autoimport +
 
 .include "smb3.inc"
+.include "bhop/bhop.inc"
 
 .segment "PRG_22"
 
@@ -2692,11 +2693,11 @@ PRG022_CF7C:
     ; Switch to page 28 @ A000
     LDA #MMC3_8K_TO_PRG_A000
     STA MMC3_COMMAND
-    LDA #28
+    LDA #38
     STA MMC3_PAGE
 
     ; Jump to the sound engine, newly inserted at page A000!
-    JSR Sound_Engine_Begin
+    ;JSR bhop_init
 
     ; Change A000 back to whatever it was before the sound engine
     JSR PRGROM_Change_A000

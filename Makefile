@@ -1,4 +1,4 @@
-.PHONY: all clean dir run
+.PHONY: all clean dir run expanded
 
 # ---- directories ----
 SOURCEDIR  := src
@@ -6,6 +6,7 @@ PRGDIR     := $(SOURCEDIR)/PRG
 EXPDDIR    := $(SOURCEDIR)/expanded
 INCDIR     := include
 BUILDDIR   := build
+BHOPDIR    := $(SOURCEDIR)/bhop
 
 ASFLAGS += $(addprefix -I,$(INCDIR) $(SOURCEDIR))
 
@@ -14,15 +15,15 @@ ROM_STOCK  := smb3.nes
 ROM_EXPD   := smb3-expanded.nes
 
 # ---- sources ----
-PRG_ASM := $(wildcard $(PRGDIR)/*.asm)
-SRC_ASM := $(wildcard $(SOURCEDIR)/*.s)
-EXPD_ASM := $(EXPDDIR)/segments.s
+SRCS_BHOP   := $(SOURCEDIR)/bhop.s
+STOCK_ASM   := $(wildcard $(PRGDIR)/*.asm)
+#STOCK_S     := $(filter-out $(SRCS_BHOP), $(wildcard $(SOURCEDIR)/*.s))
+STOCK_S     := $(wildcard $(SOURCEDIR)/*.s)
+ALL_COMMON := $(STOCK_S) $(STOCK_ASM)
 
-# target-specific variables
-$(ROM_STOCK): VARIANT  := stock
-$(ROM_EXPD):  VARIANT  := expanded
-
-ALL_COMMON := $(SRC_ASM) $(PRG_ASM)
+# ---- expanded sources except for the header, which is handled specially due to it being the same in the stock -----
+#EXPD_ASM    := $(filter-out $(EXPDDIR)/header.s, $(wildcard $(EXPDDIR)/*.s) $(SRCS_BHOP))
+EXPD_ASM    := $(filter-out $(EXPDDIR)/header.s, $(wildcard $(EXPDDIR)/*.s))
 
 # ---- objects ----
 COMMON_OBJS = \
@@ -35,6 +36,8 @@ EXPD_OBJS = \
 VPATH = $(SOURCEDIR) $(PRGDIR)
 
 all: $(ROM_STOCK) $(ROM_EXPD)
+
+expanded: $(ROM_EXPD)
 
 clean:
 	@rm -rf $(BUILDDIR) $(ROM_STOCK) $(ROM_EXPD)

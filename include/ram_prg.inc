@@ -28,6 +28,8 @@ __PRGRAM_OFFSET__ .set 0
 	;	Vertical level max size is 	15 rows * 16 columns * 16 screens = 3840 ($0F00) bytes
 	;	Non-vertical level max size is 	27 rows * 16 columns * 15 screens = 6480 ($1950) bytes
 	PRGRAM Tile_Mem, 6480	; $6000-$794F Space used to store the 16x16 "tiles" that make up the World Map or Level
+	PRGRAM _BHOP_RESERVED_, $123
+	PRGRAM_NOINC _BHOP_RESERVED_END_
 
 	PRGRAM Map_MoveRepeat, 2	; $7950-$7951 (Mario/Luigi) counts up to $18 and then you keep moving without pause
 	PRGRAM AScrlURDiag_OffsetX, 1	; When diagonal autoscroller is wrapping, this holds an X offset for Player/Objects to temporarily correct
@@ -91,15 +93,11 @@ __PRGRAM_OFFSET__ .set 0
 	PRGRAM Level_Jct_VSHi, 1	; Level junction vertical scroll high value
 	PRGRAM Level_Jct_VS, 1	; Level junction vertical scroll value
 
-__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 2   ; $7990-7991 unused
-
 	PRGRAM_NOINC Map_Unused7992			; Value used in some dead code in PRG011; cleared elsewhere (NOT SURE if maybe it sometimes meant Bonus_DiePos?)
 	PRGRAM Bonus_DiePos, 1	; UNUSED Die in the lost bonus games, counts 0-5
 	PRGRAM Map_Previous_Dir, 2	; $7993-$7994 (Mario/Luigi) Backup movement dir (remember which way Player moved last) (8=Up, 4=Down, 2=Left, 1=Right)
 	PRGRAM Map_Unused7995, 1	; Unused; cleared but never used otherwise
 	PRGRAM Player_NoSlopeStick, 1	; If set, Player does not stick to slopes (noticeable running downhill)
-
-__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 105	; $7997-$79FF unused
 
 	; Auto scroll effect variables -- everything to do with screens that aren't scrolling in the normal way
 	; NOTE: Post-airship cinematic scene with Toad and King ONLY uses $7A01-$7A11 MMC3 SRAM (from Level_AScrlSelect to Level_AScrlHVelCarry)
@@ -139,8 +137,6 @@ __PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 105	; $7997-$79FF unused
 	PRGRAM Level_AScrlMoveTicks, 1	; Counts down to zero, decrements Level_AScrlMoveRepeat (goes to next "movement")
 	PRGRAM Level_AScrlTimer, 1	; Auto scroll counter, decrements to zero
 	PRGRAM Level_AScrlPosHHi, 1	; Raster effect horizontal "high" position
-
-__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 1  ; $7A0B
 
 	PRGRAM Level_AScrlPosH, 1	; Raster effect horizontal position
 	PRGRAM Level_AScrlPosV, 1	; Raster effect vertical position
@@ -194,23 +190,15 @@ __PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 1  ; $7A0B
 
 	PRGRAM SObjBlooperKid_OutOfWater, 8	; $7A68-$7A6F Blooper kid only; if set, Blooper Kid is trying to go out of water
 
-__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 2   ; $7A70-$7A71 unused
-
 	PRGRAM Object_SplashAlt, 1	; Used to alternate the "splash slots" 1 and 2 as objects hit the water
-
-__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 109 ; $7A73-$7ADF unused
 
 	PRGRAM Music_Start, 1	; Music start index (beginning of this song)
 	PRGRAM Music_End, 1	; Music end index (inclusive last index to play before loop)
 	PRGRAM Music_Loop, 1	; Music loop index (index to start from when song reaches end)
 	PRGRAM Sound_Octave, 1	; Used for calculating octave
-__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 12  ; $7AE4-$7AEF unused
 	PRGRAM Music_Sq1Bend, 1	; Alters PAPU_FT1 for bend effects
-__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 3  ; $7AF1-$7AF3 unused
 	PRGRAM Music_Sq2Bend, 1	; Alters PAPU_FT2 for bend effects
-__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 2   ; $7AF5-$7AF6 unused
 	PRGRAM Music_RestH_Off, 1	; Offset added to Music_RestH_Base; typically $00 or $10 (for low time warning on compatible songs)
-__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 7   ; $7AF8-$7AFE unused
 	PRGRAM PAPU_MODCTL_Copy, 1	; Current PAPU_MODCTL register
 
 	PRGRAM Level_ObjIdxStartByScreen, 16	; $7B00-$7B0F Defines the starting index into Level_Objects for each "screen"
@@ -221,9 +209,6 @@ __PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 7   ; $7AF8-$7AFE unused
 ; The first byte copied in has no apparent purpose
 ; The rest is a repeating series of 3 bytes -- ID, Column, Row (C/R of tile grid, multiply by 16 for pixel location), $FF for terminator
 	PRGRAM Level_Objects, 48*3	; $7B40-$7BCF
-
-__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 80  ; $7BD0-$7C1F unused
-
 
 ; For certain objects that require a buffer of X or Y values; only a couple are available.
 ; Each contains 32 bytes, intended for enemies that have "tails"; Buffer_Occupied determines

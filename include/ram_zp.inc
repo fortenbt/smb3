@@ -248,5 +248,11 @@ __RAM_ZP_INC__ = 1
 .importzp BonusDie_YVelFrac
 .importzp Vs_State
 .importzp Vs_IsPaused
+.importzp bhop_ptr
+    ; pattern pointers, read repeatedly when updating
+    ; rows in a loop, we'll want access to these to be quick
+.importzp pattern_ptr
+.importzp channel_index
+.importzp scratch_byte
 
 .endif; include guard

@@ -14,6 +14,7 @@
 .autoimport +
 
 .include "smb3.inc"
+.include "bhop/bhop.inc"
 
 .segment "PRGFIXED_8000"
 
@@ -857,25 +858,38 @@ PRG030_8676:
     LDA #$00
     JSR Video_Do_Update
 
-    LDX World_Num
-    LDY World_BGM,X     ; Get BGM index for this world
-    CPX #4
-    BNE PRG030_8698     ; If we're NOT on world 5, jump to PRG030_8698
+    ;LDX World_Num
+    ;LDY World_BGM,X     ; Get BGM index for this world
+    ;CPX #4
+    ;BNE PRG030_8698     ; If we're NOT on world 5, jump to PRG030_8698
 
     ; World 5 special handling (Sky part different music)
-    LDX Player_Current  ; X = Player_Current
-    LDA World_Map_XHi,X    ; Get the high byte of this Player's X position
-    BEQ PRG030_8698     ; If it's equal to 0 (the "lower" part of the Sky World), jump to PRG030_8698
+    ;LDX Player_Current  ; X = Player_Current
+    ;LDA World_Map_XHi,X    ; Get the high byte of this Player's X position
+    ;BEQ PRG030_8698     ; If it's equal to 0 (the "lower" part of the Sky World), jump to PRG030_8698
 
     ; Otherwise...
-    LDY #MUS2A_SKY   ; Use Sky music!
-    JMP PRG030_869F
+    ;LDY #MUS2A_SKY   ; Use Sky music!
+    ;JMP PRG030_869F
 
 PRG030_8698:
     ; Either not world 5, or ground-side of world 5
-    LDA Map_MusicBox_Cnt
-    BEQ PRG030_869F     ; If Map_MusicBox_Cnt = 0, jump to PRG030_869F
-    LDY #MUS2A_MUSICBOX     ; Otherwise, play the music box song
+    ;LDA Map_MusicBox_Cnt
+    ;BEQ PRG030_869F     ; If Map_MusicBox_Cnt = 0, jump to PRG030_869F
+    ;LDY #MUS2A_MUSICBOX     ; Otherwise, play the music box song
+
+    LDA #MMC3_8K_TO_PRG_A000    ; Changing PRG ROM at A000
+    STA MMC3_COMMAND        ; Set MMC3 command
+    LDA #38             ; Page 28
+    STA MMC3_PAGE           ; Set MMC3 page
+    lda #39
+    jsr bhop_set_module_bank
+    jsr bhop_apply_music_bank
+    ldx #<MODULE_DOOM
+    ldy #>MODULE_DOOM
+    lda #0
+    jsr bhop_init
+    JSR PRGROM_Change_Both
 
 PRG030_869F:
     STY Sound_QMusic2   ; Play BGM!
@@ -4188,17 +4202,17 @@ GamePlay_TimeStart: .byte 3, 4, 2, 0
 
     ; Available BGMs for levels (16 possible with stock code, only 11 defined here)
 GamePlay_BGM:
-    .byte MUS2B_OVERWORLD   ; 0
-    .byte MUS2B_UNDERGROUND ; 1
-    .byte MUS2B_UNDERWATER  ; 2
-    .byte MUS2B_FORTRESS    ; 3
-    .byte MUS2B_BOSS    ; 4
-    .byte MUS2B_AIRSHIP ; 5
-    .byte MUS2B_BATTLE  ; 6
-    .byte MUS2B_TOADHOUSE   ; 7
-    .byte MUS2B_ATHLETIC    ; 8
-    .byte MUS2A_THRONEROOM  ; 9
-    .byte MUS2A_SKY     ; 10
+    ;.byte MUS2B_OVERWORLD   ; 0
+    ;.byte MUS2B_UNDERGROUND ; 1
+    ;.byte MUS2B_UNDERWATER  ; 2
+    ;.byte MUS2B_FORTRESS    ; 3
+    ;.byte MUS2B_BOSS    ; 4
+    ;.byte MUS2B_AIRSHIP ; 5
+    ;.byte MUS2B_BATTLE  ; 6
+    ;.byte MUS2B_TOADHOUSE   ; 7
+    ;.byte MUS2B_ATHLETIC    ; 8
+    ;.byte MUS2A_THRONEROOM  ; 9
+    ;.byte MUS2A_SKY     ; 10
 
 
 LevelLoad:  ; $97B7
@@ -5924,7 +5938,7 @@ PRG030_SUB_9F40:
     JMP PRG031_F499
 
     ; Filler space
-    .byte $ff, $ff, $ff, $ff, $ff
+    ;.byte $ff, $ff, $ff, $ff, $ff
 
     ; Sub part of A0 mode of IRQ
 PRG030_SUB_9F50:
@@ -5942,8 +5956,8 @@ PRG030_9F52:
     RTS      ; Return
 
     ; Probably unused space
-    .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-    .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+    ;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+    ;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 
 IntIRQ_32PixelPartition_Part5:
 
@@ -5964,7 +5978,7 @@ PRG030_9F80:
     JMP PRG031_FA3C  ; Jump to PRG031_FA3C
 
     ; Unused space
-    .byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+    ;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
 
 IntIRQ_32PixelPartition_Part2:  ; $9FA0
     LDA Update_Request
@@ -5992,3 +6006,13 @@ PRG030_9FAF:
 
 ; NOTE: The remaining ROM space was all blank ($FF)
 
+.proc bhop_apply_music_bank
+    ; *** Bring the sound engine (page 28 and page 29) into ROM
+    PHA
+    LDA #MMC3_8K_TO_PRG_C000    ; Changing PRG ROM at C000
+    STA MMC3_COMMAND        ; Set MMC3 command
+    PLA
+    STA MMC3_PAGE           ; Set MMC3 page
+    RTS
+.endproc
+.export bhop_apply_music_bank

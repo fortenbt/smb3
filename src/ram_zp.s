@@ -48,8 +48,6 @@ __ZP_OFFSET__ .set $0
 
 	ZP VBlank_Tick, 1	; can be used for timing, or knowing when an NMI just fired off
 
-__ZP_OFFSET__ .set __ZP_OFFSET__ +  1 ; $11 unused
-
 	ZP Horz_Scroll_Hi, 1	; Provides a "High" byte for horizontally scrolling, or could be phrased as "current screen"
 	ZP_NOINC PPU_CTL1_Mod; NOT DURING GAMEPLAY, this is used as an additional modifier to PPU_CTL1
 	ZP Vert_Scroll_Hi, 1	; Provides a "High" byte for vertically scrolling (only used during vertical levels!)
@@ -82,15 +80,11 @@ __ZP_OFFSET__ .set __ZP_OFFSET__ +  1 ; $11 unused
 
 	ZP Map_EnterViaID, 1	; Overrides whatever spot on the map you entered with something special (see Map_DoEnterViaID)
 
-__ZP_OFFSET__ .set __ZP_OFFSET__ +  1
-
 	; $20 has a lot of different uses on the World Map...
 	ZP_NOINC Map_EnterLevelFX; When entering a level on the map, dictates the status of the entry (0=None, 1=Boxing in, 2=Boxing out [J only]) NOTEOverlap/reuse
 	ZP_NOINC Map_IntBoxErase; Used for determining where in erasing the "World X" intro box we are NOTEOverlap/reuse
 	ZP_NOINC Map_ClearLevelFXCnt; Counter for "clear level" FX occurring (1-6Poof, 7-9Flip) ("poof"/"panel flip") NOTEOverlap/reuse
 	ZP Map_ScrollOddEven, 1	; Toggles odd/even column as it scrolls
-
-__ZP_OFFSET__ .set __ZP_OFFSET__ +  1
 
 	ZP Level_Width, 1	; Width of current level, in screens (0 = don't move at all, max is 15H/16V)
 
@@ -119,8 +113,6 @@ __ZP_OFFSET__ .set __ZP_OFFSET__ +  1
 	; resets to zero.
 	ZP Graphics_Queue, 1
 
-__ZP_OFFSET__ .set __ZP_OFFSET__ +  2
-
 	ZP Level_LayPtr_AddrL, 1	; Low byte of address to tile layout (ORIGINAL stored in Level_LayPtrOrig_AddrL)
 	ZP Level_LayPtr_AddrH, 1	; High byte of address to tile layout (ORIGINAL stored in Level_LayPtrOrig_AddrH)
 
@@ -132,8 +124,6 @@ __ZP_OFFSET__ .set __ZP_OFFSET__ +  2
 
 	ZP Level_ObjPtr_AddrL, 1	; Low byte of address to object set (ORIGINAL stored in Level_ObjPtrOrig_AddrL)
 	ZP Level_ObjPtr_AddrH, 1	; High byte of address to object set (ORIGINAL stored in Level_ObjPtrOrig_AddrH)
-
-__ZP_OFFSET__ .set __ZP_OFFSET__ +  2
 
 	ZP Video_Upd_AddrL, 1	; Video_Misc_Updates routine uses this as an address, low byte
 	ZP Video_Upd_AddrH, 1	; Video_Misc_Updates routine uses this as an address, hi byte
@@ -149,10 +139,21 @@ __ZP_OFFSET__ .set __ZP_OFFSET__ +  2
 	ZP Music_PatchAdrH, 1	; Music current patch address high byte
 	ZP Sound_Map_Off, 1	; Current "offset" within a map sound effect
 
+; Offsets $XX - $74 useable
+    ; scratch ptr, used for all sorts of indirect reads
+    ZP bhop_ptr, 2
+    ; pattern pointers, read repeatedly when updating
+    ; rows in a loop, we'll want access to these to be quick
+    ZP pattern_ptr, 2
+    ZP channel_index, 1
+    ZP scratch_byte, 1
+
 
 	; NOTE$75 - $F3 are context specific
 
-__ZP_OFFSET__ .set $f4
+; Offsets $F4 - $F7 useable
+
+__ZP_OFFSET__ .set $f8
 
 	ZP Scroll_OddEven, 1	; 0 or 1, depending on what part of 8 pixels has crossed (need better description)
 
@@ -161,12 +162,8 @@ __ZP_OFFSET__ .set $f4
 	ZP Controller1, 1	; Player 1's controller inputs -- R01 L02 D04 U08 S10 E20 B40 A80
 	ZP Controller2, 1	; Player 2's controller inputs -- R01 L02 D04 U08 S10 E20 B40 A80
 
-__ZP_OFFSET__ .set __ZP_OFFSET__ +  3
-
 	ZP Vert_Scroll, 1	; Vertical scroll of name table; typically at $EF (239, basically showing the bottom half)
 	ZP Horz_Scroll, 1	; Horizontal scroll of name table
-
-__ZP_OFFSET__ .set __ZP_OFFSET__ +  1
 
 	ZP PPU_CTL1_Copy, 1	; Ho, PPU_CTL1 register data 
 

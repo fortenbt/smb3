@@ -1,13 +1,14 @@
 .ifndef __SMB3_INC__
 __SMB3_INC__ = 1
 
+.import STACK_BASE, OAM_BASE, RAM_BASE, PRGRAM_BASE
+
 .include "constants.inc"
 .include "ram.inc"
 .include "ppu.inc"
 .include "apu.inc"
 .include "mmc3.inc"
 .include "io.inc"
-
 
 .macro BYTE_INDEX_TO target, base
     .assert ((target)-(base)-1) >= -1, error, "Index underflow"

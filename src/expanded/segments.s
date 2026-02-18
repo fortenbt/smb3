@@ -7,8 +7,10 @@
 .segment "PRG_35"
 .segment "PRG_36"
 .segment "PRG_37"
-.segment "PRG_38"
 .segment "PRG_39"
+  MODULE_DOOM:
+    .include "expanded/e1m1.asm"
+  .export MODULE_DOOM
 .segment "PRG_40"
 .segment "PRG_41"
 .segment "PRG_42"
