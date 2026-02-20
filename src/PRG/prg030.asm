@@ -6007,7 +6007,6 @@ PRG030_9FAF:
 ; NOTE: The remaining ROM space was all blank ($FF)
 
 .proc bhop_apply_music_bank
-    ; *** Bring the sound engine (page 28 and page 29) into ROM
     PHA
     LDA #MMC3_8K_TO_PRG_C000    ; Changing PRG ROM at C000
     STA MMC3_COMMAND        ; Set MMC3 command

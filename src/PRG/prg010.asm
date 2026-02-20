@@ -17,11 +17,12 @@
 
 .segment "PRG_10"
 
-.export Map_Object_Valid_Tiles2Check, DMC03, DMC03_End, DMC07, DMC07_End, DMC08, DMC08_End, FX_MonoFlash_By_MapTick
+.export Map_Object_Valid_Tiles2Check, FX_MonoFlash_By_MapTick
 .export GameOver_Loop, GameOver_PatchPlayerName, MapTile_Get_By_Offset, Map_ConfigWorldIntro, Map_DoMap, Map_DrawAndPan
 .export Map_GetTile, Map_IntroAttrSave, Map_Object_Valid_Tiles, Map_W8DarknessFill, Map_W8DarknessUpdate
 .export Scroll_Map_SpriteBorder, Video_DoGameOver00, Video_DoGameOver80, Video_DoW2WZ, Video_DoWXLuigi00
 .export Video_DoWXLuigi80, Video_DoWXMario00, Video_DoWXMario80, World5_Sky_AddCloudDeco, WorldMap_UpdateAndDraw
+.export ft_sample_0, ft_sample_1, ft_sample_2, ft_sample_3
 
 Video_DoWXMario00:
     DBYT $2908
@@ -3994,12 +3995,30 @@ PRG010_D535:
     ; data itself must not leave an alignment divisible by $40.
     ;;;; orange - ld65 warns about a ".align $300", so we just stick the number of $ff's
     ;;;; in that they used here and then align $40.
-.res $200
+;.res $200
 .align $40
 
 
     ; END UNUSED SPACE
-;ft_sample_0:
+
+DMC07:
+DMC07_End:
+
+    ; BEGIN UNUSED SPACE
+    ; END UNUSED SPACE
+
+DMC03:
+DMC03_End:
+
+DMC08:
+DMC08_End:
+
+; Rest of ROM bank was empty
+
+	.align 64
+
+; Bass-Drum-1
+ft_sample_0:
 	.byte $75, $59, $CD, $EC, $69, $B5, $A9, $D6, $56, $5A, $6E, $09, $3E, $0C, $0E, $04, $03, $F8, $60, $08
 	.byte $AB, $AA, $AA, $AA, $AA, $AA, $55, $55, $55, $55, $55, $55, $D5, $DA, $F6, $8F, $FF, $DD, $9F, $95
 	.byte $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $54, $55, $55, $55, $56, $2A, $86, $21, $45, $25
@@ -4037,7 +4056,7 @@ PRG010_D535:
 
 	.align 64
 ; Roland-SC-88-Snare-Drum
-;ft_sample_1:
+ft_sample_1:
 	.byte $01, $FF, $FF, $FF, $27, $88, $21, $02, $00, $00, $80, $0C, $8F, $E7, $FF, $FE, $7E, $FC, $FB, $C5
 	.byte $87, $3F, $20, $FC, $FF, $00, $70, $18, $00, $00, $9C, $11, $C7, $38, $1C, $0B, $60, $36, $EC, $7E
 	.byte $F8, $FF, $3D, $FF, $93, $FF, $3F, $7C, $84, $33, $7D, $83, $F3, $81, $19, $E1, $00, $02, $01, $00
@@ -4080,7 +4099,7 @@ PRG010_D535:
 
 	.align 64
 ; Roland-SC-88-Closed-Hi-Hat
-;ft_sample_2:
+ft_sample_2:
 	.byte $29, $AD, $D3, $38, $B5, $34, $8D, $59, $E6, $A4, $53, $6A, $4A, $AD, $6D, $49, $DA, $4C, $A9, $6D
 	.byte $52, $99, $4B, $59, $39, $65, $2D, $65, $69, $59, $A6, $CD, $74, $2A, $55, $8D, $9D, $D2, $D2, $62
 	.byte $65, $93, $93, $5A, $2D, $D5, $54, $72, $4E, $93, $4B, $56, $65, $4D, $C9, $96, $96, $55, $4D, $6D
@@ -4101,7 +4120,7 @@ PRG010_D535:
 
 	.align 64
 ; Claves
-;ft_sample_3:
+ft_sample_3:
 	.byte $75, $C0, $0F, $F8, $07, $F8, $07, $F8, $07, $FC, $03, $FC, $03, $FC, $01, $FE, $01, $FF, $00, $FF
 	.byte $80, $7F, $80, $3F, $C0, $3F, $E0, $1F, $E0, $0F, $F8, $07, $F8, $03, $FC, $03, $FC, $03, $FC, $03
 	.byte $FE, $01, $FE, $80, $7F, $80, $7F, $80, $3F, $D0, $5D, $C8, $5D, $D0, $5D, $D0, $17, $D1, $9B, $B0
@@ -4119,17 +4138,3 @@ PRG010_D535:
 	.byte $D5, $54, $55, $55, $55, $53, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
 	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
 	.byte $55, $55, $55, $55, $D5, $54, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
-DMC07:
-DMC07_End:
-
-    ; BEGIN UNUSED SPACE
-    ; END UNUSED SPACE
-
-DMC03:
-DMC03_End:
-
-DMC08:
-DMC08_End:
-
-; Rest of ROM bank was empty
-

@@ -9,7 +9,9 @@
 .segment "PRG_37"
 .segment "PRG_39"
   MODULE_DOOM:
-    .include "expanded/e1m1.asm"
+    ;.include "expanded/e1m1.asm"
+    ;.include "expanded/nsmb.asm"
+    .include "expanded/gl-title-screen.asm"
   .export MODULE_DOOM
 .segment "PRG_40"
 .segment "PRG_41"

@@ -83,7 +83,7 @@ PRG028_A05E:
 PRG028_A060:
     LDX #$84     ; Goes to PAPU_CTL1
     LDY #$7f     ; Goes to PAPU_RAMP1
-    JSR Sound_Sq1_NoteOn
+    ;JSR Sound_Sq1_NoteOn
 
 PRG028_A067:
     DEC SFX_Counter1 ; SFX_Counter1--
@@ -102,7 +102,7 @@ Sound_Process:
     JSR Sound_PlayPlayer     ; Player
     JSR Sound_PlayLevel1     ; Level 1
     JSR Sound_PlayMapSounds  ; Map sounds
-    JSR Sound_PlayMusic  ; Music
+    ;;;JSR Sound_PlayMusic  ; Music
 
     ; Clear any music queues
     LDA #$00
@@ -216,7 +216,7 @@ PRG028_A120:
 
 PRG028_A127:
     LDY #$7f     ; Ramp settings: Everything except actually enabling the ramp!
-    JSR Sound1_XCTL_YRAMP
+    ;;;JSR Sound1_XCTL_YRAMP
 
     LDA Sound_Map_LHold  ; Get the current length hold value
     STA Sound_Map_Len    ; Reset the length counter with this value!
@@ -272,7 +272,7 @@ PRG028_A176:
     STX PAPU_CT2     ; Short length
     LDX #%01010101   ; Square 2's CTL settings: 33% volume, envelope decay disabled, 25% duty cycle
     LDY #$7f     ; Ramp settings: Everything except actually enabling the ramp!
-    JSR Sound2_XCTL_YRAMP
+    ;;;JSR Sound2_XCTL_YRAMP
 
 PRG028_A185:
     LDA Sound_Map_L2Hld  ; Get the current length hold value
@@ -396,7 +396,7 @@ PRG028_A23F:
 PRG028_A246:
     LDX #%10110100   ; PAPU_CTL1 - volume 8, envelope decay disabled, looping enable, 50% duty
     LDY #$7f     ; PAPU_RAMP - Everything but the ramp enable!
-    JSR Sound_Sq1_NoteOn
+    ;JSR Sound_Sq1_NoteOn
 
 PRG028_A24D:
     RTS      ; Return
@@ -413,7 +413,7 @@ PlayerSnd_Jump:
 PRG028_A25A:
     LDX #%10000010   ; PAPU_CTL1  - 50% duty, envelope decay rate 2
     LDY #%10100111   ; PAPU_RAMP1 - Max shift amount, rate update 2, enable sweep
-    JSR Sound_Sq1_NoteOn     ; Play sound!
+    ;JSR Sound_Sq1_NoteOn     ; Play sound!
 
     LDA #$28
     STA SFX_Counter1 ; Load SFX_Counter1 = $28; when this expires, sound ends!
@@ -438,7 +438,7 @@ PRG028_A273:
     LDY #%10111100   ; PAPU_RAMP1 - shift amount 4, decrease wavelength, sweep update 3, sweep enable
 
 PRG028_A27B:
-    JSR Sound1_XCTL_YRAMP
+    ;;;JSR Sound1_XCTL_YRAMP
     BNE PRG028_A2A6  ; (technically always) jump to PRG028_A2A6
 
 PlayerSnd_Fire:
@@ -457,7 +457,7 @@ PRG028_A290:
     STA SFX_Counter1
 
     LDA #38      ; Note 38
-    JSR Sound_Sq1_NoteOn     ; Play sound!
+    ;JSR Sound_Sq1_NoteOn     ; Play sound!
 
 PlayerSnd_FirBmpCont:
     LDA SFX_Counter1
@@ -545,7 +545,7 @@ PlayerSnd_Swim:
     LDY #$9c     ; PAPU_RAMP1
     LDX #$9e     ; PAPU_CTL1
     LDA #66      ; Note 66
-    JSR Sound_Sq1_NoteOn
+    ;JSR Sound_Sq1_NoteOn
 
 PlayerSnd_SwimCont:
     LDY SFX_Counter1
@@ -566,7 +566,7 @@ PlayerSnd_Kick:
     LDX #$9f     ; PAPU_CTL1
     STA SFX_Counter1 ; SFX_Counter1 = $0E
     LDA #68      ; Note 68
-    JSR Sound_Sq1_NoteOn     ; Play sound!
+    ;JSR Sound_Sq1_NoteOn     ; Play sound!
     BNE PlayerSnd_CounterUpd
 
 PlayerSnd_KickCont:
@@ -616,7 +616,7 @@ PlayerSnd_PipeCont2:
     LDY #$91     ; PAPU_RAMP1
     LDX #$9a     ; PAPU_CTL1
     LDA #104     ; Note 104
-    JSR Sound_Sq1_NoteOn
+    ;JSR Sound_Sq1_NoteOn
 
 PRG028_A382:
     JMP PlayerSnd_CounterUpd
@@ -651,7 +651,7 @@ PRG028_A3D9:
     STA SFX_Counter2
     LDY #$7f     ; PAPU_RAMP2
     LDA #94      ; Note 94
-    JSR Sound_Sq2_NoteOn
+    ;JSR Sound_Sq2_NoteOn
 
 SndLev1_Coin_Cont2:
     LDA SFX_Counter2
@@ -697,7 +697,7 @@ SndLev1_PUp_Cont:
     LDY #$7f     ; PAPU_RAMP2
 
 PRG028_A425:
-    JSR Sound_Sq2_NoteOn
+    ;JSR Sound_Sq2_NoteOn
 
 SndLev1_PUp_Cont2:
     DEC SFX_Counter2
@@ -819,7 +819,7 @@ PRG028_A4B3:
 
     LDX #$82        ; PAPU_CTL2
     LDY #$7f        ; PAPU_RAMP2
-    JSR Sound2_XCTL_YRAMP
+    ;;;JSR Sound2_XCTL_YRAMP
 
     ; PAPU_CT2 = 8
     LDA #$08
@@ -860,7 +860,7 @@ SndLev1_PUpRise_Cont:
     STA PAPU_CTL2    ;  [NES] Audio -> Square 2
 
     LDA SndLev1_PUpRiseData-1,Y  ; As in other parts of sound code, -1 because SFX_Counter2 must be > 0
-    JSR Sound_Sq2_NoteOn_NoPAPURAMP
+    ;JSR Sound_Sq2_NoteOn_NoPAPURAMP
 
     RTS      ; Return
 
@@ -932,7 +932,7 @@ PRG028_A544:
     LDX SFX_Counter3
     STX PAPU_CTL2    ;  [NES] Audio -> Square 2
 
-    JSR Sound_Sq2_NoteOn_NoPAPURAMP
+    ;JSR Sound_Sq2_NoteOn_NoPAPURAMP
 
     RTS      ; Return
 
