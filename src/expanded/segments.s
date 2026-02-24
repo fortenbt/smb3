@@ -11,7 +11,9 @@
   MODULE_DOOM:
     ;.include "expanded/e1m1.asm"
     ;.include "expanded/nsmb.asm"
-    .include "expanded/gl-title-screen.asm"
+    ;.include "expanded/gl-title-screen.asm"
+    ;.include "expanded/deja-vu.asm"
+    .include "expanded/smb1.asm"
   .export MODULE_DOOM
 .segment "PRG_40"
 .segment "PRG_41"

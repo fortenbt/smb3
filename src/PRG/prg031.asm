@@ -25,8 +25,15 @@
 .export PRGROM_Change_C000, PT2_Full_CHRROM_Switch, Player_GetCard, Player_GetCardAndUpdate, Player_GetItem
 .export Read_Joypads, Reset_PPU_Clear_Nametables, Reset_PPU_Clear_Nametables2, Scroll_PPU_Reset
 .export Sprite_RAM_Clear, StatusBar_DrawCardPiece, StatusBar_Update_Cards, VertLevel_ScreenH, VertLevel_ScreenL
-.export PRGROM_Change_Both
-;.export ft_sample_0, ft_sample_1, ft_sample_2, ft_sample_3, ft_sample_4
+.export PRGROM_Change_Both, Sound_Sq1_NoteOn, Sound_Sq2_NoteOn, Sound_Sq2_NoteOn_NoPAPURAMP, Sound1_XCTL_YRAMP, Sound2_XCTL_YRAMP
+;;; for nsmb
+;.export ft_sample_1, ft_sample_2, ft_sample_4, ft_sample_5
+;;; for doom
+;.export ft_sample_0, ft_sample_1, ft_sample_2, ft_sample_3
+;;; for deja-vu
+;.export ft_sample_d
+;;; for smb1
+.export ft_sample_0, ft_sample_1, ft_sample_2
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; The following two LUTs are used together via Update_Request
@@ -40,6 +47,144 @@ IntNMI_Raster_Table:
     .byte $40   ; UPDATERASTER_32PIXPART (opt. flag UPDATERASTER_32PIXSHOWSPR)
     .byte $60   ; UPDATERASTER_SPADEGAME
     .byte $a0   ; UPDATERASTER_WATERLINE
+
+    ; Quick and dirty function that writes X to the CTL and Y to the RAMP of Square 1
+Sound1_XCTL_YRAMP:
+    STX PAPU_CTL1
+    STY PAPU_RAMP1
+    RTS      ; Return
+
+    ; Quick and dirty function that writes X to the CTL and Y to the RAMP of Square 2
+Sound2_XCTL_YRAMP:
+    STX PAPU_CTL2
+    STY PAPU_RAMP2
+    RTS      ; Return
+
+Sound_Sq1_NoteOn:
+    ; Note On event for Square 1
+    ; 'A' is input note to play
+    STX PAPU_CTL1
+    STY PAPU_RAMP1
+
+Sound_Sq1_NoteOn_NoPAPURAMP:
+    LDX #$00
+
+PRG031_E7C1:
+    CMP #$7e
+    BNE PRG031_E7C8  ; If note <> $7E, jump to PRG031_E7C8
+
+    ; If note is $7E (rest), then we're done!
+    LDA #$00    ; To alert music system we just played a "rest"
+    RTS     ; Return
+
+PRG031_E7C8:
+    LDY #$01
+    STY Sound_Octave ; Sound_Octave = 1 (interestingly, this sets a "center octave", so at 0 everything is lower, at 2 everything is higher...)
+    PHA      ; Save original note
+    TAY      ; Y = Note
+    BMI PRG031_37D9  ; If Note & $80, skip the octave adjust??
+
+    ; Note:
+    ; Notes are stored as double value for convenience here (spares a shift)
+    ; So "24" is an entire octave for doubled note values, get it?
+
+    ; The following loop transforms a note into a relative
+    ; "octave lookup" for the note base frequency; essentially,
+    ; this is (Note MOD 12), just no such instruction available
+PRG031_E7D1:
+    INC Sound_Octave ; Sound_Octave++ (Sound_Octave will have the octave level after this, essentially Note / 12)
+    SEC
+    SBC #24       ; A -= 24 (down an octave)
+    BPL PRG031_E7D1   ; While above zero, loop!
+
+PRG031_37D9:
+    CLC
+    ADC #24       ; A += 24 (recover from last subtraction)
+    TAY       ; Y = A (Y is now the offset into the LUT to get the base frequency for this note)
+
+    ; Y should now be a lookup into the note table!
+    ; Store this resultant frequency into Sound_Sqr_FreqL/H
+    LDA Square1_Table_Notes,Y
+    STA Sound_Sqr_FreqL
+    LDA Square1_Table_Notes+1,Y
+    STA Sound_Sqr_FreqH
+
+    ; Sound_Octave now holds the octave level
+    ; This loops to adjust the base frequency to the proper octave
+PRG031_E7E7:
+    LSR Sound_Sqr_FreqH
+    ROR Sound_Sqr_FreqL
+    DEC Sound_Octave    ; Sound_Octave--
+    BNE PRG031_E7E7  ; While Sound_Octave > 0, loop!
+
+    PLA      ; Retrieve original note
+    CMP #56      ;
+    BCC PRG031_E7F7  ; If note is less than 56, skip the decrement
+    DEC Sound_Sqr_FreqL     ; Minor adjustment to resultant frequency?
+PRG031_E7F7:
+    TXA      ; A = X  (0 = square 1, 4 = square 2)
+    CMP #$04     ;
+    BNE PRG031_E808  ; If on Square 1, jump to PRG031_E808
+
+    ; Square 2 only...
+    LDA Music_Sq1Patch
+    CMP #$e0     ;
+    BEQ PRG031_E818  ; If Music_Sq1Patch = $E0, jump to PRG031_E818 (some alternate SQ2 routine??)
+
+    LDA Music_Sq1Bend,X
+    BNE PRG031_E851     ; If bend in effect on this track, jump to PRG031_E851
+
+PRG031_E808:
+    ; This is used by Square 1/2 or triangle
+    ; 'X' is 0 (Square 1), 4 (Square 2), 8 (Triangle)
+
+    LDA Sound_Sqr_FreqL
+    STA PAPU_FT1,X   ; Store low part of frequency in appropriate register
+    STA Sound_Sq1_CurFL,X    ; Store low frequency in appropriate backup variable
+
+    LDA Sound_Sqr_FreqH
+    ORA #$08     ; Sets sort of a minimal frequency level
+    STA PAPU_CT1,X   ; Store high frequency in appropriate register
+    RTS      ; Return
+
+PRG031_E818:
+    ; For Square Wave 2 only!
+    LDA Sound_Sqr_FreqL
+    SEC
+    SBC #$02        ; Sound_Sqr_FreqL -= 2
+    STA PAPU_FT2        ; Store low part of frequency in register
+    STA Sound_Sq2_CurFL
+
+    LDA Sound_Sqr_FreqH
+    ORA #$08     ; Sets sort of a minimal frequency level
+    STA PAPU_CT2     ; Store high frequency in register
+
+    RTS      ; Return
+
+Sound_Sq2_NoteOn:
+    ; Note On event for Square 2
+    ; 'A' is input note to play
+    STX PAPU_CTL2
+    STY PAPU_RAMP2
+
+Sound_Sq2_NoteOn_NoPAPURAMP:
+    LDX #$04     ; Offset from Square 1 regs to Square 2
+    BNE PRG031_E7C1  ; Common waveform routine
+
+Sound_Tri_NoteOn:
+    LDX #$08     ; Offset from Square 1 regs to Triangle
+    BNE PRG031_E7C1  ; Common waveform routine
+
+    ; 12 notes LUT for Square Wave channels
+Square1_Table_Notes:
+    .word $1AB8, $1938, $17CC, $1678, $1534, $1404, $12E4, $11D4, $10D4, $0FE0, $0EFC, $0E24
+
+PRG031_E851:
+    ; If bend is in effect, this stores the last set frequency
+    LDA Sound_Sqr_FreqL
+    STA Sound_Sq1_CurFL,X
+    RTS
+
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; NMI INTERRUPT
@@ -211,16 +356,22 @@ PRG031_F567:
     ; *** Bring the sound engine (page 28 and page 29) into ROM
     ;LDA #MMC3_8K_TO_PRG_C000    ; Changing PRG ROM at C000
     ;STA MMC3_COMMAND        ; Set MMC3 command
-    ;LDA #39             ; Page 29
+    ;LDA #29             ; Page 29
     ;STA MMC3_PAGE           ; Set MMC3 page
 
+    ;LDA #MMC3_8K_TO_PRG_A000    ; Changing PRG ROM at A000
+    ;STA MMC3_COMMAND        ; Set MMC3 command
+    ;LDA #28             ; Page 28
+    ;STA MMC3_PAGE           ; Set MMC3 page
+
+    
     LDA #MMC3_8K_TO_PRG_A000    ; Changing PRG ROM at A000
     STA MMC3_COMMAND        ; Set MMC3 command
     LDA #38             ; Page 28
     STA MMC3_PAGE           ; Set MMC3 page
-
+    
     ; Jump to the sound engine, newly inserted at page A000!
-    ;JSR Sound_Engine_Begin
+    JSR Sound_Engine_Process
     jsr bhop_play
 
     ; Change A000/C000 back to whatever they were before the sound engine
@@ -1976,9 +2127,9 @@ VBlank_Wait_Loop:
     STY MMC3_IRQDISABLE ; Disable MMC3 IRQ generation
 
     LDA #%00001111   ;
-    ;STA PAPU_EN  ; Enable rectangle wave 1 & 2, triangle, and noise channels
+    STA PAPU_EN  ; Enable rectangle wave 1 & 2, triangle, and noise channels
     LDA #$00     ;
-    ;STA PAPU_MODCTL  ; disable DMC IRQs
+    STA PAPU_MODCTL  ; disable DMC IRQs
 
     ; Any write to $4017 resets both the frame counter, and the clock divider.
     ; Sometimes, games will write to this register in order to synchronize the
@@ -2083,3 +2234,468 @@ PRGROM_Change_C000: ; $FFD1
     STA MMC3_PAGE           ; Set MMC3 page
     RTS             ; Return
 
+;;; for doom
+;ft_sample_0:
+;	.byte $75, $59, $CD, $EC, $69, $B5, $A9, $D6, $56, $5A, $6E, $09, $3E, $0C, $0E, $04, $03, $F8, $60, $08
+;	.byte $AB, $AA, $AA, $AA, $AA, $AA, $55, $55, $55, $55, $55, $55, $D5, $DA, $F6, $8F, $FF, $DD, $9F, $95
+;	.byte $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $54, $55, $55, $55, $56, $2A, $86, $21, $45, $25
+;	.byte $55, $A5, $A6, $E1, $8A, $59, $95, $CE, $70, $8B, $3C, $3A, $BC, $48, $8E, $45, $35, $52, $45, $11
+;	.byte $0B, $16, $62, $A1, $AA, $2A, $55, $55, $55, $55, $55, $55, $55, $55, $55, $4B, $6B, $B9, $EA, $39
+;	.byte $3D, $75, $D9, $C3, $CB, $AD, $56, $5D, $BC, $A5, $57, $D5, $5A, $97, $A7, $AD, $DD, $D2, $AB, $AB
+;	.byte $AB, $AE, $AC, $D5, $DA, $95, $2E, $75, $AA, $5A, $B5, $D4, $4A, $AD, $AC, $56, $B9, $5A, $55, $5B
+;	.byte $6A, $A9, $55, $A5, $AA, $B2, $34, $59, $85, $2D, $52, $29, $51, $52, $28, $45, $4A, $89, $54, $22
+;	.byte $13, $55, $45, $A3, $54, $91, $92, $52, $8A, $64, $A9, $22, $55, $25, $8B, $8A, $55, $E2, $52, $29
+;	.byte $9B, $B4, $96, $AA, $96, $AD, $DA, $6A, $6B, $6B, $6D, $B5, $AE, $B6, $76, $B5, $6B, $5B, $6D, $6B
+;	.byte $DD, $D6, $B6, $AD, $6E, $AD, $36, $AB, $4D, $55, $B3, $B2, $54, $35, $95, $54, $AA, $A4, $24, $15
+;	.byte $45, $29, $A5, $50, $29, $95, $92, $49, $A5, $AA, $54, $55, $A9, $96, $AA, $AA, $AA, $6A, $39, $55
+;	.byte $AB, $AC, $AA, $AA, $A6, $B2, $B4, $AA, $AA, $AC, $54, $55, $55, $4B, $55, $55, $55, $55, $55, $55
+;	.byte $D5, $54, $B5, $6A, $2D, $6D, $55, $97, $55, $55, $73, $55, $AD, $96, $95, $55, $53, $55, $55, $D5
+;	.byte $52, $AB, $4A, $4B, $B5, $54, $55, $59, $55, $5A, $A9, $9A, $AA, $9A, $6A, $69, $55, $CD, $5A, $5A
+;	.byte $55, $55, $4B, $55, $53, $AD, $D2, $2A, $55, $A5, $AA, $64, $53, $5A, $A9, $9A, $4A, $2B, $B5, $52
+;	.byte $55, $A9, $AA, $D4, $54, $55, $29, $4D, $99, $9A, $AA, $A5, $AA, $69, $56, $55, $D3, $D2, $AA, $59
+;	.byte $65, $55, $55, $55, $65, $69, $55, $55, $55, $55, $55, $55, $53, $2D, $4D, $4B, $55, $55, $55, $69
+;	.byte $65, $72, $69, $6A, $55, $55, $55, $2B, $AB, $4A, $D5, $54, $2D, $55, $55, $55, $55, $55, $55, $55
+;	.byte $AB, $AA, $D5, $D2, $AA, $B2, $AA, $AA, $AA, $D4, $54, $55, $95, $56, $CA, $2A, $D3, $D2, $B4, $AC
+;	.byte $AA, $2C, $4B, $55, $D5, $52, $B5, $54, $55, $55, $55, $55, $69, $56, $5A, $55, $55, $55, $55, $55
+;	.byte $A5, $AA, $AA, $AA, $B2, $CA, $32, $55, $B5, $AA, $6C, $59, $56, $55, $55, $55, $55, $55, $55, $55
+;	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $D3, $54, $55, $55, $55, $55, $55, $56, $A9, $55
+;	.byte $55, $55, $55, $55, $55, $D5, $AA, $AA, $55, $69, $65, $6A, $AA, $AA, $AA, $4A, $4B, $55, $53, $55
+;	.byte $55, $55, $55, $55, $55, $55, $55, $55, $95, $A5, $A9, $55, $55, $55, $D5, $B4, $5A, $55, $AB, $9A
+;	.byte $96, $A6, $96, $CA, $A2, $A9, $D4, $54, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $A9
+;	.byte $56, $AA, $96, $56, $55, $55, $55, $55, $B3, $AA, $6A, $6A, $5A, $59, $56, $AA, $4A, $55, $55, $55
+;	.byte $55, $55, $55, $55, $55, $55, $55, $59, $55, $AA, $AA, $52, $55, $95, $5A, $AA, $56, $55, $55, $D5
+;	.byte $2A, $35, $D3, $AA, $B2, $6A, $AA, $96, $56, $55, $55, $55, $55, $55, $55, $35, $55, $4B, $D5, $D2
+;	.byte $54, $35, $AD, $AA, $AA, $AA, $CA, $CA, $52, $55, $55, $55, $D3, $D2, $B2, $AA, $AA, $6A, $A9, $35
+;	.byte $55, $4D, $55, $53, $55, $55, $55, $55, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $6A, $55
+;	.byte $55, $55, $55, $55, $55, $55, $55, $D5, $54, $55, $55, $55, $55, $55, $55, $B5, $4C, $55, $55, $55
+;	.byte $55
+;
+;
+;	.align 64
+;; Roland-SC-88-Snare-Drum
+;ft_sample_1:
+;	.byte $01, $FF, $FF, $FF, $27, $88, $21, $02, $00, $00, $80, $0C, $8F, $E7, $FF, $FE, $7E, $FC, $FB, $C5
+;	.byte $87, $3F, $20, $FC, $FF, $00, $70, $18, $00, $00, $9C, $11, $C7, $38, $1C, $0B, $60, $36, $EC, $7E
+;	.byte $F8, $FF, $3D, $FF, $93, $FF, $3F, $7C, $84, $33, $7D, $83, $F3, $81, $19, $E1, $00, $02, $01, $00
+;	.byte $13, $F9, $01, $F0, $86, $E3, $9C, $33, $FF, $B7, $63, $E7, $9D, $21, $5F, $BE, $FF, $D8, $79, $38
+;	.byte $D3, $61, $26, $62, $CC, $3C, $C9, $20, $12, $60, $26, $0D, $8D, $B3, $18, $79, $B0, $C1, $38, $47
+;	.byte $9C, $BD, $7E, $CF, $1E, $3F, $FD, $CD, $DD, $69, $98, $9E, $6C, $CA, $C9, $60, $22, $1A, $64, $02
+;	.byte $C3, $D2, $18, $1C, $70, $9C, $99, $3A, $CE, $1F, $17, $FF, $B1, $9D, $A6, $FD, $78, $E7, $B0, $C5
+;	.byte $87, $31, $12, $E7, $70, $CC, $10, $C7, $58, $C5, $70, $18, $31, $CE, $C2, $93, $A3, $E9, $9C, $AE
+;	.byte $A6, $76, $C6, $FB, $71, $0E, $9F, $9D, $9C, $61, $B6, $65, $03, $F3, $30, $73, $88, $3B, $CC, $D0
+;	.byte $0C, $CC, $E1, $31, $3C, $88, $3D, $32, $AE, $F1, $23, $1F, $59, $36, $7F, $3C, $66, $BE, $59, $68
+;	.byte $3E, $87, $67, $38, $18, $E7, $1C, $13, $C2, $73, $1C, $E5, $18, $6E, $E0, $38, $23, $36, $1E, $67
+;	.byte $E6, $49, $59, $1E, $7B, $38, $F2, $CD, $38, $FB, $F8, $61, $F0, $98, $36, $D9, $06, $B9, $C5, $19
+;	.byte $CC, $E1, $9C, $14, $1E, $D8, $13, $EB, $E1, $18, $72, $32, $3B, $96, $1D, $E6, $6C, $77, $E4, $B1
+;	.byte $9B, $70, $1C, $1F, $C7, $98, $D1, $E7, $F0, $48, $0E, $F5, $18, $47, $9C, $39, $66, $6C, $B8, $1C
+;	.byte $CE, $78, $4C, $46, $F6, $24, $1B, $6E, $1E, $67, $F3, $30, $C7, $CC, $CD, $D4, $C2, $3B, $8C, $D7
+;	.byte $21, $53, $6D, $38, $9A, $11, $CF, $70, $99, $E3, $70, $C1, $C3, $D9, $34, $83, $39, $F5, $70, $66
+;	.byte $7C, $13, $CE, $B5, $E1, $BC, $18, $A7, $63, $9E, $C3, $89, $CB, $F0, $24, $6D, $E1, $71, $78, $83
+;	.byte $B1, $4C, $2E, $CB, $CC, $21, $CF, $E1, $38, $1E, $CD, $B1, $C9, $1C, $5E, $5C, $56, $96, $B3, $63
+;	.byte $38, $4E, $C7, $F2, $92, $CC, $33, $16, $67, $63, $CE, $0C, $9B, $B8, $64, $E5, $D4, $71, $70, $1C
+;	.byte $C7, $71, $78, $38, $9E, $68, $5C, $66, $8F, $71, $C6, $59, $B6, $D1, $A5, $C3, $B3, $71, $1C, $EE
+;	.byte $F0, $78, $44, $B3, $E8, $70, $1C, $27, $D9, $38, $0E, $1D, $E3, $26, $C9, $E3, $C8, $87, $E5, $E1
+;	.byte $C6, $31, $9B, $2C, $9B, $65, $8E, $B5, $29, $8F, $55, $1C, $B7, $31, $63, $D3, $61, $2E, $B6, $98
+;	.byte $EC, $30, $99, $23, $6E, $C6, $51, $4E, $39, $96, $26, $73, $B2, $D9, $58, $27, $4F, $66, $4D, $C7
+;	.byte $CC, $26, $CF, $86, $2D, $73, $B4, $D1, $91, $93, $1D, $3C, $D8, $1C, $8D, $31, $67, $E2, $8C, $33
+;	.byte $35, $DA, $46, $33, $CD, $B4, $A5, $99, $A5, $93, $8D, $1D, $C7, $4C, $9D, $16, $1D, $33, $1B, $1B
+;	.byte $33, $CB, $74, $D4, $31, $AD, $34, $56, $63, $9C, $E1, $19, $57, $B2, $71, $99, $C6, $26, $97, $19
+;	.byte $8F, $35, $8E, $4D, $99, $35, $D9, $64, $35, $2D, $4D, $C7, $51, $B3, $64, $95, $47, $35, $95, $55
+;	.byte $39, $59, $59, $56, $35, $96, $65, $99, $55, $71, $96, $4D, $5C, $72, $93, $55, $76, $D8, $54, $4D
+;	.byte $4E, $59, $55, $65, $59, $53, $55, $55, $55, $53, $55, $4D, $95, $55, $35, $55, $CE, $A4, $B5, $54
+;	.byte $55, $36, $35, $55, $39, $8D, $55, $53, $55, $A5, $65, $C5, $A5, $72, $56, $56, $56, $55, $55, $35
+;	.byte $D3, $34, $CD, $52, $4B, $35, $55, $53, $55, $55, $E3, $38, $4E, $55, $95, $65, $55, $96, $55, $A5
+;	.byte $56, $55, $65, $55, $36, $36, $65, $55, $59, $55, $55, $55, $53, $B5, $4C, $35, $35, $35, $CD, $52
+;	.byte $35, $35, $56, $95, $B1, $95, $56, $5A, $59, $99, $65, $65, $99, $95, $95, $4D, $A5, $55, $4D, $55
+;	.byte $55, $55, $D5, $54, $55, $33, $CD, $B2, $52, $55, $55, $55, $59, $39, $55, $55, $55, $56, $5A, $A9
+;	.byte $96, $A6, $55, $59, $55, $D5, $54, $55, $53, $53, $55, $55, $55, $55, $B5, $54, $35, $59, $55, $69
+;	.byte $59, $69, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+;	.byte $55, $55, $56, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $95, $55, $55, $55, $55, $55
+;	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+;
+;
+;	.align 64
+;; Roland-SC-88-Closed-Hi-Hat
+;ft_sample_2:
+;	.byte $29, $AD, $D3, $38, $B5, $34, $8D, $59, $E6, $A4, $53, $6A, $4A, $AD, $6D, $49, $DA, $4C, $A9, $6D
+;	.byte $52, $99, $4B, $59, $39, $65, $2D, $65, $69, $59, $A6, $CD, $74, $2A, $55, $8D, $9D, $D2, $D2, $62
+;	.byte $65, $93, $93, $5A, $2D, $D5, $54, $72, $4E, $93, $4B, $56, $65, $4D, $C9, $96, $96, $55, $4D, $6D
+;	.byte $92, $A6, $99, $B5, $34, $D3, $A4, $4D, $A9, $D6, $92, $A6, $55, $DA, $52, $CA, $3A, $2D, $D2, $56
+;	.byte $63, $D3, $D0, $9B, $56, $A9, $E4, $D4, $52, $B5, $4C, $39, $95, $5A, $6A, $8D, $95, $D3, $4C, $E9
+;	.byte $54, $4B, $39, $B3, $25, $2D, $D5, $62, $B3, $D4, $4C, $8E, $4D, $AD, $92, $D5, $92, $65, $5B, $68
+;	.byte $2D, $95, $36, $CD, $D4, $C8, $5A, $A5, $5A, $69, $33, $93, $72, $D5, $62, $2D, $65, $4D, $AD, $64
+;	.byte $69, $35, $69, $A9, $95, $56, $56, $56, $4B, $1B, $A9, $95, $35, $55, $AD, $34, $D5, $D2, $D4, $64
+;	.byte $56, $4D, $DA, $34, $CD, $54, $66, $95, $93, $69, $AD, $54, $96, $6A, $55, $53, $95, $4D, $95, $5A
+;	.byte $59, $93, $95, $D9, $4C, $5A, $35, $56, $55, $95, $66, $4D, $55, $4D, $55, $A5, $D5, $A4, $39, $55
+;	.byte $95, $56, $95, $56, $35, $55, $53, $55, $55, $55, $53, $4D, $55, $65, $D5, $52, $D5, $94, $55, $4B
+;	.byte $55, $B5, $D4, $54, $35, $55, $35, $4B, $63, $55, $4D, $55, $8D, $55, $59, $55, $55, $95, $4D, $65
+;	.byte $53, $55, $55, $55, $55, $B5, $D4, $54, $35, $55, $56, $55, $55, $55, $55, $55, $55, $55, $55, $55
+;	.byte $55, $95, $55, $55, $55, $55, $59, $55, $55, $55, $55, $55, $55, $55, $65, $95, $55, $55, $55, $55
+;	.byte $95, $55, $55, $55, $55, $35, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+;	.byte $55, $55, $55, $55, $55
+;
+;
+;	.align 64
+;; Claves
+;ft_sample_3:
+;	.byte $75, $C0, $0F, $F8, $07, $F8, $07, $F8, $07, $FC, $03, $FC, $03, $FC, $01, $FE, $01, $FF, $00, $FF
+;	.byte $80, $7F, $80, $3F, $C0, $3F, $E0, $1F, $E0, $0F, $F8, $07, $F8, $03, $FC, $03, $FC, $03, $FC, $03
+;	.byte $FE, $01, $FE, $80, $7F, $80, $7F, $80, $3F, $D0, $5D, $C8, $5D, $D0, $5D, $D0, $17, $D1, $9B, $B0
+;	.byte $2B, $A9, $2B, $69, $4B, $69, $4B, $DA, $49, $BA, $92, $B6, $92, $B6, $92, $AE, $A4, $AD, $A4, $AD
+;	.byte $94, $AD, $A4, $AD, $68, $1D, $69, $27, $69, $27, $69, $4B, $DA, $4A, $D6, $92, $76, $91, $F6, $40
+;	.byte $6F, $21, $6F, $A2, $5E, $C4, $9D, $A8, $17, $71, $17, $F4, $13, $F4, $13, $F4, $43, $DC, $85, $DC
+;	.byte $89, $B6, $91, $B6, $92, $B5, $92, $B5, $94, $AD, $54, $D5, $54, $D5, $52, $B5, $52, $B5, $54, $D5
+;	.byte $54, $B5, $54, $55, $55, $D5, $54, $B5, $94, $AD, $A4, $2D, $69, $2B, $59, $2B, $59, $4B, $D9, $4A
+;	.byte $D6, $52, $55, $55, $D5, $54, $55, $55, $55, $55, $55, $55, $55, $D5, $52, $D5, $52, $D5, $52, $55
+;	.byte $55, $55, $53, $D5, $54, $55, $55, $55, $55, $55, $53, $55, $55, $D9, $4A, $D6, $4A, $D6, $4A, $D6
+;	.byte $4A, $D6, $52, $B5, $54, $B5, $54, $B5, $A4, $2D, $65, $1D, $69, $1B, $69, $17, $69, $1B, $69, $27
+;	.byte $D9, $46, $D9, $52, $D5, $52, $D6, $52, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $4D
+;	.byte $55, $55, $55, $55, $55, $55, $D5, $54, $B5, $54, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+;	.byte $35, $55, $55, $55, $55, $55, $55, $55, $55, $53, $55, $4B, $DA, $52, $D6, $52, $D5, $52, $D5, $52
+;	.byte $D5, $54, $55, $55, $55, $53, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+;	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+;	.byte $55, $55, $55, $55, $D5, $54, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+
+
+;;; for nsmb
+;	.align 64
+;
+;ft_sample_4: ; nsmb-bah-3rd
+;	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $4D, $00, $D0, $68, $77, $B5
+;	.byte $FE, $FF, $15, $41, $92, $D6, $BD, $FD, $6F, $08, $00, $00, $BA, $DF, $EE, $0A, $63, $3A, $B5, $7B
+;	.byte $26, $B4, $4F, $00, $00, $F6, $FF, $4F, $00, $40, $EE, $DF, $F9, $EF, $00, $00, $0B, $F1, $B8, $EF
+;	.byte $7D, $22, $D3, $18, $29, $98, $DC, $F5, $BF, $00, $00, $D3, $FD, $7F, $DF, $04, $00, $80, $FF, $CF
+;	.byte $33, $00, $00, $FB, $FF, $FF, $1F, $00, $00, $F0, $FF, $F2, $9B, $00, $00, $73, $FB, $2B, $C9, $FD
+;	.byte $03, $88, $09, $EC, $BF, $64, $FF, $0F, $00, $00, $FF, $77, $A5, $48, $81, $F5, $9F, $6A, $00, $E0
+;	.byte $BF, $57, $44, $F6, $7F, $00, $F8, $2F, $00, $D0, $FF, $BF, $28, $00, $F8, $F7, $DF, $75, $00, $00
+;	.byte $E0, $FF, $2F, $A1, $52, $02, $FA, $FF, $FF, $01, $00, $E0, $FF, $25, $0E, $44, $90, $FE, $FF, $07
+;	.byte $A0, $02, $E0, $7D, $79, $BD, $C9, $50, $FF, $0F, $00, $F0, $7F, $FD, $00, $00, $E0, $FF, $7F, $68
+;	.byte $01, $E0, $5E, $C1, $FF, $0F, $00, $D0, $FF, $D3, $00, $D5, $5E, $25, $D8, $3D, $45, $55, $CF, $9F
+;	.byte $00, $C0, $FF, $1F, $00, $E0, $FF, $00, $FC, $FF, $0F, $00, $F0, $FF, $03, $00, $FC, $1F, $00, $FC
+;	.byte $FF, $00, $C0, $FF, $3F, $00, $E0, $5F, $88, $FF, $7F, $00, $00, $F8, $FF, $0F, $00, $EE, $35, $C5
+;	.byte $F6, $1F, $00, $00, $FF, $FF, $0F, $00, $80, $FF, $FF, $1F, $00, $00, $FC, $FF, $09, $12, $40, $BF
+;	.byte $D5, $F5, $47, $22, $01, $FA, $FF, $0F, $00, $80, $FF, $FF, $00, $00, $FE, $7F, $FE, $D4, $01, $00
+;	.byte $F0, $FF, $3F, $00, $40, $59, $F1, $FF, $FF, $00, $00, $F8, $FF, $03, $00, $FF, $0F, $C0, $FF, $07
+;	.byte $00, $F0, $FF, $0F, $00, $E0, $FF, $0F, $FC, $0F, $00, $00, $FE, $FF, $07, $00, $FC, $1F, $E1, $FE
+;	.byte $0F, $00, $E0, $FF, $1F, $00, $E0, $FF, $0F, $00, $F8, $FF, $64, $41, $E2, $05, $00, $FF, $FF, $0F
+;	.byte $00, $E0, $5F, $FF, $3F, $00, $00, $E0, $FF, $1F, $80, $E6, $FF, $0F, $50, $15, $A0, $5F, $64, $F7
+;	.byte $25, $09, $80, $FE, $FF, $3F, $00, $00, $F8, $FF, $07, $00, $DE, $E9, $F5, $AB, $FE, $01, $00, $F8
+;	.byte $3F, $A5, $0B, $00, $E0, $FF, $FF, $0F, $00, $00, $FF, $3F, $80, $BD, $54, $91, $A8, $FF, $3F, $00
+;	.byte $C0, $FF, $10, $AB, $EF, $02, $21, $7B, $3F, $20, $E8, $F7, $2B, $00, $EA, $57, $85, $DE, $FF, $07
+;	.byte $00, $E0, $A5, $FF, $05, $D4, $4A, $50, $F5, $F6, $0F, $F0, $3F, $00, $E0, $9F, $DE, $06, $54, $29
+;	.byte $3E, $29, $FC, $1F, $00, $FF, $01, $F0, $CF, $D7, $A2, $02, $85, $FD, $07, $80, $FF, $3F, $00, $80
+;	.byte $FF, $FF, $00, $E0, $FF, $03, $00, $FF, $07, $E8, $FD, $0B, $00, $F0, $FF, $1F, $00, $E0, $FF, $03
+;	.byte $80, $FF, $FF, $01, $00, $FF, $06, $80, $FF, $3F, $00, $F8, $7F, $0D, $00, $FC, $1F, $2A, $00, $FE
+;	.byte $3F, $00, $FF, $FF, $00, $80, $FF, $D1, $09, $40, $FF, $07, $80, $FF, $1F, $00, $7F, $4B, $3C, $02
+;	.byte $F8, $3F, $81, $F7, $7F, $00, $C0, $FF, $E1, $16, $00, $F0, $FF, $44, $FD, $05, $00, $7E, $B5, $FE
+;	.byte $0F, $00, $F8, $0F, $F9, $7F, $00, $80, $FF, $D7, $13, $00, $E0, $FF, $A0, $FD, $03, $00, $FD, $55
+;	.byte $FE, $1F, $00, $E0, $BF, $FD, $05, $00, $E0, $FF, $D7, $2D, $00, $80, $FF, $0F, $68, $B1, $78, $51
+;	.byte $D0, $FF, $3F, $00, $80, $FF, $FF, $03, $00, $40, $FF, $DF, $0F, $00, $E0, $FF, $27, $18, $10, $FD
+;	.byte $75, $51, $F6, $0F, $00, $F8, $DB, $FF, $03, $00, $F8, $5B, $F5, $0F, $00, $C0, $FF, $1F, $09, $8A
+;	.byte $57, $55, $A2, $FF, $00, $F8, $7F, $20, $59, $70, $F4, $EC, $BF, $26, $01, $00, $FE, $FF, $AF, $00
+;	.byte $00, $FC, $FF, $93, $05, $00, $F8, $BF, $BD, $06, $80, $FE, $96, $E8, $3F, $00, $C0, $FF, $9F, $84
+;	.byte $80, $C0, $FF, $FF, $0F, $00, $00, $FE, $FF, $2F, $05, $00, $C0, $FF, $FF, $03, $40, $01, $F8, $FF
+;	.byte $FF, $00, $00, $FE, $DB, $2F, $00, $78, $77, $2D, $A6, $07, $00, $FC, $FF, $1F, $00, $70, $57, $EA
+;	.byte $FD, $FF, $00, $00, $F8, $FF, $03, $C0, $16, $C0, $FF, $FF, $03, $00, $F8, $F7, $05, $00, $FE, $0F
+;	.byte $E0, $F7, $3F, $00, $80, $FF, $FF, $00, $80, $FF, $01, $FC, $FF, $01, $00, $F8, $FF, $0F, $00, $F8
+;	.byte $0F, $E0, $F7, $7F, $00, $00, $FF, $7F, $00, $C0, $FF, $01, $80, $FF, $3F, $00, $FC, $FF, $03, $00
+;	.byte $F8, $7F, $B0, $69, $51, $00, $F0, $FF, $FF, $01, $00, $FE, $4B, $ED, $BF, $04, $00, $E0, $FF, $3F
+;	.byte $00, $FC, $07, $80, $FF, $BF, $00, $80, $FF, $7F, $00, $C0, $FF, $03, $B8, $4D, $A5, $40, $FE, $FF
+;	.byte $0F, $00, $F0, $1F, $40, $FF, $2F, $00, $00, $FF, $FF, $07, $00, $7F, $03, $F0, $F7, $B5, $48, $40
+;	.byte $DA, $DB, $52, $F6, $2B, $00, $F5, $55, $A5, $6A, $FB, $06, $04, $E8, $FF, $97, $40, $58, $B7, $0A
+;	.byte $A9, $B7, $D5, $AA, $10, $D0, $7D, $57, $BB, $40, $E0, $BD, $91, $A4, $F7, $6B, $04, $02, $DA, $FF
+;	.byte $8F, $00, $A8, $7E, $97, $94, $74, $7D, $4B, $80, $A8, $FD, $FB, $12, $00, $F8, $FF, $00, $D2, $DD
+;	.byte $5F, $01, $80, $EF, $AF, $93, $48, $50, $7D, $AB, $54, $2A, $DD, $3B, $01, $A0, $FF, $7F, $01, $00
+;	.byte $F6, $BF, $10, $B4, $F7, $26, $11, $52, $ED, $BD, $AB, $10, $11, $D9, $B7, $25, $AA, $76, $AB, $40
+;	.byte $A0, $FF, $FF, $00, $00, $FD, $2F, $11, $6D, $4D, $55, $AD, $14, $A9, $EE, $BE, $42, $40, $7D, $1F
+;	.byte $01, $F6, $FD, $0A, $01, $52, $FF, $77, $09, $48, $B5, $5A, $B5, $96, $52, $52, $DB, $A5, $84, $EA
+;	.byte $FD, $02, $50, $FF, $17, $00, $EC, $F7, $25, $11, $B9, $35, $55, $B5, $2D, $22, $AA, $77, $53, $12
+;	.byte $D5, $6E, $89, $54, $B7, $2B, $11, $D2, $DE, $5B, $10, $B5, $35, $55, $D5, $4A, $55, $29, $B5, $DD
+;	.byte $42, $A4, $BD, $25, $A9, $D6, $56, $92, $64, $DB, $2D, $42, $EC, $6D, $49, $59, $AD, $14, $B5, $D5
+;	.byte $5A, $49, $52, $5B, $2B, $95, $D6, $96, $A4, $5A, $AD, $96, $44, $EA, $75, $95, $A4, $5A, $4B, $A9
+;	.byte $B6, $55, $94, $D2, $D6, $2A, $95, $6A, $B5, $14, $75, $DB, $42, $91, $B6, $DD, $22, $51, $6D, $4D
+;	.byte $95, $D5, $9A, $94, $D4, $D6, $56, $92, $5A, $4D, $91, $76, $B7, $12, $49, $76, $DD, $12, $51, $6D
+;	.byte $4B, $55, $AD, $52, $A5, $AA, $55, $5B, $4A, $AA, $55, $45, $DD, $5B, $41, $48, $BB, $DD, $8A, $24
+;	.byte $6D, $4D, $A9, $D6, $4D, $92, $6C, $55, $55, $55, $55, $35, $95, $5A, $AF, $44, $D0, $DE, $AB, $48
+;	.byte $52, $6D, $AD, $54, $55, $6B, $52, $52, $57, $AB, $54, $55, $55, $29, $75, $DD, $12, $91, $76, $AF
+;	.byte $90, $68, $77, $4B, $24, $B5, $AD, $52, $59, $D5, $54, $55, $55, $55, $55, $55, $5B, $91, $A8, $B7
+;	.byte $2D, $49, $52, $6D, $AB, $94, $6A, $5D, $51, $AA, $55, $55, $55, $55, $55, $55, $55, $35, $55, $C9
+;	.byte $D6, $55, $52, $4A, $6B, $6D, $49, $A9, $56, $4B, $A9, $D6, $AA, $54, $55, $A5, $6A, $D5, $96, $52
+;	.byte $52, $6D, $AD, $52, $55, $55, $53, $A5, $56, $55, $2D, $55, $AA, $55, $55, $55, $55, $55, $D5, $52
+;	.byte $55, $55, $55, $AB, $54, $AA, $56, $4D, $55, $55, $55, $55, $A9, $5A, $AD, $4A, $55, $A5, $5A, $55
+;	.byte $55, $55, $A5, $56, $4B, $A5, $56, $AB, $54, $55, $55, $D5, $2A, $95, $5A, $55, $55, $55, $55, $D5
+;	.byte $2A, $55, $AA, $56, $B5, $4A, $55, $55, $55, $55, $55, $55, $2D, $55, $95, $5A, $55, $AB, $54, $A5
+;	.byte $55, $55, $55, $55, $AD, $52, $55, $AA, $55, $D5, $2A, $55, $55, $55, $55, $55, $D5, $AA, $54, $A9
+;	.byte $5A, $55, $55, $55, $55, $55, $55, $55, $55, $B5, $4A, $95, $6A, $55, $55, $55, $55, $55, $55, $55
+;	.byte $55, $55, $AB, $52, $A9, $5A, $55, $55, $55, $55, $55, $55, $55, $55, $D5, $2A, $55, $AA, $55, $4D
+;	.byte $55, $55, $55, $55, $55, $55, $55, $D5, $54, $A5, $5A, $D5, $52, $55, $55, $55, $55, $55, $55, $55
+;	.byte $53, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+;	.byte $55, $55, $55, $55, $55, $55, $55, $5A, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+;	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+;	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+;	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+;	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+;	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55
+;
+;	.align 64
+;
+;ft_sample_5: ; nsmb-bah-3rd-higher
+;	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $D5, $02, $80, $62, $B7, $B6, $FF, $DD
+;	.byte $54, $4C, $5C, $BB, $FA, $2F, $02, $00, $B0, $FF, $7F, $02, $40, $AC, $DD, $FF, $07, $3D, $00, $00
+;	.byte $F0, $FF, $3F, $44, $4D, $92, $E0, $FB, $03, $95, $89, $18, $F3, $BC, $3B, $CD, $5B, $0A, $08, $B7
+;	.byte $FA, $01, $00, $CC, $FF, $FF, $7F, $06, $00, $C0, $FF, $7E, $00, $40, $52, $FB, $FF, $02, $80, $FB
+;	.byte $FF, $A4, $01, $00, $F8, $FF, $5F, $00, $EC, $15, $54, $25, $FF, $8F, $FA, $07, $00, $80, $FF, $2F
+;	.byte $DB, $22, $00, $FF, $B6, $41, $C0, $ED, $9D, $08, $FD, $8F, $F0, $4F, $00, $C0, $FF, $3F, $00, $80
+;	.byte $FF, $FF, $7F, $04, $00, $E0, $FF, $96, $04, $01, $F8, $FF, $FF, $00, $00, $FE, $57, $1A, $51, $55
+;	.byte $FE, $1F, $00, $30, $FC, $7F, $00, $F4, $69, $FC, $FF, $03, $00, $00, $FE, $1F, $61, $5B, $BF, $05
+;	.byte $03, $C0, $FF, $EF, $05, $00, $80, $FF, $FF, $03, $E0, $9F, $00, $FC, $FF, $01, $C0, $FE, $07, $C0
+;	.byte $FF, $01, $00, $FF, $1F, $80, $FF, $1F, $00, $FC, $3F, $00, $E0, $3F, $80, $FA, $FF, $00, $F0, $FF
+;	.byte $03, $00, $FF, $84, $F7, $3F, $00, $00, $FF, $FF, $00, $C0, $7E, $ED, $EF, $00, $00, $FE, $FF, $01
+;	.byte $A0, $5D, $C1, $FF, $0F, $00, $80, $FF, $FF, $00, $00, $FE, $FF, $07, $00, $FC, $FD, $6F, $01, $00
+;	.byte $F8, $7F, $11, $B8, $3D, $00, $FE, $FF, $07, $00, $FE, $1F, $00, $E0, $5F, $FD, $7F, $00, $00, $F8
+;	.byte $FF, $07, $00, $FE, $80, $FF, $FF, $00, $00, $FF, $07, $00, $FE, $3F, $C0, $FF, $00, $00, $FF, $FF
+;	.byte $00, $80, $FF, $07, $FD, $0F, $00, $C0, $FF, $07, $80, $FF, $1F, $00, $F8, $BF, $F8, $13, $04, $00
+;	.byte $F8, $FF, $0F, $00, $FE, $EF, $5B, $40, $5A, $E0, $7F, $10, $B6, $74, $7F, $E0, $0E, $00, $F8, $FF
+;	.byte $FF, $00, $00, $C0, $FF, $FF, $07, $00, $F8, $3F, $94, $D5, $84, $D4, $55, $FD, $03, $80, $FF, $40
+;	.byte $6F, $12, $49, $FF, $7F, $02, $00, $F0, $FF, $07, $00, $BA, $FF, $DD, $51, $00, $A0, $FF, $03, $F4
+;	.byte $FF, $01, $00, $FE, $FF, $01, $C0, $F7, $90, $F2, $13, $E0, $FF, $17, $00, $F8, $AF, $3E, $00, $7C
+;	.byte $55, $55, $F7, $07, $C0, $1F, $00, $FE, $BF, $05, $A0, $52, $FE, $1B, $FE, $01, $80, $7F, $28, $D5
+;	.byte $FF, $41, $00, $D8, $7F, $00, $FE, $7F, $00, $C0, $FF, $0F, $C0, $FF, $07, $00, $FE, $03, $FC, $FF
+;	.byte $07, $00, $F0, $FF, $00, $E0, $7F, $00, $F8, $FF, $0F, $80, $1F, $00, $E0, $FF, $0F, $C0, $FF, $1F
+;	.byte $00, $F8, $FF, $02, $80, $7F, $00, $FE, $FF, $00, $E0, $7F, $48, $04, $FF, $0F, $C0, $FF, $03, $C0
+;	.byte $DF, $C2, $49, $A0, $6F, $85, $FD, $7F, $00, $E0, $1F, $BF, $00, $E0, $3F, $CA, $F7, $00, $C0, $FF
+;	.byte $E8, $0B, $00, $FF, $48, $FF, $07, $00, $5F, $EB, $3F, $00, $E0, $3F, $DF, $04, $00, $FE, $1F, $FE
+;	.byte $03, $00, $FF, $07, $1D, $00, $FE, $4B, $F8, $7F, $00, $F0, $2F, $F5, $02, $C0, $3D, $FD, $FF, $00
+;	.byte $00, $FF, $3F, $00, $00, $FF, $2F, $FE, $01, $00, $FF, $07, $05, $F5, $1F, $04, $FC, $7F, $00, $7C
+;	.byte $E2, $FF, $00, $60, $ED, $FE, $1F, $00, $E0, $FF, $67, $00, $80, $FF, $8F, $1F, $00, $F8, $3F, $41
+;	.byte $C1, $ED, $6A, $45, $7D, $01, $E0, $FF, $17, $05, $80, $D3, $FF, $FF, $00, $00, $FC, $FF, $24, $00
+;	.byte $D8, $FF, $77, $01, $00, $FE, $9F, $A8, $01, $E0, $FF, $7F, $00, $00, $FE, $F7, $BF, $0C, $00, $E0
+;	.byte $FF, $1F, $00, $16, $D0, $FF, $3F, $00, $E0, $FF, $0F, $00, $7C, $CB, $FE, $3F, $00, $00, $FF, $7F
+;	.byte $20, $14, $01, $FE, $FF, $07, $00, $FE, $B4, $A2, $7C, $0B, $78, $7F, $0D, $00, $F8, $FF, $0F, $00
+;	.byte $F8, $B0, $FF, $7F, $00, $00, $FF, $1F, $00, $FC, $0F, $00, $FF, $0F, $00, $FF, $FF, $00, $C0, $7F
+;	.byte $00, $FF, $3F, $00, $E0, $FF, $07, $00, $FF, $00, $EC, $FF, $03, $C0, $FF, $0F, $00, $F0, $3F, $54
+;	.byte $BD, $14, $00, $FE, $FF, $03, $00, $7F, $C5, $FD, $A7, $00, $80, $FF, $1F, $00, $FE, $07, $E0, $FF
+;	.byte $05, $00, $FF, $7F, $00, $E0, $3F, $E0, $FF, $00, $00, $FC, $FF, $0F, $00, $7F, $00, $FE, $7F, $0A
+;	.byte $00, $FD, $5B, $81, $FE, $0F, $80, $5E, $55, $55, $F6, $3B, $00, $C0, $FF, $91, $F6, $2E, $00, $E8
+;	.byte $DF, $5B, $94, $56, $09, $C4, $EF, $55, $A9, $55, $04, $6A, $DF, $6D, $0B, $44, $57, $91, $BA, $6D
+;	.byte $55, $0B, $41, $FA, $5A, $FD, $25, $10, $55, $4B, $F5, $6E, $A9, $02, $E0, $BE, $D5, $5B, $22, $D1
+;	.byte $76, $22, $75, $BD, $1B, $00, $E8, $DF, $95, $5A, $52, $B4, $9A, $5A, $55, $ED, $07, $00, $F4, $FF
+;	.byte $2B, $02, $EA, $AB, $80, $7E, $BB, $AA, $12, $01, $FB, $FD, $2D, $00, $F0, $7F, $10, $F4, $DD, $4D
+;	.byte $10, $D4, $5E, $ED, $2B, $00, $F8, $7F, $10, $F4, $FD, $13, $00, $F0, $FF, $97, $08, $01, $F5, $7F
+;	.byte $05, $24, $FF, $2D, $00, $E8, $FF, $17, $50, $2A, $55, $B5, $D6, $96, $4A, $6D, $00, $EC, $FF, $1F
+;	.byte $00, $F0, $BF, $42, $E8, $57, $51, $2D, $15, $68, $FF, $1F, $00, $E0, $FF, $01, $D5, $7D, $05, $21
+;	.byte $EA, $77, $AB, $96, $00, $F4, $BF, $44, $A4, $DD, $3B, $01, $E0, $DF, $5B, $45, $84, $DA, $55, $55
+;	.byte $55, $C9, $76, $45, $A8, $DE, $55, $51, $51, $B7, $45, $D2, $D6, $52, $D5, $26, $C2, $DE, $AB, $44
+;	.byte $50, $DF, $2B, $24, $5D, $95, $6C, $57, $92, $D2, $D6, $15, $45, $75, $57, $A4, $DA, $96, $14, $AD
+;	.byte $6D, $52, $AA, $55, $95, $DA, $36, $12, $6A, $F7, $45, $90, $5D, $55, $5A, $6D, $49, $49, $DB, $56
+;	.byte $84, $EE, $16, $A9, $6D, $45, $91, $76, $BB, $22, $D1, $56, $49, $F7, $46, $84, $B6, $6D, $25, $A5
+;	.byte $D6, $4A, $B2, $6D, $45, $D2, $D6, $2A, $55, $69, $55, $A9, $ED, $46, $20, $7D, $57, $49, $CA, $5A
+;	.byte $53, $69, $AD, $92, $D4, $6D, $52, $AA, $6D, $49, $A4, $BD, $15, $45, $DB, $96, $94, $6A, $55, $55
+;	.byte $B5, $0B, $91, $76, $57, $51, $B2, $B5, $4A, $A9, $B5, $52, $55, $2B, $55, $AA, $D5, $4A, $A5, $B5
+;	.byte $45, $62, $B7, $55, $4A, $49, $6D, $55, $D5, $2A, $25, $DB, $26, $A5, $5A, $B5, $4A, $A5, $5A, $4D
+;	.byte $55, $D5, $52, $55, $55, $AA, $D5, $56, $52, $52, $6D, $5B, $49, $95, $56, $55, $55, $55, $AD, $52
+;	.byte $55, $A5, $56, $AD, $4A, $69, $B5, $4A, $49, $5B, $AB, $4A, $95, $AA, $55, $AB, $54, $A9, $56, $4B
+;	.byte $55, $56, $AD, $4A, $A5, $6A, $55, $55, $55, $A9, $55, $53, $65, $55, $55, $55, $A5, $6A, $B5, $4A
+;	.byte $95, $AA, $B5, $52, $55, $55, $55, $55, $55, $55, $D5, $4A, $95, $6A, $55, $55, $55, $55, $55, $55
+;	.byte $55, $55, $D5, $52, $A5, $56, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $A9, $56, $55, $55
+;	.byte $55, $55, $55, $A5, $56, $AD, $4A, $55, $6A, $55, $55, $55, $55, $55, $55, $55, $55, $B5, $54, $95
+;	.byte $56, $D5, $4A, $55, $55, $55, $55, $55, $55, $2B, $55, $A9, $56, $B5, $4A, $55, $55, $55, $55, $55
+;	.byte $D5, $4A, $55, $A9, $55, $B5, $52, $95, $55, $55, $55, $55, $AD, $54, $95, $5A, $55, $AD, $52, $55
+;	.byte $55, $55, $55, $55, $AB, $52, $A9, $5A, $55, $55, $55, $55, $55, $55, $55, $55, $AB, $54, $A9, $56
+;	.byte $55, $55, $55, $55, $55, $55, $55, $D5, $AA, $54, $AA, $55, $55, $55, $55, $55, $55, $55, $55, $D5
+;	.byte $2A, $55, $AA, $55, $53, $55, $55, $55, $55, $55, $55, $55, $53, $55, $5A, $D5, $4A, $55, $55, $55
+;	.byte $55, $55, $55, $D5, $54, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+;	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $59, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+;	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+;	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+;	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+;	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+;	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55
+;	.align 64
+;
+;ft_sample_1: ; bongo.dmc
+;	.byte $55, $34, $62, $7F, $B0, $BF, $02, $FC, $60, $7F, $01, $00, $F8, $FF, $3F, $00, $FE, $0F, $80, $FF
+;	.byte $01, $00, $FC, $FF, $0F, $00, $FE, $BF, $00, $00, $F8, $FF, $41, $7F, $29, $0B, $40, $FF, $1F, $00
+;	.byte $F8, $FF, $15, $00, $F8, $7F, $00, $D5, $DA, $2F, $84, $FA, $2F, $01, $E0, $7F, $55, $01, $F8, $FF
+;	.byte $09, $80, $5D, $FD, $02, $D0, $7F, $69, $41, $F6, $2F, $90, $08, $EC, $9F, $44, $E4, $FE, $15, $12
+;	.byte $D9, $2D, $8D, $80, $DF, $48, $54, $75, $75, $05, $90, $79, $17, $50, $49, $DD, $0B, $A8, $AA, $DA
+;	.byte $A0, $2A, $D1, $AD, $04, $F1, $2F, $45, $92, $AA, $6D, $01, $55
+;
+;	.align 64
+;
+;ft_sample_2: ; bongo2.dmc
+;	.byte $AA, $AA, $AA, $92, $C5, $C9, $F0, $F3, $FD, $2E, $0C, $01, $02, $40, $F0, $7F, $FF, $F5, $5F, $FF
+;	.byte $10, $00, $00, $00, $00, $00, $F0, $5F, $FF, $F5, $5F, $FF, $AA, $AA, $AA, $92, $C4, $C9, $F0, $F2
+;	.byte $ED, $2E, $0C, $01, $02, $40, $E0, $7F, $FB, $BF, $FF, $FB, $10, $00, $00, $00, $00, $00, $B8, $FF
+;	.byte $FB, $BF, $FF, $FB, $AF, $20, $04, $00, $00, $00, $C0, $DA, $D5, $6E, $DB, $F7, $FB, $FF, $5F, $25
+;	.byte $09, $09, $00, $00, $40, $22, $DA, $FD, $DD, $FB, $FE, $FF, $6E, $2B, $45, $00, $00, $20, $44, $54
+;	.byte $D5, $DA, $7B, $BB, $F7, $BD, $DB, $5A, $AB, $44, $80, $00, $81, $20, $CA, $76, $7B, $BF, $7F, $B7
+;	.byte $B5, $56, $4A, $91, $24, $11, $11, $29, $A4, $6A, $6D, $BA, $CB, $B6, $54, $45, $A5, $56, $45, $25
+;	.byte $88, $84, $44, $4A, $45, $BB, $DC, $A6, $B5, $54, $85, $94, $56, $AD, $54, $28, $25, $89, $94, $46
+;	.byte $AD, $6D, $DD, $6A, $55, $6B, $55, $A9, $2A, $55, $4A, $49, $24, $A9, $6A, $6D, $B7, $6D, $55, $B5
+;	.byte $68, $4D, $29, $A5, $4A, $4A, $48, $09, $95, $68, $DB, $BD, $4D, $AB, $A8, $54, $4A, $49, $49, $29
+;	.byte $55, $4A, $55, $A9, $56, $6D, $6D, $5B, $AB, $94, $24, $29, $55, $2A, $AA, $55, $55, $54, $D5, $AA
+;	.byte $68, $B5, $D6, $AA, $2A, $25, $41, $AA, $5A, $A5, $AA, $AA, $0A, $55, $AD, $1A, $B5, $AA, $2A, $AA
+;	.byte $56
+
+; DPCM samples (located at DPCM segment)
+;;;deja-vu
+; ripped00.dmc
+;	.align 64
+;ft_sample_d:
+;	.byte $3F, $FC, $7F, $DC, $E1, $F9, $0F, $DF, $F7, $00, $00, $00, $80, $FD, $FF, $FF, $FF
+
+.align 64
+
+ft_sample_0: ; kick15.dmc
+	.byte $AA, $AA, $5A, $55, $55, $55, $55, $55, $71, $91, $2A, $09, $0F, $B2, $09, $D3, $2A, $32, $29, $87
+	.byte $C1, $8E, $E3, $E0, $7F, $9C, $E7, $FF, $BF, $EF, $FE, $7C, $4B, $93, $58, $A5, $A9, $2A, $6B, $71
+	.byte $4B, $C7, $B2, $C0, $70, $20, $08, $1C, $90, $00, $47, $80, $44, $B0, $53, $41, $45, $54, $22, $AA
+	.byte $4A, $B4, $A4, $CA, $4A, $55, $55, $37, $D5, $A6, $DA, $AD, $DA, $76, $59, $B5, $B5, $AD, $6D, $57
+	.byte $BB, $96, $B4, $92, $2E, $6D, $D1, $1A, $A1, $5A, $95, $42, $29, $AD, $AA, $6A, $A5, $5A, $55, $55
+	.byte $55, $55, $55, $29, $55, $A5, $52, $41, $29, $55, $2A, $55, $4A, $A5, $4A, $A5, $4A, $55, $49, $D5
+	.byte $4A, $55, $A5, $54, $A5, $AA, $54, $A9, $AA, $AA, $D4, $AA, $AA, $AA, $AA, $56, $55, $D5, $AA, $6A
+	.byte $55, $B5, $AA, $6A, $AD, $5A, $D5, $6A, $D5, $AA, $55, $AB, $55, $B5, $AA, $D6, $AA, $6A, $55, $B5
+	.byte $AA, $5A, $55, $55, $D5, $AA, $AA, $AA, $AA, $54, $55, $55, $55, $AA, $2A, $55, $A5, $AA, $54, $A5
+	.byte $AA, $54, $A5, $AA, $54, $95, $AA, $54, $95, $AA, $2A, $55, $55, $95, $AA, $AA, $AA, $4C, $55, $55
+	.byte $55, $95, $5A, $A9, $AA, $AA, $AA, $AA, $AA, $54, $55, $55, $55, $95, $AA, $AA, $AA, $AA, $AA, $AA
+	.byte $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $5A, $55, $55, $15, $B5, $AA, $2A, $AA, $6A, $55, $54, $55
+	.byte $D5, $A8, $AA, $AA, $AA, $A8, $6A, $55, $51, $55, $45, $A5, $AA, $8A, $AA, $5A, $55, $55, $55, $55
+	.byte $AB, $AA, $AA, $2A, $AA, $AA, $AA, $AA, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $AA, $AA, $55
+
+	.align 64
+
+ft_sample_1: ; kicksnare.dmc
+	.byte $6A, $9A, $AA, $A6, $69, $CA, $39, $F1, $39, $19, $36, $81, $35, $0E, $40, $5E, $0C, $E0, $55, $44
+	.byte $F8, $F7, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $01, $00, $00, $00, $00, $00
+	.byte $00, $00, $55, $55, $55, $55, $55, $55, $55, $B5, $F4, $7B, $45, $F7, $FB, $6D, $F7, $F8, $FF, $47
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $03, $08, $00, $00, $00, $00, $00, $00, $A4, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA
+	.byte $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $AA, $3A, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $0D, $01, $00, $00, $00, $00, $08, $80, $92, $07, $30, $CE, $E3, $46, $76
+	.byte $CD, $11, $0A, $AA, $56, $A2, $AA, $AA, $AA, $AA, $AA, $8A, $A9, $AA, $AA, $AA, $8E, $2B, $CE, $1F
+	.byte $E7, $DE, $BD, $ED, $A1, $9B, $F1, $69, $74, $91, $E6, $D2, $4C, $C2, $58, $13, $30, $A3, $0D, $8A
+	.byte $D7, $C9, $33, $4F, $6D, $B0, $9E, $14, $68, $C7, $C2, $A1, $26, $4A, $28, $CD, $C0, $98, $21, $20
+	.byte $31, $55, $25, $4A, $33, $E9, $CB, $AC, $D7, $79, $84, $7D, $87, $69, $C9, $61, $39, $85, $B2, $4C
+	.byte $68, $29, $93, $11, $EB, $52, $B6, $E4, $AE, $8D, $A5, $BD, $A3, $C3, $CD, $DA, $B8, $E9, $F8, $49
+	.byte $58, $35, $35, $34, $52, $66, $3C, $0C, $EB, $52, $6C, $D2, $DD, $3A, $53, $E5, $AB, $0E, $2E, $BD
+	.byte $62, $29, $4B, $2B, $D4, $42, $11, $25, $69, $14, $2C, $54, $33, $1C, $D3, $35, $83, $BE, $A6, $69
+	.byte $B1, $37, $58, $5C, $47, $23, $9D, $63, $1C, $C7, $A4, $49, $C6, $19, $69, $54, $E5, $71, $5A, $CB
+	.byte $AD, $67, $5A, $33, $AF, $E3, $37, $71, $8F, $4D, $8D, $37, $52, $69, $2C, $A4, $09, $95, $AA, $9C
+	.byte $96, $BA, $96, $DB, $D6, $69, $5D, $71, $EC, $E4, $38, $AC, $65, $34, $25, $A5, $49, $2D, $83, $31
+	.byte $99, $61, $D3, $64, $A6, $A2, $69, $6E, $85, $B3, $6A, $9E, $66, $B5, $51, $C7, $25, $2B, $A5, $49
+	.byte $CC, $54, $98, $B2, $48, $93, $65, $56, $75, $95, $D7, $D8, $CB, $5C, $6B, $56, $6D, $1A, $73, $AC
+	.byte $33, $46, $33, $4D, $4D, $82, $71, $A5, $B1, $6A, $A5, $39, $95, $E5, $34, $4F, $E3, $66, $9B, $AA
+	.byte $65, $B3, $B4, $B2, $4C, $99, $45, $19, $8D, $A9, $98, $A2, $65, $E4, $9A, $55, $D3, $26, $97, $56
+	.byte $AB, $E3, $18, $79, $1C, $31, $4D, $55, $D2, $8A, $29, $35, $C6, $29, $95, $A3, $95, $69, $E4, $39
+	.byte $56, $2D, $B3, $33, $A7, $8E, $53, $E6, $38, $CE, $74, $CC, $14, $47, $15, $8D, $86, $C9, $A4, $9A
+	.byte $72, $CC, $72, $D5, $9A, $B5, $36, $D7, $6A, $1C, $27, $CB, $34, $63, $69, $14, $8B, $23, $CD, $98
+	.byte $28, $1B, $4D, $A5, $CC, $B4, $9A, $33, $E7, $AC, $AA, $45, $2D, $9D, $71, $1C, $CD, $98, $95, $A6
+	.byte $52, $19, $6B, $94, $A9, $B2, $AA, $64, $AA, $56, $AD, $59, $31, $CD, $9A, $83, $36, $64, $A5, $AA
+	.byte $4C, $19, $19, $CB, $0C, $4D, $65, $A9, $65, $55, $53, $41, $33, $D3, $34, $6B, $6A, $9A, $35, $25
+	.byte $B5, $B2, $4A, $53, $65, $81, $AA, $AA, $AA, $AC, $32, $55, $53, $55, $55, $44, $55
+
+	.align 64
+
+ft_sample_2: ; smb_all_stars_orchestra_hit
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $BD, $88, $16, $BA, $E8, $FF
+	.byte $FF, $23, $00, $00, $00, $E0, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $07, $00, $00, $00, $00, $00, $00
+	.byte $00, $80, $5F, $B0, $FA, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $1F, $00, $00, $00
+	.byte $00, $00, $F0, $7F, $F0, $01, $00, $00, $1F, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
+	.byte $00, $00, $00, $C0, $FF, $F9, $E9, $03, $A0, $FF, $53, $F0, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $F8, $FF, $FF, $FF, $FF, $FF, $FF, $FF
+	.byte $27, $0E, $00, $00, $00, $FC, $FF, $F0, $FF, $1F, $00, $F0, $83, $FF, $1F, $FC, $FF, $BF, $FE, $FF
+	.byte $55, $F0, $FF, $C0, $F8, $00, $80, $07, $00, $C0, $01, $00, $80, $00, $00, $00, $00, $00, $00, $00
+	.byte $C0, $80, $F0, $FF, $FF, $FF, $FF, $FF, $FF, $00, $00, $1C, $00, $E0, $07, $7C, $F8, $FB, $FF, $FF
+	.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $1F, $0F, $00, $C0, $01, $03, $08, $C0, $07, $00
+	.byte $60, $10, $80, $0F, $20, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $18, $00, $F0, $FF
+	.byte $7F, $FF, $FF, $01, $3F, $C0, $F0, $FF, $FF, $FF, $7F, $80, $87, $1F, $F0, $00, $00, $00, $00, $80
+	.byte $03, $00, $F0, $FE, $E3, $FF, $0F, $C0, $F3, $FF, $FF, $FF, $FF, $FF, $F0, $C1, $03, $00, $00, $00
+	.byte $80, $BF, $00, $F8, $C1, $0F, $FF, $FF, $E0, $87, $0F, $FF, $FF, $E1, $7F, $FF, $FF, $FF, $FF, $FF
+	.byte $FF, $FF, $FF, $1F, $E0, $EF, $FF, $FF, $2F, $00, $00, $E0, $FF, $FF, $00, $00, $00, $FF, $E1, $FF
+	.byte $00, $00, $00, $07, $FF, $00, $C0, $FF, $01, $FE, $FF, $00, $86, $1F, $F0, $FF, $07, $FE, $03, $00
+	.byte $FF, $0F, $00, $00, $00, $00, $00, $00, $6C, $00, $00, $EF, $00, $1C, $7F, $FF, $FF, $FF, $FF, $FF
+	.byte $07, $3F, $06, $00, $00, $00, $FC, $FF, $00, $00, $0F, $C0, $FF, $1F, $FF, $7F, $80, $0F, $1F, $C0
+	.byte $FF, $DF, $FF, $7F, $E0, $01, $00, $F8, $01, $00, $3E, $00, $E0, $1F, $10, $0C, $00, $FF, $FF, $3C
+	.byte $0E, $FE, $FF, $FF, $60, $40, $83, $FF, $FF, $09, $F8, $00, $E0, $FF, $FF, $FC, $1F, $00, $FC, $FF
+	.byte $1F, $78, $E0, $00, $7E, $E0, $FF, $03, $08, $E0, $F8, $FF, $03, $00, $00, $00, $3E, $05, $C0, $DF
+	.byte $3F, $FE, $FF, $C0, $FF, $3F, $C0, $07, $00, $00, $00, $C0, $1F, $03, $00, $FC, $0F, $FE, $1F, $E0
+	.byte $FF, $03, $FF, $7F, $80, $7F, $00, $FE, $FF, $00, $FF, $03, $C0, $FF, $03, $00, $00, $00, $FC, $0F
+	.byte $00, $FC, $2F, $F8, $FF, $71, $00, $F8, $FF, $59, $C0, $C3, $E0, $FF, $DF, $03, $3E, $00, $C0, $FF
+	.byte $1F, $E0, $F8, $0F, $FF, $FF, $81, $BF, $00, $78, $C0, $03, $00, $78, $E0, $EF, $3F, $00, $00, $E0
+	.byte $07, $00, $00, $00, $C0, $FF, $FF, $FF, $FF, $CF, $07, $41, $C7, $00, $00, $FF, $7F, $07, $00, $00
+	.byte $C0, $5F, $FC, $1F, $00, $C0, $0F, $FF, $FF, $F1, $CF, $1F, $40, $FD, $1F, $D6, $FF, $F1, $FF, $07
+	.byte $FC, $FD, $00, $FE, $3F, $00, $E0, $07, $F8, $7F, $80, $CF, $0F, $80, $FF, $03, $00, $FC, $FF, $03
+	.byte $00, $00, $00, $00, $00, $3C, $FC, $C0, $FF, $FF, $79, $CA, $1B, $00, $00, $FC, $F0, $07, $1C, $FE
+	.byte $FF, $FF, $3F, $38, $00, $00, $0F, $00, $C0, $80, $FF, $FF, $FF, $FF, $FF, $FF, $43, $80, $07, $00
+	.byte $F8, $9F, $1F, $3F, $00, $BE, $0F, $10, $7C, $00, $F0, $FF, $F9, $F1, $03, $FC, $FB, $F0, $0F, $00
+	.byte $00, $02, $FF, $FF, $07, $80, $0F, $00, $C0, $07, $00, $F8, $07, $00, $FF, $11, $E0, $3F, $FF, $FE
+	.byte $0F, $00, $00, $FC, $E1, $07, $20, $3F, $00, $FF, $FF, $BC, $FF, $3B, $FD, $3B, $C0, $E5, $C1, $FF
+	.byte $FF, $0F, $00, $3F, $00, $FF, $07, $F0, $00, $00, $FD, $3F, $80, $EE, $81, $FE, $3F, $CE, $2B, $E0
+	.byte $FF, $FF, $07, $00, $0F, $80, $3F, $00, $00, $00, $FF, $FF, $FF, $00, $00, $04, $18, $C0, $FF, $0F
+	.byte $F0, $FF, $FF, $FF, $0F, $00, $30, $80, $4F, $1D, $00, $F0, $3F, $C0, $FC, $00, $F8, $FF, $28, $F9
+	.byte $03, $00, $FE, $F0, $FF, $1F, $FE, $7F, $00, $00, $78, $00, $E0, $1F, $3E, $FF, $03, $F8, $3F, $00
+	.byte $80, $1F, $80, $FF, $FF, $CF, $7F, $00, $F8, $80, $0F, $BC, $C0, $F1, $FF, $FF, $2F, $00, $00, $00
+	.byte $00, $C0, $41, $FF, $FF, $FF, $FF, $47, $00, $FF, $00, $00, $5E, $00, $F8, $FF, $E7, $FF, $00, $00
+	.byte $00, $40, $E0, $07, $07, $D7, $FE, $FF, $FF, $3F, $00, $F8, $1F, $00, $F8, $07, $E3, $FF, $FF, $5F
+	.byte $00, $1F, $55, $FE, $03, $00, $7C, $FF, $C3, $FF, $7F, $E0, $39, $00, $D8, $0F, $00, $C0, $1F, $FE
+	.byte $FF, $80, $C1, $1E, $F0, $79, $00, $F0, $3F, $C0, $FF, $0F, $00, $20, $00, $FE, $0F, $C0, $FF, $C1
+	.byte $FF, $7F, $00, $00, $00, $38, $FC, $00, $FF, $FF, $FF, $FF, $07, $00, $38, $00, $5E, $0F, $E0, $FF
+	.byte $07, $FE, $7F, $00, $C0, $02, $F8, $FF, $07, $B0, $FF, $07, $5E, $7F, $00, $3E, $01, $F8, $0F, $C0
+	.byte $6E, $0A, $FE, $FF, $00, $A0, $A4, $55, $FF, $07, $00, $FE, $A8, $E7, $3F, $42, $A0, $8B, $8A, $37
+	.byte $00, $F0, $0F, $3C, $F0, $1F, $00, $FC, $01, $F0, $1F, $00, $ED, $0D, $84, $FF, $03, $50, $D3, $1F
+	.byte $86, $FF, $81, $FF, $FF, $A9, $0F, $C0, $7F, $00, $FC, $0F, $00, $FF, $FF, $FF, $FF, $00, $E0, $01
+	.byte $F0, $FF, $1F, $E0, $FF, $C1, $FF, $1F, $00, $F0, $00, $E0, $1F, $00, $FE, $07, $E0, $FF, $03, $F0
+	.byte $07, $00, $38, $00, $F0, $FF, $07, $FC, $FF, $80, $FF, $07, $00, $B5, $01, $FE, $04, $80, $FF, $00
+	.byte $E0, $FF, $1F, $5E, $1C, $C0, $0F, $00, $F0, $FF, $07, $FC, $FF, $00, $F0, $1F, $80, $7F, $00, $FE
+	.byte $7F, $00, $FE, $0F, $00, $F4, $5F, $FF, $57, $00, $A7, $46, $71, $0B, $00, $80, $FF, $FF, $D7, $92
+	.byte $FF, $5A, $FF, $6B, $02, $00, $E0, $F5, $FF, $03, $70, $81, $F0, $FF, $1F, $00, $00, $00, $F8, $07
+	.byte $00, $FF, $5A, $FF, $03, $00, $7C, $00, $F0, $FF, $0F, $C0, $03, $E0, $FF, $1F, $E0, $7F, $00, $FE
+	.byte $FF, $03, $F8, $01, $F8, $FF, $00, $FF, $1F, $F0, $FF, $01, $F0, $03, $F5, $BF, $02, $F0, $53, $80
+	.byte $FF, $27, $00, $D8, $5F, $50, $B5, $F5, $15, $BD, $A4, $94, $2D, $21, $AD, $AD, $A2, $DA, $2B, $D0
+	.byte $7F, $83, $EC, $0B, $20, $7B, $57, $A0, $AA, $52, $DC, $AB, $20, $77, $5B, $50, $57, $11, $AA, $54
+	.byte $C1, $DE, $5D, $E0, $AE, $09, $F4, $5B, $01, $BE, $89, $D8, $B7, $15, $78, $6B, $01, $6D, $BB, $A4
+	.byte $5E, $52, $B5, $BD, $24, $ED, $8A, $54, $6B, $37, $D1, $AA, $54, $F5, $D6, $84, $EC, $94, $92, $76
+	.byte $97, $94, $5A, $25, $DD, $2A, $D4, $85, $4A, $D8, $6A, $45, $2A, $55, $D5, $AD, $4A, $95, $EC, $81
+	.byte $AA, $5F, $45, $A8, $3A, $4B, $7D, $55, $22, $5F, $89, $FC, $5E, $02, $D2, $5E, $51, $5B, $55, $6A
+	.byte $57, $45, $AD, $2A, $A1, $B6, $95, $6C, $6D, $49, $55, $55, $55, $AB, $4A, $CA, $DA, $4A, $55, $AD
+	.byte $AA, $54, $9B, $4A, $B5, $26, $55, $AD, $AA, $D4, $5A, $25, $D5, $AD, $A4, $B6, $52, $52, $5B, $93
+	.byte $54, $55, $55, $AD, $2A, $55, $AD, $29, $B5, $2A, $A5, $A6, $2A, $D9, $6A, $95, $6C, $55, $49, $6B
+	.byte $55, $52, $AB, $52, $B5, $56, $A5, $5A, $55, $52, $B5, $55, $AA, $55, $55, $55, $2B, $55, $AB, $52
+	.byte $55, $6D, $95, $AA, $AA, $AA, $D6, $2A, $A9, $56, $AA, $D4, $6A, $55, $AA, $56, $AA, $56, $A5, $AA
+	.byte $54, $95, $56, $55, $A9, $AA, $AA, $5A, $55, $A9, $A5, $56, $52, $6B, $55, $A9, $B4, $AA, $AA, $55
+	.byte $55, $6A, $55, $A9, $D6, $2A, $A5, $6A, $55, $55, $55, $55, $55, $2B, $55, $55, $55, $6A, $55, $55
+	.byte $55, $4D, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $D5, $52, $55, $B5, $54, $55
+	.byte $55, $55, $55, $2D, $55, $B5, $2A, $D5, $AA, $54, $55, $AB, $54, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $95, $56, $55, $55, $55, $55, $55, $55, $55, $55, $55, $65, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $AD
+	.byte $4A, $55, $55, $55, $55, $2D, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
+	.byte $55, $55, $55, $55, $6B, $F7, $FF, $3D, $EF
