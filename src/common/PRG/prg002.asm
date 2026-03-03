@@ -6041,10 +6041,10 @@ PRG002_BDF8:
     LDY #$00     ; Otherwise, Y = 0
 
 PRG002_BE07:
-    CPY #Inventory_Cards2 - Inventory_Cards + $03
+    CPY #<(Inventory_Cards2 - Inventory_Cards + $03)
     BNE PRG002_BE0D  ; If Y <> Luigi's last card index, jump to PRG002_BE0D
 
-    LDY #Inventory_Cards2 - Inventory_Cards
+    LDY #<(Inventory_Cards2 - Inventory_Cards)
 PRG002_BE0D:
     TYA
     STA Objects_Var2,X   ; Update Var2
@@ -6105,7 +6105,7 @@ PRG002_BE2E:
 Player_GetInventoryOffset:
     LDY Player_Current
     BEQ PRG002_BE4B
-    LDY #Inventory_Items2 - Inventory_Items
+    LDY #<(Inventory_Items2 - Inventory_Items)
 PRG002_BE4B:
     RTS      ; Return
 

@@ -337,10 +337,10 @@ Letter_GiveIncludedItem:
     LDY Player_Current   ; Y = current Player index
     BEQ PRG027_A1EA  ; If Player is Mario, jump to PRG027_A1EA
 
-    LDY #Inventory_Items2 - Inventory_Items   ; Offset to Luigi's items
+    LDY #<(Inventory_Items2 - Inventory_Items)   ; Offset to Luigi's items
 
 PRG027_A1EA:
-    LDX #Inventory_Cards - Inventory_Items - 1    ; X = total number of inventory items, <-1
+    LDX #<(Inventory_Cards - Inventory_Items - 1)    ; X = total number of inventory items, <-1
 
 PRG027_A1EC:
     LDA Inventory_Items,Y

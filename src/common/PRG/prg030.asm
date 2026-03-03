@@ -632,11 +632,11 @@ PRG030_84D7:
     JSR SetPages_ByTileset   ;  A000 = Page 11, C000 = Page 10
 
     LDX Player_Current  ; X = Player_Current
-    LDA #Inventory_Score - Inventory_Items    ; Base offset to score from Inventory_Items
+    LDA #<(Inventory_Score - Inventory_Items)    ; Base offset to score from Inventory_Items
     CPX #$00        ;
     BEQ PRG030_853F     ; If X = 0 (Player is Mario), jump to PRG030_853F
     CLC
-    ADC #Inventory_Score2 - Inventory_Score    ; Otherwise, add $23
+    ADC #<(Inventory_Score2 - Inventory_Score)    ; Otherwise, add $23
 
 PRG030_853F:
     TAY      ; Y = $1F (Mario) or $42 (Luigi)
@@ -2735,12 +2735,12 @@ PRG030_9062:
 
     LDX Player_Current   ; X = current Player index
 
-    LDA #Inventory_Score - Inventory_Items    ; Mario's score
+    LDA #<(Inventory_Score - Inventory_Items)    ; Mario's score
 
     CPX #$00
     BEQ PRG030_907D  ; If Player is Mario, jump to PRG030_907D
     CLC
-    ADC #Inventory_Score2 - Inventory_Score   ; offset to Luigi's score
+    ADC #<(Inventory_Score2 - Inventory_Score)   ; offset to Luigi's score
 PRG030_907D:
     TAY      ; Y = offset to score
 
@@ -2776,13 +2776,13 @@ PRG030_9097:
 
     LDX Player_Current  ; X = Player_Current
 
-    LDA #Inventory_Score - Inventory_Items    ; Offset to Mario's Score
+    LDA #<(Inventory_Score - Inventory_Items)    ; Offset to Mario's Score
 
     CPX #$00
     BEQ PRG030_90AD  ; If Player is Mario, jump to PRG030_90AD
 
     CLC
-    ADC #Inventory_Items2 - Inventory_Items   ; Offset to Luigi's Score
+    ADC #<(Inventory_Items2 - Inventory_Items)   ; Offset to Luigi's Score
 
 PRG030_90AD:
     TAY      ; -> 'Y'
@@ -3180,15 +3180,15 @@ PRG030_92B6:
     STA Map_GameOver_CursorY
     STA BigQBlock_GotIt ; Didn't get any Big ? Blocks
 
-    LDY #Inventory_Coins - Inventory_Cards    ; Y = offset to Mario's coins
+    LDY #<(Inventory_Coins - Inventory_Cards)    ; Y = offset to Mario's coins
 
     CPX #$00
     BEQ PRG030_92FE  ; If Player is Mario, jump to PRG030_92FE
 
-    LDY #Inventory_Coins2 - Inventory_Cards   ; Y = offset to Luigi's coins
+    LDY #<(Inventory_Coins2 - Inventory_Cards)   ; Y = offset to Luigi's coins
 
 PRG030_92FE:
-    LDA #Inventory_Coins - Inventory_Cards
+    LDA #<(Inventory_Coins - Inventory_Cards)
     STA Temp_Var1       ; Temp_Var1 = total bytes to clear
 
     LDA #$00     ; A = 0
@@ -3365,13 +3365,13 @@ PRG030_93B1:
     JMP PRG030_946C  ; Jump to PRG030_946C
 
 PRG030_93E7:
-    LDA #Inventory_Score - Inventory_Items    ; Offset to Mario's score
+    LDA #<(Inventory_Score - Inventory_Items)    ; Offset to Mario's score
 
     LDX Player_Current
     BEQ PRG030_93F1  ; If current Player is Mario, jump to PRG030_93F1
 
     CLC
-    ADC #Inventory_Score2 - Inventory_Score   ; Offset to Luigi's score
+    ADC #<(Inventory_Score2 - Inventory_Score)   ; Offset to Luigi's score
 
 PRG030_93F1:
     TAY      ; Y = offset to Player's score
@@ -3825,7 +3825,7 @@ PRG030_9622:
     ; Offset to Luigi's Inventory
     LDA Temp_Var16
     CLC
-    ADC #Inventory_Items2 - Inventory_Items
+    ADC #<(Inventory_Items2 - Inventory_Items)
     STA Temp_Var16
 
     DEY      ; Y will equal 1 here, so this just makes Y zero

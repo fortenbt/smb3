@@ -238,7 +238,7 @@ Map_Airship_Pick_Travel:
 
 
     ; Offset to Player-specific inventory items
-Inventory_OffsetByPlayer:   .byte (Inventory_Items - Inventory_Items), (Inventory_Items2 - Inventory_Items)
+Inventory_OffsetByPlayer:   .byte <(Inventory_Items - Inventory_Items), <(Inventory_Items2 - Inventory_Items)
 
 
     ; FIXME: Anyone want to claim this?

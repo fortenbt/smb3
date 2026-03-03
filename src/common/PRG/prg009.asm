@@ -69,7 +69,7 @@ Vs_CardAwardLives:
 
     JSR PRG009_A026
 
-    LDX #Inventory_Cards2 - Inventory_Cards   ; Offset to Luigi's cards
+    LDX #<(Inventory_Cards2 - Inventory_Cards)   ; Offset to Luigi's cards
     LDY #$01     ; Y = 1
 
 PRG009_A026:
@@ -365,7 +365,7 @@ PRG009_A165:
     STA Temp_Var1
 
     ; Set Temp_Var2 as offset to Luigi's last card
-    LDY #Inventory_Cards2 - Inventory_Cards + 2
+    LDY #<(Inventory_Cards2 - Inventory_Cards + 2)
     STY Temp_Var2
 
     JMP PRG009_A10E  ; Jump to PRG009_A10E
@@ -775,7 +775,7 @@ Vs_PlayerPopCard:
     BEQ PRG009_A38E  ; If Player is Mario, jump to PRG009_A38E
 
     ; Set Y as offset to Luigi's third card
-    LDY #Inventory_Cards2 - Inventory_Cards + 2
+    LDY #<(Inventory_Cards2 - Inventory_Cards + 2)
 
 PRG009_A38E:
 
@@ -4406,7 +4406,7 @@ Vs_GrabCardObject:
     LDA Temp_Var16
     BEQ PRG009_B4DF  ; If this is Mario, jump to PRG009_B4DF
 
-    LDY #Inventory_Cards2 - Inventory_Cards   ; Offset to Luigi's cards
+    LDY #<(Inventory_Cards2 - Inventory_Cards)   ; Offset to Luigi's cards
 
 PRG009_B4DF:
 
@@ -5108,13 +5108,13 @@ PRG009_B822:
 Vs_BumpBlockApplyYVel:
     TXA
     CLC
-    ADC #Vs_PlayerBlkHitYVel - Vs_PlayerYVel  ; Offset to bump block Y Velocity
+    ADC #<(Vs_PlayerBlkHitYVel - Vs_PlayerYVel)  ; Offset to bump block Y Velocity
     BPL PRG009_B888
 
 Vs_ObjectApplyXVel:
     TXA
     CLC
-    ADC #Vs_ObjectXVel - Vs_ObjectYVel + 2    ; +2 so to get passed the Vs_PlayerXVel vars
+    ADC #<(Vs_ObjectXVel - Vs_ObjectYVel + 2)    ; +2 so to get passed the Vs_PlayerXVel vars
     BPL PRG009_B888
 
 Vs_ObjectApplyYVel:
@@ -5135,7 +5135,7 @@ Vs_ApplyXVel:
     ; Update X velocity instead of Y velocity
     TXA
     CLC
-    ADC #Vs_PlayerXVel - Vs_PlayerYVel
+    ADC #<(Vs_PlayerXVel - Vs_PlayerYVel)
     TAX
 
     JSR Vs_ApplyYVel     ; Really apply X velocity!
@@ -5175,7 +5175,7 @@ PRG009_B8BB:
 
     ROL A        ; Essentially puts carry into 'A'
 
-    CPX #Vs_PlayerXVel - Vs_PlayerYVel
+    CPX #<(Vs_PlayerXVel - Vs_PlayerYVel)
     BGE PRG009_B8CF  ; If this is the Player/Object X, then do not concern with the "high" part, jump to PRG009_B8CF (RTS)
 
     ROR A        ; Put carry bit back in place

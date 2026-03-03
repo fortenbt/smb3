@@ -5804,10 +5804,10 @@ PRG024_BCD4:
 
     ; P-Wings for everybody!
     LDX #$01     ; X = 1
-    LDY #Inventory_Cards - Inventory_Items - 1
+    LDY #<(Inventory_Cards - Inventory_Items - 1)
 PRG024_BCE7:
 
-    LDA #Inventory_Cards - Inventory_Items - 1
+    LDA #<(Inventory_Cards - Inventory_Items - 1)
     STA Temp_Var1
 
     LDA #$08     ; A = 8 (P-Wing)
@@ -5822,9 +5822,9 @@ PRG024_BCED:
     DEX      ; X--
     BMI PRG024_BD01  ; If X < 0, jump to PRG024_BD01
 
-    LDA #Inventory_Cards - Inventory_Items - 1
+    LDA #<(Inventory_Cards - Inventory_Items - 1)
     CLC
-    ADC #Inventory_Items2 - Inventory_Items
+    ADC #<(Inventory_Items2 - Inventory_Items)
 
     TAY      ; Reset 'Y'
     JMP PRG024_BCE7  ; Loop

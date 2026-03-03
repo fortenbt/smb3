@@ -98,7 +98,7 @@ PRG026_A0A6:
     BEQ PRG026_A0C3     ; If Player_Current = 0 (Mario), jump to PRG026_A0C3
 
     CLC
-    ADC #Inventory_Items2 - Inventory_Items    ; Offset for Luigi's items
+    ADC #<(Inventory_Items2 - Inventory_Items)    ; Offset for Luigi's items
 
 PRG026_A0C3:
     TAX         ; X = A (InvStart_Item + offset)
@@ -501,10 +501,10 @@ Inventory_DrawItemsOrCards:
 
 
     ; Inventory is closing!  Set up for cards
-    LDA #Inventory_Cards - Inventory_Items    ; Mario's cards
+    LDA #<(Inventory_Cards - Inventory_Items)    ; Mario's cards
     LDX Player_Current  ; X = Player_Current
     BEQ PRG026_A336     ; If Player_Current = 0 (Mario), jump to PRG026_A336
-    LDA #Inventory_Cards2 - Inventory_Items   ; Luigi's cards
+    LDA #<(Inventory_Cards2 - Inventory_Items)   ; Luigi's cards
 
 PRG026_A336:
     STA Temp_Var14     ; Store this into Temp_Var14 (offset to first pattern in card layout)
@@ -523,7 +523,7 @@ PRG026_A344:
     LDA #Inventory_Items - Inventory_Items    ; Mario's inventory
     LDX Player_Current              ; X = Player_Current
     BEQ PRG026_A34D                 ; If Player_Current = 0 (Mario), jump to PRG026_A34D
-    LDA #Inventory_Items2 - Inventory_Items   ; Luigi's inventory
+    LDA #<(Inventory_Items2 - Inventory_Items)   ; Luigi's inventory
 
 PRG026_A34D:
     CLC
@@ -670,7 +670,7 @@ InvItem_HiliteOORX: .byte 240, 48   ; Highlight out-of-range X position to tell 
 InvItem_HiliteMinMax:   .byte 72, 216   ; Highlight left min and right max for right/left overflows
 InvItem_RightLeft:  .byte 1, <-1 ; Whether right or left was pressed, how to inc/dec the highlight index
 InvItem_RightLeftMinMax:.byte 0, 6  ; Right/left overflows wrap-around index value
-InvItem_PerPlayerOff:   .byte $00, (Inventory_Items2 - Inventory_Items) ; Offset per player
+InvItem_PerPlayerOff:   .byte $00, <(Inventory_Items2 - Inventory_Items) ; Offset per player
 Inventory_DoPowerupUse:
     LDA Map_Powerup_Poof
     BNE PRG026_A398     ; If no power-up "poof" effect occurring, jump to PRG026_A398 (RTS)
@@ -728,7 +728,7 @@ PRG026_A45B:
     BEQ PRG026_A468     ; If Player_Current = 0 (Mario), jump to PRG026_A468
     TXA         ; A = InvStart_Item
     CLC
-    ADC #Inventory_Items2 - Inventory_Items    ; Offset to Luigi's items
+    ADC #<(Inventory_Items2 - Inventory_Items)    ; Offset to Luigi's items
     TAX         ; X = offset to item
 
 PRG026_A468:
@@ -763,7 +763,7 @@ PRG026_A491:
     LDY #$00        ; Y = 0
     LDX Player_Current  ; X = Player_Current
     BEQ PRG026_A4A1     ; If Player_Current = 0 (Mario), jump to PRG026_A4A1
-    LDY #Inventory_Items2 - Inventory_Items    ; Offset to Luigi's items
+    LDY #<(Inventory_Items2 - Inventory_Items)    ; Offset to Luigi's items
 
 PRG026_A4A1:
     LDA Inventory_Items,Y
@@ -814,7 +814,7 @@ PRG026_A4D9:
     ; Luigi...
     TYA
     CLC
-    ADC #Inventory_Items2 - Inventory_Items
+    ADC #<(Inventory_Items2 - Inventory_Items)
     TAY         ; Y = InvHilite_Item + InvStart_Item + Luigi offset
 
 PRG026_A4EB:
@@ -838,7 +838,7 @@ PRG026_A4FC:
     BEQ PRG026_A50E     ; If Player_Current = 0 (Mario), jump to PRG026_A50E
     TYA
     CLC
-    ADC #Inventory_Items2 - Inventory_Items
+    ADC #<(Inventory_Items2 - Inventory_Items)
     TAY         ; Y += Luigi offset
 
 PRG026_A50E:
@@ -951,7 +951,7 @@ Inv_UseItem_Powerup:
     BEQ PRG026_A5C8     ; If Player_Current = 0 (Mario), jump to PRG026_A5C8
     TYA
     CLC
-    ADC #Inventory_Items2 - Inventory_Items    ; Offset to Luigi's items
+    ADC #<(Inventory_Items2 - Inventory_Items)    ; Offset to Luigi's items
     TAY         ; Y, offset to Luigi
 
 PRG026_A5C8:
@@ -1024,12 +1024,12 @@ Inv_UseItem_ShiftOver:
 
     LDA #27
     CLC
-    ADC #Inventory_Items2 - Inventory_Items   ; This could've been done as a constant, but oh well!
+    ADC #<(Inventory_Items2 - Inventory_Items)   ; This could've been done as a constant, but oh well!
     STA Temp_Var15     ; Temp_Var15 += Luigi items offset (last index of Luigi items to shift)
 
     TYA
     CLC
-    ADC #Inventory_Items2 - Inventory_Items
+    ADC #<(Inventory_Items2 - Inventory_Items)
     TAY         ; Y += Luigi items offset
 
     ; This loop "removes" the used item by backing the other items over it
@@ -1052,7 +1052,7 @@ PRG026_A64B:
     BEQ PRG026_A65A     ; If Player_Current = 0, jump to PRG026_A65A
     TYA
     CLC
-    ADC #Inventory_Items2 - Inventory_Items
+    ADC #<(Inventory_Items2 - Inventory_Items)
     TAY         ; Y is Offset to Luigi's items
 
 PRG026_A65A:
@@ -1423,7 +1423,7 @@ PRG026_A876:
     BEQ PRG026_A88E     ; If Player_Current = 0 (Mario), jump to PRG026_A88E
     TYA
     CLC
-    ADC #Inventory_Items2 - Inventory_Items
+    ADC #<(Inventory_Items2 - Inventory_Items)
     TAY         ; Y += Luigi items offset
 
 PRG026_A88E:
@@ -2926,11 +2926,11 @@ PRG026_B06C:
 ; Coins_Earned value to the active total and issues 1-ups
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 StatusBar_Fill_Coins:
-    LDA #Inventory_Coins-Inventory_Items        ; A = $22 (offset to Mario's coins)
+    LDA #<(Inventory_Coins-Inventory_Items)        ; A = $22 (offset to Mario's coins)
     LDX Player_Current  ; X = Player_Current
     BEQ PRG026_B07D     ; If Player_Current = 0 (Mario), jump to PRG026_B07D
     CLC
-    ADC #(Inventory_Coins2-Inventory_Items)-(Inventory_Coins-Inventory_Items)   ; Otherwise, A = $45 (offset to Luigi's coins)
+    ADC #<((Inventory_Coins2-Inventory_Items)-(Inventory_Coins-Inventory_Items))   ; Otherwise, A = $45 (offset to Luigi's coins)
 PRG026_B07D:
     LDY #$00        ; Y = 0 (for loop at PRG026_B09F)
     TAX         ; X = $22 / $45

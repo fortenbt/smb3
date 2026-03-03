@@ -6760,7 +6760,7 @@ ToadHouse_GiveItem:
     LDY Player_Current
     BEQ PRG000_DDE7  ; If Player is Mario, jump to PRG000_DDE7
 
-    LDY #Inventory_Items2 - Inventory_Items    ; Y = offset to Luigi's items
+    LDY #<(Inventory_Items2 - Inventory_Items)    ; Y = offset to Luigi's items
 
 PRG000_DDE7:
     LDX #$00        ; X = 0
@@ -6771,7 +6771,7 @@ PRG000_DDE9:
 
     INY      ; Y++ (next item slot)
     INX      ; X++ (counter)
-    CPX #Inventory_Cards - Inventory_Items - 1
+    CPX #<(Inventory_Cards - Inventory_Items - 1)
     BLT PRG000_DDE9  ; While potential item slots remain, loop!
 
 PRG000_DDF4:

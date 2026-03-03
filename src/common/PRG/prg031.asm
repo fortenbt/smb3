@@ -2800,7 +2800,7 @@ Player_GetCardAndUpdate:
 StatusBar_Update_Cards:
     LDA Player_Current
     BEQ PRG031_FCC6  ; If player = 0 (Mario), jump to PRG031_FCC6
-    LDA #Inventory_Cards2 - Inventory_Cards
+    LDA #<(Inventory_Cards2 - Inventory_Cards)
 
 PRG031_FCC6:
     ; A is 0 (Mario) or $23 (Luigi)
@@ -2841,7 +2841,7 @@ StatusBar_DrawCardPiece:
 
     LDX Player_Current  ; X = Player_Current
     BEQ PRG031_FCFF     ; If player = 0 (Mario), jump to PRG031_FCFF
-    LDX #Inventory_Cards2 - Inventory_Cards
+    LDX #<(Inventory_Cards2 - Inventory_Cards)
 PRG031_FCFF:
 
     LDA Temp_Var3      ; A = Temp_Var3 (offset to current card)
@@ -2908,7 +2908,7 @@ Player_GetCard:
     LDY Player_Current
     BEQ PRG031_FD4C  ; If Player is Mario, jump to PRG031_FD4C
 
-    LDY #Inventory_Cards2 - Inventory_Cards
+    LDY #<(Inventory_Cards2 - Inventory_Cards)
 
 PRG031_FD4C:
     LDA Inventory_Cards,Y
@@ -2917,7 +2917,7 @@ PRG031_FD4C:
     INY      ; Y++
     CPY #$03
     BEQ PRG031_FD5A  ; If Mario's cards are full, jump to PRG031_FD5A
-    CPY #Inventory_Cards2 - Inventory_Cards + 3
+    CPY #<(Inventory_Cards2 - Inventory_Cards + 3)
     BNE PRG031_FD4C  ; If Luigi's cards are NOT full, jump to PRG031_FD4C
 
 PRG031_FD5A:
@@ -2949,10 +2949,10 @@ Player_GetItem:
     LDY Player_Current
     BEQ PRG031_FD74  ; If not Luigi, jump to PRG031_FD74
 
-    LDY #Inventory_Items2 - Inventory_Items   ; Luigi inventory offset
+    LDY #<(Inventory_Items2 - Inventory_Items)   ; Luigi inventory offset
 
 PRG031_FD74:
-    LDX #Inventory_Cards - Inventory_Items - 1    ; X = total inventory slots
+    LDX #<(Inventory_Cards - Inventory_Items - 1)    ; X = total inventory slots
 PRG031_FD76:
     LDA Inventory_Items,Y
     BEQ PRG031_FD7F  ; If this slot is empty, jump to PRG031_FD7F
