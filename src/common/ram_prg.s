@@ -1,25 +1,14 @@
 .autoimport +
 
-; =====================================
-; PRG-RAM linear allocator
-; =====================================
-__PRGRAM_OFFSET__ .set 0
-.macro PRGRAM_NOINC name
-    .export name = PRGRAM_BASE + __PRGRAM_OFFSET__
-.endmacro
-.macro PRGRAM name, size
-    .if (__PRGRAM_OFFSET__ + (size)) > $2000
-        .error "PRGRAM overflow: name"
-    .endif
-    .export name = PRGRAM_BASE + __PRGRAM_OFFSET__
-    __PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + (size)
-.endmacro
+; This defines the allocator macros to allow for the expanded ROM to ignore the
+; unused variables to allow for maximum available variable space
+.include "ram_prg_internal.inc"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $6000-$7FFF MMC3 SRAM
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-	; NOTE: $6800+ is used by 2P Vs RAM, see previous section
+	; NOTE: $6800+ is used by 2P Vs RAM, see $68xx below
 
 	; Tile_Mem stores for the greatest case:
 	;	Vertical level max size is 	15 rows * 16 columns * 16 screens = 3840 ($0F00) bytes
@@ -338,13 +327,6 @@ __PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 8   ; $7DD6-$7DDD unused
 
 	PRGRAM Level_BlockGrabHitMem, 128	; $7E02-$7E81 Records coins and 1-ups grabbed, so they don't come back if you switch areas
 
-CARD_MUSHROOM	= 0
-CARD_FLOWER	= 1
-CARD_STAR	= 2
-CARD_1UP	= 3
-CARD_10COIN	= 4
-CARD_20COIN	= 5
-CARD_WILD	= 8	; UNUSED Wild card (can match any other!)
 	PRGRAM Card_ActiveSet, 18	; $7E82-$7E93 Active set of N-Spade game cards
 
 	; Tile_AttrTable:
@@ -394,27 +376,6 @@ __PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 24   ; $7E9E-$7EB5 unused
 	PRGRAM Map_Objects_XLo, 14	; $7EF9-$7F06, X coordinate lo byte of all map objects
 	PRGRAM Map_Objects_XHi, 14	; $7F07-$7F14, X coordinate hi byte of all map objects
 
-; Map_Objects_IDs: ID of all 8 map objects 
-MAPOBJ_EMPTY		= $00	; None
-MAPOBJ_HELP		= $01	; HELP
-MAPOBJ_AIRSHIP		= $02	; Airship
-MAPOBJ_HAMMERBRO	= $03	; Hammer Bro
-MAPOBJ_BOOMERANGBRO	= $04	; Boomerang Bro
-MAPOBJ_HEAVYBRO		= $05	; Heavy Bro
-MAPOBJ_FIREBRO		= $06	; Fire Bro
-MAPOBJ_W7PLANT		= $07	; World 7 Plant
-MAPOBJ_UNK08		= $08	; Unknown marching glitch object
-MAPOBJ_NSPADE		= $09 	; N-Spade
-MAPOBJ_WHITETOADHOUSE	= $0A	; White Toad House
-MAPOBJ_COINSHIP		= $0B	; Coin Ship
-MAPOBJ_UNK0C		= $0C	; Unknown white colorization of $0F (goes to World 7 level??)
-MAPOBJ_BATTLESHIP	= $0D	; World 8 Battleship
-MAPOBJ_TANK		= $0E	; World 8 Tank
-MAPOBJ_W8AIRSHIP	= $0F	; World 8 Airship
-MAPOBJ_CANOE		= $10	; Canoe
-
-MAPOBJ_TOTALINIT	= $08	; Total number of map objects initialized per world
-MAPOBJ_TOTAL		= $0E	; Total POSSIBLE map objects
 	PRGRAM Map_Objects_IDs, 14	; $7F15-$7F22
 
 	PRGRAM Map_SprRAMOffDistr, 1	; A free running counter on the map only which distributes Sprite_RAM offsets to ensure visibility
@@ -520,3 +481,218 @@ __PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 2
 
 	PRGRAM_NOINC Roulette_Lives			; Number of lives you are rewarded from winning the Roulette (NOTE: Shared with first byte of Objects_IsGiant)
 	PRGRAM Objects_IsGiant, 8	; $7FF7-$7FFE Set mainly for World 4 "Giant" enemies (but some others, like Bowser, also use it)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; $68xx SRAM for 2P Vs ONLY
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+PRG_SET_LOC($800)
+
+; NOTE: $6000-$67FF is still in considered tile grid memory (see next section)
+; 2P Vs just utilizes a chunk where no tiles will ever exist in 2P Mode
+
+; 2P Vs Only
+	PRGRAM_NOINC Vs_MemStart ; Should be at "top"; this point and 512 bytes forward are cleared at start of 2P Vs
+
+	; Vs_PlayerFrame
+	; 0/1: Standing (0) / walking (0/1) / falling-not-jumped (1) frames
+	; 2: Skidding turnaround
+	; 3: Jumping/Falling-jumped
+	; 4: Dizzy
+	; 5: Kicking
+	; 6: Dying
+	; 7: Climbing
+	PRGRAM Vs_PlayerFrame, 2	; $6800-$6801 Mario/Luigi Frame
+	PRGRAM Vs_PlayerState, 2	; $6802-$6803 Mario/Luigi State (0=Init, 1=Normal, 2=Dying, 3=Ladder climbing)
+	PRGRAM Vs_ObjectState, 12	; $6804-$680F Objects State (0=Dead/empty, 1=Normal, 2=Flipped over, 3=Dying)
+
+__PRGRAM_OFFSET__ .set (__PRGRAM_OFFSET__ + 1)
+
+	PRGRAM Vs_PlayerBlkHitCnt, 2	; $6811-$6812 Mario/Luigi Hit block counter value
+	PRGRAM Vs_PlayerY, 2	; $6813-$6814 Mario/Luigi Y
+	PRGRAM Vs_ObjectsY, 12	; $6815-$6820 Objects Y
+
+__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 1
+
+	PRGRAM Vs_PlayerBlkHitY, 2	; $6822-$6823 Mario/Luigi Aligned Y position where block was hit
+	PRGRAM Vs_PlayerX, 2	; $6824-$6825 Mario/Luigi X
+	PRGRAM Vs_ObjectsX, 12	; $6826-$6831 Objects X
+
+__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 1
+
+	PRGRAM Vs_PlayerBlkHitX, 2	; $6833-$6834 Mario/Luigi Aligned Y position where block was hit
+	PRGRAM Vs_PlayerYVel, 2	; $6835-$6836 Mario/Luigi Y Velocity
+	PRGRAM Vs_ObjectYVel, 12	; $6837-$6842 Objects Y Velocity
+
+__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 1
+
+	PRGRAM Vs_PlayerBlkHitYVel, 2	; $6844-$6845 Mario/Luigi Hit block Y velocity
+	PRGRAM Vs_PlayerXVel, 2	; $6846-$6847 Mario/Luigi X Velocity
+	PRGRAM Vs_ObjectXVel, 12	; $6848-$6853 Objects X Velocity
+
+__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 3
+
+	PRGRAM Vs_PlayerClimbFrame, 2	; $6857-$6858 incremented as Player climbs
+	PRGRAM Vs_ObjectAnimCnt, 12	; $6859-$6864 A continuous counter per object for animating (typically 2 frames)
+
+__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 1
+
+	PRGRAM Vs_PlayerDir, 2	; $6866-$6867 Mario/Luigi direction (1=Right, 2=Left)
+	PRGRAM Vs_ObjectDir, 12	; $6868-$6873 Objects direction (1=Right, 2=Left)
+
+__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 1
+
+	PRGRAM Vs_PlayerYVelFrac, 2	; $6875-$6876 Mario/Luigi Y velocity fractional accumulator
+	PRGRAM Vs_ObjectYVelFrac, 12	; $6877-$6882
+
+__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 3
+
+	PRGRAM Vs_PlayerXVelFrac, 2	; $6886-$6887 Mario/Luigi X velocity fractional accumulator
+	PRGRAM Vs_ObjectXVelFrac, 12	; $6888-$6893
+
+__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 3
+
+	PRGRAM Vs_PlayerDetStat, 2	; $6897-$6898 Mario/Luigi detection status
+	PRGRAM Vs_ObjectDetStat, 12	; $6899-$68A4 Objects detection status
+
+__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 3
+
+	PRGRAM Vs_ObjectVar1, 12	; $68A8-$68B3 General variable 1
+
+__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 1
+
+	PRGRAM Vs_PlayerKick, 2	; $68B5-$68B6 Mario/Luigi Player is kicking until decrements to zero
+	PRGRAM Vs_PlayerDizzy, 2	; $68B7-$68B8 Mario/Luigi Player "dizzy" face until decrements to zero
+	PRGRAM Vs_PlayerStick, 2	; $68B9-$68BA Mario/Luigi Mario/Luigi Player "sticking" to ceiling; decrements to zero
+	PRGRAM Vs_PlayerBumpTimer, 1	; Mario/Luigi Players bumped off eachother (and can't again until zero); decrements to zero
+	PRGRAM Vs_POWBlockCnt, 1	; POW block counter; decrements to zero; until then, POW shaking!
+
+	; 2P Vs Object IDs
+VSOBJID_SPINY		= 0	; Spiny
+VSOBJID_SIDESTEPPER	= 2	; Sidestepper
+VSOBJID_FIGHTERFLY	= 3	; Fighter Fly
+VSOBJID_FIREBALL_HORZ	= 4	; Horizontal Fireball that spawns to keep Players from hiding down at the bottom
+VSOBJID_FIREBALL_ENDER	= 5	; Game Ender Fireball (bounces around, attempts to kill Players who've stuck around too long!)
+VSOBJID_FIREBALL_FOUNTAIN= 6	; Fountain Fireball
+VSOBJID_COIN		= 7	; Coin (from [?] block)
+VSOBJID_MUSHROOMCARD	= 8	; Mushroom card
+VSOBJID_FLOWERCARD	= 9	; Flower card
+VSOBJID_STARCARD	= 10	; Star card
+VSOBJID_KICKEDBLOCK	= 11	; Kicked block (from [?] block match)
+	PRGRAM Vs_ObjectId, 12	; $68BD-$68C8 Objects ID
+
+__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 1
+
+	PRGRAM Vs_ObjectSprRAMOff, 1	; Current object Sprite RAM offset
+	PRGRAM Vs_ObjectSprRAMSel, 1	; Counter that runs $D to $0 (inclusive) and helps distribute Sprite RAM offsets among the objects
+	PRGRAM Vs_EnemyCount, 1	; Number of spawned enemies (in the typical game)
+	PRGRAM Vs_PlayerHaltTimer, 2	; $68CD-$68CE Mario/Luigi timer which halts gameplay; decrements to zero
+	PRGRAM Vs_ObjHaltTimer, 12	; $68CF-$68DA Object timer which halts object when greater than zero; decrements to zero
+
+__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 1
+
+	PRGRAM Vs_ObjectTimer3, 12	; $68DC-$68E7
+
+__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 1
+
+	PRGRAM Vs_PlayerCnt, 2	; $68E9-$68EA Mario/Luigi "counter" value; decrements to zero
+	PRGRAM Vs_EnemyGetUpTimer, 12	; $68EB-$68F6 Timer for flipped-over enemy; decrements to zero
+
+__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 1
+
+	PRGRAM Vs_PlayerJumped, 2	; $68F8-$68F9 Set to 1 if Player jumped; prevents Player from jumping again until they hit floor
+	PRGRAM Vs_PlayerTileL, 2	; $68FA-$68FB Mario/Luigi Tile detected at Player's feet
+	PRGRAM Vs_ObjectTileL, 12	; $68FC-$6907
+
+__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 2
+
+	PRGRAM Vs_PlayerBlkHit, 2	; $690A-$690B Mario/Luigi Holds Tile_Mem offset to bounce block they hit
+	PRGRAM Vs_PlayerFlashInv, 2	; $690C-$690D Mario/Luigi Flashing invicibility (?)
+	PRGRAM Vs_SpawnCnt2, 1	; FIXME describe better
+	PRGRAM Vs_TooLongCnt, 1	; Increments after each round of spawning; if it overflows, "game ender" fireballs are spawned 
+	PRGRAM Vs_CurIndex, 1	; Current index (Player or object)
+	PRGRAM Vs_PlayerTileU, 2	; $6911-$6912 Mario/Luigi Tile detected above Player's feet
+
+__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 13
+
+	PRGRAM Vs_ObjectPipeTimer, 12	; $6920-$692B Timer used for enemies to exit and emerge from pipes; decrements to zero
+
+__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 1
+
+	PRGRAM Vs_Random, 3	; $692D-$692F Random generator for 2P Vs mode
+	PRGRAM Vs_PlayerCoins, 2	; $6930-$6931 Player's coins (in 2P Vs); 5 wins the match
+	PRGRAM Vs_TimeToExit, 1	; Decrements to zero then exits the 2P Vs
+	PRGRAM Vs_ObjectIsLast, 12	; $6933-$693E Set if this is the last object (turns blue, move fast)
+
+__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 1
+
+	PRGRAM Vs_POWHits, 1	; Number of times POW block has been hit (disabled on 3)
+	PRGRAM Vs_PlayerYOff, 2	; $6941-$6942 Mario/Luigi Y offset applied
+	PRGRAM Vs_UNKGAMECnt, 1	; Unknown "game" counter; after overflow, we exit
+	PRGRAM Vs_PlayerYHi, 2	; $6944-$6945 Mario/Luigi Y Hi
+	PRGRAM Vs_ObjectYHi, 12	; $6946-$6951 Object Y Hi
+
+__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 3
+
+	PRGRAM Vs_ObjectIsAngry, 12	; $6955-$6960 Set when Sidestepper is angry (not used for anything else)
+
+__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 1
+
+	PRGRAM Vs_AngrySidesteppers, 1	; When greater than zero, and spawning a Sidestepper, next one is an "angry" Sidestepper (then decrement)
+
+__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 1
+
+	PRGRAM Vs_ObjectVDir, 12	; $6964-$696F Objects vertical direction (4=Down, 8=Up)
+
+__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 1
+
+	PRGRAM Vs_ObjectRestoreXVel, 12	; $6971-$697C Flipped over object restore X velocity
+
+__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 1
+
+	PRGRAM Vs_ObjTimer2, 12	; $697E-$6989 Object timer; decrements to zero
+
+__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 1
+
+	PRGRAM Vs_CardFlash, 2	; $698B-$698C Mario/Luigi Cycles color for card (when picked up from another Player)
+	PRGRAM Vs_HaltTimerBackup, 15	; $698D-$699B Backs up all halt timers
+	PRGRAM Vs_EnemySet, 1	; Specifies an index of active enemy set, selecting one of the quintuples from Vs_5EnemySets
+	PRGRAM Vs_ObjectXOff, 1	; A one-shot X offset for display of object FIXME: When?
+	PRGRAM Vs_PlayerWalkCnt, 2	; $699E-$699F Mario/Luigi counts up and overflows to toggle walk frames
+	PRGRAM Vs_PlayerWalkFrame, 2	; $69A0-$69A1 Mario/Luigi incremented when Vs_PlayerWalkCnt overflows
+	PRGRAM Vs_NextObjectIsLast, 1	; If there are 5 enemies and this is set, next enemy out is the "last" (turns blue, moves fast)
+
+	; Display of "x Up" after getting 3 cards
+	PRGRAM Vs_xUpCnt, 2	; $69A3-$69A4 Mario/Luigi "x Up" counter
+	PRGRAM Vs_xUpY, 2	; $69A5-$69A6 Mario/Luigi "x Up" Y pos
+	PRGRAM Vs_xUpX, 2	; $69A7-$69A8 Mario/Luigi "x Up" X pos
+	PRGRAM Vs_xUpLives, 2	; $69A9-$69AA Mario/Luigi "x Up" Lives amount (1, 2, 3, 5)
+	PRGRAM Vs_SpawnCnt, 1	; Spawn counter; increments and triggers spawning
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; $7A01-$7A11 MMC3 SRAM as Cinematic for Wand Return (Post-Airship)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+PRG_SET_LOC($1A01)
+
+; This uses the same space as most of the Auto Scroll data, I'm annoyed that I have to make a section for this
+
+; After the wand is returned ONLY
+    PRGRAM CineKing_WandState, 1   ; Wand state; 0 = falling, 1 = spinning, 2 = held
+    PRGRAM CineKing_WandFrame, 1   ; Wand frame; 0 to 7
+    PRGRAM CineKing_ToadFrame, 1   ; Toad's frame
+    PRGRAM CineKing_DiagHi, 1   ; Text high address value
+
+__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 3
+
+    PRGRAM CineKing_TimerT, 1   ; Cheering Toad animation Timer
+    PRGRAM CineKing_Timer3, 1   ; Timer decremented every 4 ticks (does not appear to be used!)
+
+__PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 2
+
+    PRGRAM CineKing_WandX, 1   ; Wand X position
+    PRGRAM CineKing_WandY, 1   ; Wand Y position
+    PRGRAM CineKing_WandXVel, 1   ; Wand X velocity (4.4FP)
+    PRGRAM CineKing_WandYVel, 1   ; Wand Y velocity (4.4FP)
+    PRGRAM CineKing_WandXVel_Frac, 1   ; Wand X velocity fractional accumulator
+    PRGRAM CineKing_WandYVel_Frac, 1   ; Wand Y velocity fractional accumulator

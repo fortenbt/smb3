@@ -1,74 +1,122 @@
-.PHONY: all clean dir run expanded stock
+.PHONY: all clean stock expanded
 
-# ---- directories ----
-SOURCEDIR  := src
-COMMONDIR  := $(SOURCEDIR)/common
-PRGDIR     := $(COMMONDIR)/PRG
-EXPDDIR    := $(SOURCEDIR)/expanded
-STOCKDIR   := $(SOURCEDIR)/stock
-INCDIR     := include
-BUILDDIR   := build
+# --------------------------------------------------
+# Directories
+# --------------------------------------------------
 
-ASFLAGS += $(addprefix -I,$(INCDIR) $(COMMONDIR))
+SRC       := src
+COMMON    := $(SRC)/common
+PRG       := $(COMMON)/PRG
+STOCKSRC  := $(SRC)/stock
+EXPDSRC   := $(SRC)/expanded
 
-# ---- output ----
-ROM_STOCK  := smb3.nes
-ROM_EXPD   := smb3-expanded.nes
+BUILD     := build
+BSTOCK    := $(BUILD)/stock
+BEXPD     := $(BUILD)/expanded
 
-# ---- sources ----
-# COMMON_S is the framework source that should be identical across ROMs
-COMMON_S    := $(wildcard $(COMMONDIR)/*.s)
-# COMMON_ASM is Southbird's original PRG/prgxxx.asm files
-COMMON_ASM  := $(wildcard $(PRGDIR)/*.asm)
-# STOCK_SRC is the source assembly written to reproduce the stock PRG1 ROM byte-for-byte
-STOCK_SRC := $(wildcard $(STOCKDIR)/*.s)
-# Expanded-only sources
-EXPD_SRC  := $(wildcard $(EXPDDIR)/*.s)
+INCLUDE   := include
 
-# ---- objects ----
-define make_objs
-    $(patsubst $(SOURCEDIR)/%.s,$(BUILDDIR)/%.o,$(filter %.s,$1)) \
-    $(patsubst $(SOURCEDIR)/%.asm,$(BUILDDIR)/%.o,$(filter %.asm,$1))
+ASFLAGS   := $(addprefix -I,$(INCLUDE) $(COMMON))
+
+# --------------------------------------------------
+# Output ROMs
+# --------------------------------------------------
+
+ROM_STOCK := smb3.nes
+ROM_EXPD  := smb3-expanded.nes
+
+# --------------------------------------------------
+# Sources
+# --------------------------------------------------
+
+COMMON_S   := $(wildcard $(COMMON)/*.s)
+COMMON_PRG := $(wildcard $(PRG)/*.asm)
+
+STOCK_S    := $(wildcard $(STOCKSRC)/*.s)
+EXPD_S     := $(wildcard $(EXPDSRC)/*.s)
+
+# --------------------------------------------------
+# Object mapping helpers
+# --------------------------------------------------
+
+# common/*.s → build/<variant>/common/*.o
+define map_common_s
+	$(patsubst $(COMMON)/%.s,$(BUILD)/$1/common/%.o,$(COMMON_S))
 endef
 
-STOCK_OBJS := $(call make_objs, $(STOCK_SRC) $(COMMON_S) $(COMMON_ASM))
-EXPD_OBJS  := $(call make_objs, $(EXPD_SRC) $(COMMON_S) $(COMMON_ASM))
+# PRG/*.asm → build/<variant>/common/PRG/*.o
+define map_common_prg
+	$(patsubst $(PRG)/%.asm,$(BUILD)/$1/common/PRG/%.o,$(COMMON_PRG))
+endef
 
-VPATH = $(SOURCEDIR) $(PRGDIR)
+# --------------------------------------------------
+# Object lists
+# --------------------------------------------------
 
-all: $(ROM_STOCK) $(ROM_EXPD)
+STOCK_OBJS := \
+	$(call map_common_s,stock) \
+	$(call map_common_prg,stock) \
+	$(patsubst $(STOCKSRC)/%.s,$(BSTOCK)/%.o,$(STOCK_S))
 
-expanded: $(ROM_EXPD)
+EXPD_OBJS := \
+	$(call map_common_s,expanded) \
+	$(call map_common_prg,expanded) \
+	$(patsubst $(EXPDSRC)/%.s,$(BEXPD)/%.o,$(EXPD_S))
+
+# --------------------------------------------------
+# Targets
+# --------------------------------------------------
+
+all: stock expanded
 
 stock: $(ROM_STOCK)
+expanded: $(ROM_EXPD)
 
 clean:
-	@rm -rf $(BUILDDIR) $(ROM_STOCK) $(ROM_EXPD)
+	rm -rf $(BUILD) $(ROM_STOCK) $(ROM_EXPD)
 
-define BUILD_ROM
-$1: CFG := $(SOURCEDIR)/$2/mmc3.cfg
-$1: MAP := $(BUILDDIR)/map-$2.txt
-$1: DBG := $(BUILDDIR)/smb3-$2.dbg
+
+# --------------------------------------------------
+# Build-specific variables
+# --------------------------------------------------
+$(ROM_STOCK): ASFLAGS += -I$(STOCKSRC)
+
+$(ROM_EXPD) $(ROM_BHOP): ASFLAGS += -I$(EXPDSRC)
+
+# --------------------------------------------------
+# Linking
+# --------------------------------------------------
+$(ROM_STOCK): $(STOCK_OBJS)
+	ld65 -o $@ \
+         -m $(BSTOCK)/smb3.map \
+         -C $(STOCKSRC)/mmc3.cfg \
+         --dbgfile $(basename $@).dbg \
+         $^
+
+$(ROM_EXPD): $(EXPD_OBJS)
+	ld65 -o $@ \
+         -m $(BEXPD)/smb3.map \
+         -C $(EXPDSRC)/mmc3.cfg \
+         --dbgfile $(basename $@).dbg \
+         $^
+
+# --------------------------------------------------
+# Compile rules
+# --------------------------------------------------
+define COMMON_RULES
+$1/common/%.o: $(COMMON)/%.s
+	@mkdir -p $$(dir $$@)
+	ca65 $$(ASFLAGS) -o $$@ $$<
+
+$1/common/PRG/%.o: $(PRG)/%.asm
+	@mkdir -p $$(dir $$@)
+	ca65 $$(ASFLAGS) -o $$@ $$<
+
+$1/%.o: $2/%.s
+	@mkdir -p $$(dir $$@)
+	ca65 $$(ASFLAGS) -o $$@ $$<
 endef
 
-$(eval $(call BUILD_ROM,$(ROM_STOCK),stock))
-$(eval $(call BUILD_ROM,$(ROM_EXPD),expanded))
-
-$(ROM_STOCK): $(STOCK_OBJS)
-$(ROM_EXPD):  $(EXPD_OBJS)
-
-$(ROM_STOCK) $(ROM_EXPD):
-	ld65 -m $(MAP) \
-	     --dbgfile $(DBG) \
-	     -o $@ \
-	     -C $(CFG) \
-	     $^
-$(BUILDDIR)/%.o: $(SOURCEDIR)/%.s
-	@mkdir -p $(dir $@)
-	ca65 -g $(ASFLAGS) --create-dep $(@:.o=.d) -o $@ $<
-
-$(BUILDDIR)/%.o: $(SOURCEDIR)/%.asm
-	@mkdir -p $(dir $@)
-	ca65 -g $(ASFLAGS) --create-dep $(@:.o=.d) -o $@ $<
-
--include $(STOCK_OBJS:.o=.d) $(EXPD_OBJS:.o=.d)
+# Common source for stock/expanded
+$(eval $(call COMMON_RULES, $(BSTOCK), $(STOCKSRC)))
+$(eval $(call COMMON_RULES, $(BEXPD), $(EXPDSRC)))

@@ -7069,7 +7069,7 @@ Player_ApplyYVelocity:
     STA Player_YVel ; Player_YVel = FALLRATE_MAX
 
 PRG008_BFF9:
-    LDX #Player_YVel - Player_XVel ; Do the Y velocity
+    LDX #<(Player_YVel - Player_XVel) ; Do the Y velocity
     JSR Player_ApplyVelocity     ; Apply it!
 
     RTS      ; Return

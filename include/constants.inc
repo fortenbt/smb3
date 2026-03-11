@@ -1,6 +1,48 @@
 .ifndef __CONSTANTS_INC__
 __CONSTANTS_INC__ = 1
 
+	; 2P Vs Object IDs
+VSOBJID_SPINY		= 0	; Spiny
+VSOBJID_SIDESTEPPER	= 2	; Sidestepper
+VSOBJID_FIGHTERFLY	= 3	; Fighter Fly
+VSOBJID_FIREBALL_HORZ	= 4	; Horizontal Fireball that spawns to keep Players from hiding down at the bottom
+VSOBJID_FIREBALL_ENDER	= 5	; Game Ender Fireball (bounces around, attempts to kill Players who've stuck around too long!)
+VSOBJID_FIREBALL_FOUNTAIN= 6	; Fountain Fireball
+VSOBJID_COIN		= 7	; Coin (from [?] block)
+VSOBJID_MUSHROOMCARD	= 8	; Mushroom card
+VSOBJID_FLOWERCARD	= 9	; Flower card
+VSOBJID_STARCARD	= 10	; Star card
+VSOBJID_KICKEDBLOCK	= 11	; Kicked block (from [?] block match)
+
+MAPOBJ_EMPTY		= $00	; None
+MAPOBJ_HELP		= $01	; HELP
+MAPOBJ_AIRSHIP		= $02	; Airship
+MAPOBJ_HAMMERBRO	= $03	; Hammer Bro
+MAPOBJ_BOOMERANGBRO	= $04	; Boomerang Bro
+MAPOBJ_HEAVYBRO		= $05	; Heavy Bro
+MAPOBJ_FIREBRO		= $06	; Fire Bro
+MAPOBJ_W7PLANT		= $07	; World 7 Plant
+MAPOBJ_UNK08		= $08	; Unknown marching glitch object
+MAPOBJ_NSPADE		= $09 	; N-Spade
+MAPOBJ_WHITETOADHOUSE	= $0A	; White Toad House
+MAPOBJ_COINSHIP		= $0B	; Coin Ship
+MAPOBJ_UNK0C		= $0C	; Unknown white colorization of $0F (goes to World 7 level??)
+MAPOBJ_BATTLESHIP	= $0D	; World 8 Battleship
+MAPOBJ_TANK		= $0E	; World 8 Tank
+MAPOBJ_W8AIRSHIP	= $0F	; World 8 Airship
+MAPOBJ_CANOE		= $10	; Canoe
+
+MAPOBJ_TOTALINIT	= $08	; Total number of map objects initialized per world
+MAPOBJ_TOTAL		= $0E	; Total POSSIBLE map objects
+
+CARD_MUSHROOM	= 0
+CARD_FLOWER	= 1
+CARD_STAR	= 2
+CARD_1UP	= 3
+CARD_10COIN	= 4
+CARD_20COIN	= 5
+CARD_WILD	= 8	; UNUSED Wild card (can match any other!)
+
 CFIRE_BULLETBILL	= $01	; Bullet Bill cannon
 CFIRE_MISSILEBILL	= $02	; Missile Bill (homing Bullet Bill)
 CFIRE_ROCKYWRENCH	= $03	; (Re-)Creates Rocky Wrench on timer

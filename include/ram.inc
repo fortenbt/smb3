@@ -3,11 +3,8 @@ __RAM_INC__ = 1
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Note that we have these "allocator" macros instead of using .res or .org
-; to build up the variables. This makes for the cleanest solution where
-; the linker is in charge of placing all variables in each segment and
-; we don't break things unknowingly by having the linker place something
-; in a segment that's based at a different place than where we thought
-; a variable was defined (e.g. if we used .org)
+; to build up the variables. This makes for the cleanest solution where we
+; are forced to have aliased variable locations per context.
 ; If an address is truly -unused-, we can just remove it. However, there
 ; are places where the code assumes certain variables overlap and that
 ; certain variables won't be used in certain contexts, so we still need
@@ -18,7 +15,6 @@ __RAM_INC__ = 1
 .include "ram_zp.inc"
 .include "ram_stack.inc"
 .include "ram_oam.inc"
-.include "ram_prg.inc"
 
 .segment "RAM"
 

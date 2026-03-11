@@ -3,23 +3,12 @@ ZP_BASE:
     .res $100; $0 - $100 zero page
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; SMB3 RAM DEFS 
+; SMB3 ZERO PAGE RAM DEFS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-; =====================================
-; ZP RAM linear allocator
-; =====================================
-__ZP_OFFSET__ .set $0
-.macro ZP_NOINC name
-    .exportzp name = ZP_BASE + __ZP_OFFSET__
-.endmacro
-.macro ZP name, size
-    .if (__ZP_OFFSET__ + (size)) > $100
-        .error "ZP overflow name"
-    .endif
-    .exportzp name = ZP_BASE + __ZP_OFFSET__
-    __ZP_OFFSET__ .set __ZP_OFFSET__ + (size)
-.endmacro
+; This defines the allocator macros to allow for the expanded ROM to ignore the
+; unused variables to allow for maximum available variable space
+.include "ram_zp_internal.inc"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; ZERO PAGE RAM COMMON
@@ -152,7 +141,7 @@ __ZP_OFFSET__ .set __ZP_OFFSET__ +  2
 
 	; NOTE$75 - $F3 are context specific
 
-__ZP_OFFSET__ .set $f4
+ZP_SET_LOC($f4)
 
 	ZP Scroll_OddEven, 1	; 0 or 1, depending on what part of 8 pixels has crossed (need better description)
 
@@ -173,10 +162,10 @@ __ZP_OFFSET__ .set __ZP_OFFSET__ +  1
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; ZERO PAGE RAM: GAMEPLAY CONTEXT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-__ZP_OFFSET__ .set $75
+ZP_SET_LOC($75)
 
 ; There's a consistent difference of $12 between X and Y; this consistent distancing is meant to be maintained, so leave it alone!
-
+.assert (Player_YHi - Player_XHi) = (Player_Y - Player_X), error, "Player_X/Y - Player_XHi/YHi must be equal"
 	ZP Player_XHi, 1	; Player X Hi 
 	ZP Objects_XHi, 8	; $76-$7D Other object's X Hi positions
 
@@ -196,6 +185,9 @@ __ZP_OFFSET__ .set __ZP_OFFSET__ + 1   ; $7E unused (need to maintain X and Y $1
 
 __ZP_OFFSET__ .set __ZP_OFFSET__ +  1
 
+; Two unused bytes here (one at $7E and one here in stock)
+
+ZP_SET_LOC($75 + $12) ; (need to maintain X and Y same difference as XHi and YHi)
 	ZP Player_YHi, 1	; Player Y Hi
 	ZP Objects_YHi, 8	; $88-$8F Other object's Y Hi positions
 	ZP Player_X, 1	; Player X
@@ -207,6 +199,10 @@ __ZP_OFFSET__ .set __ZP_OFFSET__ +  1
 	ZP_NOINC CineKing_Var		; General variable
 
 	ZP Objects_Var5, 8	; $9A-$A1 Generic variable 5 for objects
+
+; One unused byte here (at $99 in stock)
+
+ZP_SET_LOC($90 + $12) ; (need to maintain X and Y same difference as XHi and YHi)
 	ZP Player_Y, 1	; Player Y
 	ZP Objects_Y, 8	; $A3-$A9 Other object's Y positions
 
@@ -273,7 +269,7 @@ __ZP_OFFSET__ .set __ZP_OFFSET__ +  1
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; ZERO PAGE RAM: WORLD MAP CONTEXT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-__ZP_OFFSET__ .set $75    ; $75-$F3 is available for this context-dependent situation
+ZP_SET_LOC($75)    ; $75-$F3 is available for this context-dependent situation
 
     ZP World_Map_Y, 2   ; $75-$76 (Mario/Luigi) Y pixel coordinate position of Mario on world map
     ZP World_Map_XHi, 2   ; $77-$78 (Mario/Luigi) X pixel (hi byte) coordinate position of Mario on world map
@@ -380,7 +376,7 @@ __ZP_OFFSET__ .set __ZP_OFFSET__ +  7
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; ZERO PAGE RAM: TITLE SCREEN / ENDING CONTEXT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-__ZP_OFFSET__ .set $75    ; $75-$F3 is available for this context-dependent situation
+ZP_SET_LOC($75)    ; $75-$F3 is available for this context-dependent situation
 
 ; Title screen "objects", which includes Mario, Luigi, and the assortment of other things
 ; The following are the offsets from any of the object arrays:
@@ -440,7 +436,7 @@ __ZP_OFFSET__ .set __ZP_OFFSET__ +  1
 ; Ending-specific vars -- NOTE that Ending system uses some of the Title Screen code, so these variables overlap some of the above
 ; Basically don't assume anything here is free space without consulting above as well...
 
-__ZP_OFFSET__ .set $75
+ZP_SET_LOC($75)
     ZP Ending2_PicState, 1   ; Ending part 2 picture loader state
     ZP Ending2_ClearLen, 1   ; Length of clear run
     ZP Ending2_ClearPat, 1   ; Pattern to clear the screen with
@@ -463,14 +459,14 @@ __ZP_OFFSET__ .set $D2
     ZP EndText_CPos, 1   ; Princess speech Character Position
     ZP EndText_State, 1   ; Princess speech state variable
 
-__ZP_OFFSET__ .set $F4
+ZP_SET_LOC($F4)
     ZP Ending2_IntCmd, 1   ; used during ending to buffer out the ending picture data on the interrupt.  Triggers "Do_Ending2_IntCmd" in PRG024 in interrupt context.
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; ZERO PAGE RAM: BONUS GAME CONTEXT (see PRG022 for lots more info)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-__ZP_OFFSET__ .set $75    ; $75-$F3 is available for this context-dependent situation
+ZP_SET_LOC($75)    ; $75-$F3 is available for this context-dependent situation
 
 __ZP_OFFSET__ .set __ZP_OFFSET__ +  22
 
@@ -488,9 +484,7 @@ __ZP_OFFSET__ .set __ZP_OFFSET__ +  41
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; ZERO PAGE RAM: 2P VS CONTEXT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-__ZP_OFFSET__ .set $75    ; $75-$F3 is available for this context-dependent situation
+ZP_SET_LOC($75)    ; $75-$F3 is available for this context-dependent situation
 
     ZP Vs_State, 1   ; 2P Vs Mode state
     ZP Vs_IsPaused, 1   ; If set, 2P Vs is paused
-
-__ZP_OFFSET__ .set __ZP_OFFSET__ +  125
