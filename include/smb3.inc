@@ -1,6 +1,8 @@
 .ifndef __SMB3_INC__
 __SMB3_INC__ = 1
 
+.include "smb3_internal.inc"
+
 .include "constants.inc"
 .include "ram_zp.inc"
 .include "ram_oam.inc"
