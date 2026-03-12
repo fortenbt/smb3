@@ -390,7 +390,7 @@ PRG008_A1D7:
     STA Player_LowClearance
 
     ; Decrement several adjacent counters!
-    LDX #$07     ; X = 7
+    LDX #<(Objects_Timer - Event_Countdown - 1)
 
 PRG008_A1DE:
     LDA Event_Countdown,X

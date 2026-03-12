@@ -1,16 +1,10 @@
-.export STACK_BASE, OAM_BASE, RAM_BASE, PRGRAM_BASE
+.export STACK_BASE, OAM_BASE
 
 .segment "STACK"
 STACK_BASE:     .res $100; $100 - $200 stack
 
 .segment "SHADOW_OAM"
 OAM_BASE:       .res $100; $200 - $300 object attribute mem dma'd to PPU
-
-.segment "RAM"
-RAM_BASE:       .res $500; $300 - $800 normal RAM
-
-.segment "PRGRAM"
-PRGRAM_BASE:    .res $2000
 
 .segment "CHR"
     .incbin "CHR/chr000.chr"

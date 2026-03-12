@@ -1,10 +1,10 @@
 .ifndef __SMB3_INC__
 __SMB3_INC__ = 1
 
-.import STACK_BASE, OAM_BASE, RAM_BASE, PRGRAM_BASE
-
 .include "constants.inc"
-.include "ram.inc"
+.include "ram_zp.inc"
+.include "ram_oam.inc"
+.include "ram_stack.inc"
 .include "ppu.inc"
 .include "apu.inc"
 .include "mmc3.inc"

@@ -1,4 +1,6 @@
-.autoimport +
+.segment "PRGRAM"
+PRGRAM_BASE:
+    .res $2000; $6000 - $7FFF PRG RAM
 
 ; This defines the allocator macros to allow for the expanded ROM to ignore the
 ; unused variables to allow for maximum available variable space
@@ -192,11 +194,22 @@ __PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 109 ; $7A73-$7ADF unused
 	PRGRAM Sound_Octave, 1	; Used for calculating octave
 __PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 12  ; $7AE4-$7AEF unused
 	PRGRAM Music_Sq1Bend, 1	; Alters PAPU_FT1 for bend effects
+
+; Warning! The distance between Music_Sq1Bend and Music_Sq2Bend must be same as Sound_Sq2_CurFL and Sound_Sq1_CurFL (see PRG031_E808 and Music_UpdateBend)
 __PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 3  ; $7AF1-$7AF3 unused
+EXPD_RSRV_PRG 3
+
 	PRGRAM Music_Sq2Bend, 1	; Alters PAPU_FT2 for bend effects
+.assert (Music_Sq2Bend - Music_Sq1Bend) = 4, error, "Difference between Music_Sq2Bend and Music_Sq1Bend MUST be 4. See prg031:PRG031_E808"
 __PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 2   ; $7AF5-$7AF6 unused
 	PRGRAM Music_RestH_Off, 1	; Offset added to Music_RestH_Base; typically $00 or $10 (for low time warning on compatible songs)
+
+; Warning! Music_Sq1Bend + 8 (and thus Music_Sq2Bend + 4) will be affected by triangle, see PRG031_E808
 __PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + 7   ; $7AF8-$7AFE unused
+EXPD_RSRV_PRG 3
+	PRGRAM_NOINC _here_
+.assert (_here_ - Music_Sq1Bend) >= 8, error, "Difference between (here) and Music_Sq1Bend MUST be >= 8. See prg031:PRG031_E808"
+
 	PRGRAM PAPU_MODCTL_Copy, 1	; Current PAPU_MODCTL register
 
 	PRGRAM Level_ObjIdxStartByScreen, 16	; $7B00-$7B0F Defines the starting index into Level_Objects for each "screen"

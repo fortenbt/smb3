@@ -5312,7 +5312,7 @@ ObjAutoScroller_Init:
     CMP #$60
     BNE PRG005_B964     ; If object is NOT on row $60, jump to PRG005_B964
 
-    LDA #UPDATERASTER_WATERLINE
+    LDA #<UPDATERASTER_WATERLINE
     STA Update_Request   ; Update_Request = UPDATERASTER_WATERLINE
 
     RTS      ; Return

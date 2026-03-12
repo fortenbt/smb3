@@ -1573,7 +1573,7 @@ PRG024_A8BF:
 
 
     ; Clearing memory used by various title screen objects
-    LDX #Title_ObjFrame - Title_MLAccelCnt + 6
+    LDX #<(Title_ObjFrame - Title_MLAccelCnt + 6)
 PRG024_A8C8:
     LDA #$00     ; A = 0
     STA Title_MLAccelCnt,X   ; Clear this byte

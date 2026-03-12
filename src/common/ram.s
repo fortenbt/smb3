@@ -1,5 +1,10 @@
-.ifndef __RAM_INC__
-__RAM_INC__ = 1
+.segment "RAM"
+RAM_BASE:
+    .res $500 ; $300 - $800 normal RAM
+
+; This defines the allocator macros to allow for the expanded ROM to ignore the
+; unused variables to allow for maximum available variable space
+.include "ram_internal.inc"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Note that we have these "allocator" macros instead of using .res or .org
@@ -12,26 +17,6 @@ __RAM_INC__ = 1
 ; or set __RAM_OFFSET__
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-.include "ram_zp.inc"
-.include "ram_stack.inc"
-.include "ram_oam.inc"
-
-.segment "RAM"
-
-; =====================================
-; RAM linear allocator
-; =====================================
-__RAM_OFFSET__ .set $0
-.macro RAM_NOINC name
-    name = RAM_BASE + __RAM_OFFSET__
-.endmacro
-.macro RAM name, size
-    .if (__RAM_OFFSET__ + (size)) > $800
-        .error "RAM overflow name"
-    .endif
-    name = RAM_BASE + __RAM_OFFSET__
-    __RAM_OFFSET__ .set __RAM_OFFSET__ + (size)
-.endmacro
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $03xx RAM (Largely graphics updating / control)
@@ -145,10 +130,6 @@ __RAM_OFFSET__ .set __RAM_OFFSET__ + 1
     RAM Level_7Vertical, 1   ; Set in World 7 vertical type levels
     RAM Level_SelXStart, 1   ; Selects X starting position when level begins (valid values 0-3)
 
-UPDATERASTER_32PIXPART  = 1 ; 32 pixel partition; common use is for levels with water along the bottom
-UPDATERASTER_SPADEGAME  = 2 ; Spade game sliders
-UPDATERASTER_WATERLINE  = 3 ; "Water line" mode (described at ObjHorzAutoScroller_Init)
-UPDATERASTER_32PIXSHOWSPR= $80  ; If NOT set, hides sprites that fall beneath the partition (i.e. for fixed water effect)
     RAM Update_Request, 1   ; This changes the current Raster_Effect and Update_Select and doesn't persist
     RAM Map_Starman, 1   ; Player used a Starman!
     RAM Map_Power_Disp, 1   ; This is the powerup currently DISPLAYED on the map; it should be the same as $0746 World_Map_Power, except for Judgem's Cloud
@@ -163,7 +144,7 @@ UPDATERASTER_32PIXSHOWSPR= $80  ; If NOT set, hides sprites that fall beneath th
 
     ; Setting __RAM_OFFSET__ because of major overlap, but be careful!
 
-__RAM_OFFSET__ .set $147; $0447
+RAM_SET_LOC($147) ; $0447
 
 ; W8D = World 8 Darkness; overlaps the vars used by the entrance transition
     RAM Map_W8D_VAddrH, 1
@@ -185,7 +166,7 @@ __RAM_OFFSET__ .set __RAM_OFFSET__ + 2
     RAM Map_W8D_Y, 1
     RAM Map_W8D_Idx, 1
 
-__RAM_OFFSET__ .set  $144; $0444
+RAM_SET_LOC($144) ; $0444
 
     ; Entrance transition; overlaps with above
     ; NOTE: Memory is cleared from here to +$1C, $460
@@ -213,7 +194,7 @@ __RAM_OFFSET__ .set __RAM_OFFSET__ + 8   ; $0457-$045E unused
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $04xx BONUS GAME CONTEXT (see PRG022 for lots more info)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-__RAM_OFFSET__ .set $100  ; $0400-$04CF (except $0461 and $0462, see "$04xx RAM SOUND/MUSIC ENGINE") is available for this context-dependent situation
+RAM_SET_LOC($100)  ; $0400-$04CF (except $0461 and $0462, see "$04xx RAM SOUND/MUSIC ENGINE") is available for this context-dependent situation
     ; WARNING: $0400-$04CF gets cleared at end of bonus game!
 
     RAM Roulette_Pos, 3   ; $0400-$0402 horizontal position of each row
@@ -324,14 +305,7 @@ __RAM_OFFSET__ .set __RAM_OFFSET__ + 1
 
     ; The "unused" ones are just guesses (where even possible) based on the
     ; semi-translated "greetings" for the sake of tracking...
-BONUS_UNUSED_KEYCOIN    = 0
-BONUS_SPADE     = 1 ; Line up images Spade game
-BONUS_NSPADE        = 2 ; Card matching N-Spade game
-BONUS_UNUSED_CCCC   = 3
-BONUS_UNUSED_DDDD   = 4 ; Unused placeholder (I think), but does actually set something when it exits!
-BONUS_UNUSED_ODDROULETTE= 5
-BONUS_UNUSED_EVENCARD   = 6
-BONUS_UNUSED_2RETURN    = 7 ; MAY have been Koopa Troopa's "Prize" Game...
+
     RAM Bonus_GameType, 1
 
     RAM Bonus_KTPrize, 1   ; UNUSED Koopa Troopa's "Prize" Game Prize ID (0 = Mushroom, 1 = Star, 2 = Flower, 3 = Judgem's, by BMF54123's patch)
@@ -342,7 +316,7 @@ BONUS_UNUSED_2RETURN    = 7 ; MAY have been Koopa Troopa's "Prize" Game...
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $04xx GAMEPLAY CONTEXT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-__RAM_OFFSET__ .set $100  ; $0400-$04CF (except $0461 and $0462, see "$04xx RAM SOUND/MUSIC ENGINE") is available for this context-dependent situation
+RAM_SET_LOC($100)  ; $0400-$04CF (except $0461 and $0462, see "$04xx RAM SOUND/MUSIC ENGINE") is available for this context-dependent situation
 
 __RAM_OFFSET__ .set __RAM_OFFSET__ + 27
 
@@ -362,7 +336,7 @@ __RAM_OFFSET__ .set __RAM_OFFSET__ + 27
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $04xx RAM SOUND/MUSIC ENGINE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-__RAM_OFFSET__ .set $161; $0461
+RAM_SET_LOC($161) ; $0461
 
 ; $0461-$0462 are reserved for use by the sound/music engine
 ; These ought to be moved into the greater range to spare this area...
@@ -371,7 +345,7 @@ __RAM_OFFSET__ .set $161; $0461
     RAM Level_MusicQueue, 1   ; Requests a song from Set 2A/B (used to allow delayed start)
     RAM Level_MusicQueueRestore, 1   ; What to "restore" the BGM to when it changes (e.g. Starman, P-Switch, etc.)
 
-__RAM_OFFSET__ .set $1D0; $04D0
+RAM_SET_LOC($1D0) ; $04D0
 
 ; $04D0-$04FF is reserved for use by the sound/music engine
 ; Lower ranges are context-dependent
@@ -411,105 +385,20 @@ __RAM_OFFSET__ .set __RAM_OFFSET__ + 3
 
 ; For any of these queues, the value is a bit value, which offers
 ; a simple prioritization system; lowest value plays over any other
-
-; Queue Player sound effects
-SND_PLAYERJUMP  = $01   ; Jump
-SND_PLAYERBUMP  = $02   ; Bump
-SND_PLAYERSWIM  = $04   ; Swim / Squish
-SND_PLAYERKICK  = $08   ; Kick
-SND_PLAYERPIPE  = $10   ; Pipe / shrink
-SND_PLAYERFIRE  = $20   ; Fireball
-SND_PLAYERPOWER = $40   ; Full power ringing (must be constantly set or you don't hear it)
-SND_PLAYERFROG  = $80   ; frog hop
     RAM Sound_QPlayer, 1
-
-; Queue Level sound effects 1
-SND_LEVELCOIN   = $01   ; Coin
-SND_LEVELRISE   = $02   ; Powerup rising from block
-SND_LEVELVINE   = $04   ; Vine rising
-SND_LEVELBABOOM = $08   ; Cannon fire
-SND_LEVELBLIP   = $10   ; Text "type" sound / card select
-SND_LEVELPOWER  = $20   ; Power up
-SND_LEVEL1UP    = $40   ; 1-up
-SND_LEVELPOOF   = $80   ; Lost suit / wand shot
-SND_LEVELUNK    = $90   ; Unknown / lost sound
-SND_LEVELSHOE   = $A0   ; Lost Kuirbo's Shoe
-SND_LEVELTAILWAG= $B0   ; Tail wag
     RAM Sound_QLevel1, 1
-
-; Queue Level sound effects 2
-SND_LEVELCRUMBLE= $01   ; Crumbling brick
-SND_LEVELFLAME  = $02   ; Flame jet
-SND_BOOMERANG   = $04   ; Boomerang
-SND_LEVELAIRSHIP= $08   ; Airship fly
-SND_LEVELMARCH  = $10   ; Hammer Bros. march around
-; $20 - Unused
-; $40 - Unused
-SND_LEVELSKID   = $80   ; Skid
     RAM Sound_QLevel2, 1
 
-
 ; Queue music request 1
-; The following I've grouped into "Set 1" (which play song index 0-7):
-MUS1_PLAYERDEATH    = $01   ; Player death
-MUS1_GAMEOVER       = $02   ; Game over
-MUS1_BOSSVICTORY    = $04   ; Victory normal
-MUS1_WORLDVICTORY   = $08   ; Victory super (King reverted, Bowser defeated, etc.)
-MUS1_BOWSERFALL     = $10   ; Bowser dramatic falling
-MUS1_COURSECLEAR    = $20   ; Course Clear
-MUS1_TIMEWARNING    = $40   ; Time Warning (attempts to speed up song playing)
-MUS1_STOPMUSIC      = $80   ; Stops playing any music
     RAM Sound_QMusic1, 1
 
 ; Queue music request 2
-; The following I've grouped into "Set 2A":
-MUS2A_WORLD1        = $01   ; World 1
-MUS2A_WORLD2        = $02   ; World 2
-MUS2A_WORLD3        = $03   ; World 3
-MUS2A_WORLD4        = $04   ; World 4
-MUS2A_WORLD5        = $05   ; World 5
-MUS2A_WORLD6        = $06   ; World 6
-MUS2A_WORLD7        = $07   ; World 7
-MUS2A_WORLD8        = $08   ; World 8
-MUS2A_SKY       = $09   ; Coin Heaven / Sky World / Warp Zone (World 9)
-MUS2A_INVINCIBILITY = $0A   ; Invincibility
-MUS2A_WARPWHISTLE   = $0B   ; Warp whistle
-MUS2A_MUSICBOX      = $0C   ; Music box
-MUS2A_THRONEROOM    = $0D   ; King's room
-MUS2A_BONUSGAME     = $0E   ; Bonus game
-MUS2A_ENDING        = $0F   ; Ending music
-
-
-; The following I've grouped into "Set 2B":
-MUS2B_OVERWORLD     = $10   ; Overworld 1
-MUS2B_UNDERGROUND   = $20   ; Underground
-MUS2B_UNDERWATER    = $30   ; Water
-MUS2B_FORTRESS      = $40   ; Fortress
-MUS2B_BOSS      = $50   ; Boss
-MUS2B_AIRSHIP       = $60   ; Airship
-MUS2B_BATTLE        = $70   ; Hammer Bros. battle
-MUS2B_TOADHOUSE     = $80   ; Toad House
-MUS2B_ATHLETIC      = $90   ; Overworld 2
-MUS2B_PSWITCH       = $A0   ; P-Switch
-MUS2B_BOWSER        = $B0   ; Bowser
-MUS2B_WORLD8LETTER  = $C0   ; Bowser's World 8 Letter
-MUS2B_MASK      = $F0   ; Not intended for use in code, readability/traceability only
     RAM Sound_QMusic2, 1
 
 ; Queue map sound effects
-SND_MAPENTERWORLD   = $01   ; World begin starry entrance sound
-SND_MAPPATHMOVE     = $02   ; Path move
-SND_MAPENTERLEVEL   = $04   ; Enter level
-SND_MAPINVENTORYFLIP    = $08   ; Flip inventory
-SND_MAPBONUSAPPEAR  = $10   ; Bonus appears
-; $20: ?? unused ?
-; $40: ?? unused ?
-SND_MAPDENY     = $80   ; Denied
     RAM Sound_QMap, 1
 
 ; Queue pause sound
-PAUSE_STOPMUSIC     = $01   ; Pause sound effect (like pressing START, pauses music!)
-PAUSE_RESUMEMUSIC   = $02   ; Resume sound (resumes music)
     RAM Sound_QPause, 1
 
     RAM DMC_Time, 1   ; Time remaining on DMC sound
@@ -530,7 +419,7 @@ PAUSE_RESUMEMUSIC   = $02   ; Resume sound (resumes music)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $05xx TITLE SCREEN CONTEXT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-__RAM_OFFSET__ .set $200  ; $0500-$05FF is available for this context-dependent situation
+RAM_SET_LOC($200)  ; $0500-$05FF is available for this context-dependent situation
 
 __RAM_OFFSET__ .set __RAM_OFFSET__ + 16
 
@@ -546,7 +435,7 @@ __RAM_OFFSET__ .set __RAM_OFFSET__ + 16
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $5xx MAP CONTEXT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-__RAM_OFFSET__ .set $200  ; $0500-$05FF is available for this context-dependent situation
+RAM_SET_LOC($200)  ; $0500-$05FF is available for this context-dependent situation
 
     ; NOTE: Most of the memory in this space is shared with Gameplay Context
     ; so don't assume that any value that should be spared is safe in here...
@@ -571,7 +460,7 @@ __RAM_OFFSET__ .set __RAM_OFFSET__ + 60
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $5xx BONUS GAME CONTEXT (see PRG022 for lots more info)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-__RAM_OFFSET__ .set $200  ; $0500-$05FF is available for this context-dependent situation
+RAM_SET_LOC($200)  ; $0500-$05FF is available for this context-dependent situation
 
 __RAM_OFFSET__ .set __RAM_OFFSET__ + 231
     RAM BonusText_VH, 1
@@ -581,7 +470,7 @@ __RAM_OFFSET__ .set __RAM_OFFSET__ + 231
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $5xx GAMEPLAY CONTEXT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-__RAM_OFFSET__ .set $200  ; $0500-$05FF is available for this context-dependent situation
+RAM_SET_LOC($200)  ; $0500-$05FF is available for this context-dependent situation
 
 __RAM_OFFSET__ .set __RAM_OFFSET__ + 16
     ; Event_Countdown is context dependent; without context, does nothing
@@ -668,28 +557,6 @@ __RAM_OFFSET__ .set __RAM_OFFSET__ + 1
     RAM Level_UnusedFlag, 1   ; Unused; only set in a couple places, but never read back!
     RAM Level_SlopeEn, 1   ; If set, enables slope tiles (otherwise they're considered flat top-only solids)
 
-CHNGTILE_DELETECOIN = $01
-CHNGTILE_DELETETOBG = $02
-CHNGTILE_TOGNOTEBLOCK   = $03   ; miscolored note block
-CHNGTILE_TOBOUNCEWOOD   = $04
-CHNGTILE_TONOTEBLOCK    = $05
-CHNGTILE_COINHEAVEN = $06
-CHNGTILE_TOBRICK    = $07
-CHNGTILE_TOMETALPLATE   = $08   ; i.e. "plate" that appears after ? block is hit
-CHNGTILE_PSWITCHSTOMP   = $09
-CHNGTILE_TOBRICKCOIN    = $0B   ; brick containing coin
-CHNGTILE_DELETETOBGALT  = $0C
-CHNGTILE_PIPEJCT    = $0E   ; UNUSED replaces the unused TILE9_PIPEWORKS_JCT tile!
-CHNGTILE_DELETEDONUT    = $0F
-CHNGTILE_FROZENMUNCHER  = $10
-CHNGTILE_FROZENCOIN = $11
-CHNGTILE_PSWITCHAPPEAR  = $12
-CHNGTILE_DOORAPPEAR = $13
-CHNGTILE_TOADBOXOPEN    = $14
-CHNGTILE_4WAYCANNON = $15
-CHNGTILE_GIANTBRICKBUST = $16   ; Giant World brick bust
-CHNGTILE_GIANTBLOCKHIT  = $17   ; Giant World [?] block hit to metal
-CHNGTILE_GIANTBRICKFIX  = $18   ; Giant World brick restore (small Mario hit giant brick)
     RAM Level_ChgTileEvent, 1   ; When non-zero, queues a "change tile" event
 
     RAM Level_NoStopCnt, 1   ; A counter which continuously increments unless something is "stopping" the action
@@ -823,8 +690,6 @@ __RAM_OFFSET__ .set __RAM_OFFSET__ + 8
 
     ; NOTE: Since Level_AScrlConfig checks are generally implemented as "BEQ/BNE", technically ANY
     ; value enables auto scroll adjustments, but officially ASCONFIG_ENABLE is used to enable it
-ASCONFIG_ENABLE     = $01   ; Enables auto scroll coordinate adjustments of any sort
-ASCONFIG_HDISABLE   = $80   ; Disables horizontal auto scroll coordinate adjustment (generally if Horz Auto Scroll is not in use)
     RAM Level_AScrlConfig, 1
 
     RAM Cine_ToadKing, 1   ; Set to 1, initializes Toad and transformed king; set to 2 while running that cinematic
@@ -840,11 +705,11 @@ ASCONFIG_HDISABLE   = $80   ; Disables horizontal auto scroll coordinate adjustm
 ; $06xx RAM
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; DURING ENDING ONLY
-__RAM_OFFSET__ .set $300; $0600
+RAM_SET_LOC($300) ; $0600
     RAM Ending_CmdBuffer, 192 ; $0600-$06C0 Buffer used during ending sequence
 
     ; Normal purpose $06xx RAM...
-__RAM_OFFSET__ .set $300; $0600
+RAM_SET_LOC($300) ; $0600
 
 __RAM_OFFSET__ .set __RAM_OFFSET__ + 2
 
@@ -897,15 +762,6 @@ __RAM_OFFSET__ .set __RAM_OFFSET__ + 1
     RAM Objects_SpawnIdx, 8   ; $0659-$0660 Holds the index into level data that this object was spawned from
 
 ; Objects_State
-OBJSTATE_DEADEMPTY  = 0 ; Dead/Empty
-OBJSTATE_INIT       = 1 ; Init
-OBJSTATE_NORMAL     = 2 ; Normal (typical operation)
-OBJSTATE_SHELLED    = 3 ; Shelled (shelled enemy post-stomp)
-OBJSTATE_HELD       = 4 ; Held (held by Player)
-OBJSTATE_KICKED     = 5 ; Kicked (kicked by Player / spinning shell)
-OBJSTATE_KILLED     = 6 ; Killed (flipped over and falling off screen)
-OBJSTATE_SQUASHED   = 7 ; Squashed (generally Goomba only)
-OBJSTATE_POOFDEATH  = 8 ; "Poof" Death (e.g. Piranha death)
     RAM Objects_State, 8
 
     RAM Objects_Frame, 8   ; $0669-$0670 "Frame" of object (see ObjectGroup_PatternSets)
@@ -982,7 +838,7 @@ __RAM_OFFSET__ .set __RAM_OFFSET__ + 2
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $07xx RAM
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-__RAM_OFFSET__ .set $400; $0700
+RAM_SET_LOC($400) ; $0700
 
     RAM TileAddr_Off, 1   ; During level loading, specifies an offset into the current Mem_Tile_Addr setting
 
@@ -1126,10 +982,13 @@ __RAM_OFFSET__ .set __RAM_OFFSET__ + 1
                 ; WARNING: Though unused, this is required for the consistent padding between XVel(Frac) and YVel(Frac)
                 ; So use it if you want, but maintain the distance!!
 __RAM_OFFSET__ .set __RAM_OFFSET__ + 7   ; $0758-$075E unused
+EXPD_RSRV_RAM 8  ; Note the 8 free bytes here to preserve distance between Player_XVelFrac equal to Player_XVel/YVel
 
     ; WARNING: The distance between Player/Objects_XVelFrac and Player/Objects_YVelFrac must be same as Player/Objects_X/YVel!
     RAM Player_YVelFrac, 1   ; Y velocity fractional accumulator
     RAM Objects_YVelFrac, 8   ; $0760-$0767 Other object's Y velocity fractional accumulator
+.importzp Player_YVel, Player_XVel
+.assert (Player_YVelFrac - Player_XVelFrac) = (Player_YVel - Player_XVel), error, "Distance between Player_YVel and XVel must equal Player_YVelFrac - Player_XVelFrac"
 
     RAM Objects_ColorCycle, 8   ; $0768-$076F Cycles colors of object and decrements to zero (e.g. "Melting" ice block, starman, etc.)
 
@@ -1148,7 +1007,7 @@ __RAM_OFFSET__ .set __RAM_OFFSET__ + 7   ; $0758-$075E unused
     RAM Level_ScrollDiffH, 1   ; Difference between desired horizontal and the current Horz_Scroll
 
     RAM Random_Pool, 10  ; $0781-$078A (or $0789?) Data pool for pseudo-random number generator algorithm
-RandomN = Random_Pool+1         ; Pull a random number from the sequence (NOTE: RandomN+1 is also good; If you need multiple random numbers, call Randomize)
+.export RandomN = Random_Pool+1         ; Pull a random number from the sequence (NOTE: RandomN+1 is also good; If you need multiple random numbers, call Randomize)
 
     RAM Map_PlayerLost2PVs, 1   ; When > 0, (1=Mario, 2=Luigi) doesn't lose a life for "death" exiting to map, but does lose their turn
 
@@ -1214,11 +1073,13 @@ __RAM_OFFSET__ .set __RAM_OFFSET__ + 13
 
     RAM Music_NseStart, 1   ; Holds the starting offset of the noise track (CHECK: Reuse of $07F3, is this bad??)
 
+; Warning! The distance between Sound_Sq1_CurFL and Sound_Sq2_CurFL must be 4 (see PRG031_E808)
 __RAM_OFFSET__ .set __RAM_OFFSET__ + 1
+EXPD_RSRV_RAM 1
 
     RAM Music2_Hold, 1   ; A very little used feature, Music Set 1 overrides Music Set 2, but after a M1 song finishes, it restarts the M2 song
     RAM Sound_Sq2_CurFL, 1   ; Holds current "low" frequency of Square Wave 1 (Warning: Must be +4 from Sound_Sq1_CurFL, see PRG031_E808)
-
+.assert (Sound_Sq2_CurFL - Sound_Sq1_CurFL) = 4, error, "Sound_Sq2_CurFL must be 4 bytes from Sound_Sq1_CurFL"
     RAM Music_Sq2Patch, 1   ; Current "instrument patch" for Square 2 (only upper 4 bits stored, 0ppp 0000)
     RAM Music_Sq1Patch, 1   ; Current "instrument patch" for Square 1 (only upper 4 bits stored, 0ppp 0000)
 
@@ -1230,5 +1091,3 @@ __RAM_OFFSET__ .set __RAM_OFFSET__ + 1
     RAM Sound_Map_Len, 1   ; Countdown tick for current note/rest that map sound effect is on
     RAM Sound_Map_Off2, 1   ; Same as Sound_Map_Off, used for the secondary track
     RAM Sound_Unused7FF, 1   ; Cleared once, never used otherwise
-
-.endif; include guard

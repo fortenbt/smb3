@@ -5874,7 +5874,7 @@ PRG009_BDC9:
     STA Player_PartDetEn
 
     ; Enable display of 32 pixel partition and show sprites beneath the partition
-    LDA #UPDATERASTER_32PIXPART | UPDATERASTER_32PIXSHOWSPR
+    LDA #<(UPDATERASTER_32PIXPART | UPDATERASTER_32PIXSHOWSPR)
 
 
 PRG009_BDD0:
@@ -6006,7 +6006,7 @@ PRG009_BE74:
     JMP PRG009_BDC9  ; Otherwise, jump to PRG009_BDC9
 
 Setup32PixPartWater:
-    LDA #UPDATERASTER_32PIXPART ; For Update_Select; use the "32 pixel partition" style (water along the bottom)
+    LDA #<UPDATERASTER_32PIXPART ; For Update_Select; use the "32 pixel partition" style (water along the bottom)
     JSR PRG009_BDD0
 
     LDA Player_AboveTop

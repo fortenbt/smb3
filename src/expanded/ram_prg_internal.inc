@@ -10,19 +10,29 @@ __RAM_PRG_INTERNAL_INC__ = 1
 __PRGRAM_OFFSET__ .set 0
 __PRGRAM_EXPD_OFFSET__ .set 0
 .macro PRGRAM_NOINC name
-    .export name = PRGRAM_BASE + __PRGRAM_OFFSET__
+    .export name = PRGRAM_BASE + __PRGRAM_EXPD_OFFSET__
 .endmacro
 .macro PRGRAM name, size
-    .if (__PRGRAM_OFFSET__ + (size)) > $2000
+    .if (__PRGRAM_EXPD_OFFSET__ + (size)) > $2000
         .error "PRGRAM overflow: name"
     .endif
-    .export name = PRGRAM_BASE + __PRGRAM_OFFSET__
-    __PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + (size)
+    .export name = PRGRAM_BASE + __PRGRAM_EXPD_OFFSET__
+    __PRGRAM_EXPD_OFFSET__ .set __PRGRAM_EXPD_OFFSET__ + (size)
 .endmacro
 
 ; This is required to properly base the variables that are aliased for multiple modes
 .macro PRG_SET_LOC loc
-    __PRGRAM_OFFSET__ .set loc
+    __PRGRAM_EXPD_OFFSET__ .set loc
+.endmacro
+
+.macro EXPD_RSRV_PRG amt
+    __PRGRAM_EXPD_OFFSET__ .set __PRGRAM_EXPD_OFFSET__ + amt
+.endmacro
+
+.macro BHOP_RSRV_PRG size
+    .ifdef BHOP
+        __PRGRAM_EXPD_OFFSET__ .set __PRGRAM_EXPD_OFFSET__ + (size)
+    .endif
 .endmacro
 
 .endif ; include guard

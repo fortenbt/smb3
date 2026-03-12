@@ -2365,7 +2365,7 @@ BonusCoin_ApplyXVel:
     ; Offset to coin X velocity
     TYA
     CLC
-    ADC #Bonus_CoinsXVelFrac - Bonus_CoinsYVelFrac
+    ADC #<(Bonus_CoinsXVelFrac - Bonus_CoinsYVelFrac)
     TAY
 
     JSR BonusCoin_ApplyVel   ; Apply X velocity to coin
@@ -2373,7 +2373,7 @@ BonusCoin_ApplyXVel:
     ; Offset back
     TYA
     SEC
-    SBC #Bonus_CoinsXVelFrac - Bonus_CoinsYVelFrac
+    SBC #<(Bonus_CoinsXVelFrac - Bonus_CoinsYVelFrac)
     TAY
 
     RTS      ; Return

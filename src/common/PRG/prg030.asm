@@ -1518,7 +1518,7 @@ PRG030_89D1:
     JSR Palette_FadeIn   ; Fade in palette
 
     ; Enable the Roulette slider raster effect
-    LDA #UPDATERASTER_SPADEGAME
+    LDA #<UPDATERASTER_SPADEGAME
     STA Update_Request
 
     ; We actually get hung up here until afer the end of the Roulette
@@ -5968,7 +5968,7 @@ PRG030_9F80:
 
 IntIRQ_32PixelPartition_Part2:  ; $9FA0
     LDA Update_Request
-    AND #UPDATERASTER_32PIXSHOWSPR
+    AND #<UPDATERASTER_32PIXSHOWSPR
     BNE PRG030_9FAA  ; If UPDATERASTER_32PIXSHOWSPR is set, go to PRG030_9FAA
 
     ; Otherwise, change loaded pattern tables to hide sprites that fall beneath the 32 pixel partition

@@ -1,4 +1,4 @@
 # Ignore the generation of the ROM
 build/
-smb3.nes
-smb3-expanded.nes
+*.nes
+*.dbg

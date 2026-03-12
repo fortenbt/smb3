@@ -314,12 +314,12 @@ Sound_Map_LUT:
     ;   Offset1, Offset2
     ; Offset1 specifies a first track played on Square 1 at 50% duty cycle
     ; Offset2 specifies a second track played on Square 2 at 25% duty cycle, only used by the level entry sound...
-SndMapH_Entrance:   .byte SndMap_Data_WEnt - SndMap_Data,    $00 ; $01: World begin starry entrance sound
-SndMapH_Move:       .byte SndMap_Data_Move - SndMap_Data,    $00 ; $02: Path move
-SndMapH_Enter:      .byte SndMap_Data_Entr - SndMap_Data,    SndMap_Data_Entr2 - SndMap_Data ; $04: Enter level
-SndMapH_Flip:       .byte SndMap_Data_Flip - SndMap_Data,    $00 ; $08: Flip inventory
-SndMapH_Bonus:      .byte SndMap_Data_Bonus - SndMap_Data,   $00 ; $10: Bonus appears
-SndMapH_Deny:       .byte SndMap_Data_Deny - SndMap_Data,    $00 ; $80: Denied
+SndMapH_Entrance:   .byte SndMap_Data_WEnt - SndMap_Data,    $00 ; $01 (SND_MAPENTERWORLD): World begin starry entrance sound
+SndMapH_Move:       .byte SndMap_Data_Move - SndMap_Data,    $00 ; $02 (SND_MAPPATHMOVE): Path move
+SndMapH_Enter:      .byte SndMap_Data_Entr - SndMap_Data,    SndMap_Data_Entr2 - SndMap_Data ; $04 (SND_MAPENTERLEVEL): Enter level
+SndMapH_Flip:       .byte SndMap_Data_Flip - SndMap_Data,    $00 ; $08 (SND_MAPINVENTORYFLIP): Flip inventory
+SndMapH_Bonus:      .byte SndMap_Data_Bonus - SndMap_Data,   $00 ; $10 (SND_MAPBONUSAPPEAR): Bonus appears
+SndMapH_Deny:       .byte SndMap_Data_Deny - SndMap_Data,    $00 ; $80 (SND_MAPDENY): Denied
 SndMapH_Unused:     .byte SndMap_Data_Unused - SndMap_Data,  $00 ; $20/$40: ?? unused ?
 
 
@@ -2174,7 +2174,7 @@ PRG028_BF80:        ; UNUSED COPY FROM PRG030, DELETE DON'T MODIFY
 
 ; IntIRQ_32PixelPartition_Part2:    ; $9FA0     ; UNUSED COPY FROM PRG030, DELETE DON'T MODIFY
     LDA Update_Request          ; UNUSED COPY FROM PRG030, DELETE DON'T MODIFY
-    AND #UPDATERASTER_32PIXSHOWSPR      ; UNUSED COPY FROM PRG030, DELETE DON'T MODIFY
+    AND #<UPDATERASTER_32PIXSHOWSPR      ; UNUSED COPY FROM PRG030, DELETE DON'T MODIFY
     BNE PRG028_BFAA  ; If UPDATERASTER_32PIXSHOWSPR is set, go to PRG028_BFAA       ; UNUSED COPY FROM PRG030, DELETE DON'T MODIFY
 
     ; Otherwise, change loaded pattern tables to hide sprites that fall beneath the 32 pixel partition      ; UNUSED COPY FROM PRG030, DELETE DON'T MODIFY

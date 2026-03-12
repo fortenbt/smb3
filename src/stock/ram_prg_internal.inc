@@ -24,4 +24,10 @@ __PRGRAM_OFFSET__ .set 0
     __PRGRAM_OFFSET__ .set loc
 .endmacro
 
+.macro EXPD_RSRV_PRG amt ; increments are handled by __PRGRAM_OFFSET__ .set __PRGRAM_OFFSET__ + x in stock
+.endmacro
+
+.macro BHOP_RSRV_PRG size ; no bhop in stock
+.endmacro
+
 .endif ; include guard
