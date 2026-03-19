@@ -23,4 +23,8 @@ __ZP_EXPD_OFFS__ .set $0
     __ZP_EXPD_OFFS__ .set loc
 .endmacro
 
+.macro BHOP_RSRV_ZP amt
+    __ZP_EXPD_OFFS__ .set __ZP_EXPD_OFFS__ + (amt)
+.endmacro
+
 .endif ; include guard

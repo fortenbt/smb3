@@ -2,6 +2,18 @@ image: fortenbt/smb3-build:1
 
 aliases:
   build:
-    script: make
+    script:
+      - make
+      - sha256sum --check smb3sum.txt
+  bhop:
+    script:
+      - make bhop
+  expanded:
+    script:
+      - make expanded
+  stock:
+    script:
+      - make stock
+      - sha256sum --check smb3sum.txt
   clean:
     script: make clean

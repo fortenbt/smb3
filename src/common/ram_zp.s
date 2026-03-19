@@ -37,6 +37,9 @@ ZP_BASE:
 
 	ZP VBlank_Tick, 1	; can be used for timing, or knowing when an NMI just fired off
 
+    ; BHop ZP variables reserved if we're using BHOP (Start at $11)
+    BHOP_RSRV_ZP 6
+
 __ZP_OFFSET__ .set __ZP_OFFSET__ +  1 ; $11 unused
 
 	ZP Horz_Scroll_Hi, 1	; Provides a "High" byte for horizontally scrolling, or could be phrased as "current screen"

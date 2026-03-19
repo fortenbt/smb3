@@ -31,3 +31,18 @@
 .segment "PRG_59"
 .segment "PRG_60"
 .segment "PRG_61"
+.segment "MUS_03"
+  .ifdef BHOP
+    MODULE_DOOM:
+        .include "music/e1m1.asm"
+        ;.include "music/temple-bgm1.asm"
+        ;.include "music/world1bgm.asm"
+    .export MODULE_DOOM
+  .endif
+.segment "MUS_04"
+.segment "MUS_05"
+.segment "MUS_06"
+.segment "MUS_07"
+.segment "MUS_08"
+.segment "MUS_09"
+.segment "MUS_0A"

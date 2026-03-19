@@ -22,9 +22,13 @@
 .export Clear_Nametable_Short, DynJump, IntIRQ, IntIRQ_32PixPart_HideSprites, IntIRQ_32PixelPartition_Part3
 .export IntIRQ_Finish_NoDis, IntNMI, IntReset, PRG031_F499, PRG031_FA3C, PRGROM_Change_A000, PRGROM_Change_Both2
 .export PRGROM_Change_C000, PT2_Full_CHRROM_Switch, Player_GetCard, Player_GetCardAndUpdate, Player_GetItem
-.export Read_Joypads, Reset_PPU_Clear_Nametables, Reset_PPU_Clear_Nametables2, Scroll_PPU_Reset, Sound1_XCTL_YRAMP
-.export Sound2_XCTL_YRAMP, Sound_PlayMusic, Sound_Sq1_NoteOn, Sound_Sq2_NoteOn, Sound_Sq2_NoteOn_NoPAPURAMP
+.export Read_Joypads, Reset_PPU_Clear_Nametables, Reset_PPU_Clear_Nametables2, Scroll_PPU_Reset
 .export Sprite_RAM_Clear, StatusBar_DrawCardPiece, StatusBar_Update_Cards, VertLevel_ScreenH, VertLevel_ScreenL
+.export PRGROM_Change_Both
+.export Sound1_XCTL_YRAMP, Sound2_XCTL_YRAMP, Sound_Sq1_NoteOn, Sound_Sq2_NoteOn, Sound_Sq2_NoteOn_NoPAPURAMP
+
+.ifndef BHOP
+.export Sound_PlayMusic
 
 DMC01:  .byte $55, $55, $55, $95, $AA, $2A, $95, $E0, $7F, $FC, $C0, $F1, $03, $28, $FE, $FF
     .byte $FF, $F1, $5F, $3F, $00, $00, $00, $00, $00, $00, $08, $80, $C0, $F1, $FF, $C7
@@ -67,7 +71,6 @@ DMC02:  .byte $55, $60, $6B, $79, $EA, $F8, $FF, $43, $82, $24, $00, $20, $8E, $
 DMC02_End:
 
     ;
-
     ;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
     ;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
     ;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
@@ -1059,6 +1062,12 @@ PRG031_E7A8:
     LDA (Music_PatchAdrL),Y
     RTS
 
+.else ; BHOP
+DMC01:
+DMC01_End:
+DMC02:
+DMC02_End:
+.endif
 
     ; Quick and dirty function that writes X to the CTL and Y to the RAMP of Square 1
 Sound1_XCTL_YRAMP:
@@ -1223,7 +1232,6 @@ PRG031_E870:
     STA PAPU_FT1,X   ; Update PAPU_FT1/2!
     RTS      ; Return
 
-
     ; Music_RestH_LUT is indexed by (Music_RestH_Base + Music_RestH_Off + [0 to 15])
     ; * Music_RestH_Base is always divisible by $10, Music_RestH_Off is $00 or $10
     ;
@@ -1264,6 +1272,7 @@ Music_RestH_LUT:
 
     ; END UNUSED SPACE
 
+.ifndef BHOP
 DMC04:  .byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $B5, $82, $DC
     .byte $7F, $00, $E0, $FF, $03, $E8, $FF, $03, $00, $F8, $FF, $00, $F0, $FF, $62, $0B
     .byte $40, $DF, $8B, $EA, $27, $00, $FC, $BF, $00, $14, $FD, $FF, $03, $00, $F6, $FF
@@ -1447,8 +1456,18 @@ DMC05_C:.byte $AB, $8A, $42, $A5, $F6, $B2, $25, $49, $56, $6D, $B5, $A9, $94, $
     .byte $AB, $A9, $20, $A9, $6D, $6F, $5B, $51, $2A, $55, $96, $AC, $4A, $B5, $2D, $4B
     .byte $A9, $65, $55, $95, $AD, $2A, $95, $A5, $D4, $6A, $57, $25, $92, $AA, $DA, $6D
 DMC05_End:
-
-
+.else ; BHOP
+DMC04:
+DMC04_End:
+DMC06:
+DMC06_End:
+DMC09:
+DMC09_End:
+DMC05:
+DMC05_B:
+DMC05_C:
+DMC05_End:
+.endif
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; The following two LUTs are used together via Update_Request
@@ -1630,22 +1649,8 @@ PRG031_F55B:
 PRG031_F567:
     ; Some jump here instead of F55B
 
-    ; *** Bring the sound engine (page 28 and page 29) into ROM
-    LDA #MMC3_8K_TO_PRG_C000    ; Changing PRG ROM at C000
-    STA MMC3_COMMAND        ; Set MMC3 command
-    LDA #29             ; Page 29
-    STA MMC3_PAGE           ; Set MMC3 page
-
-    LDA #MMC3_8K_TO_PRG_A000    ; Changing PRG ROM at A000
-    STA MMC3_COMMAND        ; Set MMC3 command
-    LDA #28             ; Page 28
-    STA MMC3_PAGE           ; Set MMC3 page
-
-    ; Jump to the sound engine, newly inserted at page A000!
-    JSR Sound_Engine_Begin
-
-    ; Change A000/C000 back to whatever they were before the sound engine
-    JSR PRGROM_Change_Both
+    ; Sound engine callout now in music-hooks.inc under the respective music-engine/{engine}
+    RUN_SOUND_ENGINE
 
     INC Counter_1   ; Simply increments every frame, used for timing
 
@@ -2012,10 +2017,12 @@ IntIRQ:  ; $F795 IRQ Interrupt (scanline from MMC3)
     JMP (Temp_Var1)
 
 PRG031_F7B0:
+.ifndef BHOP
     LDA PAPU_MODCTL_Copy
     PHA      ; Save A
     AND #$7f     ; Basically don't disturb DMC, but disable interrupt, if active
     STA PAPU_MODCTL  ;
+.endif
 
     LDA Raster_Effect    ; Get status bar mode
 
@@ -2176,8 +2183,10 @@ IntIRQ_Finish:
 IntIRQ_Finish_NoDis:
     LDA PAGE_CMD     ; Get old page command
     STA MMC3_COMMAND ; Issue it
+.ifndef BHOP
     PLA      ; Restore A (PAPU_MODCTL_Copy)
     STA PAPU_MODCTL  ; Set DMC back to normal
+.endif
 
     ; Restore the other registers
     PLA

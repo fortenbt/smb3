@@ -31,7 +31,9 @@ __PRGRAM_EXPD_OFFSET__ .set 0
 
 .macro BHOP_RSRV_PRG size
     .ifdef BHOP
+        BHOP_RSRV_START:
         __PRGRAM_EXPD_OFFSET__ .set __PRGRAM_EXPD_OFFSET__ + (size)
+        BHOP_RSRV_END:
     .endif
 .endmacro
 

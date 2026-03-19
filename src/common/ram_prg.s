@@ -1,6 +1,7 @@
 .segment "PRGRAM"
 PRGRAM_BASE:
     .res $2000; $6000 - $7FFF PRG RAM
+.export PRGRAM_BASE
 
 ; This defines the allocator macros to allow for the expanded ROM to ignore the
 ; unused variables to allow for maximum available variable space
@@ -15,7 +16,10 @@ PRGRAM_BASE:
 	; Tile_Mem stores for the greatest case:
 	;	Vertical level max size is 	15 rows * 16 columns * 16 screens = 3840 ($0F00) bytes
 	;	Non-vertical level max size is 	27 rows * 16 columns * 15 screens = 6480 ($1950) bytes
-	PRGRAM Tile_Mem, 6480	; $6000-$794F Space used to store the 16x16 "tiles" that make up the World Map or Level
+	PRGRAM Tile_Mem, $1950	; $6000-$794F Space used to store the 16x16 "tiles" that make up the World Map or Level
+
+	; BHop PRG variables reserved if we're using BHOP
+	BHOP_RSRV_PRG $123
 
 	PRGRAM Map_MoveRepeat, 2	; $7950-$7951 (Mario/Luigi) counts up to $18 and then you keep moving without pause
 	PRGRAM AScrlURDiag_OffsetX, 1	; When diagonal autoscroller is wrapping, this holds an X offset for Player/Objects to temporarily correct

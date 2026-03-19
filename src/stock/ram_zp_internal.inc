@@ -24,4 +24,7 @@ __ZP_OFFSET__ .set $0
     __ZP_OFFSET__ .set loc
 .endmacro
 
+.macro BHOP_RSRV_ZP amt
+.endmacro
+
 .endif ; include guard

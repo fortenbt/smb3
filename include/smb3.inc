@@ -12,6 +12,8 @@ __SMB3_INC__ = 1
 .include "mmc3.inc"
 .include "io.inc"
 
+.include "music-hooks.inc"
+
 
 .macro BYTE_INDEX_TO target, base
     .assert ((target)-(base)-1) >= -1, error, "Index underflow"

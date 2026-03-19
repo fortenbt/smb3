@@ -857,28 +857,7 @@ PRG030_8676:
     LDA #$00
     JSR Video_Do_Update
 
-    LDX World_Num
-    LDY World_BGM,X     ; Get BGM index for this world
-    CPX #4
-    BNE PRG030_8698     ; If we're NOT on world 5, jump to PRG030_8698
-
-    ; World 5 special handling (Sky part different music)
-    LDX Player_Current  ; X = Player_Current
-    LDA World_Map_XHi,X    ; Get the high byte of this Player's X position
-    BEQ PRG030_8698     ; If it's equal to 0 (the "lower" part of the Sky World), jump to PRG030_8698
-
-    ; Otherwise...
-    LDY #MUS2A_SKY   ; Use Sky music!
-    JMP PRG030_869F
-
-PRG030_8698:
-    ; Either not world 5, or ground-side of world 5
-    LDA Map_MusicBox_Cnt
-    BEQ PRG030_869F     ; If Map_MusicBox_Cnt = 0, jump to PRG030_869F
-    LDY #MUS2A_MUSICBOX     ; Otherwise, play the music box song
-
-PRG030_869F:
-    STY Sound_QMusic2   ; Play BGM!
+    SETUP_WORLD_MUSIC ; Introduced this macro to allow for BHOP music engine versus stock
 
 PRG030_86A2:
     LDA #$00
@@ -5995,4 +5974,3 @@ PRG030_9FAF:
     JMP IntIRQ_32PixelPartition_Part3
 
 ; NOTE: The remaining ROM space was all blank ($FF)
-
