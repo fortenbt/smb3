@@ -209,6 +209,7 @@ RAM_SET_LOC($100)  ; $0400-$04CF (except $0461 and $0462, see "$04xx RAM SOUND/M
     RAM Roulette_xUpY, 1   ; "x Up" display Y position (overlaps first byte of Roulette_StopState)
     RAM Roulette_LivesToGive, 1   ; Lives left to give in reward (overlaps second byte of Roulette_StopState)
 __RAM_OFFSET__ .set __RAM_OFFSET__ + 1   ; Third byte of Roulette_StopState
+EXPD_RSRV_RAM 1
 
     RAM Roulette_Speed, 3   ; $040F-$0411 Movement speed of each row (4.4FP)
     RAM Roulette_StopCnt, 3   ; $0412-$0414 Decrements to zero while each row is stopping

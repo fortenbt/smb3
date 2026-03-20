@@ -38,7 +38,7 @@ ZP_BASE:
 	ZP VBlank_Tick, 1	; can be used for timing, or knowing when an NMI just fired off
 
     ; BHop ZP variables reserved if we're using BHOP (Start at $11)
-    BHOP_RSRV_ZP 6
+    BHOP_RSRV_ZP 8
 
 __ZP_OFFSET__ .set __ZP_OFFSET__ +  1 ; $11 unused
 

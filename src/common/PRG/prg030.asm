@@ -489,8 +489,7 @@ PRG030_8437:
     JSR Clear_RAM_thru_ZeroPage
 
     ; Reset_Latch = $5A (magic value that prevents reset vector from being run)
-    LDA #$5a
-    STA Reset_Latch
+    EARLY_RESET_HOOK
 
     ; N-Spade appears every 80,000 points, but the leading zero is fake, so 8000
 
@@ -1321,8 +1320,7 @@ PRG030_892A:
     BNE PRG030_893F  ; If World_Num <> 8 (World 9), jump to PRG030_893F
 
     ; Warp zone special
-    LDA #MUS1_STOPMUSIC
-    STA Sound_QMusic1   ; Stop BGM
+    STOP_MUSIC
 
     ; The destination world is fed back out through Map_Warp_PrevWorld
     LDA Map_Warp_PrevWorld
@@ -1513,8 +1511,7 @@ PRG030_89D1:
     STA MMC3_MIRROR
 
     ; Stop music
-    LDA #MUS1_STOPMUSIC
-    STA Sound_QMusic1
+    STOP_MUSIC
 
     ; Returning to map
     JMP PRG030_8FA1  ; Jump to PRG030_8FA1
@@ -1612,8 +1609,7 @@ PRG030_8AC0:
     BEQ PRG030_8AC0  ; If we're not exiting to map, loop N-Spade game
 
     ; Stop music
-    LDA #MUS1_STOPMUSIC
-    STA Sound_QMusic1
+    STOP_MUSIC
 
     ; Set bank at A000 to page 26
     LDA #26
@@ -2193,7 +2189,7 @@ Level_MainLoop:
     JSR GraphicsBuf_Prep_And_WaitVSync
 
     LDA SndCur_Map
-    AND #$04
+    AND #SND_MAPENTERLEVEL
     BNE PRG030_8DF4 ; If enter level sound is still playing, jump to PRG030_8DF4
 
     LDA Level_MusicQueue
@@ -2330,27 +2326,7 @@ PRG030_8E79:
     ; When game is paused...
 
     ; Wow, what the heck did they remove here??
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
-    NOP
+    STOCK_FREE_SPACE $15, $EA ; 21 NOPs
 
     LDA #$32
     STA PatTable_BankSel+5  ; Set patterns needed for P A U S E sprites
@@ -2605,8 +2581,7 @@ PRG030_8FCA:
     STA Vert_Scroll_Off
 
     ; Stop the music
-    LDA #MUS1_STOPMUSIC
-    STA Sound_QMusic1
+    STOP_MUSIC
 
     LDA Map_ReturnStatus
     BNE PRG030_8FFC  ; If Player died, jump to PRG030_8FFC
@@ -2733,8 +2708,7 @@ PRG030_9080:
     BNE PRG030_9080  ; If X <> 3, jump to PRG030_9080
 
     ; Stop any music
-    LDA #MUS1_STOPMUSIC
-    STA Sound_QMusic1
+    STOP_MUSIC
 
     INC World_Num    ; Go to next world!
 
@@ -2855,8 +2829,7 @@ PRG030_910C:
 PRG030_9128:
 
     ; Stop any music
-    LDA #MUS1_STOPMUSIC
-    STA Sound_QMusic1
+    STOP_MUSIC
 
     STY Map_Operation    ; Map_Operation = 2
     JMP PRG030_84D7     ; Jump to PRG030_84D7
@@ -3107,8 +3080,7 @@ PRG030_927E:
 PRG030_929C:
 
     ; Stop music
-    LDA #MUS1_STOPMUSIC
-    STA Sound_QMusic1
+    STOP_MUSIC
 
     ; Switch bank A000 to page 26
     LDA #26
@@ -3217,8 +3189,7 @@ PRG030_932E:
     ; All Players are dead and have given up
 
     ; Stop music
-    LDA #MUS1_STOPMUSIC
-    STA Sound_QMusic1
+    STOP_MUSIC
 
     ; Reset game
     JMP IntReset_Part2
@@ -3323,8 +3294,7 @@ PRG030_93B1:
     JSR Palette_FadeOut         ; Fade out
 
     ; Stop 2P Vs music
-    LDA #MUS1_STOPMUSIC
-    STA Sound_QMusic1
+    STOP_MUSIC
 
     LDA #%00011000
     STA PPU_CTL2_Copy  ; Show BG+Sprites

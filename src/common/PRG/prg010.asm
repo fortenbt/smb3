@@ -763,31 +763,7 @@ Map_DoMap:
     BNE PRG010_C413     ; If Map_Operation <> $0D (normal), jump to PRG010_C413
 
     ; Map is operating normally
-    LDX World_Num       ; X = World_Num
-    LDY World_BGM_Arrival,X ; Y = World_BGM_Arrival[X]
-
-    CPX #$04
-    BNE PRG010_C3E3     ; If X <> 4 (not on World 5), jump to PRG010_C3E3
-
-    LDX Player_Current  ; X = Player_Current
-    LDA World_Map_XHi,X
-    BEQ PRG010_C3E3     ; If not on the high part of World 5, jump to PRG010_C3E3
-
-    LDY #MUS2A_SKY      ; High part of World 5 uses alternate song
-    JMP PRG010_C3EA     ; Jump to PRG010_C3EA
-
-PRG010_C3E3:
-    LDA Map_MusicBox_Cnt
-    BEQ PRG010_C3EA     ; If Map_MusicBox_Cnt = 0 (music box not active), jump to PRG010_C3EA
-
-    LDY #MUS2A_MUSICBOX  ; Otherwise, Y = $C (music box song)
-
-PRG010_C3EA:
-    LDA SndCur_Music2
-    BNE PRG010_C3F2     ; If SndCur_Music2 <> 0 (a song from set 2 is playing), jump to PRG010_C3F2
-
-    ; Otherwise, queue the requested song!
-    STY Sound_QMusic2
+    RETURN_TO_WORLD_MUSIC
 
 PRG010_C3F2:
     LDX Player_Current  ; X = Player_Current

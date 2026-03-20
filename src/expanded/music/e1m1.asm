@@ -1,6 +1,6 @@
 ; Dn-FamiTracker exported music data: DOOM.ftm
 ;
-.autoimport +
+.scope
 
 ; Module header
 	.word ft_song_list
@@ -695,3 +695,4 @@ ft_sample_3:
 	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
 	.byte $55, $55, $55, $55, $D5, $54, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
 
+.endscope

@@ -5,6 +5,8 @@ bhop_ptr = _BHOP_ZP_START_
 pattern_ptr = _BHOP_ZP_START_ + $2
 channel_index = _BHOP_ZP_START_ + $4
 scratch_byte = _BHOP_ZP_START_ + $5
+track_ptr = _BHOP_ZP_START_ + $6
+.exportzp track_ptr
 
 .include "bhop/config.inc"
 .if ::BHOP_ZSAW_ENABLED
@@ -148,6 +150,7 @@ __PRGRAM_EXPD_OFFSET__ .set $1950 ; BHOP's reserved area starts after Tile_Mem (
 .segment BHOP_PLAYER_SEGMENT
 ; global
 .export bhop_init, bhop_play, bhop_mute_channel, bhop_unmute_channel, bhop_set_module_bank, bhop_set_expansion_flags
+.export bhop_unmute_all, bhop_mute_all
 
 .include "bhop/midi_lut.inc"
 
@@ -2882,6 +2885,8 @@ reset_counter:
         jsr tick_envelopes_and_effects
         jsr tick_registers
         ; :D
+        LDA PAGE_C000
+        JSR PRGROM_Change_C000
         rts
 .endproc
 
@@ -3104,6 +3109,84 @@ Sound_Engine_Process:
     LDA #$ff     ;
     STA FRAMECTR_CTL ; Resets the frame counter clock (sync sound hardware), disables IRQ generation
 
+    ; --- process music ---
+    ; MUS1 are
+    ; MUS1_PLAYERDEATH    = $01   ; Player death
+    ; MUS1_GAMEOVER       = $02   ; Game over
+    ; MUS1_BOSSVICTORY    = $04   ; Victory normal
+    ; MUS1_WORLDVICTORY   = $08   ; Victory super (King reverted, Bowser defeated, etc.)
+    ; MUS1_BOWSERFALL     = $10   ; Bowser dramatic falling
+    ; MUS1_COURSECLEAR    = $20   ; Course Clear
+    ; MUS1_TIMEWARNING    = $40   ; Time Warning (attempts to speed up song playing)
+    ; MUS1_STOPMUSIC      = $80   ; Stops playing any music
+    LDA Sound_QMusic1
+    BMI _stop_music   ; $80 is MUS1_STOPMUSIC
+    BNE _mute   ; TODO: handle each of these?
+    ; MUS2 are
+    ; MUS2A_WORLD1        = $01   ; World 1
+    ; MUS2A_WORLD2        = $02   ; World 2
+    ; MUS2A_WORLD3        = $03   ; World 3
+    ; MUS2A_WORLD4        = $04   ; World 4
+    ; MUS2A_WORLD5        = $05   ; World 5
+    ; MUS2A_WORLD6        = $06   ; World 6
+    ; MUS2A_WORLD7        = $07   ; World 7
+    ; MUS2A_WORLD8        = $08   ; World 8
+    ; MUS2A_SKY           = $09   ; Coin Heaven / Sky World / Warp Zone (World 9)
+    ; MUS2A_INVINCIBILITY = $0A   ; Invincibility
+    ; MUS2A_WARPWHISTLE   = $0B   ; Warp whistle
+    ; MUS2A_MUSICBOX      = $0C   ; Music box
+    ; MUS2A_THRONEROOM    = $0D   ; King's room
+    ; MUS2A_BONUSGAME     = $0E   ; Bonus game
+    ; MUS2A_ENDING        = $0F   ; Ending music
+    ; MUS2B_OVERWORLD     = $10   ; Overworld 1
+    ; MUS2B_UNDERGROUND   = $20   ; Underground
+    ; MUS2B_UNDERWATER    = $30   ; Water
+    ; MUS2B_FORTRESS      = $40   ; Fortress
+    ; MUS2B_BOSS          = $50   ; Boss
+    ; MUS2B_AIRSHIP       = $60   ; Airship
+    ; MUS2B_BATTLE        = $70   ; Hammer Bros. battle
+    ; MUS2B_TOADHOUSE     = $80   ; Toad House
+    ; MUS2B_ATHLETIC      = $90   ; Overworld 2
+    ; MUS2B_PSWITCH       = $A0   ; P-Switch
+    ; MUS2B_BOWSER        = $B0   ; Bowser
+    ; MUS2B_WORLD8LETTER  = $C0   ; Bowser's World 8 Letter
+    ; MUS2B_MASK          = $F0   ; Not intended for use in code, readability/traceability only
+    ; GamePlay_BGM:
+    ; .byte MUS2B_OVERWORLD   ; 0  ($10)
+    ; .byte MUS2B_UNDERGROUND ; 1  ($20)
+    ; .byte MUS2B_UNDERWATER  ; 2  ($30)
+    ; .byte MUS2B_FORTRESS    ; 3  ($40)
+    ; .byte MUS2B_BOSS        ; 4  ($50)
+    ; .byte MUS2B_AIRSHIP     ; 5  ($60)
+    ; .byte MUS2B_BATTLE      ; 6  ($70)
+    ; .byte MUS2B_TOADHOUSE   ; 7  ($80)
+    ; .byte MUS2B_ATHLETIC    ; 8  ($90)
+    ; .byte MUS2A_THRONEROOM  ; 9  ($0D)
+    ; .byte MUS2A_SKY         ; 10 ($09)
+    LDA Sound_QMusic2
+    BEQ _process_sounds ; no music queued
+    CMP #MUS2A_SKY      ; music >= MUS2A_SKY must use level table rather than world table
+    BCS _level_music
+    SEC
+    SBC #1  ; A = index of world song
+    LDX #0  ; X = 0 (world songs)
+_music_init:
+    JSR bhop_player_init_music
+    LDA Sound_QMusic2
+    STA SndCur_Music2
+    BNE _process_sounds ; (always)
+_level_music:
+    LSR
+    LSR
+    LSR
+    LSR    ; A = index of level song
+    LDX #1 ; X = 1 (level songs)
+    BNE _music_init ; (always)
+_stop_music:
+    sta track_ptr+1
+_mute:
+    jsr bhop_mute_all
+_process_sounds:
     LDA Sound_QPause
     BNE SndPause     ; If a "pause/resume" was requested, jump to SndPause
     LDA SndCur_Pause
@@ -3132,7 +3215,10 @@ PRG028_A033:
     ; Want to PAUSE sound
     ;LDA #$00
     ;STA PAPU_EN ; Disable all sound channels
-    jsr bhop_mute_all
+    ;jsr bhop_mute_all
+    jsr bhop_mute_sq1
+    jsr bhop_mute_sq2
+    LDA #$00
 
     ; Clear other sound counters
     STA SndCur_Player   ; Kill player sound
@@ -3218,7 +3304,8 @@ MapSound_Queued:
     ;STX PAPU_EN  ; Disable all sound channels
     ;LDX #$0f     ;
     ;STX PAPU_EN  ; Enable all sound channels
-    ;JSR bhop_mute_all
+    JSR bhop_mute_all
+    LDA Sound_QMap
 
 PRG028_A0BD:
     STA SndCur_Map ; Lock in this sound as playing!
@@ -3386,21 +3473,25 @@ AND7F:  ; This seems like a ridiculous subroutine!
 
 Sound_Map_LUT:
     ; These are offsets from here to the respective SFX data headers
-    .byte SndMapH_Entrance - Sound_Map_LUT,   SndMapH_Move - Sound_Map_LUT
-    .byte SndMapH_Enter - Sound_Map_LUT,  SndMapH_Flip - Sound_Map_LUT
-    .byte SndMapH_Bonus - Sound_Map_LUT,  SndMapH_Unused - Sound_Map_LUT
-    .byte SndMapH_Unused - Sound_Map_LUT, SndMapH_Deny - Sound_Map_LUT
+    .byte SndMapH_Entrance - Sound_Map_LUT ; 1 - SND_MAPENTERWORLD    ($01)
+    .byte SndMapH_Move     - Sound_Map_LUT ; 2 - SND_MAPPATHMOVE      ($02)
+    .byte SndMapH_Enter    - Sound_Map_LUT ; 3 - SND_MAPENTERLEVEL    ($04)
+    .byte SndMapH_Flip     - Sound_Map_LUT ; 4 - SND_MAPINVENTORYFLIP ($08)
+    .byte SndMapH_Bonus    - Sound_Map_LUT ; 5 - SND_MAPBONUSAPPEAR   ($10)
+    .byte SndMapH_Unused   - Sound_Map_LUT ; 6 - $20 unused
+    .byte SndMapH_Unused   - Sound_Map_LUT ; 7 - $40 unused
+    .byte SndMapH_Deny     - Sound_Map_LUT ; 8 - SND_MAPDENY          ($80)
 
 
     ;   Offset1, Offset2
     ; Offset1 specifies a first track played on Square 1 at 50% duty cycle
     ; Offset2 specifies a second track played on Square 2 at 25% duty cycle, only used by the level entry sound...
-SndMapH_Entrance:   .byte SndMap_Data_WEnt - SndMap_Data,    $00 ; $01: World begin starry entrance sound
-SndMapH_Move:       .byte SndMap_Data_Move - SndMap_Data,    $00 ; $02: Path move
-SndMapH_Enter:      .byte SndMap_Data_Entr - SndMap_Data,    SndMap_Data_Entr2 - SndMap_Data ; $04: Enter level
-SndMapH_Flip:       .byte SndMap_Data_Flip - SndMap_Data,    $00 ; $08: Flip inventory
-SndMapH_Bonus:      .byte SndMap_Data_Bonus - SndMap_Data,   $00 ; $10: Bonus appears
-SndMapH_Deny:       .byte SndMap_Data_Deny - SndMap_Data,    $00 ; $80: Denied
+SndMapH_Entrance:   .byte SndMap_Data_WEnt - SndMap_Data,    $00 ; SND_MAPENTERWORLD    ($01): World begin starry entrance sound
+SndMapH_Move:       .byte SndMap_Data_Move - SndMap_Data,    $00 ; SND_MAPPATHMOVE      ($02): Path move
+SndMapH_Enter:      .byte SndMap_Data_Entr - SndMap_Data,    SndMap_Data_Entr2 - SndMap_Data ; SND_MAPENTERLEVEL ($04): Enter level
+SndMapH_Flip:       .byte SndMap_Data_Flip - SndMap_Data,    $00 ; SND_MAPINVENTORYFLIP ($08): Flip inventory
+SndMapH_Bonus:      .byte SndMap_Data_Bonus - SndMap_Data,   $00 ; SND_MAPBONUSAPPEAR   ($10): Bonus appears
+SndMapH_Deny:       .byte SndMap_Data_Deny - SndMap_Data,    $00 ; SND_MAPDENY          ($80): Denied
 SndMapH_Unused:     .byte SndMap_Data_Unused - SndMap_Data,  $00 ; $20/$40: ?? unused ?
 
 
@@ -4382,5 +4473,85 @@ _loop:
     RTS
 .endproc
 .export bhop_apply_music_bank
+
+; ----- Music Stuff -----
+
+.struct MusicTrack
+        ModulePtr .word
+        BankNumber .byte
+.endstruct
+
+.macro music_track module_ptr, bank_number
+.scope
+.addr module_ptr
+.byte bank_number
+.endscope
+.endmacro
+
+song_e1m1:      music_track MODULE_DOOM,   <.bank(MODULE_DOOM)
+song_world1:    music_track MODULE_W1,     <.bank(MODULE_W1)
+song_virus:     music_track MODULE_VIRUS,  <.bank(MODULE_VIRUS)
+
+bhop_world_songs:
+bhop_level_songs:
+        .addr song_virus
+
+        .addr song_e1m1 ; World 1
+        .addr song_world1 ; World 2
+        .addr song_virus
+        .addr song_virus
+        .addr song_virus
+        .addr song_virus
+        .addr song_virus
+        .addr song_virus
+        .addr song_virus
+        .addr song_virus
+        .addr song_virus
+        .addr song_virus
+
+bhop_song_tbl_hi:
+    .byte >bhop_world_songs, >bhop_level_songs
+bhop_song_tbl_lo:
+    .byte <bhop_world_songs, <bhop_level_songs
+
+; X is index of song table
+; 0 - world songs
+; 1 - level songs
+; A is index of song
+.proc bhop_player_init_music
+    pha
+    lda bhop_song_tbl_lo, X
+    sta track_ptr+0
+    lda bhop_song_tbl_hi, X
+    sta track_ptr+1
+    pla
+    asl
+    tay
+
+    lda (track_ptr), y
+    pha
+    iny
+    lda (track_ptr), y
+    sta track_ptr+1
+    pla
+    sta track_ptr
+    ; Set the correct bank for this song
+    ldy #<MusicTrack::BankNumber
+    lda (track_ptr), y
+    jsr bhop_set_module_bank
+    ; Initialize bhop with track 0 of the module specified by the song
+    ldy #<MusicTrack::ModulePtr
+    lda (track_ptr), y
+    tax ; lo ptr for the module address
+    iny
+    lda (track_ptr), y
+    tay ; hi ptr for the module address
+    lda #TRACK_0
+    jsr bhop_init
+    lda #0
+    sta track_ptr
+    sta track_ptr+1
+    rts
+.endproc
 
 .endscope

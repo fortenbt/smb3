@@ -1268,7 +1268,7 @@ Music_RestH_LUT:
     ;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
     ;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
     ;.byte $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF, $FF
-    STOCK_FREE_SPACE $6f, $40
+    STOCK_FREE_SPACE $6f, $ff, $40
 
     ; END UNUSED SPACE
 
@@ -1676,7 +1676,6 @@ PRG031_F567:
 
     ; Fully cleaned up "NMI" interrupt
     RTI
-
 UpdSel_Vertical:
 
     ; COMPARE TO PRG031_F4E3
