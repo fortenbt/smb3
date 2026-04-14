@@ -6,5 +6,3 @@
 .import bhop_set_module_bank
 .import bhop_set_expansion_flags
 .import bhop_mute_channel, bhop_unmute_channel, blarggsaw_irq, zetasaw_irq
-
-.import bhop_player_init_music

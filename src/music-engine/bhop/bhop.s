@@ -150,7 +150,7 @@ __PRGRAM_EXPD_OFFSET__ .set $1950 ; BHOP's reserved area starts after Tile_Mem (
 .segment BHOP_PLAYER_SEGMENT
 ; global
 .export bhop_init, bhop_play, bhop_mute_channel, bhop_unmute_channel, bhop_set_module_bank, bhop_set_expansion_flags
-.export bhop_unmute_all, bhop_mute_all
+.export bhop_unmute_all, bhop_mute_all, bhop_player_init_music
 
 .include "bhop/midi_lut.inc"
 
@@ -980,6 +980,7 @@ done_advancing_rows:
 ; prep:
 ; - channel_index is set to desired channel
 .proc advance_channel_row
+    .export skip_sample_trigger
         ; see CChannelHandler::PlayNote() in Dn-FT
         ; check first if we still have lingering delay from the previous row
         ldx channel_index
@@ -3121,7 +3122,16 @@ Sound_Engine_Process:
     ; MUS1_STOPMUSIC      = $80   ; Stops playing any music
     LDA Sound_QMusic1
     BMI _stop_music   ; $80 is MUS1_STOPMUSIC
-    BNE _mute   ; TODO: handle each of these?
+    BEQ _qmusic2          ; no music1, check 2
+    LDX #2                ; X = 2 (MUS1 songs)
+    LDY #$ff
+_mus1_to_idx_loop:
+    INY
+    LSR
+    BCC _mus1_to_idx_loop
+    TYA
+    JSR bhop_player_init_music
+
     ; MUS2 are
     ; MUS2A_WORLD1        = $01   ; World 1
     ; MUS2A_WORLD2        = $02   ; World 2
@@ -3163,6 +3173,7 @@ Sound_Engine_Process:
     ; .byte MUS2B_ATHLETIC    ; 8  ($90)
     ; .byte MUS2A_THRONEROOM  ; 9  ($0D)
     ; .byte MUS2A_SKY         ; 10 ($09)
+_qmusic2:
     LDA Sound_QMusic2
     BEQ _process_sounds ; no music queued
     CMP #MUS2A_SKY      ; music >= MUS2A_SKY must use level table rather than world table
@@ -3305,6 +3316,7 @@ MapSound_Queued:
     ;LDX #$0f     ;
     ;STX PAPU_EN  ; Enable all sound channels
     JSR bhop_mute_all
+    INC track_ptr+1
     LDA Sound_QMap
 
 PRG028_A0BD:
@@ -4488,31 +4500,57 @@ _loop:
 .endscope
 .endmacro
 
-song_e1m1:      music_track MODULE_DOOM,   <.bank(MODULE_DOOM)
-song_world1:    music_track MODULE_W1,     <.bank(MODULE_W1)
-song_virus:     music_track MODULE_VIRUS,  <.bank(MODULE_VIRUS)
+song_death:        music_track MODULE_DEATH,        <.bank(MODULE_DEATH)
+song_world1:       music_track MODULE_W1,           <.bank(MODULE_W1)
+song_revenge:      music_track MODULE_REVENGE,      <.bank(MODULE_REVENGE)
+song_guile:        music_track MODULE_GUILE,        <.bank(MODULE_GUILE)
+song_course_clear: music_track MODULE_COURSE_CLEAR, <.bank(MODULE_COURSE_CLEAR)
+song_w1_1:         music_track MODULE_W1_1,         <.bank(MODULE_W1_1)
+song_w1_2:         music_track MODULE_W1_2,         <.bank(MODULE_W1_2)
+song_brinstar:     music_track MODULE_BRINSTAR,     <.BANK(MODULE_BRINSTAR)
+song_summit:       music_track MODULE_SUMMIT,       <.BANK(MODULE_SUMMIT)
 
-bhop_world_songs:
+    ; .byte MUS2B_OVERWORLD   ; 0  ($10)
+    ; .byte MUS2B_UNDERGROUND ; 1  ($20)
+    ; .byte MUS2B_UNDERWATER  ; 2  ($30)
+    ; .byte MUS2B_FORTRESS    ; 3  ($40)
+    ; .byte MUS2B_BOSS        ; 4  ($50)
+    ; .byte MUS2B_AIRSHIP     ; 5  ($60)
+    ; .byte MUS2B_BATTLE      ; 6  ($70)
+    ; .byte MUS2B_TOADHOUSE   ; 7  ($80)
+    ; .byte MUS2B_ATHLETIC    ; 8  ($90)
+bhop_mus1_songs:
+        .addr song_death
+        .addr song_death
+        .addr song_death
+        .addr song_death
+        .addr song_death
+        .addr song_course_clear
+        .addr song_course_clear
 bhop_level_songs:
-        .addr song_virus
-
-        .addr song_e1m1 ; World 1
+        .addr song_brinstar
+        .addr song_brinstar
+        .addr song_summit
+        .addr song_guile
+        .addr song_guile
+        .addr song_guile
+        .addr song_w1_2
+        .addr song_w1_2
+        .addr song_w1_2
+        .addr song_w1_2
+        .addr song_w1_2
+        .addr song_w1_2
+        .addr song_w1_2
+        .addr song_w1_2
+bhop_world_songs:
+        .addr song_brinstar
+        .addr song_revenge ; World 1
         .addr song_world1 ; World 2
-        .addr song_virus
-        .addr song_virus
-        .addr song_virus
-        .addr song_virus
-        .addr song_virus
-        .addr song_virus
-        .addr song_virus
-        .addr song_virus
-        .addr song_virus
-        .addr song_virus
 
 bhop_song_tbl_hi:
-    .byte >bhop_world_songs, >bhop_level_songs
+    .byte >bhop_world_songs, >bhop_level_songs, >bhop_mus1_songs
 bhop_song_tbl_lo:
-    .byte <bhop_world_songs, <bhop_level_songs
+    .byte <bhop_world_songs, <bhop_level_songs, <bhop_mus1_songs
 
 ; X is index of song table
 ; 0 - world songs
@@ -4553,5 +4591,6 @@ bhop_song_tbl_lo:
     sta track_ptr+1
     rts
 .endproc
+.export bhop_player_init_music
 
-.endscope
+.endscope ; BHOP

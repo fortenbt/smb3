@@ -75,6 +75,7 @@ command_table:
         jmp (bhop_ptr)
         ; dispatched command executes rts
 .endproc
+.export dispatch_command
 
 .proc skip_command
         and #$7F ; mask off the high bit
@@ -110,6 +111,7 @@ no_parameter_byte:
         fetch_pattern_byte
         rts
 .endproc
+.export cmd_unimplemented
 
 .proc cmd_unimplemented_short
         ; this command has no argument. Do absolutely nothing!
@@ -124,6 +126,7 @@ no_parameter_byte:
         sta channel_status, x
         rts
 .endproc
+.export cmd_set_duration
 
 .proc cmd_reset_duration
         lda channel_status, x
@@ -228,6 +231,7 @@ done:
         sta channel_tuning, x
         rts
 .endproc
+.export cmd_eff_pitch
 
 .proc cmd_eff_reset_pitch
         lda #0
@@ -344,6 +348,7 @@ cmd_eff_note_release := cmd_unimplemented
         sta channel_instrument_duty, x
         rts
 .endproc
+.export cmd_eff_duty
 
 .proc cmd_eff_tremolo
         fetch_pattern_byte
