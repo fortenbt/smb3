@@ -1,8 +1,28 @@
 .ifndef __MUSIC_HOOKS_INC__
 __MUSIC_HOOKS_INC__ = 1
 
-; This is taken directly from prg030.asm within INITIALIZATION OF WORLD MAP
-; (prg030.asm)
+; ----- MUSIC HOOKS -----
+; NOTE: All these music hooks exist in order to modify code within the stock game
+; while still allowing the stock ROM to be assembled byte-for-byte identical.
+; So all the hooks are defined under stock to be identical to the code that was
+; there originally.
+; -----
+
+; ----- (prg030.asm) -----
+; EARLY_RESET_HOOK
+;
+; One of the first things done after clearing RAM after reset
+; -----
+.macro EARLY_RESET_HOOK
+    LDA #$5a
+    STA Reset_Latch
+.endmacro
+
+; ----- (prg030.asm) -----
+; SETUP_WORLD_MUSIC
+;
+; Where we initially queue up the music on the map for this world
+; -----
 .macro SETUP_WORLD_MUSIC
     LDX World_Num
     LDY World_BGM,X     ; Get BGM index for this world
@@ -28,7 +48,18 @@ PRG030_869F:
     STY Sound_QMusic2   ; Play BGM!
 .endmacro
 
-; (prg010.asm)
+; ----- (prg030.asm) -----
+.macro STOP_MUSIC
+    LDA #MUS1_STOPMUSIC
+    STA Sound_QMusic1
+.endmacro
+
+; ----- (prg010.asm) -----
+; RETURN_TO_WORLD_MUSIC
+;
+; When Map_Operation is in normal operation, this is called out to to get the music running again
+; if it isn't already.
+; -----
 .macro RETURN_TO_WORLD_MUSIC
     .local PRG010_C3E3, PRG010_C3EA
     LDX World_Num       ; X = World_Num
@@ -58,7 +89,11 @@ PRG010_C3EA:
     STY Sound_QMusic2
 .endmacro
 
-; (prg031.asm)
+; ----- (prg031.asm) -----
+; RUN_SOUND_ENGINE
+;
+; This is the normal, every-frame callout to run the sound engine
+; -----
 .macro RUN_SOUND_ENGINE
     ; *** Bring the sound engine (page 28 and page 29) into ROM
     LDA #MMC3_8K_TO_PRG_C000    ; Changing PRG ROM at C000
@@ -76,8 +111,12 @@ PRG010_C3EA:
     JSR PRGROM_Change_Both
 .endmacro
 
-; Stupid that we have to have two of these, but that's what stock did
-; (prg022.asm)
+; ----- (prg022.asm) -----
+; RUN_SOUND_ENGINE_ROULETTE
+;
+; Stupid that we have to have two of these, but that's what stock did.
+; For whatever reason, this only changes out page 28.
+; -----
 .macro RUN_SOUND_ENGINE_ROULETTE
     ; Switch to page 28 @ A000
     LDA #MMC3_8K_TO_PRG_A000
@@ -90,16 +129,6 @@ PRG010_C3EA:
 
     ; Change A000 back to whatever it was before the sound engine
     JSR PRGROM_Change_A000
-.endmacro
-
-.macro STOP_MUSIC
-    LDA #MUS1_STOPMUSIC
-    STA Sound_QMusic1
-.endmacro
-
-.macro EARLY_RESET_HOOK
-    LDA #$5a
-    STA Reset_Latch
 .endmacro
 
 
