@@ -948,9 +948,14 @@ __RAM_OFFSET__ .set __RAM_OFFSET__ + 5
 ;   If object is in state 4 (being held), timer only decrements every 4 ticks
 ;   In all other states, timer decrements every 2 ticks
     RAM Objects_Timer3, 5   ; $06A6-$06AA Used as the "wake up" out of shell timer
-    RAM Objects_Timer4, 5   ; $06AB-$06AF "Timer" values; automatically decrements to zero (used in "shakin' awake" effect)
+    RAM Objects_Timer4, 6   ; $06AB-$06AF "Timer" values; automatically decrements to zero (used in "shakin' awake" effect)
 
-__RAM_OFFSET__ .set __RAM_OFFSET__ + 3
+    ; [ORANGE] !!!! This is a BUG !!!!
+    ; Southbird had Objects_Timer4 (above) as an array of size 5. However, this must be at least size 6 due to powerups always
+    ; emerging as object index 5. And powerups do use the "shakin' awake" effect. If this slot was used for another variable,
+    ; it might make the shakin' awake code force the powerup to shake as it's emerging.
+
+__RAM_OFFSET__ .set __RAM_OFFSET__ + 2
 
     RAM Object_SlopeHeight, 1   ; Object calculated slope height
     RAM Buffer_Occupied, 2   ; $06B4-$06B5 Set if respective Object_BufferX/Y buffer is already taken by an object
