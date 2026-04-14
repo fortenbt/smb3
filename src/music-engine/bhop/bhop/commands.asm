@@ -339,6 +339,9 @@ cmd_eff_note_release := cmd_unimplemented
 .proc cmd_eff_duty
         fetch_pattern_byte
         sta channel_duty, x
+        ;;; ORANGE - note that we have to do this here so that it actually happens in the case
+        ;;; when only volume changes occur to the note
+        sta channel_instrument_duty, x
         rts
 .endproc
 
