@@ -90,7 +90,7 @@ expanded: $(ROM_EXPD)
 bhop: $(ROM_BHOP)
 
 clean:
-	rm -rf $(BUILD) $(ROM_STOCK) $(ROM_EXPD)
+	rm -rf $(BUILD) $(ROM_STOCK) $(ROM_EXPD) $(ROM_BHOP) *.dbg
 
 
 # --------------------------------------------------
