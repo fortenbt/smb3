@@ -1032,6 +1032,7 @@ process_extended_command:
 
         ; did we activate a Gxx command? If we did, EXIT NOW.
         ; Do NOT pass Go, do NOT collect $200
+        ; [ORANGE] This is broken in cases where multiple notes were meant to be delayed back-to-back
         ldx channel_index ; un-clobber, since we don't know what dispatch_command did to x
         lda effect_note_delay, x
         beq no_note_delay

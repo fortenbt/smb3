@@ -26,7 +26,7 @@ command_table:
     .word cmd_eff_pitch            ;($91)       CMD_EFF_PITCH               Pxx
     .word cmd_eff_reset_pitch      ;($92)       CMD_EFF_RESET_PITCH         P80
     .word cmd_eff_duty             ;($93)       CMD_EFF_DUTY                Vxx; for S5B only: (EffParam << 6) | ((EffParam & 0x04) << 3)
-    .word cmd_eff_delay            ;($94)       CMD_EFF_DELAY               Gxx
+    .word cmd_unimplemented            ;($94)       CMD_EFF_DELAY               Gxx
     .word cmd_unimplemented        ;($95)       CMD_EFF_SWEEP               sweep for 2A03 pulse, Hxy == (0x88 | (EffParam & 0x77)), Ixy == (0x80 | (EffParam & 0x77))
     .word cmd_eff_dac              ;($96)       CMD_EFF_DAC                 Zxx DPCM, EffParam & 0x7F
     .word cmd_eff_offset           ;($97)       CMD_EFF_OFFSET              Yxx DPCM
