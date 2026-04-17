@@ -3163,18 +3163,6 @@ _mus1_to_idx_loop:
     ; MUS2B_BOWSER        = $B0   ; Bowser
     ; MUS2B_WORLD8LETTER  = $C0   ; Bowser's World 8 Letter
     ; MUS2B_MASK          = $F0   ; Not intended for use in code, readability/traceability only
-    ; GamePlay_BGM:
-    ; .byte MUS2B_OVERWORLD   ; 0  ($10)
-    ; .byte MUS2B_UNDERGROUND ; 1  ($20)
-    ; .byte MUS2B_UNDERWATER  ; 2  ($30)
-    ; .byte MUS2B_FORTRESS    ; 3  ($40)
-    ; .byte MUS2B_BOSS        ; 4  ($50)
-    ; .byte MUS2B_AIRSHIP     ; 5  ($60)
-    ; .byte MUS2B_BATTLE      ; 6  ($70)
-    ; .byte MUS2B_TOADHOUSE   ; 7  ($80)
-    ; .byte MUS2B_ATHLETIC    ; 8  ($90)
-    ; .byte MUS2A_THRONEROOM  ; 9  ($0D)
-    ; .byte MUS2A_SKY         ; 10 ($09)
 _qmusic2:
     LDA Sound_QMusic2
     BEQ _process_sounds ; no music queued
@@ -4511,43 +4499,74 @@ song_w1_1:         music_track MODULE_W1_1,         <.bank(MODULE_W1_1)
 song_w1_2:         music_track MODULE_W1_2,         <.bank(MODULE_W1_2)
 song_brinstar:     music_track MODULE_BRINSTAR,     <.BANK(MODULE_BRINSTAR)
 song_summit:       music_track MODULE_SUMMIT,       <.BANK(MODULE_SUMMIT)
+song_numa:         music_track MODULE_NUMA,         <.BANK(MODULE_NUMA)
 
-    ; .byte MUS2B_OVERWORLD   ; 0  ($10)
-    ; .byte MUS2B_UNDERGROUND ; 1  ($20)
-    ; .byte MUS2B_UNDERWATER  ; 2  ($30)
-    ; .byte MUS2B_FORTRESS    ; 3  ($40)
-    ; .byte MUS2B_BOSS        ; 4  ($50)
-    ; .byte MUS2B_AIRSHIP     ; 5  ($60)
-    ; .byte MUS2B_BATTLE      ; 6  ($70)
-    ; .byte MUS2B_TOADHOUSE   ; 7  ($80)
-    ; .byte MUS2B_ATHLETIC    ; 8  ($90)
+    ; MUS2 are
+    ; MUS2A_WORLD1        = $01   ; World 1
+    ; MUS2A_WORLD2        = $02   ; World 2
+    ; MUS2A_WORLD3        = $03   ; World 3
+    ; MUS2A_WORLD4        = $04   ; World 4
+    ; MUS2A_WORLD5        = $05   ; World 5
+    ; MUS2A_WORLD6        = $06   ; World 6
+    ; MUS2A_WORLD7        = $07   ; World 7
+    ; MUS2A_WORLD8        = $08   ; World 8
+    ; MUS2A_SKY           = $09   ; Coin Heaven / Sky World / Warp Zone (World 9)
+    ; MUS2A_INVINCIBILITY = $0A   ; Invincibility
+    ; MUS2A_WARPWHISTLE   = $0B   ; Warp whistle
+    ; MUS2A_MUSICBOX      = $0C   ; Music box
+    ; MUS2A_THRONEROOM    = $0D   ; King's room
+    ; MUS2A_BONUSGAME     = $0E   ; Bonus game
+    ; MUS2A_ENDING        = $0F   ; Ending music
+    ; MUS2B_OVERWORLD     = $10   ; Overworld 1
+    ; MUS2B_UNDERGROUND   = $20   ; Underground
+    ; MUS2B_UNDERWATER    = $30   ; Water
+    ; MUS2B_FORTRESS      = $40   ; Fortress
+    ; MUS2B_BOSS          = $50   ; Boss
+    ; MUS2B_AIRSHIP       = $60   ; Airship
+    ; MUS2B_BATTLE        = $70   ; Hammer Bros. battle
+    ; MUS2B_TOADHOUSE     = $80   ; Toad House
+    ; MUS2B_ATHLETIC      = $90   ; Overworld 2
+    ; MUS2B_PSWITCH       = $A0   ; P-Switch
+    ; MUS2B_BOWSER        = $B0   ; Bowser
+    ; MUS2B_WORLD8LETTER  = $C0   ; Bowser's World 8 Letter
+    ; MUS2B_MASK          = $F0   ; Not intended for use in code, readability/traceability only
+
+    ; MUS1 are
+    ; MUS1_PLAYERDEATH    = $01   ; Player death
+    ; MUS1_GAMEOVER       = $02   ; Game over
+    ; MUS1_BOSSVICTORY    = $04   ; Victory normal
+    ; MUS1_WORLDVICTORY   = $08   ; Victory super (King reverted, Bowser defeated, etc.)
+    ; MUS1_BOWSERFALL     = $10   ; Bowser dramatic falling
+    ; MUS1_COURSECLEAR    = $20   ; Course Clear
+    ; MUS1_TIMEWARNING    = $40   ; Time Warning (attempts to speed up song playing)
+    ; MUS1_STOPMUSIC      = $80   ; Stops playing any music
 bhop_mus1_songs:
-        .addr song_death
-        .addr song_death
-        .addr song_death
-        .addr song_death
-        .addr song_death
-        .addr song_course_clear
-        .addr song_course_clear
+        .addr song_death        ; MUS1_PLAYERDEATH
+        .addr song_death        ; MUS1_GAMEOVER
+        .addr song_death        ; MUS1_BOSSVICTORY
+        .addr song_death        ; MUS1_WORLDVICTORY
+        .addr song_death        ; MUS1_BOWSERFALL
+        .addr song_course_clear ; MUS1_COURSECLEAR
+        .addr song_course_clear ; MUS1_TIMEWARNING
 bhop_level_songs:
-        .addr song_brinstar
-        .addr song_brinstar
-        .addr song_summit
-        .addr song_guile
-        .addr song_guile
-        .addr song_guile
-        .addr song_w1_2
-        .addr song_w1_2
-        .addr song_w1_2
-        .addr song_w1_2
-        .addr song_w1_2
-        .addr song_w1_2
-        .addr song_w1_2
-        .addr song_w1_2
+        .addr song_summit       ; unused
+        .addr song_summit       ; MUS2B_OVERWORLD
+        .addr song_guile        ; MUS2B_UNDERGROUND
+        .addr song_brinstar     ; MUS2B_UNDERWATER
+        .addr song_guile        ; MUS2B_FORTRESS
+        .addr song_guile        ; MUS2B_BOSS
+        .addr song_w1_2         ; MUS2B_AIRSHIP
+        .addr song_w1_2         ; MUS2B_BATTLE
+        .addr song_numa         ; MUS2B_TOADHOUSE
+        .addr song_brinstar     ; MUS2B_ATHLETIC
+        .addr song_w1_2         ; 
+        .addr song_w1_2         ; 
+        .addr song_w1_2         ; 
+        .addr song_w1_2         ; 
 bhop_world_songs:
-        .addr song_brinstar
-        .addr song_revenge ; World 1
-        .addr song_world1 ; World 2
+        .addr song_revenge      ; MUS2A_WORLD1
+        .addr song_revenge      ; MUS2A_WORLD2
+        .addr song_world1
 
 bhop_song_tbl_hi:
     .byte >bhop_world_songs, >bhop_level_songs, >bhop_mus1_songs
@@ -4557,6 +4576,7 @@ bhop_song_tbl_lo:
 ; X is index of song table
 ; 0 - world songs
 ; 1 - level songs
+; 2 - mus1 songs
 ; A is index of song
 .proc bhop_player_init_music
     pha
