@@ -466,7 +466,7 @@ ObjNorm_IceBlock:
 
     LDA #$03     ; A = 3
     JMP PRG003_A4DD  ; Jump to PRG003_A4DD
-
+.export ObjInit_TreasureBox
 ObjInit_TreasureBox:
     LDA Level_TreasureItem
     STA Objects_Var5,X ; Var5 = what item we're gonna get
@@ -616,7 +616,7 @@ PRG003_A33A:
 PRG003_A34E:
     JMP Object_ShakeAndDraw  ; Draw treasure box item without mirroring
 
-
+.export TreasureBox_Poof
 TreasureBox_Poof:
     JSR SpecialObj_FindEmptyAbort   ; Find an empty special object slot or don't come back here!
 

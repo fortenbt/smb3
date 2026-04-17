@@ -134,6 +134,7 @@ no_parameter_byte:
         sta channel_status, x
         rts
 .endproc
+.export cmd_reset_duration
 
 .proc cmd_eff_jump
         fetch_pattern_byte

@@ -33,7 +33,7 @@ __PRGRAM_EXPD_OFFSET__ .set $1950 ; BHOP's reserved area starts after Tile_Mem (
     .if (__PRGRAM_EXPD_OFFSET__ + (size)) > ($1950 + $123) ; reserved size == $123 (see ram_prg.s)
         .error "BHOP PRGRAM overflow: name"
     .endif
-    name = PRGRAM_BASE + __PRGRAM_EXPD_OFFSET__
+    .export name = PRGRAM_BASE + __PRGRAM_EXPD_OFFSET__
     __PRGRAM_EXPD_OFFSET__ .set __PRGRAM_EXPD_OFFSET__ + (size)
 .endmacro
 
@@ -915,6 +915,7 @@ done_vrc6_row_reset:
 
         rts
 .endproc
+.export load_frame_patterns
 
 .proc tick_frame_counter
         clc
@@ -1224,6 +1225,7 @@ skip:
 done:
         rts
 .endproc
+.export advance_channel_row
 
 ; if for whatever reason (usually Dxx with xx >= 0) we need to skip a channel
 ; row and *not* apply *any* of the bytecode, this is the way to go. Note that we
@@ -2892,7 +2894,7 @@ reset_counter:
 .endproc
 
 ; channel index in A
-;;; ORANGE - this didn't mute! We have to actually mute the sound and then suppress the channel
+;;; [ORANGE] - this didn't mute! We have to actually mute the sound and then suppress the channel
 .proc bhop_mute_channel
         tax
         lda #(CHANNEL_SUPPRESSED)
