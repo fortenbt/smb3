@@ -1,6 +1,6 @@
 ; Dn-FamiTracker exported music data: mmbn2b.0cc
 ;
-
+.scope
 ; Module header
 	.word ft_song_list
 	.word ft_instrument_list
@@ -577,7 +577,7 @@ ft_s0p5c2:
 
 ; DPCM samples (located at DPCM segment)
 
-	.segment "PRGFIXED_E000"
+	.segment "aPRGFIXED_E000"
 	.align 64
 ft_sample_0: ; ekick
 	.byte $55, $D5, $C5, $69, $90, $4E, $AA, $AA, $54, $55, $55, $55, $B5, $AA, $55, $55, $55, $AB, $74, $AA
@@ -624,3 +624,4 @@ ft_sample_0: ; ekick
 	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55
 	.byte $55, $55, $55, $55, $55, $55, $55, $55, $55
 
+.endscope

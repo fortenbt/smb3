@@ -4,7 +4,7 @@ __BHOP_CONFIG = 1
 ; Configuration variables, adjust these to taste for your specific project
 
 ; Where should BHOP live?
-.define BHOP_PLAYER_SEGMENT "PRG_28"
+.define BHOP_PLAYER_SEGMENT "PRG_BHOP"
 .define BHOP_RAM_SEGMENT "RAM"
 .define BHOP_ZP_SEGMENT "ZEROPAGE"
 

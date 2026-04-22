@@ -793,3 +793,4 @@
 .forceimport Sound_Unused7FF
 .forceimport TreasureBox_Poof
 .forceimport ObjInit_TreasureBox
+.forceimport World_Metadata

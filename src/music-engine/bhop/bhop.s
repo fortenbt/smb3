@@ -150,7 +150,7 @@ __PRGRAM_EXPD_OFFSET__ .set $1950 ; BHOP's reserved area starts after Tile_Mem (
 .segment BHOP_PLAYER_SEGMENT
 ; global
 .export bhop_init, bhop_play, bhop_mute_channel, bhop_unmute_channel, bhop_set_module_bank, bhop_set_expansion_flags
-.export bhop_unmute_all, bhop_mute_all, bhop_player_init_music
+.export bhop_unmute_all, bhop_mute_all
 
 .include "bhop/midi_lut.inc"
 
@@ -3166,16 +3166,25 @@ _mus1_to_idx_loop:
 _qmusic2:
     LDA Sound_QMusic2
     BEQ _process_sounds ; no music queued
-    CMP #MUS2A_SKY      ; music >= MUS2A_SKY must use level table rather than world table
-    BCS _level_music
     SEC
-    SBC #1  ; A = index of world song
+    SBC #1
+    CMP #MUS2A_WORLD8      ; music > MUS2A_WORLD8 must use level table rather than world table
+    BCS _level_or_special_music
     LDX #0  ; X = 0 (world songs)
 _music_init:
     JSR bhop_player_init_music
     LDA Sound_QMusic2
     STA SndCur_Music2
     BNE _process_sounds ; (always)
+
+_level_or_special_music:
+    CMP #MUS2A_ENDING
+    BCS _level_music
+    ; MUS2A_SKY - MUS2A_ENDING
+    SEC
+    SBC #MUS2A_WORLD8 ; create index...we already subtracted 1
+    LDX #3   ; "special" MUS2 songs
+    BNE _music_init ; (always)
 _level_music:
     LSR
     LSR
@@ -4475,144 +4484,5 @@ _loop:
     RTS
 .endproc
 .export bhop_apply_music_bank
-
-; ----- Music Stuff -----
-
-.struct MusicTrack
-        ModulePtr .word
-        BankNumber .byte
-.endstruct
-
-.macro music_track module_ptr, bank_number
-.scope
-.addr module_ptr
-.byte bank_number
-.endscope
-.endmacro
-
-song_death:        music_track MODULE_DEATH,        <.bank(MODULE_DEATH)
-song_world1:       music_track MODULE_W1,           <.bank(MODULE_W1)
-song_revenge:      music_track MODULE_REVENGE,      <.bank(MODULE_REVENGE)
-song_guile:        music_track MODULE_GUILE,        <.bank(MODULE_GUILE)
-song_course_clear: music_track MODULE_COURSE_CLEAR, <.bank(MODULE_COURSE_CLEAR)
-song_w1_1:         music_track MODULE_W1_1,         <.bank(MODULE_W1_1)
-song_w1_2:         music_track MODULE_W1_2,         <.bank(MODULE_W1_2)
-song_brinstar:     music_track MODULE_BRINSTAR,     <.BANK(MODULE_BRINSTAR)
-song_summit:       music_track MODULE_SUMMIT,       <.BANK(MODULE_SUMMIT)
-song_numa:         music_track MODULE_NUMA,         <.BANK(MODULE_NUMA)
-
-    ; MUS2 are
-    ; MUS2A_WORLD1        = $01   ; World 1
-    ; MUS2A_WORLD2        = $02   ; World 2
-    ; MUS2A_WORLD3        = $03   ; World 3
-    ; MUS2A_WORLD4        = $04   ; World 4
-    ; MUS2A_WORLD5        = $05   ; World 5
-    ; MUS2A_WORLD6        = $06   ; World 6
-    ; MUS2A_WORLD7        = $07   ; World 7
-    ; MUS2A_WORLD8        = $08   ; World 8
-    ; MUS2A_SKY           = $09   ; Coin Heaven / Sky World / Warp Zone (World 9)
-    ; MUS2A_INVINCIBILITY = $0A   ; Invincibility
-    ; MUS2A_WARPWHISTLE   = $0B   ; Warp whistle
-    ; MUS2A_MUSICBOX      = $0C   ; Music box
-    ; MUS2A_THRONEROOM    = $0D   ; King's room
-    ; MUS2A_BONUSGAME     = $0E   ; Bonus game
-    ; MUS2A_ENDING        = $0F   ; Ending music
-    ; MUS2B_OVERWORLD     = $10   ; Overworld 1
-    ; MUS2B_UNDERGROUND   = $20   ; Underground
-    ; MUS2B_UNDERWATER    = $30   ; Water
-    ; MUS2B_FORTRESS      = $40   ; Fortress
-    ; MUS2B_BOSS          = $50   ; Boss
-    ; MUS2B_AIRSHIP       = $60   ; Airship
-    ; MUS2B_BATTLE        = $70   ; Hammer Bros. battle
-    ; MUS2B_TOADHOUSE     = $80   ; Toad House
-    ; MUS2B_ATHLETIC      = $90   ; Overworld 2
-    ; MUS2B_PSWITCH       = $A0   ; P-Switch
-    ; MUS2B_BOWSER        = $B0   ; Bowser
-    ; MUS2B_WORLD8LETTER  = $C0   ; Bowser's World 8 Letter
-    ; MUS2B_MASK          = $F0   ; Not intended for use in code, readability/traceability only
-
-    ; MUS1 are
-    ; MUS1_PLAYERDEATH    = $01   ; Player death
-    ; MUS1_GAMEOVER       = $02   ; Game over
-    ; MUS1_BOSSVICTORY    = $04   ; Victory normal
-    ; MUS1_WORLDVICTORY   = $08   ; Victory super (King reverted, Bowser defeated, etc.)
-    ; MUS1_BOWSERFALL     = $10   ; Bowser dramatic falling
-    ; MUS1_COURSECLEAR    = $20   ; Course Clear
-    ; MUS1_TIMEWARNING    = $40   ; Time Warning (attempts to speed up song playing)
-    ; MUS1_STOPMUSIC      = $80   ; Stops playing any music
-bhop_mus1_songs:
-        .addr song_death        ; MUS1_PLAYERDEATH
-        .addr song_death        ; MUS1_GAMEOVER
-        .addr song_death        ; MUS1_BOSSVICTORY
-        .addr song_death        ; MUS1_WORLDVICTORY
-        .addr song_death        ; MUS1_BOWSERFALL
-        .addr song_course_clear ; MUS1_COURSECLEAR
-        .addr song_course_clear ; MUS1_TIMEWARNING
-bhop_level_songs:
-        .addr song_summit       ; unused
-        .addr song_summit       ; MUS2B_OVERWORLD
-        .addr song_guile        ; MUS2B_UNDERGROUND
-        .addr song_brinstar     ; MUS2B_UNDERWATER
-        .addr song_guile        ; MUS2B_FORTRESS
-        .addr song_guile        ; MUS2B_BOSS
-        .addr song_w1_2         ; MUS2B_AIRSHIP
-        .addr song_w1_2         ; MUS2B_BATTLE
-        .addr song_numa         ; MUS2B_TOADHOUSE
-        .addr song_brinstar     ; MUS2B_ATHLETIC
-        .addr song_w1_2         ; 
-        .addr song_w1_2         ; 
-        .addr song_w1_2         ; 
-        .addr song_w1_2         ; 
-bhop_world_songs:
-        .addr song_revenge      ; MUS2A_WORLD1
-        .addr song_revenge      ; MUS2A_WORLD2
-        .addr song_world1
-
-bhop_song_tbl_hi:
-    .byte >bhop_world_songs, >bhop_level_songs, >bhop_mus1_songs
-bhop_song_tbl_lo:
-    .byte <bhop_world_songs, <bhop_level_songs, <bhop_mus1_songs
-
-; X is index of song table
-; 0 - world songs
-; 1 - level songs
-; 2 - mus1 songs
-; A is index of song
-.proc bhop_player_init_music
-    pha
-    lda bhop_song_tbl_lo, X
-    sta track_ptr+0
-    lda bhop_song_tbl_hi, X
-    sta track_ptr+1
-    pla
-    asl
-    tay
-
-    lda (track_ptr), y
-    pha
-    iny
-    lda (track_ptr), y
-    sta track_ptr+1
-    pla
-    sta track_ptr
-    ; Set the correct bank for this song
-    ldy #<MusicTrack::BankNumber
-    lda (track_ptr), y
-    jsr bhop_set_module_bank
-    ; Initialize bhop with track 0 of the module specified by the song
-    ldy #<MusicTrack::ModulePtr
-    lda (track_ptr), y
-    tax ; lo ptr for the module address
-    iny
-    lda (track_ptr), y
-    tay ; hi ptr for the module address
-    lda #TRACK_0
-    jsr bhop_init
-    lda #0
-    sta track_ptr
-    sta track_ptr+1
-    rts
-.endproc
-.export bhop_player_init_music
 
 .endscope ; BHOP
