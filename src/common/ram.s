@@ -135,6 +135,7 @@ __RAM_OFFSET__ .set __RAM_OFFSET__ + 1
     RAM Map_Power_Disp, 1   ; This is the powerup currently DISPLAYED on the map; it should be the same as $0746 World_Map_Power, except for Judgem's Cloud
     RAM Map_Warp_PrevWorld, 1   ; The world you're coming FROM when warping (also used as output from warp zone what world you're going to)
 
+    RAM Cur_Music_Engine, 1
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; $04xx WORLD MAP CONTEXT

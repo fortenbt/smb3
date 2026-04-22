@@ -27,7 +27,6 @@
 .export PRGROM_Change_Both
 .export Sound1_XCTL_YRAMP, Sound2_XCTL_YRAMP, Sound_Sq1_NoteOn, Sound_Sq2_NoteOn, Sound_Sq2_NoteOn_NoPAPURAMP
 
-.ifndef BHOP
 .export Sound_PlayMusic
 
 DMC01:  .byte $55, $55, $55, $95, $AA, $2A, $95, $E0, $7F, $FC, $C0, $F1, $03, $28, $FE, $FF
@@ -1062,12 +1061,6 @@ PRG031_E7A8:
     LDA (Music_PatchAdrL),Y
     RTS
 
-.else ; BHOP
-DMC01:
-DMC01_End:
-DMC02:
-DMC02_End:
-.endif
 
     ; Quick and dirty function that writes X to the CTL and Y to the RAMP of Square 1
 Sound1_XCTL_YRAMP:
@@ -1272,7 +1265,6 @@ Music_RestH_LUT:
 
     ; END UNUSED SPACE
 
-.ifndef BHOP
 DMC04:  .byte $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $55, $B5, $82, $DC
     .byte $7F, $00, $E0, $FF, $03, $E8, $FF, $03, $00, $F8, $FF, $00, $F0, $FF, $62, $0B
     .byte $40, $DF, $8B, $EA, $27, $00, $FC, $BF, $00, $14, $FD, $FF, $03, $00, $F6, $FF
@@ -1456,18 +1448,6 @@ DMC05_C:.byte $AB, $8A, $42, $A5, $F6, $B2, $25, $49, $56, $6D, $B5, $A9, $94, $
     .byte $AB, $A9, $20, $A9, $6D, $6F, $5B, $51, $2A, $55, $96, $AC, $4A, $B5, $2D, $4B
     .byte $A9, $65, $55, $95, $AD, $2A, $95, $A5, $D4, $6A, $57, $25, $92, $AA, $DA, $6D
 DMC05_End:
-.else ; BHOP
-DMC04:
-DMC04_End:
-DMC06:
-DMC06_End:
-DMC09:
-DMC09_End:
-DMC05:
-DMC05_B:
-DMC05_C:
-DMC05_End:
-.endif
 
     ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     ; The following two LUTs are used together via Update_Request
@@ -2016,12 +1996,10 @@ IntIRQ:  ; $F795 IRQ Interrupt (scanline from MMC3)
     JMP (Temp_Var1)
 
 PRG031_F7B0:
-.ifndef BHOP
     LDA PAPU_MODCTL_Copy
     PHA      ; Save A
     AND #$7f     ; Basically don't disturb DMC, but disable interrupt, if active
     STA PAPU_MODCTL  ;
-.endif
 
     LDA Raster_Effect    ; Get status bar mode
 
@@ -2182,10 +2160,8 @@ IntIRQ_Finish:
 IntIRQ_Finish_NoDis:
     LDA PAGE_CMD     ; Get old page command
     STA MMC3_COMMAND ; Issue it
-.ifndef BHOP
     PLA      ; Restore A (PAPU_MODCTL_Copy)
     STA PAPU_MODCTL  ; Set DMC back to normal
-.endif
 
     ; Restore the other registers
     PLA

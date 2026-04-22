@@ -131,5 +131,6 @@ PRG010_C3EA:
     JSR PRGROM_Change_A000
 .endmacro
 
+.define CHECK_FOR_BHOP_MUSIC ; defined to nothing
 
 .endif ; include guard

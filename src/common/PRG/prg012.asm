@@ -18,7 +18,7 @@
 .segment "PRG_12"
 
 .export Map_PrepareLevel, Map_Reload_with_Completions, Tile_Attributes_TS0, Tile_Layout_TS0
-
+.export World_Metadata
 Tile_Layout_TS0:
     ; This defines the individual 8x8 blocks used to construct one of the tiles
     ; Referenced by Address_Per_Tileset, addressed by Level_Tileset
@@ -253,6 +253,7 @@ PRG012_A498:
     JMP PRG012_A496     ; Do next 144 bytes...
 
 PRG012_A4C1:
+    CHECK_FOR_BHOP_MUSIC    ; Does nothing in stock
     ; Layout is loaded!
 
     ; This places the tiles along the bottom (lower horizontal border)
@@ -454,9 +455,8 @@ W7_Map_Layout:  .include "PRG/maps/World7L.asm"
 W8_Map_Layout:  .include "PRG/maps/World8L.asm"
 W9_Map_Layout:  .include "PRG/maps/World9L.asm"
 
-; FIXME: Anybody want to claim this? Is this part of the above?
-; $B0F3
-    .byte $4A, $44, $47, $48, $AE, $AF, $B5, $B6, $DE, $D9, $DC, $DD
+World_Metadata:
+    WORLD_METADATA
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Map_PrepareLevel

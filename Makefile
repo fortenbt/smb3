@@ -42,7 +42,7 @@ COMMON_PRG := $(wildcard $(PRG)/*.asm)
 STOCK_S    := $(wildcard $(STOCKSRC)/*.s)
 EXPD_S     := $(wildcard $(EXPDSRC)/*.s)
 
-BHOP_S     := $(BHOPNGIN)/bhop.s
+BHOP_S     := $(wildcard $(BHOPNGIN)/*.s)
 
 # --------------------------------------------------
 # Object mapping helpers
@@ -75,7 +75,7 @@ EXPD_OBJS := \
 # BHOP doesn't use the stock music engine (prg028)
 BHOP_OBJS := \
 	$(call map_common_s,expanded-bhop) \
-	$(filter-out %/prg028.o, $(call map_common_prg,expanded-bhop)) \
+	$(call map_common_prg,expanded-bhop) \
 	$(patsubst $(EXPDSRC)/%.s,$(BBHOP)/%.o,$(EXPD_S)) \
 	$(patsubst $(BHOPNGIN)/%.s,$(BBHOP)/%.o,$(BHOP_S))
 

@@ -13,6 +13,7 @@ __SMB3_INC__ = 1
 .include "io.inc"
 
 .include "music-hooks.inc"
+.include "world.inc"
 
 
 .macro BYTE_INDEX_TO target, base
