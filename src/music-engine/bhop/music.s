@@ -24,13 +24,16 @@
     NumSongs .byte
 .endstruct
 
-.macro NUM_SONGS start, end
+.macro NUM_SONGS start
+  .scope
+    end = .ident(.sprintf("%s_end", .string(start)))
     .byte <((end - (start + .sizeof(SongTblHdr))) / .sizeof(MusicTrack))
+  .endscope
 .endmacro
 
 .macro SONG_TABLE_HEADER
     .byte "BHOP"
-    NUM_SONGS bhop_song_table, bhop_song_table_end
+    NUM_SONGS bhop_song_table
 .endmacro
 
 bhop_song_table:
